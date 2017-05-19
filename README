@@ -1,0 +1,8 @@
+Just a place to store my emacs configuration.
+
+Zenburn has a small change to highlight the region using black background-green letters. Otherwise is identical to the one in the official repository.
+
+Config notes (useful for my future self):
+* Whitespace mode made everything too slow under Windows, so it's commented out.
+* Default fullscreen frames are great. But they always open in the main monitor, so also commented that setting. Win+Arrow and then <f-11> it is.
+* Must update proxy settings, or remove them.
