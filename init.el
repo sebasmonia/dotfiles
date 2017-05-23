@@ -148,6 +148,23 @@
   ; (newline-mark ?\n    [?\u21B5 ?\n])
   ; (tab-mark     ?\t    [?\u2192 ?\t] [?\\ ?\t])))
 
+;; TRAMP
+
+; From EmacsWiki, switch buffer (or open from dired) using sudo
+(defun find-alternative-file-with-sudo ()
+  (interactive)
+  (let ((fname (or buffer-file-name
+		   dired-directory)))
+    (when fname
+      (if (string-match "^/sudo:root@localhost:" fname)
+	  (setq fname (replace-regexp-in-string
+		       "^/sudo:root@localhost:" ""
+		       fname))
+	(setq fname (concat "/sudo:root@localhost:" fname)))
+      (find-alternate-file fname))))
+
+(global-set-key (kbd "C-x C-r") 'find-alternative-file-with-sudo)
+
 
 ;; MISC
 (setq-default indent-tabs-mode nil)  ; use only spaces and no tabs
@@ -181,4 +198,3 @@
   (find-file "~/org/Notes.org")
   (find-file "~/org")
   (find-file "~/org/Work.org"))
-
