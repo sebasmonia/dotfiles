@@ -34,7 +34,7 @@
  '(ls-lisp-use-localized-time-format t)
  '(ls-lisp-verbosity nil)
  '(menu-bar-mode nil)
- '(package-selected-packages (quote (bm guide-key neotree dired-launch nyan-mode elpy)))
+ '(package-selected-packages (quote (magit slime bm guide-key neotree dired-launch nyan-mode elpy)))
    (quote
     (("hr-prod"
       (sql-product
@@ -133,6 +133,7 @@
 
 ;; NEOTREE
 (global-set-key [f8] 'neotree-toggle)
+(setq neo-smart-open t)
 
 ;; WHITESPACE MODE
 
@@ -165,6 +166,8 @@
 
 (global-set-key (kbd "C-x C-r") 'find-alternative-file-with-sudo)
 
+;; MAGIT
+(global-set-key (kbd "C-x g") 'magit-status)
 
 ;; MISC
 (setq-default indent-tabs-mode nil)  ; use only spaces and no tabs
