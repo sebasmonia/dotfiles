@@ -34,7 +34,7 @@
  '(ls-lisp-use-localized-time-format t)
  '(ls-lisp-verbosity nil)
  '(menu-bar-mode nil)
- '(package-selected-packages (quote (magit slime bm guide-key neotree dired-launch nyan-mode elpy)))
+ '(package-selected-packages (quote (omnisharp magit slime bm guide-key neotree dired-launch nyan-mode elpy)))
    (quote
     (("hr-prod"
       (sql-product
@@ -107,9 +107,28 @@
 (setq auto-mode-alist (append '(("\\.\\(frm\\|bas\\|cls\\|vb\\)$" .
                              vbnet-mode)) auto-mode-alist))
 
-(autoload 'csharp-mode "csharp-mode" "Major mode for editing C# code." t)
-(setq auto-mode-alist
-  (append '(("\\.cs$" . csharp-mode)) auto-mode-alist))
+;; OMNISHARP
+(require 'omnisharp)
+(setq omnisharp-server-executable-path "C:/HomeFolder/omnisharp_server/OmniSharp.exe")
+(add-hook 'csharp-mode-hook 'omnisharp-mode)
+(add-hook 'vbnet-mode-hook 'omnisharp-mode)
+(define-key omnisharp-mode-map (kbd "M-.") 'omnisharp-auto-complete)
+(define-key omnisharp-mode-map (kbd ".") 'omnisharp-add-dot-and-auto-complete)
+(define-key omnisharp-mode-map (kbd "<f12>") 'omnisharp-go-to-definition)
+(define-key omnisharp-mode-map (kbd "[(shift f12)]") 'omnisharp-find-usages)
+(define-key omnisharp-mode-map (kbd "\C-cou") 'omnisharp-find-usages)
+(define-key omnisharp-mode-map (kbd "\C-coi") 'omnisharp-find-implementations)
+(define-key omnisharp-mode-map (kbd "\C-cod") 'omnisharp-go-to-definition)
+(define-key omnisharp-mode-map (kbd "\C-coq") 'omnisharp-run-code-action-refactoring)
+(define-key omnisharp-mode-map (kbd "\C-cof") 'omnisharp-fix-code-issue-at-point)
+(define-key omnisharp-mode-map (kbd "\C-cor") 'omnisharp-rename)
+(define-key omnisharp-mode-map (kbd "\C-coti") 'omnisharp-current-type-information)
+(define-key omnisharp-mode-map (kbd "\C-cotd") 'omnisharp-current-type-documentation)
+(define-key omnisharp-mode-map (kbd "\C-cos") 'omnisharp-start-omnisharp-server)
+;(define-key omnisharp-mode-map (kbd "<f5>") 'recompile)
+
+;; MAGIT
+(global-set-key (kbd "C-x g") 'magit-status)
 
 ;; ORG MODE
 (define-key global-map "\C-cl" 'org-store-link)
@@ -165,9 +184,6 @@
       (find-alternate-file fname))))
 
 (global-set-key (kbd "C-x C-r") 'find-alternative-file-with-sudo)
-
-;; MAGIT
-(global-set-key (kbd "C-x g") 'magit-status)
 
 ;; MISC
 (setq-default indent-tabs-mode nil)  ; use only spaces and no tabs
