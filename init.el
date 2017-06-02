@@ -231,3 +231,8 @@
   (find-file "~/org/Notes.org")
   (find-file "~/org")
   (find-file "~/org/Work.org"))
+
+; terminal-only customizations
+(unless (display-graphic-p) 
+    (disable-theme 'zenburn) ; disable theme
+  )
