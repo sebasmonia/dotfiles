@@ -34,7 +34,7 @@
  '(ls-lisp-use-localized-time-format t)
  '(ls-lisp-verbosity nil)
  '(menu-bar-mode nil)
- '(package-selected-packages (quote (omnisharp magit slime bm guide-key neotree dired-launch nyan-mode elpy)))
+ '(package-selected-packages (quote (fill-column-indicator omnisharp magit slime bm guide-key neotree dired-launch nyan-mode elpy)))
    (quote
     (("hr-prod"
       (sql-product
@@ -94,6 +94,20 @@
 
 ;; DIRED
 (dired-launch-enable)
+
+;; FCI
+(setq fci-rule-color "grey")
+(setq fci-rule-width 2)
+(setq fci-rule-column 80)
+
+(define-globalized-minor-mode global-fci-mode fci-mode
+  (lambda ()
+    (if (and
+         (not (string-match "^\*.*\*$" (buffer-name)))
+         (not (eq major-mode 'dired-mode)))
+        (fci-mode 1))))
+(global-fci-mode 1)
+
 
 ;; IDO
 (require 'ido-vertical-mode)
