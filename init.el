@@ -35,41 +35,6 @@
  '(ls-lisp-verbosity nil)
  '(menu-bar-mode nil)
  '(package-selected-packages (quote (fill-column-indicator omnisharp magit slime bm guide-key neotree dired-launch nyan-mode elpy)))
-   (quote
-    (("hr-prod"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-password "")
-      (sql-server "SQLPRD08")
-      (sql-database "HumanResources"))
-     ("continuity-prod"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-password "")
-      (sql-server "SLS_Continuity_PROD_SQL_AG")
-      (sql-database "SLS_Continuity"))
-     ("continuity-uat"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-password "")
-      (sql-server "UAT_SLS_Continuity_SQL_AG")
-      (sql-database "SLS_Continuity_UAT"))
-     ("irt-uat"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-password "")
-      (sql-server "UAT_SLS_ImageRequest_SQL_AG")
-      (sql-database "SLS_ImageRequest_UAT"))
-     ("irt-prod"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-server "SLS_ImageRequest_Prod_PROD_SQL_AG")
-      (sql-database "SLS_ImageRequest")))))
  '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -107,7 +72,6 @@
          (not (eq major-mode 'dired-mode)))
         (fci-mode 1))))
 (global-fci-mode 1)
-
 
 ;; IDO
 (require 'ido-vertical-mode)
@@ -205,6 +169,14 @@
 (global-linum-mode t)
 ;(add-to-list 'default-frame-alist '(fullscreen . fullscreen))
 
+;; modified version of the one in https://www.emacswiki.org/emacs/InsertDate
+(defun insert-date (prefix)
+  "Insert the current date. With prefix-argument, use ISO format. With
+   two prefix arguments, write out the day and month name."
+  (interactive "P")
+  (let ((format (if prefix "%Y-%m-%dT%H:%M:%S" "%Y-%m-%d")))
+    (insert (format-time-string format))))
+(global-set-key (kbd "C-c d") 'insert-date)
 
 (global-set-key (kbd "C-<f1>")
   (lambda ()
