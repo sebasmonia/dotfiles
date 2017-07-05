@@ -167,6 +167,7 @@
 (setq-default indent-tabs-mode nil)  ; use only spaces and no tabs
 (setq default-tab-width 4)
 (global-linum-mode t)
+(setq frame-title-format "%b - Emacs")
 ;(add-to-list 'default-frame-alist '(fullscreen . fullscreen))
 
 ;; modified version of the one in https://www.emacswiki.org/emacs/InsertDate
