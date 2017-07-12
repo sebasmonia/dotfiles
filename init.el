@@ -168,6 +168,7 @@
 (setq default-tab-width 4)
 (global-linum-mode t)
 (setq frame-title-format "%b - Emacs")
+(global-set-key (kbd "M-RET") 'toggle-frame-fullscreen)
 ;(add-to-list 'default-frame-alist '(fullscreen . fullscreen))
 
 ;; modified version of the one in https://www.emacswiki.org/emacs/InsertDate
