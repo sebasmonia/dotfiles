@@ -160,8 +160,9 @@ Also bind `class' to ((class color) (min-colors 89))."
      ((t (:foreground ,zenburn-green-1
                       :background ,zenburn-bg-05
                       :box (:line-width -1 :style released-button)))))
-   ;Cystoin
-   `(region ((,class (:background ,"#000000" :foreground "#00FF00"))
+
+   ;Cystoin "#00FF00"
+   `(region ((,class (:background ,zenburn-bg-2 :foreground "#00FF00"))
              (t :inverse-video t)))
    `(secondary-selection ((t (:background ,zenburn-bg+2))))
    `(trailing-whitespace ((t (:background ,zenburn-red))))
@@ -673,10 +674,10 @@ Also bind `class' to ((class color) (min-colors 89))."
 ;;;;; helm-swoop
    `(helm-swoop-target-line-face ((t (:foreground ,zenburn-fg :background ,zenburn-bg+1))))
    `(helm-swoop-target-word-face ((t (:foreground ,zenburn-yellow :background ,zenburn-bg+2 :weight bold))))
-;;;;; hl-line-mode
-   `(hl-line-face ((,class (:background ,zenburn-bg-05))
+;;;;; hl-line-mode zenburn-bg-05
+   `(hl-line-face ((,class (:background ,zenburn-bg-1))
                    (t :weight bold)))
-   `(hl-line ((,class (:background ,zenburn-bg-05)) ; old emacsen
+   `(hl-line ((,class (:background ,zenburn-bg-1)) ; old emacsen
               (t :weight bold)))
 ;;;;; hl-sexp
    `(hl-sexp-face ((,class (:background ,zenburn-bg+1))
