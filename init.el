@@ -167,6 +167,7 @@
 (setq-default indent-tabs-mode nil)  ; use only spaces and no tabs
 (setq default-tab-width 4)
 (global-linum-mode t)
+(global-hl-line-mode t)
 (setq frame-title-format "%b - Emacs")
 (global-set-key (kbd "M-RET") 'toggle-frame-fullscreen)
 ;(add-to-list 'default-frame-alist '(fullscreen . fullscreen))
