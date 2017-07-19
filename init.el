@@ -171,6 +171,10 @@
 (setq frame-title-format "%b - Emacs")
 (global-set-key (kbd "M-RET") 'toggle-frame-fullscreen)
 ;(add-to-list 'default-frame-alist '(fullscreen . fullscreen))
+(delete-selection-mode t)
+; see https://emacs.stackexchange.com/questions/33510/unicode-txt-slowness
+(setq inhibit-compacting-font-caches t)
+
 
 ;; modified version of the one in https://www.emacswiki.org/emacs/InsertDate
 (defun insert-date (prefix)
