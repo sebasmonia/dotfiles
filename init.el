@@ -259,6 +259,11 @@
 ; from https://emacs.stackexchange.com/questions/7362/how-to-show-a-diff-between-two-buffers-with-character-level-diffs
 (setq-default ediff-forward-word-function 'forward-char)
 
+(global-set-key (kbd "M-o") 'other-window)
+(global-set-key (kbd "M-N") 'next-buffer)
+(global-set-key (kbd "M-P") 'previous-buffer)
+(global-set-key (kbd "C-x K") 'kill-this-buffer)
+
 ;; modified version of the one in https://www.emacswiki.org/emacs/InsertDate
 (defun insert-date (prefix)
   "Insert the current date. With prefix-argument, use ISO format. With
