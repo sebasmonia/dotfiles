@@ -39,6 +39,7 @@
  '(fci-rule-color "#383838")
  '(ls-lisp-dirs-first t)
  '(ls-lisp-format-time-list (quote ("%Y-%m-%d %H:%M" "%Y-%m-%d %H:%M")))
+ '(ls-lisp-use-insert-directory-program nil)
  '(ls-lisp-use-localized-time-format t)
  '(ls-lisp-verbosity nil)
  '(menu-bar-mode nil)
@@ -48,10 +49,46 @@
  '(org-hide-emphasis-markers t)
  '(package-selected-packages
    (quote
-    (circe web-mode cyberpunk-theme grandshell-theme gruber-darker-theme lyrics xah-find jabber jdee ox-clip speed-type symon fill-column-indicator omnisharp magit slime bm guide-key neotree dired-launch nyan-mode elpy)))
+    (dired-narrow circe web-mode cyberpunk-theme grandshell-theme gruber-darker-theme lyrics xah-find jabber jdee ox-clip speed-type symon fill-column-indicator omnisharp magit slime bm guide-key neotree dired-launch nyan-mode elpy)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(proced-filter (quote all))
  '(scroll-bar-mode nil)
+ '(sql-connection-alist
+   (quote
+    (("hr-prod"
+      (sql-product
+       (quote ms))
+      (sql-user "")
+      (sql-password "")
+      (sql-server "SQLPRD08")
+      (sql-database "HumanResources"))
+     ("continuity-prod"
+      (sql-product
+       (quote ms))
+      (sql-user "")
+      (sql-password "")
+      (sql-server "SLS_Continuity_PROD_SQL_AG")
+      (sql-database "SLS_Continuity"))
+     ("continuity-uat"
+      (sql-product
+       (quote ms))
+      (sql-user "")
+      (sql-password "")
+      (sql-server "UAT_SLS_Continuity_SQL_AG")
+      (sql-database "SLS_Continuity_UAT"))
+     ("irt-uat"
+      (sql-product
+       (quote ms))
+      (sql-user "")
+      (sql-password "")
+      (sql-server "UAT_SLS_ImageRequest_SQL_AG")
+      (sql-database "SLS_ImageRequest_UAT"))
+     ("irt-prod"
+      (sql-product
+       (quote ms))
+      (sql-user "")
+      (sql-server "SLS_ImageRequest_Prod_PROD_SQL_AG")
+      (sql-database "SLS_ImageRequest")))))
  '(sql-ms-options nil)
  '(sql-ms-program "sqlcmdline")
  '(symon-delay 5)
@@ -126,6 +163,8 @@
 (dired-launch-enable)
 (autoload 'dired-async-mode "dired-async.el" nil t)
 (dired-async-mode 1)
+(global-set-key (kbd "\C-cj") 'dired-jump)
+(define-key dired-mode-map (kbd "\\") 'dired-narrow) 
 
 ;; FCI
 ;; (setq fci-rule-color "grey")
@@ -258,7 +297,7 @@
 (setq inhibit-compacting-font-caches t)
 ; from https://emacs.stackexchange.com/questions/7362/how-to-show-a-diff-between-two-buffers-with-character-level-diffs
 (setq-default ediff-forward-word-function 'forward-char)
-
+(global-set-key (kbd "M-o") 'other-window)
 (global-set-key (kbd "M-o") 'other-window)
 (global-set-key (kbd "M-N") 'next-buffer)
 (global-set-key (kbd "M-P") 'previous-buffer)
@@ -273,17 +312,6 @@
     (insert (format-time-string format))))
 (global-set-key (kbd "C-c d") 'insert-date)
 
-    
-(global-set-key (kbd "C-<f1>")
-  (lambda ()
-    (interactive)
-    (dired "~/")))
-
-(global-set-key (kbd "C-<f2>")
-  (lambda ()
-    (interactive)
-    (dired "//csafsapp1/KCC Technology/")))
-
 (defun go-org()
   (interactive)
   (find-file "~/org/Notes.org")
@@ -291,17 +319,3 @@
   (find-file "~/org/Work.org"))
 
 (global-set-key (kbd "C--") 'pop-tag-mark) ; sort of Omnisharp-related
-
-;; WORK KEYBOARD BINDINGS
-(setq w32-pass-multimedia-buttons-to-system nil)
-(global-set-key (kbd "<browser-back>") 'previous-buffer)
-(global-set-key (kbd "<browser-forward>") 'next-buffer)
-(global-set-key (kbd "<browser-home>")
-  (lambda ()
-    (interactive)
-    (dired "~/")))
-
-(global-set-key (kbd "<browser-search>")
-  (lambda ()
-    (interactive)
-    (dired "//csafsapp1/KCC Technology/")))
