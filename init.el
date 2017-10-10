@@ -1,7 +1,7 @@
 (setq url-proxy-services
    '(("no_proxy" . "^\\(localhost\\|10.*\\)")
      ("http" . "0.0.0.0:8080")
-     ("https" . "0.0.0.0:8080"))
+     ("https" . "0.0.0.0:8080")))
 
 (require 'package)
 ;(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/"))
@@ -17,6 +17,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-faces-vector
+   [default default default italic underline success warning error])
  '(ansi-color-names-vector
    ["#212526" "#ff4b4b" "#b4fa70" "#fce94f" "#729fcf" "#e090d7" "#8cc4ff" "#eeeeec"])
  '(bm-buffer-persistence t)
@@ -29,6 +31,7 @@
  '(desktop-save-mode t)
  '(dired-dwim-target t)
  '(dired-listing-switches "-laGh1v")
+ '(dired-narrow-exit-action (quote ignore))
  '(dired-sort-menu-saved-config
    (quote
     ((dired-actual-switches . "-al")
@@ -37,6 +40,7 @@
  '(ediff-keep-variants nil)
  '(eww-search-prefix "https://www.bing.com/search?q=")
  '(fci-rule-color "#383838")
+ '(frame-brackground-mode (quote dark))
  '(ls-lisp-dirs-first t)
  '(ls-lisp-format-time-list (quote ("%Y-%m-%d %H:%M" "%Y-%m-%d %H:%M")))
  '(ls-lisp-use-insert-directory-program nil)
@@ -49,46 +53,13 @@
  '(org-hide-emphasis-markers t)
  '(package-selected-packages
    (quote
-    (dired-narrow circe web-mode cyberpunk-theme grandshell-theme gruber-darker-theme lyrics xah-find jabber jdee ox-clip speed-type symon fill-column-indicator omnisharp magit slime bm guide-key neotree dired-launch nyan-mode elpy)))
+    (highlight2clipboard diminish spaceline crux dired-narrow circe web-mode cyberpunk-theme grandshell-theme gruber-darker-theme lyrics xah-find jabber jdee ox-clip speed-type symon fill-column-indicator omnisharp magit slime bm guide-key neotree dired-launch nyan-mode elpy)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
+ '(powerline-default-separator (quote arrow))
+ '(powerline-default-separator-dir (quote (left . left)))
+ '(powerline-height 20)
  '(proced-filter (quote all))
  '(scroll-bar-mode nil)
- '(sql-connection-alist
-   (quote
-    (("hr-prod"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-password "")
-      (sql-server "SQLPRD08")
-      (sql-database "HumanResources"))
-     ("continuity-prod"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-password "")
-      (sql-server "SLS_Continuity_PROD_SQL_AG")
-      (sql-database "SLS_Continuity"))
-     ("continuity-uat"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-password "")
-      (sql-server "UAT_SLS_Continuity_SQL_AG")
-      (sql-database "SLS_Continuity_UAT"))
-     ("irt-uat"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-password "")
-      (sql-server "UAT_SLS_ImageRequest_SQL_AG")
-      (sql-database "SLS_ImageRequest_UAT"))
-     ("irt-prod"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-server "SLS_ImageRequest_Prod_PROD_SQL_AG")
-      (sql-database "SLS_ImageRequest")))))
  '(sql-ms-options nil)
  '(sql-ms-program "sqlcmdline")
  '(symon-delay 5)
@@ -126,7 +97,7 @@
  '(weatherline-lighter-include-pressure t)
  '(weatherline-location "Denver, US")
  '(weatherline-location-id 5419384)
- '(weatherline-mode t)
+ '(weatherline-mode nil)
  '(weatherline-symbols nil)
  '(weatherline-units "metric")
  '(web-mode-enable-css-colorization t)
@@ -166,6 +137,7 @@
 (global-set-key (kbd "\C-cj") 'dired-jump)
 (define-key dired-mode-map (kbd "\\") 'dired-narrow) 
 
+
 ;; FCI
 ;; (setq fci-rule-color "grey")
 ;; (setq fci-rule-width 2)
@@ -189,6 +161,11 @@
 ;; .NET COMPAT
 (autoload 'vbnet-mode "vbnet-mode" "Mode for editing VB.NET code." t)
  (setq auto-mode-alist (append '(("\\.\\(frm\\|bas\\|cls\\|vb\\)$" . vbnet-mode)) auto-mode-alist))
+
+;; SPACELINE
+
+(require 'spaceline-config)
+(spaceline-emacs-theme)
 
 ;; WEB MODE
 (require 'web-mode)
@@ -219,8 +196,6 @@
 (add-hook 'vbnet-mode-hook 'omnisharp-mode)
 (define-key omnisharp-mode-map (kbd "M-.") 'omnisharp-auto-complete)
 (define-key omnisharp-mode-map (kbd ".") 'omnisharp-add-dot-and-auto-complete)
-(define-key omnisharp-mode-map (kbd "<f12>") 'omnisharp-go-to-definition)
-(define-key omnisharp-mode-map (kbd "[(shift f12)]") 'omnisharp-find-usages)
 (define-key omnisharp-mode-map (kbd "\C-cou") 'omnisharp-find-usages)
 (define-key omnisharp-mode-map (kbd "\C-coi") 'omnisharp-find-implementations)
 (define-key omnisharp-mode-map (kbd "\C-cod") 'omnisharp-go-to-definition)
@@ -312,10 +287,31 @@
     (insert (format-time-string format))))
 (global-set-key (kbd "C-c d") 'insert-date)
 
-(defun go-org()
+(defun open-org()
   (interactive)
   (find-file "~/org/Notes.org")
   (find-file "~/org/Minutes.org")
   (find-file "~/org/Work.org"))
 
 (global-set-key (kbd "C--") 'pop-tag-mark) ; sort of Omnisharp-related
+
+;; WORK KEYBOARD BINDGS
+(setq w32-pass-multimedia-buttons-to-system nil)
+(global-set-key (kbd "<browser-back>") 'other-frame)
+(global-set-key (kbd "<browser-forward>") 'other-frame)
+(global-set-key (kbd "<browser-home>")
+  (lambda ()
+    (interactive)
+    (dired "~/")))
+
+(global-set-key (kbd "<browser-search>")
+  (lambda ()
+    (interactive)
+    (dired "//csafsapp1/KCC Technology/")))
+
+(defun dired-file-to-clip ()
+  "Invoke the file2clip script in the file at point"
+  (interactive)
+  (shell-command (concat "f2c " (dired-get-filename))))
+
+(define-key dired-mode-map (kbd "W") 'dired-file-to-clip) 
