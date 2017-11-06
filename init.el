@@ -28,19 +28,22 @@
  '(custom-safe-themes
    (quote
     ("d61fc0e6409f0c2a22e97162d7d151dee9e192a90fa623f8d6a071dbf49229c6" "0b6cb9b19138f9a859ad1b7f753958d8a36a464c6d10550119b2838cedf92171" "d6922c974e8a78378eacb01414183ce32bc8dbf2de78aabcc6ad8172547cb074" "70f073dc36e2421b5f04309792b12852ec464423a213129cbf18663ab8cdaf3f" "eb62f4ee07ab1475878add3723dfcb4abe80d0c4ba2313b8ee4c7733ffe0b6b5" "811fdfb1c3d04988a0215c0595da8e626e48182566806ece2f7a06832187e7aa" "d9a9e18d049d25494a5abe0bf23776d3e10f3b4812f04f9377e1467c89e5e3d8" "3617b11b1fd89fa6c77b5ed019b6124a22c156639bd45a8d230728f77caa20b5" default)))
- '(desktop-save-mode t)
  '(dired-dwim-target t)
- '(dired-listing-switches "-laGh1v")
+ '(dired-listing-switches "-laogGhvD")
  '(dired-narrow-exit-action (quote ignore))
  '(dired-sort-menu-saved-config
    (quote
     ((dired-actual-switches . "-al")
      (ls-lisp-ignore-case)
      (ls-lisp-dirs-first . t))))
+ '(diredp-ignore-compressed-flag t)
+ '(ediff-highlight-all-diffs t)
  '(ediff-keep-variants nil)
  '(eww-search-prefix "https://www.bing.com/search?q=")
  '(fci-rule-color "#383838")
  '(frame-brackground-mode (quote dark))
+ '(grep-command
+   "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
  '(ls-lisp-dirs-first t)
  '(ls-lisp-format-time-list (quote ("%Y-%m-%d %H:%M" "%Y-%m-%d %H:%M")))
  '(ls-lisp-use-insert-directory-program nil)
@@ -50,18 +53,60 @@
  '(nrepl-message-colors
    (quote
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
+ '(omnisharp-server-executable-path "C:/HomeFolder/omnisharp_server/OmniSharp.exe")
  '(org-hide-emphasis-markers t)
  '(package-selected-packages
    (quote
-    (highlight2clipboard diminish spaceline crux dired-narrow circe web-mode cyberpunk-theme grandshell-theme gruber-darker-theme lyrics xah-find jabber jdee ox-clip speed-type symon fill-column-indicator omnisharp magit slime bm guide-key neotree dired-launch nyan-mode elpy)))
+    (dired+ dired-sort-menu+ dired-sort-menu highlight2clipboard diminish spaceline crux dired-narrow circe web-mode cyberpunk-theme grandshell-theme gruber-darker-theme lyrics xah-find jabber jdee ox-clip speed-type symon fill-column-indicator omnisharp magit slime bm guide-key neotree dired-launch nyan-mode elpy)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(powerline-default-separator (quote arrow))
  '(powerline-default-separator-dir (quote (left . left)))
  '(powerline-height 20)
  '(proced-filter (quote all))
  '(scroll-bar-mode nil)
+ '(set-mark-command-repeat-pop t)
+ '(sql-connection-alist
+   (quote
+    (("continuity-prod"
+      (sql-product
+       (quote ms))
+      (sql-user "")
+      (sql-password "")
+      (sql-server "SLS_Continuity_PROD_SQL_AG")
+      (sql-database "SLS_Continuity"))
+     ("continuity-uat"
+      (sql-product
+       (quote ms))
+      (sql-user "")
+      (sql-password "")
+      (sql-server "UAT_SLS_Continuity_SQL_AG")
+      (sql-database "SLS_Continuity_UAT"))
+     ("irt-uat"
+      (sql-product
+       (quote ms))
+      (sql-user "")
+      (sql-password "")
+      (sql-server "UAT_SLS_ImageRequest_SQL_AG")
+      (sql-database "SLS_ImageRequest_UAT"))
+     ("irt-prod"
+      (sql-product
+       (quote ms))
+      (sql-user "")
+      (sql-server "SLS_ImageRequest_Prod_PROD_SQL_AG")
+      (sql-database "SLS_ImageRequest"))
+     ("ph-dev"
+      (sql-user "")
+      (sql-password "")
+      (sql-server "CSAVKCCSQLD16")
+      (sql-database "PaymentHub"))
+     ("ph-qa"
+      (sql-user "")
+      (sql-password "")
+      (sql-server "CSAVKCCSQLQ16")
+      (sql-database "PaymentHub")))))
  '(sql-ms-options nil)
  '(sql-ms-program "sqlcmdline")
+ '(sql-product (quote ms))
  '(symon-delay 5)
  '(symon-mode t)
  '(symon-monitors
@@ -108,12 +153,28 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "Consolas" :foundry "outline" :slant normal :weight normal :height 98 :width normal))))
+ '(diredp-compressed-file-name ((t (:foreground "slate gray"))))
+ '(diredp-compressed-file-suffix ((t (:foreground "slate gray"))))
+ '(diredp-deletion ((t (:background "black" :foreground "red"))))
+ '(diredp-deletion-file-name ((t (:background "black" :foreground "red"))))
+ '(diredp-dir-heading ((t (:foreground "Yellow"))))
+ '(diredp-dir-name ((t (:foreground "gold"))))
+ '(diredp-flag-mark ((t (:background "black" :foreground "dark grey"))))
+ '(diredp-flag-mark-line ((t (:background "black" :foreground "dark grey"))))
+ '(diredp-ignored-file-name ((t (:foreground "slate gray"))))
+ '(ediff-current-diff-B ((t (:background "#553333"))))
+ '(ediff-current-diff-C ((t (:background "#553333"))))
  '(ediff-even-diff-A ((t (:background "dark slate gray"))))
  '(ediff-even-diff-Ancestor ((t (:background "cornflower blue"))))
- '(ediff-even-diff-C ((t (:background "deep sky blue"))))
- '(ediff-odd-diff-A ((t (:background "dim gray"))))
- '(ediff-odd-diff-B ((t (:background "light sky blue"))))
- '(ediff-odd-diff-C ((t (:background "blue"))))
+ '(ediff-even-diff-B ((t (:background "dark slate gray"))))
+ '(ediff-even-diff-C ((t (:background "dark slate gray"))))
+ '(ediff-fine-diff-Ancestor ((t (:background "DodgerBlue2"))))
+ '(ediff-fine-diff-B ((t (:background "#aa2222"))))
+ '(ediff-fine-diff-C ((t (:background "#aa2222"))))
+ '(ediff-odd-diff-A ((t (:background "dark slate gray"))))
+ '(ediff-odd-diff-Ancestor ((t (:background "cornflower blue"))))
+ '(ediff-odd-diff-B ((t (:background "dark slate gray"))))
+ '(ediff-odd-diff-C ((t (:background "dark slate gray"))))
  '(web-mode-block-face ((t nil))))
 
 
@@ -136,7 +197,9 @@
 (dired-async-mode 1)
 (global-set-key (kbd "\C-cj") 'dired-jump)
 (define-key dired-mode-map (kbd "\\") 'dired-narrow) 
-
+;; from the manual, to use ls instead of Elisp-ls
+(setq ls-lisp-use-insert-directory-program t)
+(setq insert-directory-program "ls")
 
 ;; FCI
 ;; (setq fci-rule-color "grey")
@@ -153,10 +216,12 @@
 
 ;; IDO
 (require 'ido-vertical-mode)
-(ido-mode 1)
-(setq ido-enable-flex-matching t)
 (ido-vertical-mode 1)
 (setq ido-vertical-define-keys 'C-n-and-C-p-only)
+(setq ido-enable-flex-matching t)
+(setq ido-everywhere t)
+(setq ido-create-new-buffer 'always)
+(ido-mode 1)
 
 ;; .NET COMPAT
 (autoload 'vbnet-mode "vbnet-mode" "Mode for editing VB.NET code." t)
@@ -191,9 +256,7 @@
 
 ;; OMNISHARP
 (require 'omnisharp)
-(setq omnisharp-server-executable-path "C:/HomeFolder/omnisharp_server/OmniSharp.exe")
 (add-hook 'csharp-mode-hook 'omnisharp-mode)
-(add-hook 'vbnet-mode-hook 'omnisharp-mode)
 (define-key omnisharp-mode-map (kbd "M-.") 'omnisharp-auto-complete)
 (define-key omnisharp-mode-map (kbd ".") 'omnisharp-add-dot-and-auto-complete)
 (define-key omnisharp-mode-map (kbd "\C-cou") 'omnisharp-find-usages)
@@ -205,7 +268,7 @@
 (define-key omnisharp-mode-map (kbd "\C-coti") 'omnisharp-current-type-information)
 (define-key omnisharp-mode-map (kbd "\C-cotd") 'omnisharp-current-type-documentation)
 (define-key omnisharp-mode-map (kbd "\C-cos") 'omnisharp-start-omnisharp-server)
-;(define-key omnisharp-mode-map (kbd "<f5>") 'recompile)
+(define-key omnisharp-mode-map (kbd "<f5>") 'recompile)
 
 ;; MAGIT
 (global-set-key (kbd "C-x g") 'magit-status)
@@ -227,8 +290,13 @@
 (global-set-key (kbd "C-M-w") 'org-formatted-copy)
 
 ;; SQL MODE
+(require 'sql)
+(sql-set-product-feature 'ms :prompt-regexp "^.*>")
+(sql-set-product-feature 'ms :prompt-cont-regexp "^.*>")
+
 (add-hook 'sql-interactive-mode-hook
           (lambda ()
+            (linum-mode 0)
             (toggle-truncate-lines t)))
 
 ;; GUIDE-KEY
@@ -258,9 +326,9 @@
   ; (newline-mark ?\n    [?\u21B5 ?\n])
   ; (tab-mark     ?\t    [?\u2192 ?\t] [?\\ ?\t])))
 
-(require 'weatherline-mode)
-
 ;; MISC
+(require 'weatherline-mode)
+(require 'printing)
 (setq-default indent-tabs-mode nil)  ; use only spaces and no tabs
 (setq default-tab-width 4)
 (global-linum-mode t)
@@ -272,11 +340,14 @@
 (setq inhibit-compacting-font-caches t)
 ; from https://emacs.stackexchange.com/questions/7362/how-to-show-a-diff-between-two-buffers-with-character-level-diffs
 (setq-default ediff-forward-word-function 'forward-char)
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
 (global-set-key (kbd "M-o") 'other-window)
 (global-set-key (kbd "M-o") 'other-window)
 (global-set-key (kbd "M-N") 'next-buffer)
 (global-set-key (kbd "M-P") 'previous-buffer)
 (global-set-key (kbd "C-x K") 'kill-this-buffer)
+(global-set-key (kbd "C-x C-d") 'find-name-dired)
+
 
 ;; modified version of the one in https://www.emacswiki.org/emacs/InsertDate
 (defun insert-date (prefix)
@@ -287,13 +358,34 @@
     (insert (format-time-string format))))
 (global-set-key (kbd "C-c d") 'insert-date)
 
+    
+(global-set-key (kbd "C-<f1>")
+  (lambda ()
+    (interactive)
+    (dired "~/")))
+
+(global-set-key (kbd "C-<f2>")
+  (lambda ()
+    (interactive)
+    (dired "//csafsapp1/KCC Technology/")))
+
+(global-set-key (kbd "C-<f3>")
+  (lambda ()
+    (interactive)
+    (dired "//CSAVKCCGWIN712/c$"))) 
+
+(global-set-key (kbd "C-<f4>")
+  (lambda ()
+    (interactive)
+    (dired "//denlslsfile04/Homes/smonia")))
+
 (defun open-org()
   (interactive)
   (find-file "~/org/Notes.org")
   (find-file "~/org/Minutes.org")
+  (find-file "~/org/scribble.org")
   (find-file "~/org/Work.org"))
 
-(global-set-key (kbd "C--") 'pop-tag-mark) ; sort of Omnisharp-related
 
 ;; WORK KEYBOARD BINDGS
 (setq w32-pass-multimedia-buttons-to-system nil)
@@ -309,9 +401,18 @@
     (interactive)
     (dired "//csafsapp1/KCC Technology/")))
 
+(global-set-key (kbd "<mail>")
+  (lambda ()
+    (interactive)
+    (dired "//CSAVKCCGWIN712/c$")))
+
+(global-set-key (kbd "<apps>") 'execute-extended-command)
+
+
 (defun dired-file-to-clip ()
   "Invoke the file2clip script in the file at point"
   (interactive)
   (shell-command (concat "f2c " (dired-get-filename))))
 
 (define-key dired-mode-map (kbd "W") 'dired-file-to-clip) 
+(put 'upcase-region 'disabled nil)
