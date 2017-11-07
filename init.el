@@ -65,45 +65,6 @@
  '(proced-filter (quote all))
  '(scroll-bar-mode nil)
  '(set-mark-command-repeat-pop t)
- '(sql-connection-alist
-   (quote
-    (("continuity-prod"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-password "")
-      (sql-server "SLS_Continuity_PROD_SQL_AG")
-      (sql-database "SLS_Continuity"))
-     ("continuity-uat"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-password "")
-      (sql-server "UAT_SLS_Continuity_SQL_AG")
-      (sql-database "SLS_Continuity_UAT"))
-     ("irt-uat"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-password "")
-      (sql-server "UAT_SLS_ImageRequest_SQL_AG")
-      (sql-database "SLS_ImageRequest_UAT"))
-     ("irt-prod"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-server "SLS_ImageRequest_Prod_PROD_SQL_AG")
-      (sql-database "SLS_ImageRequest"))
-     ("ph-dev"
-      (sql-user "")
-      (sql-password "")
-      (sql-server "CSAVKCCSQLD16")
-      (sql-database "PaymentHub"))
-     ("ph-qa"
-      (sql-user "")
-      (sql-password "")
-      (sql-server "CSAVKCCSQLQ16")
-      (sql-database "PaymentHub")))))
  '(sql-ms-options nil)
  '(sql-ms-program "sqlcmdline")
  '(sql-product (quote ms))
@@ -385,28 +346,6 @@
   (find-file "~/org/Minutes.org")
   (find-file "~/org/scribble.org")
   (find-file "~/org/Work.org"))
-
-
-;; WORK KEYBOARD BINDGS
-(setq w32-pass-multimedia-buttons-to-system nil)
-(global-set-key (kbd "<browser-back>") 'other-frame)
-(global-set-key (kbd "<browser-forward>") 'other-frame)
-(global-set-key (kbd "<browser-home>")
-  (lambda ()
-    (interactive)
-    (dired "~/")))
-
-(global-set-key (kbd "<browser-search>")
-  (lambda ()
-    (interactive)
-    (dired "//csafsapp1/KCC Technology/")))
-
-(global-set-key (kbd "<mail>")
-  (lambda ()
-    (interactive)
-    (dired "//CSAVKCCGWIN712/c$")))
-
-(global-set-key (kbd "<apps>") 'execute-extended-command)
 
 
 (defun dired-file-to-clip ()
