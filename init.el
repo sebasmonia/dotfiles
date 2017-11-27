@@ -254,11 +254,18 @@
 (require 'sql)
 (sql-set-product-feature 'ms :prompt-regexp "^.*>")
 (sql-set-product-feature 'ms :prompt-cont-regexp "^.*>")
+;After moving to Emacs 26.0.9, I don't get prompted for buffer name when doing C-u M-x sql-connect
+;added the function below and a call in the SQLi hook to go back to the old behaviour 
+(defun sql-rename-buffer-prompt ()
+  (interactive)
+  (let ((current-prefix-arg '(4)))
+    (call-interactively 'sql-rename-buffer)))
 
 (add-hook 'sql-interactive-mode-hook
           (lambda ()
             (linum-mode 0)
-            (toggle-truncate-lines t)))
+            (toggle-truncate-lines t)
+            (sql-rename-buffer-prompt)))
 
 ;; GUIDE-KEY
 (guide-key-mode 1)
