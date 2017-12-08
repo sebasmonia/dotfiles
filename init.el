@@ -39,6 +39,8 @@
  '(diredp-ignore-compressed-flag t)
  '(ediff-highlight-all-diffs t)
  '(ediff-keep-variants nil)
+ '(ediff-quit-hook (quote (ediff-cleanup-mess delete-frame)))
+ '(ediff-window-setup-function (quote ediff-setup-windows-plain))
  '(eww-search-prefix "https://www.bing.com/search?q=")
  '(fci-rule-color "#383838")
  '(frame-brackground-mode (quote dark))
@@ -53,11 +55,12 @@
  '(nrepl-message-colors
    (quote
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
- '(omnisharp-server-executable-path "C:/HomeFolder/omnisharp_server/OmniSharp.exe")
+ '(omnisharp-server-executable-path "C:/HomeFolder/omnisharp_64/OmniSharp.exe")
  '(org-hide-emphasis-markers t)
+ '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (dired+ dired-sort-menu+ dired-sort-menu highlight2clipboard diminish spaceline crux dired-narrow circe web-mode cyberpunk-theme grandshell-theme gruber-darker-theme lyrics xah-find jabber jdee ox-clip speed-type symon fill-column-indicator omnisharp magit slime bm guide-key neotree dired-launch nyan-mode elpy)))
+    (smex ido-vertical-mode which-key spaceline-all-the-icons dired+ dired-sort-menu+ dired-sort-menu spaceline dired-narrow circe web-mode cyberpunk-theme grandshell-theme gruber-darker-theme lyrics xah-find ox-clip symon omnisharp magit slime bm dired-launch nyan-mode elpy)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(powerline-default-separator (quote arrow))
  '(powerline-default-separator-dir (quote (left . left)))
@@ -76,6 +79,7 @@
  '(symon-refresh-rate 5)
  '(symon-sparkline-use-xpm t)
  '(tool-bar-mode nil)
+ '(tramp-syntax (quote default) nil (tramp))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
    (quote
@@ -98,16 +102,10 @@
      (340 . "#94BFF3")
      (360 . "#DC8CC3"))))
  '(vc-annotate-very-old-color "#DC8CC3")
- '(weatherline-indicator-for-clouds (quote ("☁" "Clouds")))
- '(weatherline-indicator-for-rain (quote ("☔ " "Rain")))
- '(weatherline-lighter-include-pressure t)
- '(weatherline-location "Denver, US")
- '(weatherline-location-id 5419384)
- '(weatherline-mode nil)
- '(weatherline-symbols nil)
- '(weatherline-units "metric")
  '(web-mode-enable-css-colorization t)
- '(web-mode-enable-sql-detection t))
+ '(web-mode-enable-sql-detection t)
+ '(which-key-side-window-max-width 0.4)
+ '(which-key-sort-order (quote which-key-prefix-then-key-order)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -138,16 +136,6 @@
  '(ediff-odd-diff-C ((t (:background "dark slate gray"))))
  '(web-mode-block-face ((t nil))))
 
-
-;; BOOKMARKS - BM
-(require 'bm)
-(global-set-key (kbd "\C-ckk") 'bm-toggle)
-(global-set-key (kbd "\C-ckp") 'bm-previous)
-(global-set-key (kbd "\C-ckn") 'bm-next)
-(global-set-key (kbd "\C-ckr") 'bm-bookmark-regexp)
-(global-set-key (kbd "\C-cks") 'bm-save)
-(global-set-key (kbd "\C-ckl") 'bm-load-and-restore)
-
 ;; ELPY
 (elpy-enable)
 (setq flycheck-highlighting-mode 'lines)
@@ -158,40 +146,29 @@
 (dired-async-mode 1)
 (global-set-key (kbd "\C-cj") 'dired-jump)
 (define-key dired-mode-map (kbd "\\") 'dired-narrow) 
-;; from the manual, to use ls instead of Elisp-ls
-(setq ls-lisp-use-insert-directory-program t)
-(setq insert-directory-program "ls")
-
-;; FCI
-;; (setq fci-rule-color "grey")
-;; (setq fci-rule-width 2)
-;; (setq fci-rule-column 80)
-
-;; (define-globalized-minor-mode global-fci-mode fci-mode
-;;   (lambda ()
-;;     (if (and
-;;          (not (string-match "^\*.*\*$" (buffer-name)))
-;;          (not (eq major-mode 'dired-mode)))
-;;         (fci-mode 1))))
-;; (global-fci-mode 1)
+;; from the manual, to use ls instead of Elisp-ls in Windows
+;(setq ls-lisp-use-insert-directory-program t)
+;(setq insert-directory-program "ls")
 
 ;; IDO
 (require 'ido-vertical-mode)
+(ido-mode 1)
 (ido-vertical-mode 1)
 (setq ido-vertical-define-keys 'C-n-and-C-p-only)
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere t)
 (setq ido-create-new-buffer 'always)
-(ido-mode 1)
 
 ;; .NET COMPAT
 (autoload 'vbnet-mode "vbnet-mode" "Mode for editing VB.NET code." t)
  (setq auto-mode-alist (append '(("\\.\\(frm\\|bas\\|cls\\|vb\\)$" . vbnet-mode)) auto-mode-alist))
 
 ;; SPACELINE
-
 (require 'spaceline-config)
 (spaceline-emacs-theme)
+;; Retry after Windows upgrade :)
+;; (require 'spaceline-all-the-icons)
+;; (spaceline-all-the-icons-theme)
 
 ;; WEB MODE
 (require 'web-mode)
@@ -206,9 +183,7 @@
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.xml?\\'" . web-mode))
-
 (setq web-mode-enable-current-element-highlight t)
-
 (defun my-web-mode-hook ()
   "Hooks for Web mode."
   (setq web-mode-markup-indent-offset 2)
@@ -235,10 +210,6 @@
 (global-set-key (kbd "C-x g") 'magit-status)
 
 ;; ORG MODE
-(define-key global-map "\C-cl" 'org-store-link)
-(define-key global-map "\C-ca" 'org-agenda)
-(setq org-log-done t)
-(setq org-agenda-files (list "~/org/work.org"))
 (defun org-formatted-copy (&optional b e)
   "Export region to HTML, and copy it to the clipboard."
   (interactive "r")
@@ -246,9 +217,14 @@
         (shell-command-on-region
          b
          e
-         "pandoc -f org -t html | python c:/HomeFolder/PythonModules/htmlclip.py")) 
-  )
+         "pandoc -f org -t html | python c:/HomeFolder/PythonModules/htmlclip.py")))
 (global-set-key (kbd "C-M-w") 'org-formatted-copy)
+;see https://superuser.com/questions/71786/can-i-create-a-link-to-a-specific-email-message-in-outlook
+(require 'org-outlook)
+;enable languages in org-babel
+(with-eval-after-load 'org
+  (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t))))
+
 
 ;; SQL MODE
 (require 'sql)
@@ -260,25 +236,26 @@
   (interactive)
   (let ((current-prefix-arg '(4)))
     (call-interactively 'sql-rename-buffer)))
-
 (add-hook 'sql-interactive-mode-hook
           (lambda ()
             (linum-mode 0)
             (toggle-truncate-lines t)
             (sql-rename-buffer-prompt)))
 
-;; GUIDE-KEY
-(guide-key-mode 1)
-(setq guide-key/guide-key-sequence t)
-
 ;; NYAN MODE
 (nyan-mode)
 (nyan-start-animation)
 (nyan-toggle-wavy-trail)
 
-;; NEOTREE
-(global-set-key [f8] 'neotree-toggle)
-(setq neo-smart-open t)
+;; SMEX
+(smex-initialize)
+(global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "M-X") 'smex-major-mode-commands)
+(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
+
+;; WHICH KEY
+(which-key-mode)
+(which-key-setup-side-window-right-bottom)
 
 ;; WHITESPACE MODE
 
@@ -295,8 +272,6 @@
   ; (tab-mark     ?\t    [?\u2192 ?\t] [?\\ ?\t])))
 
 ;; MISC
-(require 'weatherline-mode)
-(require 'printing)
 (setq-default indent-tabs-mode nil)  ; use only spaces and no tabs
 (setq default-tab-width 4)
 (global-linum-mode t)
@@ -310,12 +285,25 @@
 (setq-default ediff-forward-word-function 'forward-char)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (global-set-key (kbd "M-o") 'other-window)
-(global-set-key (kbd "M-o") 'other-window)
 (global-set-key (kbd "M-N") 'next-buffer)
 (global-set-key (kbd "M-P") 'previous-buffer)
 (global-set-key (kbd "C-x K") 'kill-this-buffer)
 (global-set-key (kbd "C-x C-d") 'find-name-dired)
+(global-set-key (kbd "C-'") 'dabbrev-expand)
 
+; from: https://emacs.stackexchange.com/questions/7244/enable-emacs-column-selection-using-mouse
+(defun mouse-start-rectangle (start-event)
+  (interactive "e")
+  (deactivate-mark)
+  (mouse-set-point start-event)
+  (rectangle-mark-mode +1)
+  (let ((drag-event))
+    (track-mouse
+      (while (progn
+               (setq drag-event (read-event))
+               (mouse-movement-p drag-event))
+        (mouse-set-point drag-event)))))
+(global-set-key (kbd "S-<down-mouse-1>") #'mouse-start-rectangle)
 
 ;; modified version of the one in https://www.emacswiki.org/emacs/InsertDate
 (defun insert-date (prefix)
@@ -326,35 +314,6 @@
     (insert (format-time-string format))))
 (global-set-key (kbd "C-c d") 'insert-date)
 
-    
-(global-set-key (kbd "C-<f1>")
-  (lambda ()
-    (interactive)
-    (dired "~/")))
-
-(global-set-key (kbd "C-<f2>")
-  (lambda ()
-    (interactive)
-    (dired "//csafsapp1/KCC Technology/")))
-
-(global-set-key (kbd "C-<f3>")
-  (lambda ()
-    (interactive)
-    (dired "//CSAVKCCGWIN712/c$"))) 
-
-(global-set-key (kbd "C-<f4>")
-  (lambda ()
-    (interactive)
-    (dired "//denlslsfile04/Homes/smonia")))
-
-(defun open-org()
-  (interactive)
-  (find-file "~/org/Notes.org")
-  (find-file "~/org/Minutes.org")
-  (find-file "~/org/scribble.org")
-  (find-file "~/org/Work.org"))
-
-
 (defun dired-file-to-clip ()
   "Invoke the file2clip script in the file at point"
   (interactive)
@@ -362,3 +321,4 @@
 
 (define-key dired-mode-map (kbd "W") 'dired-file-to-clip) 
 (put 'upcase-region 'disabled nil)
+
