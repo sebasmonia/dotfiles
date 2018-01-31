@@ -4,9 +4,9 @@
      ("https" . "0.0.0.0:8080")))
 
 (require 'package)
-;(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/"))
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (add-to-list 'package-archives '("elpy" . "http://jorgenschaefer.github.io/packages/"))
+(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 (package-initialize)
 
 (add-to-list 'load-path "~/.emacs.d/lisp/")
@@ -27,7 +27,7 @@
  '(custom-enabled-themes (quote (gruber-darker)))
  '(custom-safe-themes
    (quote
-    ("d61fc0e6409f0c2a22e97162d7d151dee9e192a90fa623f8d6a071dbf49229c6" "0b6cb9b19138f9a859ad1b7f753958d8a36a464c6d10550119b2838cedf92171" "d6922c974e8a78378eacb01414183ce32bc8dbf2de78aabcc6ad8172547cb074" "70f073dc36e2421b5f04309792b12852ec464423a213129cbf18663ab8cdaf3f" "eb62f4ee07ab1475878add3723dfcb4abe80d0c4ba2313b8ee4c7733ffe0b6b5" "811fdfb1c3d04988a0215c0595da8e626e48182566806ece2f7a06832187e7aa" "d9a9e18d049d25494a5abe0bf23776d3e10f3b4812f04f9377e1467c89e5e3d8" "3617b11b1fd89fa6c77b5ed019b6124a22c156639bd45a8d230728f77caa20b5" default)))
+    ("a4d03266add9a1c8f12b5309612cbbf96e1291773c7bc4fb685bfdaf83b721c6" "d61fc0e6409f0c2a22e97162d7d151dee9e192a90fa623f8d6a071dbf49229c6" "0b6cb9b19138f9a859ad1b7f753958d8a36a464c6d10550119b2838cedf92171" "d6922c974e8a78378eacb01414183ce32bc8dbf2de78aabcc6ad8172547cb074" "70f073dc36e2421b5f04309792b12852ec464423a213129cbf18663ab8cdaf3f" "eb62f4ee07ab1475878add3723dfcb4abe80d0c4ba2313b8ee4c7733ffe0b6b5" "811fdfb1c3d04988a0215c0595da8e626e48182566806ece2f7a06832187e7aa" "d9a9e18d049d25494a5abe0bf23776d3e10f3b4812f04f9377e1467c89e5e3d8" "3617b11b1fd89fa6c77b5ed019b6124a22c156639bd45a8d230728f77caa20b5" default)))
  '(dired-dwim-target t)
  '(dired-listing-switches "-laogGhvD")
  '(dired-narrow-exit-action (quote ignore))
@@ -60,14 +60,23 @@
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (smex ido-vertical-mode which-key spaceline-all-the-icons dired+ dired-sort-menu+ dired-sort-menu spaceline dired-narrow circe web-mode cyberpunk-theme grandshell-theme gruber-darker-theme lyrics xah-find ox-clip symon omnisharp magit slime bm dired-launch nyan-mode elpy)))
+    (powershell elfeed elfeed-goodies darktooth-theme projectile smex ido-vertical-mode which-key spaceline-all-the-icons dired+ dired-sort-menu+ dired-sort-menu spaceline dired-narrow circe web-mode cyberpunk-theme grandshell-theme gruber-darker-theme lyrics xah-find ox-clip symon omnisharp magit slime bm dired-launch nyan-mode elpy)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
- '(powerline-default-separator (quote arrow))
  '(powerline-default-separator-dir (quote (left . left)))
- '(powerline-height 20)
  '(proced-filter (quote all))
  '(scroll-bar-mode nil)
  '(set-mark-command-repeat-pop t)
+ '(spaceline-all-the-icons-clock-always-visible nil)
+ '(spaceline-all-the-icons-eyebrowse-display-name nil)
+ '(spaceline-all-the-icons-highlight-file-name t)
+ '(spaceline-all-the-icons-icon-set-bookmark (quote star))
+ '(spaceline-all-the-icons-icon-set-eyebrowse-slot (quote string))
+ '(spaceline-all-the-icons-icon-set-flycheck-slim (quote outline))
+ '(spaceline-all-the-icons-icon-set-git-ahead (quote commit))
+ '(spaceline-all-the-icons-icon-set-sun-time (quote sun/moon))
+ '(spaceline-all-the-icons-icon-set-window-numbering (quote square))
+ '(spaceline-all-the-icons-separator-type (quote slant))
+ '(spaceline-all-the-icons-slim-render nil)
  '(sql-ms-options nil)
  '(sql-ms-program "sqlcmdline")
  '(sql-product (quote ms))
@@ -102,6 +111,14 @@
      (340 . "#94BFF3")
      (360 . "#DC8CC3"))))
  '(vc-annotate-very-old-color "#DC8CC3")
+ '(weatherline-indicator-for-clouds (quote ("☁" "Clouds")))
+ '(weatherline-indicator-for-rain (quote ("☔ " "Rain")))
+ '(weatherline-lighter-include-pressure t)
+ '(weatherline-location "Denver, US")
+ '(weatherline-location-id 5419384)
+ '(weatherline-mode nil)
+ '(weatherline-symbols nil)
+ '(weatherline-units "metric")
  '(web-mode-enable-css-colorization t)
  '(web-mode-enable-sql-detection t)
  '(which-key-side-window-max-width 0.4)
@@ -111,7 +128,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Consolas" :foundry "outline" :slant normal :weight normal :height 98 :width normal))))
+ '(default ((t (:family "DejaVu Sans Mono" :foundry "outline" :slant normal :weight normal :height 98 :width normal))))
  '(diredp-compressed-file-name ((t (:foreground "slate gray"))))
  '(diredp-compressed-file-suffix ((t (:foreground "slate gray"))))
  '(diredp-deletion ((t (:background "black" :foreground "red"))))
@@ -139,13 +156,17 @@
 ;; ELPY
 (elpy-enable)
 (setq flycheck-highlighting-mode 'lines)
+(setq python-shell-interpreter "jupyter"
+      python-shell-interpreter-args "console --simple-prompt")
 
 ;; DIRED
 (dired-launch-enable)
 (autoload 'dired-async-mode "dired-async.el" nil t)
 (dired-async-mode 1)
 (global-set-key (kbd "\C-cj") 'dired-jump)
-(define-key dired-mode-map (kbd "\\") 'dired-narrow) 
+(define-key dired-mode-map (kbd "\\") 'dired-narrow)
+; from SO, apparently this makes Dired faster on Windows
+(setq directory-free-space-program nil)
 ;; from the manual, to use ls instead of Elisp-ls in Windows
 ;(setq ls-lisp-use-insert-directory-program t)
 ;(setq insert-directory-program "ls")
@@ -159,16 +180,13 @@
 (setq ido-everywhere t)
 (setq ido-create-new-buffer 'always)
 
-;; .NET COMPAT
-(autoload 'vbnet-mode "vbnet-mode" "Mode for editing VB.NET code." t)
- (setq auto-mode-alist (append '(("\\.\\(frm\\|bas\\|cls\\|vb\\)$" . vbnet-mode)) auto-mode-alist))
-
 ;; SPACELINE
 (require 'spaceline-config)
 (spaceline-emacs-theme)
-;; Retry after Windows upgrade :)
-;; (require 'spaceline-all-the-icons)
-;; (spaceline-all-the-icons-theme)
+(require 'spaceline-all-the-icons)
+(spaceline-all-the-icons-theme)
+(spaceline-toggle-all-the-icons-time-off)
+(spaceline-toggle-all-the-icons-hud-off)
 
 ;; WEB MODE
 (require 'web-mode)
@@ -238,14 +256,19 @@
     (call-interactively 'sql-rename-buffer)))
 (add-hook 'sql-interactive-mode-hook
           (lambda ()
-            (linum-mode 0)
             (toggle-truncate-lines t)
+            (font-lock-mode -1)
             (sql-rename-buffer-prompt)))
 
 ;; NYAN MODE
 (nyan-mode)
 (nyan-start-animation)
 (nyan-toggle-wavy-trail)
+
+;; SHELL
+(add-hook 'shell-mode-hook
+          (lambda ()
+            (toggle-truncate-lines t)))
 
 ;; SMEX
 (smex-initialize)
@@ -257,24 +280,9 @@
 (which-key-mode)
 (which-key-setup-side-window-right-bottom)
 
-;; WHITESPACE MODE
-
-;; removed from CUSTOM above
-;; '(global-whitespace-mode t)
-;; '(whitespace-style
-;;   (quote
-;;    (face trailing tabs spaces newline empty indentation space-after-tab space-before-tab space-mark tab-mark newline-mark)))
-
-; (setq whitespace-display-mappings '(
-  ; (space-mark   ?\     [?\u00B7]     [?.])
-  ; (space-mark   ?\xA0  [?\u00A4]     [?_])
-  ; (newline-mark ?\n    [?\u21B5 ?\n])
-  ; (tab-mark     ?\t    [?\u2192 ?\t] [?\\ ?\t])))
-
 ;; MISC
 (setq-default indent-tabs-mode nil)  ; use only spaces and no tabs
 (setq default-tab-width 4)
-(global-linum-mode t)
 (global-hl-line-mode t)
 (setq frame-title-format "%b - Emacs")
 (global-set-key (kbd "M-RET") 'toggle-frame-fullscreen)
@@ -290,6 +298,14 @@
 (global-set-key (kbd "C-x K") 'kill-this-buffer)
 (global-set-key (kbd "C-x C-d") 'find-name-dired)
 (global-set-key (kbd "C-'") 'dabbrev-expand)
+(global-set-key (kbd "M-*") 'pop-tag-mark)
+(global-set-key (kbd "C-x C-r") 'rgrep)
+(global-set-key (kbd "C-c M-d") 'sql-connect)
+(global-set-key (kbd "<f6>") 'kmacro-start-macro)
+(global-set-key (kbd "<f7>") 'kmacro-end-macro)
+(global-set-key (kbd "<f8>") 'kmacro-end-and-call-macro)
+; rather than disabling global-linum-mode for SQLi/comint/etc. buffers, enable it for "file open"  actions
+(add-hook 'find-file-hook 'linum-mode)
 
 ; from: https://emacs.stackexchange.com/questions/7244/enable-emacs-column-selection-using-mouse
 (defun mouse-start-rectangle (start-event)
@@ -314,6 +330,21 @@
     (insert (format-time-string format))))
 (global-set-key (kbd "C-c d") 'insert-date)
 
+(defun open-org()
+  (interactive)
+  (find-file "~/org/Notes.org")
+  (find-file "~/org/Minutes.org")
+  (find-file "~/org/KB.org")
+  (find-file "~/org/scribble.org")
+  (find-file "~/org/tf.org")
+  (find-file "~/org/Work.org"))
+
+(setq w32-pass-multimedia-buttons-to-system nil)
+(global-set-key (kbd "<browser-back>") 'previous-buffer)
+(global-set-key (kbd "<browser-forward>") 'next-buffer)
+
+(global-set-key (kbd "<apps>") 'smex)
+
 (defun dired-file-to-clip ()
   "Invoke the file2clip script in the file at point"
   (interactive)
@@ -321,4 +352,4 @@
 
 (define-key dired-mode-map (kbd "W") 'dired-file-to-clip) 
 (put 'upcase-region 'disabled nil)
-
+(setq-default bidi-display-reordering nil)
