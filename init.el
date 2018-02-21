@@ -41,7 +41,7 @@
  '(ediff-keep-variants nil)
  '(ediff-quit-hook (quote (ediff-cleanup-mess delete-frame)))
  '(ediff-window-setup-function (quote ediff-setup-windows-plain))
- '(eww-search-prefix "https://www.bing.com/search?q=")
+ '(eww-search-prefix "http://www.bing.com/search?q=")
  '(fci-rule-color "#383838")
  '(frame-brackground-mode (quote dark))
  '(grep-command
@@ -60,10 +60,12 @@
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (powershell elfeed elfeed-goodies darktooth-theme projectile smex ido-vertical-mode which-key spaceline-all-the-icons dired+ dired-sort-menu+ dired-sort-menu spaceline dired-narrow circe web-mode cyberpunk-theme grandshell-theme gruber-darker-theme lyrics xah-find ox-clip symon omnisharp magit slime bm dired-launch nyan-mode elpy)))
+    (dashboard powershell projectile smex ido-vertical-mode which-key spaceline-all-the-icons dired+ dired-sort-menu+ dired-sort-menu spaceline dired-narrow circe web-mode gruber-darker-theme lyrics xah-find symon omnisharp magit slime bm dired-launch nyan-mode elpy)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(powerline-default-separator-dir (quote (left . left)))
  '(proced-filter (quote all))
+ '(projectile-indexing-method (quote alien))
+ '(projectile-mode t nil (projectile))
  '(scroll-bar-mode nil)
  '(set-mark-command-repeat-pop t)
  '(spaceline-all-the-icons-clock-always-visible nil)
@@ -75,11 +77,15 @@
  '(spaceline-all-the-icons-icon-set-git-ahead (quote commit))
  '(spaceline-all-the-icons-icon-set-sun-time (quote sun/moon))
  '(spaceline-all-the-icons-icon-set-window-numbering (quote square))
- '(spaceline-all-the-icons-separator-type (quote slant))
+ '(spaceline-all-the-icons-primary-separator "")
+ '(spaceline-all-the-icons-secondary-separator "")
+ '(spaceline-all-the-icons-separator-type (quote arrow))
+ '(spaceline-all-the-icons-separators-invert-direction t)
  '(spaceline-all-the-icons-slim-render nil)
  '(sql-ms-options nil)
- '(sql-ms-program "sqlcmdline")
+ '(sql-ms-program "sssql")
  '(sql-product (quote ms))
+ '(sunshine-units (quote metric))
  '(symon-delay 5)
  '(symon-mode t)
  '(symon-monitors
@@ -111,14 +117,6 @@
      (340 . "#94BFF3")
      (360 . "#DC8CC3"))))
  '(vc-annotate-very-old-color "#DC8CC3")
- '(weatherline-indicator-for-clouds (quote ("☁" "Clouds")))
- '(weatherline-indicator-for-rain (quote ("☔ " "Rain")))
- '(weatherline-lighter-include-pressure t)
- '(weatherline-location "Denver, US")
- '(weatherline-location-id 5419384)
- '(weatherline-mode nil)
- '(weatherline-symbols nil)
- '(weatherline-units "metric")
  '(web-mode-enable-css-colorization t)
  '(web-mode-enable-sql-detection t)
  '(which-key-side-window-max-width 0.4)
@@ -153,11 +151,17 @@
  '(ediff-odd-diff-C ((t (:background "dark slate gray"))))
  '(web-mode-block-face ((t nil))))
 
-;; ELPY
-(elpy-enable)
-(setq flycheck-highlighting-mode 'lines)
-(setq python-shell-interpreter "jupyter"
-      python-shell-interpreter-args "console --simple-prompt")
+;; COMPANY
+(add-hook 'after-init-hook 'global-company-mode)
+
+;; DASHBOARD
+(require 'dashboard)
+(dashboard-setup-startup-hook)
+(setq dashboard-startup-banner 'logo)
+(setq dashboard-banner-logo-title "If anything at all, perfection is finally attained not when there is no longer anything to add, but when there is no longer anything to take away - Exupéry")
+(setq dashboard-items '((projects . 10)
+                        (recents  . 30)))
+(setq initial-buffer-choice (lambda () (switch-to-buffer "*dashboard*")))
 
 ;; DIRED
 (dired-launch-enable)
@@ -171,6 +175,24 @@
 ;(setq ls-lisp-use-insert-directory-program t)
 ;(setq insert-directory-program "ls")
 
+;; ELPY
+(elpy-enable)
+(setq flycheck-highlighting-mode 'lines)
+(setq python-shell-interpreter "jupyter"
+      python-shell-interpreter-args "console --simple-prompt")
+
+;; IBUFFER
+(require 'ibuffer)
+(global-set-key (kbd "C-x C-b") 'ibuffer-other-window)
+(setq ibuffer-default-sorting-mode 'major-mode)
+(add-hook 'ibuffer-mode-hook
+	  '(lambda ()
+	     (ibuffer-auto-mode 1)
+	     (ibuffer-switch-to-saved-filter-groups "home")))
+(setq ibuffer-expert t)
+(setq ibuffer-show-empty-filter-groups nil)
+
+
 ;; IDO
 (require 'ido-vertical-mode)
 (ido-mode 1)
@@ -179,6 +201,77 @@
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere t)
 (setq ido-create-new-buffer 'always)
+
+;; MAGIT
+(global-set-key (kbd "C-x g") 'magit-status)
+
+;; NYAN MODE
+(nyan-mode)
+(nyan-start-animation)
+(nyan-toggle-wavy-trail)
+
+;; OMNISHARP
+(require 'omnisharp)
+(add-hook 'csharp-mode-hook 'omnisharp-mode)
+(define-key omnisharp-mode-map (kbd "M-.") 'omnisharp-auto-complete)
+(define-key omnisharp-mode-map (kbd ".") 'omnisharp-add-dot-and-auto-complete)
+(define-key omnisharp-mode-map (kbd "\C-coe") 'omnisharp-solution-errors)
+(define-key omnisharp-mode-map (kbd "\C-cou") 'omnisharp-find-usages)
+(define-key omnisharp-mode-map (kbd "\C-coi") 'omnisharp-find-implementations)
+(define-key omnisharp-mode-map (kbd "\C-cod") 'omnisharp-go-to-definition)
+(define-key omnisharp-mode-map (kbd "\C-coq") 'omnisharp-run-code-action-refactoring)
+(define-key omnisharp-mode-map (kbd "\C-cof") 'omnisharp-fix-code-issue-at-point)
+(define-key omnisharp-mode-map (kbd "\C-cor") 'omnisharp-rename)
+(define-key omnisharp-mode-map (kbd "\C-coti") 'omnisharp-current-type-information)
+(define-key omnisharp-mode-map (kbd "\C-cotd") 'omnisharp-current-type-documentation)
+(define-key omnisharp-mode-map (kbd "<f5>") 'recompile)
+
+;; ORG MODE
+(defun org-formatted-copy (&optional b e)
+  "Export region to HTML, and copy it to the clipboard."
+  (interactive "r")
+  (save-window-excursion
+        (shell-command-on-region
+         b
+         e
+         "pandoc -f org -t html | python c:/HomeFolder/PythonModules/htmlclip.py")))
+(global-set-key (kbd "C-M-w") 'org-formatted-copy)
+;see https://superuser.com/questions/71786/can-i-create-a-link-to-a-specific-email-message-in-outlook
+(require 'org-outlook)
+;enable languages in org-babel
+(with-eval-after-load 'org
+  (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t))))
+
+;; PROJECTILE
+(projectile-mode)
+(setq projectile-switch-project-action 'projectile-find-file-dwim)
+
+;; SQL MODE
+(require 'sql)
+(sql-set-product-feature 'ms :prompt-regexp "^.*>")
+(sql-set-product-feature 'ms :prompt-cont-regexp "^.*>")
+;After moving to Emacs 26.0.9, I don't get prompted for buffer name when doing C-u M-x sql-connect
+;added the function below and a call in the SQLi hook to go back to the old behaviour 
+(defun sql-rename-buffer-prompt ()
+  (interactive)
+  (let ((current-prefix-arg '(4)))
+    (call-interactively 'sql-rename-buffer)))
+(add-hook 'sql-interactive-mode-hook
+          (lambda ()
+            (toggle-truncate-lines t)
+            (font-lock-mode -1)
+            (sql-rename-buffer-prompt)))
+
+;; SHELL
+(add-hook 'shell-mode-hook
+          (lambda ()
+            (toggle-truncate-lines t)))
+
+;; SMEX
+(smex-initialize)
+(global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "M-X") 'smex-major-mode-commands)
+(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
 ;; SPACELINE
 (require 'spaceline-config)
@@ -208,74 +301,6 @@
 )
 (add-hook 'web-mode-hook  'my-web-mode-hook)
 
-;; OMNISHARP
-(require 'omnisharp)
-(add-hook 'csharp-mode-hook 'omnisharp-mode)
-(define-key omnisharp-mode-map (kbd "M-.") 'omnisharp-auto-complete)
-(define-key omnisharp-mode-map (kbd ".") 'omnisharp-add-dot-and-auto-complete)
-(define-key omnisharp-mode-map (kbd "\C-cou") 'omnisharp-find-usages)
-(define-key omnisharp-mode-map (kbd "\C-coi") 'omnisharp-find-implementations)
-(define-key omnisharp-mode-map (kbd "\C-cod") 'omnisharp-go-to-definition)
-(define-key omnisharp-mode-map (kbd "\C-coq") 'omnisharp-run-code-action-refactoring)
-(define-key omnisharp-mode-map (kbd "\C-cof") 'omnisharp-fix-code-issue-at-point)
-(define-key omnisharp-mode-map (kbd "\C-cor") 'omnisharp-rename)
-(define-key omnisharp-mode-map (kbd "\C-coti") 'omnisharp-current-type-information)
-(define-key omnisharp-mode-map (kbd "\C-cotd") 'omnisharp-current-type-documentation)
-(define-key omnisharp-mode-map (kbd "\C-cos") 'omnisharp-start-omnisharp-server)
-(define-key omnisharp-mode-map (kbd "<f5>") 'recompile)
-
-;; MAGIT
-(global-set-key (kbd "C-x g") 'magit-status)
-
-;; ORG MODE
-(defun org-formatted-copy (&optional b e)
-  "Export region to HTML, and copy it to the clipboard."
-  (interactive "r")
-  (save-window-excursion
-        (shell-command-on-region
-         b
-         e
-         "pandoc -f org -t html | python c:/HomeFolder/PythonModules/htmlclip.py")))
-(global-set-key (kbd "C-M-w") 'org-formatted-copy)
-;see https://superuser.com/questions/71786/can-i-create-a-link-to-a-specific-email-message-in-outlook
-(require 'org-outlook)
-;enable languages in org-babel
-(with-eval-after-load 'org
-  (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t))))
-
-
-;; SQL MODE
-(require 'sql)
-(sql-set-product-feature 'ms :prompt-regexp "^.*>")
-(sql-set-product-feature 'ms :prompt-cont-regexp "^.*>")
-;After moving to Emacs 26.0.9, I don't get prompted for buffer name when doing C-u M-x sql-connect
-;added the function below and a call in the SQLi hook to go back to the old behaviour 
-(defun sql-rename-buffer-prompt ()
-  (interactive)
-  (let ((current-prefix-arg '(4)))
-    (call-interactively 'sql-rename-buffer)))
-(add-hook 'sql-interactive-mode-hook
-          (lambda ()
-            (toggle-truncate-lines t)
-            (font-lock-mode -1)
-            (sql-rename-buffer-prompt)))
-
-;; NYAN MODE
-(nyan-mode)
-(nyan-start-animation)
-(nyan-toggle-wavy-trail)
-
-;; SHELL
-(add-hook 'shell-mode-hook
-          (lambda ()
-            (toggle-truncate-lines t)))
-
-;; SMEX
-(smex-initialize)
-(global-set-key (kbd "M-x") 'smex)
-(global-set-key (kbd "M-X") 'smex-major-mode-commands)
-(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
-
 ;; WHICH KEY
 (which-key-mode)
 (which-key-setup-side-window-right-bottom)
@@ -292,7 +317,11 @@
 ; from https://emacs.stackexchange.com/questions/7362/how-to-show-a-diff-between-two-buffers-with-character-level-diffs
 (setq-default ediff-forward-word-function 'forward-char)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
+; adapted for https://stackoverflow.com/questions/6464738/how-can-i-switch-focus-after-buffer-split-in-emacs
+(global-set-key (kbd "C-x 3") (lambda () (interactive)(split-window-right) (other-window 1)))
+(global-set-key (kbd "C-x 2") (lambda () (interactive)(split-window-below) (other-window 1)))
 (global-set-key (kbd "M-o") 'other-window)
+(global-set-key (kbd "M-O") 'other-frame)
 (global-set-key (kbd "M-N") 'next-buffer)
 (global-set-key (kbd "M-P") 'previous-buffer)
 (global-set-key (kbd "C-x K") 'kill-this-buffer)
@@ -304,8 +333,6 @@
 (global-set-key (kbd "<f6>") 'kmacro-start-macro)
 (global-set-key (kbd "<f7>") 'kmacro-end-macro)
 (global-set-key (kbd "<f8>") 'kmacro-end-and-call-macro)
-; rather than disabling global-linum-mode for SQLi/comint/etc. buffers, enable it for "file open"  actions
-(add-hook 'find-file-hook 'linum-mode)
 
 ; from: https://emacs.stackexchange.com/questions/7244/enable-emacs-column-selection-using-mouse
 (defun mouse-start-rectangle (start-event)
@@ -330,26 +357,10 @@
     (insert (format-time-string format))))
 (global-set-key (kbd "C-c d") 'insert-date)
 
-(defun open-org()
-  (interactive)
-  (find-file "~/org/Notes.org")
-  (find-file "~/org/Minutes.org")
-  (find-file "~/org/KB.org")
-  (find-file "~/org/scribble.org")
-  (find-file "~/org/tf.org")
-  (find-file "~/org/Work.org"))
-
-(setq w32-pass-multimedia-buttons-to-system nil)
-(global-set-key (kbd "<browser-back>") 'previous-buffer)
-(global-set-key (kbd "<browser-forward>") 'next-buffer)
-
-(global-set-key (kbd "<apps>") 'smex)
-
 (defun dired-file-to-clip ()
   "Invoke the file2clip script in the file at point"
   (interactive)
   (shell-command (concat "f2c " (dired-get-filename))))
-
 (define-key dired-mode-map (kbd "W") 'dired-file-to-clip) 
 (put 'upcase-region 'disabled nil)
 (setq-default bidi-display-reordering nil)
