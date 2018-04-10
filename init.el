@@ -27,7 +27,7 @@
  '(custom-enabled-themes (quote (gruber-darker)))
  '(custom-safe-themes
    (quote
-    ("a4d03266add9a1c8f12b5309612cbbf96e1291773c7bc4fb685bfdaf83b721c6" "d61fc0e6409f0c2a22e97162d7d151dee9e192a90fa623f8d6a071dbf49229c6" "0b6cb9b19138f9a859ad1b7f753958d8a36a464c6d10550119b2838cedf92171" "d6922c974e8a78378eacb01414183ce32bc8dbf2de78aabcc6ad8172547cb074" "70f073dc36e2421b5f04309792b12852ec464423a213129cbf18663ab8cdaf3f" "eb62f4ee07ab1475878add3723dfcb4abe80d0c4ba2313b8ee4c7733ffe0b6b5" "811fdfb1c3d04988a0215c0595da8e626e48182566806ece2f7a06832187e7aa" "d9a9e18d049d25494a5abe0bf23776d3e10f3b4812f04f9377e1467c89e5e3d8" "3617b11b1fd89fa6c77b5ed019b6124a22c156639bd45a8d230728f77caa20b5" default)))
+    ("70f073dc36e2421b5f04309792b12852ec464423a213129cbf18663ab8cdaf3f" "ff7625ad8aa2615eae96d6b4469fcc7d3d20b2e1ebc63b761a349bebbb9d23cb" "580d632430ae18daa5109ecd675c1b8df91d7e1e657f049b36bb6fc3c79bfc41" "d61fc0e6409f0c2a22e97162d7d151dee9e192a90fa623f8d6a071dbf49229c6" "dcb9fd142d390bb289fee1d1bb49cb67ab7422cd46baddf11f5c9b7ff756f64c" default)))
  '(dired-dwim-target t)
  '(dired-listing-switches "-laogGhvD")
  '(dired-narrow-exit-action (quote ignore))
@@ -37,6 +37,8 @@
      (ls-lisp-ignore-case)
      (ls-lisp-dirs-first . t))))
  '(diredp-ignore-compressed-flag t)
+ '(display-line-numbers (quote relative))
+ '(display-line-numbers-current-absolute nil)
  '(ediff-highlight-all-diffs t)
  '(ediff-keep-variants nil)
  '(ediff-quit-hook (quote (ediff-cleanup-mess delete-frame)))
@@ -44,6 +46,7 @@
  '(eww-search-prefix "http://www.bing.com/search?q=")
  '(fci-rule-color "#383838")
  '(frame-brackground-mode (quote dark))
+ '(global-visible-mark-mode t)
  '(grep-command
    "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
  '(ls-lisp-dirs-first t)
@@ -55,21 +58,25 @@
  '(nrepl-message-colors
    (quote
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
+ '(omnisharp-imenu-support t)
  '(omnisharp-server-executable-path "C:/HomeFolder/omnisharp_64/OmniSharp.exe")
  '(org-hide-emphasis-markers t)
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (dashboard powershell projectile smex ido-vertical-mode which-key spaceline-all-the-icons dired+ dired-sort-menu+ dired-sort-menu spaceline dired-narrow circe web-mode gruber-darker-theme lyrics xah-find symon omnisharp magit slime bm dired-launch nyan-mode elpy)))
+    (ibuffer-projectile dracula-theme challenger-deep-theme visible-mark elpy wttrin sx yasnippet yasnippet-snippets dashboard powershell projectile smex ido-vertical-mode which-key spaceline-all-the-icons dired+ dired-sort-menu+ dired-sort-menu spaceline dired-narrow circe web-mode gruber-darker-theme lyrics xah-find symon omnisharp magit slime bm dired-launch nyan-mode)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(powerline-default-separator-dir (quote (left . left)))
  '(proced-filter (quote all))
  '(projectile-indexing-method (quote alien))
  '(projectile-mode t nil (projectile))
+ '(projectile-switch-project-action (quote projectile-find-file-dwim))
  '(scroll-bar-mode nil)
  '(set-mark-command-repeat-pop t)
  '(spaceline-all-the-icons-clock-always-visible nil)
  '(spaceline-all-the-icons-eyebrowse-display-name nil)
+ '(spaceline-all-the-icons-flycheck-alternate t)
+ '(spaceline-all-the-icons-hide-long-buffer-path t)
  '(spaceline-all-the-icons-highlight-file-name t)
  '(spaceline-all-the-icons-icon-set-bookmark (quote star))
  '(spaceline-all-the-icons-icon-set-eyebrowse-slot (quote string))
@@ -79,13 +86,14 @@
  '(spaceline-all-the-icons-icon-set-window-numbering (quote square))
  '(spaceline-all-the-icons-primary-separator "")
  '(spaceline-all-the-icons-secondary-separator "")
- '(spaceline-all-the-icons-separator-type (quote arrow))
+ '(spaceline-all-the-icons-separator-type (quote slant))
  '(spaceline-all-the-icons-separators-invert-direction t)
  '(spaceline-all-the-icons-slim-render nil)
  '(sql-ms-options nil)
- '(sql-ms-program "sssql")
+ '(sql-ms-program "sqlcmdline")
  '(sql-product (quote ms))
  '(sunshine-units (quote metric))
+ '(sx-default-site "stackoverflow")
  '(symon-delay 5)
  '(symon-mode t)
  '(symon-monitors
@@ -117,25 +125,33 @@
      (340 . "#94BFF3")
      (360 . "#DC8CC3"))))
  '(vc-annotate-very-old-color "#DC8CC3")
+ '(visible-mark-faces
+   (quote
+    (visible-mark-face1 visible-mark-face2 visible-mark-forward-face1 visible-mark-forward-face2)))
+ '(visible-mark-max 4)
  '(web-mode-enable-css-colorization t)
  '(web-mode-enable-sql-detection t)
  '(which-key-side-window-max-width 0.4)
- '(which-key-sort-order (quote which-key-prefix-then-key-order)))
+ '(which-key-sort-order (quote which-key-prefix-then-key-order))
+ '(wttrin-default-accept-language (quote ("Accept-Language" . "en-US")))
+ '(wttrin-default-cities (quote ("Denver?m" "Buenos Aires?m")))
+ '(yas-prompt-functions
+   (quote
+    (yas-ido-prompt yas-dropdown-prompt yas-completing-prompt yas-maybe-ido-prompt yas-no-prompt))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "DejaVu Sans Mono" :foundry "outline" :slant normal :weight normal :height 98 :width normal))))
  '(diredp-compressed-file-name ((t (:foreground "slate gray"))))
- '(diredp-compressed-file-suffix ((t (:foreground "slate gray"))))
- '(diredp-deletion ((t (:background "black" :foreground "red"))))
- '(diredp-deletion-file-name ((t (:background "black" :foreground "red"))))
- '(diredp-dir-heading ((t (:foreground "Yellow"))))
+ '(diredp-compressed-file-suffix ((((class color) (min-colors 89)) (:foreground "#b218b2"))))
+ '(diredp-deletion ((((class color) (min-colors 89)) (:foreground "#ffffff" :background "#a40000"))))
+ '(diredp-deletion-file-name ((((class color) (min-colors 89)) (:foreground "#cc0000"))))
+ '(diredp-dir-heading ((((class color) (min-colors 89)) (:foreground "#5f5f5f" :background "#d7ff00" :bold t))))
  '(diredp-dir-name ((t (:foreground "gold"))))
- '(diredp-flag-mark ((t (:background "black" :foreground "dark grey"))))
- '(diredp-flag-mark-line ((t (:background "black" :foreground "dark grey"))))
- '(diredp-ignored-file-name ((t (:foreground "slate gray"))))
+ '(diredp-flag-mark ((((class color) (min-colors 89)) (:foreground "#ffffff" :background "#ff1f8b" :bold t))))
+ '(diredp-flag-mark-line ((((class color) (min-colors 89)) (:foreground "#5f5f5f" :background "#ff7bbb"))))
+ '(diredp-ignored-file-name ((((class color) (min-colors 89)) (:foreground "#b2b2b2"))))
  '(ediff-current-diff-B ((t (:background "#553333"))))
  '(ediff-current-diff-C ((t (:background "#553333"))))
  '(ediff-even-diff-A ((t (:background "dark slate gray"))))
@@ -149,6 +165,10 @@
  '(ediff-odd-diff-Ancestor ((t (:background "cornflower blue"))))
  '(ediff-odd-diff-B ((t (:background "dark slate gray"))))
  '(ediff-odd-diff-C ((t (:background "dark slate gray"))))
+ '(line-number ((t (:foreground "dark green"))))
+ '(visible-mark-face1 ((t (:background "slate blue"))))
+ '(visible-mark-face2 ((t (:background "light yellow"))))
+ '(visible-mark-forward-face2 ((t (:background "dark khaki"))) t)
  '(web-mode-block-face ((t nil))))
 
 ;; COMPANY
@@ -181,6 +201,9 @@
 (setq python-shell-interpreter "jupyter"
       python-shell-interpreter-args "console --simple-prompt")
 
+;; FLYCHECK
+(add-hook 'after-init-hook #'global-flycheck-mode)
+
 ;; IBUFFER
 (require 'ibuffer)
 (global-set-key (kbd "C-x C-b") 'ibuffer-other-window)
@@ -191,7 +214,12 @@
 	     (ibuffer-switch-to-saved-filter-groups "home")))
 (setq ibuffer-expert t)
 (setq ibuffer-show-empty-filter-groups nil)
-
+(require 'ibuffer-projectile)
+(add-hook 'ibuffer-hook
+    (lambda ()
+      (ibuffer-projectile-set-filter-groups)
+      (unless (eq ibuffer-sorting-mode 'alphabetic)
+        (ibuffer-do-sort-by-alphabetic))))
 
 ;; IDO
 (require 'ido-vertical-mode)
@@ -201,6 +229,53 @@
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere t)
 (setq ido-create-new-buffer 'always)
+
+;; IMENU
+(require 'imenu)
+; from https://gist.github.com/magnars/2360578
+(defun ido-imenu ()
+  "Update the imenu index and then use ido to select a symbol to navigate to.
+Symbols matching the text at point are put first in the completion list."
+  (interactive)
+  (imenu--make-index-alist)
+  (let ((name-and-pos '())
+        (symbol-names '()))
+    (flet ((addsymbols (symbol-list)
+                       (when (listp symbol-list)
+                         (dolist (symbol symbol-list)
+                           (let ((name nil) (position nil))
+                             (cond
+                              ((and (listp symbol) (imenu--subalist-p symbol))
+                               (addsymbols symbol))
+
+                              ((listp symbol)
+                               (setq name (car symbol))
+                               (setq position (cdr symbol)))
+
+                              ((stringp symbol)
+                               (setq name symbol)
+                               (setq position (get-text-property 1 'org-imenu-marker symbol))))
+
+                             (unless (or (null position) (null name))
+                               (add-to-list 'symbol-names name)
+                               (add-to-list 'name-and-pos (cons name position))))))))
+      (addsymbols imenu--index-alist))
+    ;; If there are matching symbols at point, put them at the beginning of `symbol-names'.
+    (let ((symbol-at-point (thing-at-point 'symbol)))
+      (when symbol-at-point
+        (let* ((regexp (concat (regexp-quote symbol-at-point) "$"))
+               (matching-symbols (delq nil (mapcar (lambda (symbol)
+                                                     (if (string-match regexp symbol) symbol))
+                                                   symbol-names))))
+          (when matching-symbols
+            (sort matching-symbols (lambda (a b) (> (length a) (length b))))
+            (mapc (lambda (symbol) (setq symbol-names (cons symbol (delete symbol symbol-names))))
+                  matching-symbols)))))
+    (let* ((selected-symbol (ido-completing-read "Symbol? " symbol-names))
+           (position (cdr (assoc selected-symbol name-and-pos))))
+      (goto-char position))))
+
+(global-set-key (kbd "M-g d") 'ido-imenu)
 
 ;; MAGIT
 (global-set-key (kbd "C-x g") 'magit-status)
@@ -213,17 +288,22 @@
 ;; OMNISHARP
 (require 'omnisharp)
 (add-hook 'csharp-mode-hook 'omnisharp-mode)
-(define-key omnisharp-mode-map (kbd "M-.") 'omnisharp-auto-complete)
+(eval-after-load
+ 'company
+ '(add-to-list 'company-backends 'company-omnisharp))
+(add-hook 'csharp-mode-hook #'company-mode)
+(define-key omnisharp-mode-map (kbd "C-.") 'omnisharp-auto-complete)
 (define-key omnisharp-mode-map (kbd ".") 'omnisharp-add-dot-and-auto-complete)
-(define-key omnisharp-mode-map (kbd "\C-coe") 'omnisharp-solution-errors)
-(define-key omnisharp-mode-map (kbd "\C-cou") 'omnisharp-find-usages)
-(define-key omnisharp-mode-map (kbd "\C-coi") 'omnisharp-find-implementations)
-(define-key omnisharp-mode-map (kbd "\C-cod") 'omnisharp-go-to-definition)
-(define-key omnisharp-mode-map (kbd "\C-coq") 'omnisharp-run-code-action-refactoring)
-(define-key omnisharp-mode-map (kbd "\C-cof") 'omnisharp-fix-code-issue-at-point)
-(define-key omnisharp-mode-map (kbd "\C-cor") 'omnisharp-rename)
-(define-key omnisharp-mode-map (kbd "\C-coti") 'omnisharp-current-type-information)
-(define-key omnisharp-mode-map (kbd "\C-cotd") 'omnisharp-current-type-documentation)
+(define-key omnisharp-mode-map (kbd "C-c o e") 'omnisharp-solution-errors)
+(define-key omnisharp-mode-map (kbd "C-c o u") 'omnisharp-find-usages)
+(define-key omnisharp-mode-map (kbd "C-c o i") 'omnisharp-find-implementations)
+(define-key omnisharp-mode-map (kbd "C-c o d") 'omnisharp-go-to-definition)
+(define-key omnisharp-mode-map (kbd "M-.") 'omnisharp-go-to-definition) ; more standard
+(define-key omnisharp-mode-map (kbd "C-c o q") 'omnisharp-run-code-action-refactoring)
+(define-key omnisharp-mode-map (kbd "C-c o f") 'omnisharp-fix-code-issue-at-point)
+(define-key omnisharp-mode-map (kbd "C-c o r") 'omnisharp-rename)
+(define-key omnisharp-mode-map (kbd "C-c o t i") 'omnisharp-current-type-information)
+(define-key omnisharp-mode-map (kbd "C-c o t d") 'omnisharp-current-type-documentation)
 (define-key omnisharp-mode-map (kbd "<f5>") 'recompile)
 
 ;; ORG MODE
@@ -241,10 +321,6 @@
 ;enable languages in org-babel
 (with-eval-after-load 'org
   (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t))))
-
-;; PROJECTILE
-(projectile-mode)
-(setq projectile-switch-project-action 'projectile-find-file-dwim)
 
 ;; SQL MODE
 (require 'sql)
@@ -280,6 +356,10 @@
 (spaceline-all-the-icons-theme)
 (spaceline-toggle-all-the-icons-time-off)
 (spaceline-toggle-all-the-icons-hud-off)
+
+;; SX
+(require 'sx)
+(global-set-key (kbd "C-c s s") 'sx-search)
 
 ;; WEB MODE
 (require 'web-mode)
@@ -333,8 +413,19 @@
 (global-set-key (kbd "<f6>") 'kmacro-start-macro)
 (global-set-key (kbd "<f7>") 'kmacro-end-macro)
 (global-set-key (kbd "<f8>") 'kmacro-end-and-call-macro)
+(global-set-key (kbd "<f8>") 'kmacro-end-and-call-macro)
+(global-set-key (kbd "<f8>") 'kmacro-end-and-call-macro)
+
+; from: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
+(defun jump-to-mark ()
+  "Jumps to the local mark, respecting the `mark-ring' order.
+  This is the same as using \\[set-mark-command] with the prefix argument."
+  (interactive)
+  (set-mark-command 1))
+(global-set-key (kbd "M-`") 'jump-to-mark)
 
 ; from: https://emacs.stackexchange.com/questions/7244/enable-emacs-column-selection-using-mouse
+;; (I very rarely use the below function, should I delete it?)
 (defun mouse-start-rectangle (start-event)
   (interactive "e")
   (deactivate-mark)
@@ -356,6 +447,11 @@
   (let ((format (if prefix "%Y-%m-%dT%H:%M:%S" "%Y-%m-%d")))
     (insert (format-time-string format))))
 (global-set-key (kbd "C-c d") 'insert-date)
+
+(setq w32-pass-multimedia-buttons-to-system nil)
+(global-set-key (kbd "<browser-back>") 'previous-buffer)
+(global-set-key (kbd "<browser-forward>") 'next-buffer)
+(global-set-key (kbd "<apps>") 'smex)
 
 (defun dired-file-to-clip ()
   "Invoke the file2clip script in the file at point"
