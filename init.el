@@ -5,7 +5,6 @@
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-(add-to-list 'package-archives '("elpy" . "http://jorgenschaefer.github.io/packages/"))
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 (package-initialize)
 
@@ -23,14 +22,16 @@
    ["#212526" "#ff4b4b" "#b4fa70" "#fce94f" "#729fcf" "#e090d7" "#8cc4ff" "#eeeeec"])
  '(bm-buffer-persistence t)
  '(bm-repository-size 1000)
+ '(bubbles-game-theme (quote difficult))
+ '(bubbles-grid-size (quote (20 . 15)))
  '(column-number-mode t)
  '(custom-enabled-themes (quote (gruber-darker)))
  '(custom-safe-themes
    (quote
-    ("70f073dc36e2421b5f04309792b12852ec464423a213129cbf18663ab8cdaf3f" "ff7625ad8aa2615eae96d6b4469fcc7d3d20b2e1ebc63b761a349bebbb9d23cb" "580d632430ae18daa5109ecd675c1b8df91d7e1e657f049b36bb6fc3c79bfc41" "d61fc0e6409f0c2a22e97162d7d151dee9e192a90fa623f8d6a071dbf49229c6" "dcb9fd142d390bb289fee1d1bb49cb67ab7422cd46baddf11f5c9b7ff756f64c" default)))
+    ("021720af46e6e78e2be7875b2b5b05344f4e21fad70d17af7acfd6922386b61e" "e88abed2a39b47dfedb1272066f214cb2c9db28ee6aa1794bfb27948792f81c0" "a4d03266add9a1c8f12b5309612cbbf96e1291773c7bc4fb685bfdaf83b721c6" "ed0b4fc082715fc1d6a547650752cd8ec76c400ef72eb159543db1770a27caa7" "7356632cebc6a11a87bc5fcffaa49bae528026a78637acd03cae57c091afd9b9" "04dd0236a367865e591927a3810f178e8d33c372ad5bfef48b5ce90d4b476481" "d6922c974e8a78378eacb01414183ce32bc8dbf2de78aabcc6ad8172547cb074" "a24c5b3c12d147da6cef80938dca1223b7c7f70f2f382b26308eba014dc4833a" "c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "3edbdd0ad45cb8f7c2575c0ad8f6625540283c6e928713c328b0bacf4cfbb60f" "eecacf3fb8efc90e6f7478f6143fd168342bbfa261654a754c7d47761cec07c8" "70f073dc36e2421b5f04309792b12852ec464423a213129cbf18663ab8cdaf3f" "ff7625ad8aa2615eae96d6b4469fcc7d3d20b2e1ebc63b761a349bebbb9d23cb" "580d632430ae18daa5109ecd675c1b8df91d7e1e657f049b36bb6fc3c79bfc41" "d61fc0e6409f0c2a22e97162d7d151dee9e192a90fa623f8d6a071dbf49229c6" "dcb9fd142d390bb289fee1d1bb49cb67ab7422cd46baddf11f5c9b7ff756f64c" default)))
+ '(diary-entry-marker (quote font-lock-variable-name-face))
  '(dired-dwim-target t)
  '(dired-listing-switches "-laogGhvD")
- '(dired-narrow-exit-action (quote ignore))
  '(dired-sort-menu-saved-config
    (quote
     ((dired-actual-switches . "-al")
@@ -43,12 +44,59 @@
  '(ediff-keep-variants nil)
  '(ediff-quit-hook (quote (ediff-cleanup-mess delete-frame)))
  '(ediff-window-setup-function (quote ediff-setup-windows-plain))
+ '(emms-mode-line-icon-image-cache
+   (quote
+    (image :type xpm :ascent center :data "/* XPM */
+static char *note[] = {
+/* width height num_colors chars_per_pixel */
+\"    10   11        2            1\",
+/* colors */
+\". c #1ba1a1\",
+\"# c None s None\",
+/* pixels */
+\"###...####\",
+\"###.#...##\",
+\"###.###...\",
+\"###.#####.\",
+\"###.#####.\",
+\"#...#####.\",
+\"....#####.\",
+\"#..######.\",
+\"#######...\",
+\"######....\",
+\"#######..#\" };")))
  '(eww-search-prefix "http://www.bing.com/search?q=")
  '(fci-rule-color "#383838")
  '(frame-brackground-mode (quote dark))
+ '(global-flycheck-mode t)
  '(global-visible-mark-mode t)
+ '(gnus-logo-colors (quote ("#1ec1c4" "#bababa")) t)
+ '(gnus-mode-line-image-cache
+   (quote
+    (image :type xpm :ascent center :data "/* XPM */
+static char *gnus-pointer[] = {
+/* width height num_colors chars_per_pixel */
+\"    18    13        2            1\",
+/* colors */
+\". c #1ba1a1\",
+\"# c None s None\",
+/* pixels */
+\"##################\",
+\"######..##..######\",
+\"#####........#####\",
+\"#.##.##..##...####\",
+\"#...####.###...##.\",
+\"#..###.######.....\",
+\"#####.########...#\",
+\"###########.######\",
+\"####.###.#..######\",
+\"######..###.######\",
+\"###....####.######\",
+\"###..######.######\",
+\"###########.######\" };")) t)
  '(grep-command
    "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
+ '(hl-sexp-background-color "#1c1f26")
  '(ls-lisp-dirs-first t)
  '(ls-lisp-format-time-list (quote ("%Y-%m-%d %H:%M" "%Y-%m-%d %H:%M")))
  '(ls-lisp-use-insert-directory-program nil)
@@ -64,8 +112,10 @@
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (ibuffer-projectile dracula-theme challenger-deep-theme visible-mark elpy wttrin sx yasnippet yasnippet-snippets dashboard powershell projectile smex ido-vertical-mode which-key spaceline-all-the-icons dired+ dired-sort-menu+ dired-sort-menu spaceline dired-narrow circe web-mode gruber-darker-theme lyrics xah-find symon omnisharp magit slime bm dired-launch nyan-mode)))
+    (yahoo-weather ibuffer-projectile visible-mark elpy wttrin  yasnippet yasnippet-snippets dashboard powershell projectile smex ido-vertical-mode which-key spaceline-all-the-icons dired+ dired-sort-menu+ dired-sort-menu spaceline dired-narrow circe web-mode gruber-darker-theme lyrics xah-find symon omnisharp magit slime bm dired-launch nyan-mode)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
+ '(pos-tip-background-color "#36473A")
+ '(pos-tip-foreground-color "#FFFFC8")
  '(powerline-default-separator-dir (quote (left . left)))
  '(proced-filter (quote all))
  '(projectile-indexing-method (quote alien))
@@ -80,8 +130,9 @@
  '(spaceline-all-the-icons-highlight-file-name t)
  '(spaceline-all-the-icons-icon-set-bookmark (quote star))
  '(spaceline-all-the-icons-icon-set-eyebrowse-slot (quote string))
- '(spaceline-all-the-icons-icon-set-flycheck-slim (quote outline))
+ '(spaceline-all-the-icons-icon-set-flycheck-slim (quote solid))
  '(spaceline-all-the-icons-icon-set-git-ahead (quote commit))
+ '(spaceline-all-the-icons-icon-set-modified (quote chain))
  '(spaceline-all-the-icons-icon-set-sun-time (quote sun/moon))
  '(spaceline-all-the-icons-icon-set-window-numbering (quote square))
  '(spaceline-all-the-icons-primary-separator "")
@@ -89,11 +140,91 @@
  '(spaceline-all-the-icons-separator-type (quote slant))
  '(spaceline-all-the-icons-separators-invert-direction t)
  '(spaceline-all-the-icons-slim-render nil)
+ '(sql-connection-alist
+   (quote
+    (("continuity-prod"
+      (sql-product
+       (quote ms))
+      (sql-user "")
+      (sql-password "")
+      (sql-server "SLS_Continuity_PROD_SQL_AG")
+      (sql-database "SLS_Continuity"))
+     ("continuity-uat"
+      (sql-product
+       (quote ms))
+      (sql-user "")
+      (sql-password "")
+      (sql-server "UAT_SLS_Continuity_SQL_AG")
+      (sql-database "SLS_Continuity_UAT"))
+     ("irt-uat"
+      (sql-product
+       (quote ms))
+      (sql-user "")
+      (sql-password "")
+      (sql-server "UAT_SLS_ImageRequest_SQL_AG")
+      (sql-database "SLS_ImageRequest_UAT"))
+     ("irt-prod"
+      (sql-product
+       (quote ms))
+      (sql-user "")
+      (sql-password "")
+      (sql-server "SLS_ImageRequest_Prod_PROD_SQL_AG")
+      (sql-database "SLS_ImageRequest"))
+     ("ph-dev"
+      (sql-user "KCC_CCP_API")
+      (sql-password "?sujhpMDs9nc")
+      (sql-server "CSAVKCCSQLD16")
+      (sql-database "PaymentHub"))
+     ("ph-qa"
+      (sql-user "")
+      (sql-password "")
+      (sql-server "CSAVKCCSQLQ16")
+      (sql-database "PaymentHub"))
+     ("insite-trans"
+      (sql-product
+       (quote ms))
+      (sql-user "")
+      (sql-password "")
+      (sql-server "CSACSQL24C")
+      (sql-database "assystem"))
+     ("ROS-DevQA"
+      (sql-product
+       (quote ms))
+      (sql-user "")
+      (sql-password "")
+      (sql-server "CSACSQLDEV3C")
+      (sql-database "ROS_Accounting"))
+     ("GCP-dev"
+      (sql-product
+       (quote ms))
+      (sql-user "")
+      (sql-password "")
+      (sql-server "CSAVKCCSQLD3")
+      (sql-database "GilardiSP"))
+     ("ph-uat"
+      (sql-product
+       (quote ms))
+      (sql-user "")
+      (sql-password "")
+      (sql-server "KCCSQLU16_L1")
+      (sql-database "PaymentHub"))
+     ("ROS-UAT"
+      (sql-product
+       (quote ms))
+      (sql-user "")
+      (sql-password "")
+      (sql-server "CSACSQLUAT4C")
+      (sql-database "ROS_Accounting"))
+     ("ph-prod"
+      (sql-product
+       (quote ms))
+      (sql-user "")
+      (sql-server "KCCSQLP16_L1")
+      (sql-database "PaymentHub")))))
  '(sql-ms-options nil)
- '(sql-ms-program "sqlcmdline")
+ '(sql-ms-program "sssql")
  '(sql-product (quote ms))
  '(sunshine-units (quote metric))
- '(sx-default-site "stackoverflow")
  '(symon-delay 5)
  '(symon-mode t)
  '(symon-monitors
@@ -129,12 +260,24 @@
    (quote
     (visible-mark-face1 visible-mark-face2 visible-mark-forward-face1 visible-mark-forward-face2)))
  '(visible-mark-max 4)
+ '(weatherline-indicator-for-clouds (quote ("C" "Clouds")))
+ '(weatherline-indicator-for-rain (quote ("R" "Rain")))
+ '(weatherline-lighter-include-pressure t)
+ '(weatherline-location "Denver, US")
+ '(weatherline-location-id 5419384)
+ '(weatherline-mode nil)
+ '(weatherline-request-set-location-id nil)
+ '(weatherline-symbols nil)
+ '(weatherline-units "metric")
  '(web-mode-enable-css-colorization t)
  '(web-mode-enable-sql-detection t)
  '(which-key-side-window-max-width 0.4)
  '(which-key-sort-order (quote which-key-prefix-then-key-order))
  '(wttrin-default-accept-language (quote ("Accept-Language" . "en-US")))
  '(wttrin-default-cities (quote ("Denver?m" "Buenos Aires?m")))
+ '(yahoo-weather-format "[%(weather) %(temperature)℃    %(atmosphere-humidity)]")
+ '(yahoo-weather-location "Denver, USA")
+ '(yahoo-weather-mode t)
  '(yas-prompt-functions
    (quote
     (yas-ido-prompt yas-dropdown-prompt yas-completing-prompt yas-maybe-ido-prompt yas-no-prompt))))
@@ -166,6 +309,9 @@
  '(ediff-odd-diff-B ((t (:background "dark slate gray"))))
  '(ediff-odd-diff-C ((t (:background "dark slate gray"))))
  '(line-number ((t (:foreground "dark green"))))
+ '(spaceline-highlight-face ((t (:background "PaleGreen2" :foreground "black" :inherit (quote mode-line)))))
+ '(spaceline-read-only ((t (:background "PaleGreen2" :foreground "black" :inherit (quote mode-line)))))
+ '(spaceline-unmodified ((t (:background "DodgerBlue1" :foreground "white" :inherit (quote mode-line)))))
  '(visible-mark-face1 ((t (:background "slate blue"))))
  '(visible-mark-face2 ((t (:background "light yellow"))))
  '(visible-mark-forward-face2 ((t (:background "dark khaki"))) t)
@@ -356,10 +502,8 @@ Symbols matching the text at point are put first in the completion list."
 (spaceline-all-the-icons-theme)
 (spaceline-toggle-all-the-icons-time-off)
 (spaceline-toggle-all-the-icons-hud-off)
-
-;; SX
-(require 'sx)
-(global-set-key (kbd "C-c s s") 'sx-search)
+(spaceline-toggle-selection-info-on)
+(spaceline-toggle-global-on)
 
 ;; WEB MODE
 (require 'web-mode)
@@ -418,8 +562,8 @@ Symbols matching the text at point are put first in the completion list."
 
 ; from: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
 (defun jump-to-mark ()
-  "Jumps to the local mark, respecting the `mark-ring' order.
-  This is the same as using \\[set-mark-command] with the prefix argument."
+"Jumps to the local mark, respecting the `mark-ring' order.  
+This is the same as using \\[set-mark-command] with the prefix argument."
   (interactive)
   (set-mark-command 1))
 (global-set-key (kbd "M-`") 'jump-to-mark)
@@ -441,22 +585,11 @@ Symbols matching the text at point are put first in the completion list."
 
 ;; modified version of the one in https://www.emacswiki.org/emacs/InsertDate
 (defun insert-date (prefix)
-  "Insert the current date. With prefix-argument, use ISO format. With
-   two prefix arguments, write out the day and month name."
+  "Insert the current date.  With PREFIX argument, use ISO format.  
+With two prefix arguments, write out the day and month name."
   (interactive "P")
   (let ((format (if prefix "%Y-%m-%dT%H:%M:%S" "%Y-%m-%d")))
     (insert (format-time-string format))))
 (global-set-key (kbd "C-c d") 'insert-date)
 
-(setq w32-pass-multimedia-buttons-to-system nil)
-(global-set-key (kbd "<browser-back>") 'previous-buffer)
-(global-set-key (kbd "<browser-forward>") 'next-buffer)
-(global-set-key (kbd "<apps>") 'smex)
-
-(defun dired-file-to-clip ()
-  "Invoke the file2clip script in the file at point"
-  (interactive)
-  (shell-command (concat "f2c " (dired-get-filename))))
-(define-key dired-mode-map (kbd "W") 'dired-file-to-clip) 
-(put 'upcase-region 'disabled nil)
 (setq-default bidi-display-reordering nil)
