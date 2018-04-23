@@ -44,56 +44,11 @@
  '(ediff-keep-variants nil)
  '(ediff-quit-hook (quote (ediff-cleanup-mess delete-frame)))
  '(ediff-window-setup-function (quote ediff-setup-windows-plain))
- '(emms-mode-line-icon-image-cache
-   (quote
-    (image :type xpm :ascent center :data "/* XPM */
-static char *note[] = {
-/* width height num_colors chars_per_pixel */
-\"    10   11        2            1\",
-/* colors */
-\". c #1ba1a1\",
-\"# c None s None\",
-/* pixels */
-\"###...####\",
-\"###.#...##\",
-\"###.###...\",
-\"###.#####.\",
-\"###.#####.\",
-\"#...#####.\",
-\"....#####.\",
-\"#..######.\",
-\"#######...\",
-\"######....\",
-\"#######..#\" };")))
  '(eww-search-prefix "http://www.bing.com/search?q=")
  '(fci-rule-color "#383838")
  '(frame-brackground-mode (quote dark))
  '(global-flycheck-mode t)
  '(global-visible-mark-mode t)
- '(gnus-logo-colors (quote ("#1ec1c4" "#bababa")) t)
- '(gnus-mode-line-image-cache
-   (quote
-    (image :type xpm :ascent center :data "/* XPM */
-static char *gnus-pointer[] = {
-/* width height num_colors chars_per_pixel */
-\"    18    13        2            1\",
-/* colors */
-\". c #1ba1a1\",
-\"# c None s None\",
-/* pixels */
-\"##################\",
-\"######..##..######\",
-\"#####........#####\",
-\"#.##.##..##...####\",
-\"#...####.###...##.\",
-\"#..###.######.....\",
-\"#####.########...#\",
-\"###########.######\",
-\"####.###.#..######\",
-\"######..###.######\",
-\"###....####.######\",
-\"###..######.######\",
-\"###########.######\" };")) t)
  '(grep-command
    "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
  '(hl-sexp-background-color "#1c1f26")
@@ -140,89 +95,8 @@ static char *gnus-pointer[] = {
  '(spaceline-all-the-icons-separator-type (quote slant))
  '(spaceline-all-the-icons-separators-invert-direction t)
  '(spaceline-all-the-icons-slim-render nil)
- '(sql-connection-alist
-   (quote
-    (("continuity-prod"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-password "")
-      (sql-server "SLS_Continuity_PROD_SQL_AG")
-      (sql-database "SLS_Continuity"))
-     ("continuity-uat"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-password "")
-      (sql-server "UAT_SLS_Continuity_SQL_AG")
-      (sql-database "SLS_Continuity_UAT"))
-     ("irt-uat"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-password "")
-      (sql-server "UAT_SLS_ImageRequest_SQL_AG")
-      (sql-database "SLS_ImageRequest_UAT"))
-     ("irt-prod"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-password "")
-      (sql-server "SLS_ImageRequest_Prod_PROD_SQL_AG")
-      (sql-database "SLS_ImageRequest"))
-     ("ph-dev"
-      (sql-user "KCC_CCP_API")
-      (sql-password "?sujhpMDs9nc")
-      (sql-server "CSAVKCCSQLD16")
-      (sql-database "PaymentHub"))
-     ("ph-qa"
-      (sql-user "")
-      (sql-password "")
-      (sql-server "CSAVKCCSQLQ16")
-      (sql-database "PaymentHub"))
-     ("insite-trans"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-password "")
-      (sql-server "CSACSQL24C")
-      (sql-database "assystem"))
-     ("ROS-DevQA"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-password "")
-      (sql-server "CSACSQLDEV3C")
-      (sql-database "ROS_Accounting"))
-     ("GCP-dev"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-password "")
-      (sql-server "CSAVKCCSQLD3")
-      (sql-database "GilardiSP"))
-     ("ph-uat"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-password "")
-      (sql-server "KCCSQLU16_L1")
-      (sql-database "PaymentHub"))
-     ("ROS-UAT"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-password "")
-      (sql-server "CSACSQLUAT4C")
-      (sql-database "ROS_Accounting"))
-     ("ph-prod"
-      (sql-product
-       (quote ms))
-      (sql-user "")
-      (sql-server "KCCSQLP16_L1")
-      (sql-database "PaymentHub")))))
  '(sql-ms-options nil)
- '(sql-ms-program "sssql")
+ '(sql-ms-program "sqlcmdline")
  '(sql-product (quote ms))
  '(sunshine-units (quote metric))
  '(symon-delay 5)
