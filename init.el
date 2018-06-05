@@ -67,7 +67,7 @@
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (yahoo-weather ibuffer-projectile visible-mark elpy wttrin  yasnippet yasnippet-snippets dashboard powershell projectile smex ido-vertical-mode which-key spaceline-all-the-icons dired+ dired-sort-menu+ dired-sort-menu spaceline dired-narrow circe web-mode gruber-darker-theme lyrics xah-find symon omnisharp magit slime bm dired-launch nyan-mode)))
+    (package-lint tablist yahoo-weather ibuffer-projectile visible-mark elpy wttrin  yasnippet yasnippet-snippets dashboard powershell projectile smex ido-vertical-mode which-key spaceline-all-the-icons dired+ dired-sort-menu+ dired-sort-menu spaceline dired-narrow circe web-mode gruber-darker-theme lyrics xah-find symon omnisharp magit slime bm dired-launch nyan-mode)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#36473A")
  '(pos-tip-foreground-color "#FFFFC8")
@@ -85,7 +85,7 @@
  '(spaceline-all-the-icons-highlight-file-name t)
  '(spaceline-all-the-icons-icon-set-bookmark (quote star))
  '(spaceline-all-the-icons-icon-set-eyebrowse-slot (quote string))
- '(spaceline-all-the-icons-icon-set-flycheck-slim (quote solid))
+ '(spaceline-all-the-icons-icon-set-flycheck-slim (quote outline))
  '(spaceline-all-the-icons-icon-set-git-ahead (quote commit))
  '(spaceline-all-the-icons-icon-set-modified (quote chain))
  '(spaceline-all-the-icons-icon-set-sun-time (quote sun/moon))
@@ -134,15 +134,6 @@
    (quote
     (visible-mark-face1 visible-mark-face2 visible-mark-forward-face1 visible-mark-forward-face2)))
  '(visible-mark-max 4)
- '(weatherline-indicator-for-clouds (quote ("C" "Clouds")))
- '(weatherline-indicator-for-rain (quote ("R" "Rain")))
- '(weatherline-lighter-include-pressure t)
- '(weatherline-location "Denver, US")
- '(weatherline-location-id 5419384)
- '(weatherline-mode nil)
- '(weatherline-request-set-location-id nil)
- '(weatherline-symbols nil)
- '(weatherline-units "metric")
  '(web-mode-enable-css-colorization t)
  '(web-mode-enable-sql-detection t)
  '(which-key-side-window-max-width 0.4)
@@ -182,13 +173,13 @@
  '(ediff-odd-diff-Ancestor ((t (:background "cornflower blue"))))
  '(ediff-odd-diff-B ((t (:background "dark slate gray"))))
  '(ediff-odd-diff-C ((t (:background "dark slate gray"))))
- '(line-number ((t (:foreground "dark green"))))
- '(spaceline-highlight-face ((t (:background "PaleGreen2" :foreground "black" :inherit (quote mode-line)))))
- '(spaceline-read-only ((t (:background "PaleGreen2" :foreground "black" :inherit (quote mode-line)))))
+ '(line-number ((t (:foreground "DarkGoldenrod2"))))
+ '(line-number-current-line ((t (:inherit line-number :background "dark slate gray"))))
  '(spaceline-unmodified ((t (:background "DodgerBlue1" :foreground "white" :inherit (quote mode-line)))))
- '(visible-mark-face1 ((t (:background "slate blue"))))
- '(visible-mark-face2 ((t (:background "light yellow"))))
- '(visible-mark-forward-face2 ((t (:background "dark khaki"))) t)
+ '(visible-mark-face1 ((t (:box (:line-width 1 :color "turquoise")))))
+ '(visible-mark-face2 ((t (:box (:line-width 1 :color "dodger blue")))))
+ '(visible-mark-forward-face1 ((t (:box (:line-width 1 :color "dark green")))))
+ '(visible-mark-forward-face2 ((t (:background "dark olive green"))) t)
  '(web-mode-block-face ((t nil))))
 
 ;; COMPANY
@@ -201,7 +192,7 @@
 (setq dashboard-banner-logo-title "If anything at all, perfection is finally attained not when there is no longer anything to add, but when there is no longer anything to take away - Exupéry")
 (setq dashboard-items '((projects . 10)
                         (recents  . 30)))
-(setq initial-buffer-choice (lambda () (switch-to-buffer "*dashboard*")))
+(setq initial-buffer-choice  (lambda () (get-buffer "*dashboard*")))
 
 ;; DIRED
 (dired-launch-enable)
@@ -220,9 +211,6 @@
 (setq flycheck-highlighting-mode 'lines)
 (setq python-shell-interpreter "jupyter"
       python-shell-interpreter-args "console --simple-prompt")
-
-;; FLYCHECK
-(add-hook 'after-init-hook #'global-flycheck-mode)
 
 ;; IBUFFER
 (require 'ibuffer)
