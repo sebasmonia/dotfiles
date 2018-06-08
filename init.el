@@ -423,12 +423,22 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "<f8>") 'kmacro-end-and-call-macro)
 
 ; from: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
+; modified bindings as I have cmder as C-`
+(defun push-mark-no-activate ()
+  "Pushes `point` to `mark-ring' and does not activate the region.
+Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
+  (interactive)
+  (push-mark (point) t nil)) ; removed the message, visible-mark takes care of this
 (defun jump-to-mark ()
-"Jumps to the local mark, respecting the `mark-ring' order.  
+  "Jumps to the local mark, respecting the `mark-ring' order.  
 This is the same as using \\[set-mark-command] with the prefix argument."
   (interactive)
   (set-mark-command 1))
-(global-set-key (kbd "M-`") 'jump-to-mark)
+;until I figure out what works
+(global-set-key (kbd "M-`") 'push-mark-no-activate)
+(global-set-key (kbd "M-~") 'jump-to-mark)
+(global-set-key (kbd "M-[") 'push-mark-no-activate)
+(global-set-key (kbd "M-]") 'jump-to-mark)
 
 ; from: https://emacs.stackexchange.com/questions/7244/enable-emacs-column-selection-using-mouse
 ;; (I very rarely use the below function, should I delete it?)
