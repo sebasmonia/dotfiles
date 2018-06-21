@@ -67,7 +67,7 @@
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (package-lint tablist yahoo-weather ibuffer-projectile visible-mark elpy wttrin  yasnippet yasnippet-snippets dashboard powershell projectile smex ido-vertical-mode which-key spaceline-all-the-icons dired+ dired-sort-menu+ dired-sort-menu spaceline dired-narrow circe web-mode gruber-darker-theme lyrics xah-find symon omnisharp magit slime bm dired-launch nyan-mode)))
+    (gist package-lint tablist yahoo-weather ibuffer-projectile visible-mark elpy wttrin  yasnippet yasnippet-snippets dashboard powershell projectile smex ido-vertical-mode which-key spaceline-all-the-icons dired+ dired-sort-menu+ dired-sort-menu spaceline dired-narrow circe web-mode gruber-darker-theme lyrics xah-find symon omnisharp magit slime bm dired-launch nyan-mode)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#36473A")
  '(pos-tip-foreground-color "#FFFFC8")
@@ -92,7 +92,6 @@
  '(spaceline-all-the-icons-icon-set-window-numbering (quote square))
  '(spaceline-all-the-icons-primary-separator "")
  '(spaceline-all-the-icons-secondary-separator "")
- '(spaceline-all-the-icons-separator-type (quote slant))
  '(spaceline-all-the-icons-separators-invert-direction t)
  '(spaceline-all-the-icons-slim-render nil)
  '(sql-ms-options nil)
@@ -151,6 +150,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(default ((t (:family "Consolas" :foundry "outline" :slant normal :weight normal :height 113 :width normal))))
  '(diredp-compressed-file-name ((t (:foreground "slate gray"))))
  '(diredp-compressed-file-suffix ((((class color) (min-colors 89)) (:foreground "#b218b2"))))
  '(diredp-deletion ((((class color) (min-colors 89)) (:foreground "#ffffff" :background "#a40000"))))
@@ -316,7 +316,7 @@ Symbols matching the text at point are put first in the completion list."
 
 ;; ORG MODE
 (defun org-formatted-copy (&optional b e)
-  "Export region to HTML, and copy it to the clipboard."
+  "Export region between B and E to HTML, and copy it to the clipboard."
   (interactive "r")
   (save-window-excursion
         (shell-command-on-region
@@ -335,7 +335,7 @@ Symbols matching the text at point are put first in the completion list."
 (sql-set-product-feature 'ms :prompt-regexp "^.*>")
 (sql-set-product-feature 'ms :prompt-cont-regexp "^.*>")
 ;After moving to Emacs 26.0.9, I don't get prompted for buffer name when doing C-u M-x sql-connect
-;added the function below and a call in the SQLi hook to go back to the old behaviour 
+;added the function below and a call in the SQLi hook to go back to the old behaviour
 (defun sql-rename-buffer-prompt ()
   (interactive)
   (let ((current-prefix-arg '(4)))
@@ -366,6 +366,10 @@ Symbols matching the text at point are put first in the completion list."
 (spaceline-toggle-all-the-icons-hud-off)
 (spaceline-toggle-selection-info-on)
 (spaceline-toggle-global-on)
+
+;; TFSMACS
+(require 'tfsmacs)
+(global-set-key  "\C-ct" 'tfsmacs-map)
 
 ;; WEB MODE
 (require 'web-mode)
@@ -398,6 +402,7 @@ Symbols matching the text at point are put first in the completion list."
 (setq frame-title-format "%b - Emacs")
 (global-set-key (kbd "M-RET") 'toggle-frame-fullscreen)
 (delete-selection-mode t)
+(electric-pair-mode)
 ; see https://emacs.stackexchange.com/questions/33510/unicode-txt-slowness
 (setq inhibit-compacting-font-caches t)
 ; from https://emacs.stackexchange.com/questions/7362/how-to-show-a-diff-between-two-buffers-with-character-level-diffs
@@ -423,7 +428,6 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "<f8>") 'kmacro-end-and-call-macro)
 
 ; from: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
-; modified bindings as I have cmder as C-`
 (defun push-mark-no-activate ()
   "Pushes `point` to `mark-ring' and does not activate the region.
 Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
@@ -434,11 +438,9 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 This is the same as using \\[set-mark-command] with the prefix argument."
   (interactive)
   (set-mark-command 1))
-;until I figure out what works
-(global-set-key (kbd "M-`") 'push-mark-no-activate)
-(global-set-key (kbd "M-~") 'jump-to-mark)
-(global-set-key (kbd "M-[") 'push-mark-no-activate)
-(global-set-key (kbd "M-]") 'jump-to-mark)
+
+(global-set-key (kbd "C-`") 'push-mark-no-activate)
+(global-set-key (kbd "M-`") 'jump-to-mark)
 
 ; from: https://emacs.stackexchange.com/questions/7244/enable-emacs-column-selection-using-mouse
 ;; (I very rarely use the below function, should I delete it?)
