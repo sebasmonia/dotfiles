@@ -1,8 +1,3 @@
-(setq url-proxy-services
-   '(("no_proxy" . "^\\(localhost\\|10.*\\)")
-     ("http" . "0.0.0.0:8080")
-     ("https" . "0.0.0.0:8080")))
-
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
@@ -20,62 +15,56 @@
    [default default default italic underline success warning error])
  '(ansi-color-names-vector
    ["#212526" "#ff4b4b" "#b4fa70" "#fce94f" "#729fcf" "#e090d7" "#8cc4ff" "#eeeeec"])
- '(bm-buffer-persistence t)
- '(bm-repository-size 1000)
- '(bubbles-game-theme (quote difficult))
- '(bubbles-grid-size (quote (20 . 15)))
+ '(bubbles-game-theme 'difficult)
+ '(bubbles-grid-size '(20 . 15))
  '(column-number-mode t)
- '(custom-enabled-themes (quote (gruber-darker)))
+ '(custom-enabled-themes '(gruber-darker))
  '(custom-safe-themes
-   (quote
-    ("021720af46e6e78e2be7875b2b5b05344f4e21fad70d17af7acfd6922386b61e" "e88abed2a39b47dfedb1272066f214cb2c9db28ee6aa1794bfb27948792f81c0" "a4d03266add9a1c8f12b5309612cbbf96e1291773c7bc4fb685bfdaf83b721c6" "ed0b4fc082715fc1d6a547650752cd8ec76c400ef72eb159543db1770a27caa7" "7356632cebc6a11a87bc5fcffaa49bae528026a78637acd03cae57c091afd9b9" "04dd0236a367865e591927a3810f178e8d33c372ad5bfef48b5ce90d4b476481" "d6922c974e8a78378eacb01414183ce32bc8dbf2de78aabcc6ad8172547cb074" "a24c5b3c12d147da6cef80938dca1223b7c7f70f2f382b26308eba014dc4833a" "c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "3edbdd0ad45cb8f7c2575c0ad8f6625540283c6e928713c328b0bacf4cfbb60f" "eecacf3fb8efc90e6f7478f6143fd168342bbfa261654a754c7d47761cec07c8" "70f073dc36e2421b5f04309792b12852ec464423a213129cbf18663ab8cdaf3f" "ff7625ad8aa2615eae96d6b4469fcc7d3d20b2e1ebc63b761a349bebbb9d23cb" "580d632430ae18daa5109ecd675c1b8df91d7e1e657f049b36bb6fc3c79bfc41" "d61fc0e6409f0c2a22e97162d7d151dee9e192a90fa623f8d6a071dbf49229c6" "dcb9fd142d390bb289fee1d1bb49cb67ab7422cd46baddf11f5c9b7ff756f64c" default)))
- '(diary-entry-marker (quote font-lock-variable-name-face))
+   '("c2831730b24d526a7b6268a9e42e8e57d2a1279c8f92c5db554af03d4333af2c" "021720af46e6e78e2be7875b2b5b05344f4e21fad70d17af7acfd6922386b61e" "e88abed2a39b47dfedb1272066f214cb2c9db28ee6aa1794bfb27948792f81c0" "a4d03266add9a1c8f12b5309612cbbf96e1291773c7bc4fb685bfdaf83b721c6" "ed0b4fc082715fc1d6a547650752cd8ec76c400ef72eb159543db1770a27caa7" "7356632cebc6a11a87bc5fcffaa49bae528026a78637acd03cae57c091afd9b9" "04dd0236a367865e591927a3810f178e8d33c372ad5bfef48b5ce90d4b476481" "d6922c974e8a78378eacb01414183ce32bc8dbf2de78aabcc6ad8172547cb074" "a24c5b3c12d147da6cef80938dca1223b7c7f70f2f382b26308eba014dc4833a" "c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "3edbdd0ad45cb8f7c2575c0ad8f6625540283c6e928713c328b0bacf4cfbb60f" "eecacf3fb8efc90e6f7478f6143fd168342bbfa261654a754c7d47761cec07c8" "70f073dc36e2421b5f04309792b12852ec464423a213129cbf18663ab8cdaf3f" "ff7625ad8aa2615eae96d6b4469fcc7d3d20b2e1ebc63b761a349bebbb9d23cb" "580d632430ae18daa5109ecd675c1b8df91d7e1e657f049b36bb6fc3c79bfc41" "d61fc0e6409f0c2a22e97162d7d151dee9e192a90fa623f8d6a071dbf49229c6" "dcb9fd142d390bb289fee1d1bb49cb67ab7422cd46baddf11f5c9b7ff756f64c" default))
+ '(diary-entry-marker 'font-lock-variable-name-face)
  '(dired-dwim-target t)
  '(dired-listing-switches "-laogGhvD")
  '(dired-sort-menu-saved-config
-   (quote
-    ((dired-actual-switches . "-al")
-     (ls-lisp-ignore-case)
-     (ls-lisp-dirs-first . t))))
+   ('((dired-actual-switches . "-al")
+      (ls-lisp-ignore-case)
+      (ls-lisp-dirs-first . t))))
  '(diredp-ignore-compressed-flag t)
- '(display-line-numbers (quote relative))
+ '(display-line-numbers 'relative)
  '(display-line-numbers-current-absolute nil)
  '(ediff-highlight-all-diffs t)
  '(ediff-keep-variants nil)
- '(ediff-quit-hook (quote (ediff-cleanup-mess delete-frame)))
- '(ediff-window-setup-function (quote ediff-setup-windows-plain))
+ '(ediff-quit-hook '(ediff-cleanup-mess delete-frame))
+ '(ediff-window-setup-function 'ediff-setup-windows-plain)
  '(eww-search-prefix "http://www.bing.com/search?q=")
  '(fci-rule-color "#383838")
- '(frame-brackground-mode (quote dark))
+ '(frame-brackground-mode 'dark)
  '(global-flycheck-mode t)
  '(global-visible-mark-mode t)
  '(grep-command
    "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
  '(hl-sexp-background-color "#1c1f26")
  '(ls-lisp-dirs-first t)
- '(ls-lisp-format-time-list (quote ("%Y-%m-%d %H:%M" "%Y-%m-%d %H:%M")))
+ '(ls-lisp-format-time-list '("%Y-%m-%d %H:%M" "%Y-%m-%d %H:%M"))
  '(ls-lisp-use-insert-directory-program nil)
  '(ls-lisp-use-localized-time-format t)
  '(ls-lisp-verbosity nil)
  '(menu-bar-mode nil)
  '(nrepl-message-colors
-   (quote
-    ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
+   '("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3"))
  '(omnisharp-imenu-support t)
  '(omnisharp-server-executable-path "C:/HomeFolder/omnisharp_64/OmniSharp.exe")
  '(org-hide-emphasis-markers t)
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
-   (quote
-    (gist package-lint tablist yahoo-weather ibuffer-projectile visible-mark elpy wttrin  yasnippet yasnippet-snippets dashboard powershell projectile smex ido-vertical-mode which-key spaceline-all-the-icons dired+ dired-sort-menu+ dired-sort-menu spaceline dired-narrow circe web-mode gruber-darker-theme lyrics xah-find symon omnisharp magit slime bm dired-launch nyan-mode)))
- '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
+   '(package-lint tablist yahoo-weather ibuffer-projectile visible-mark elpy wttrin yasnippet yasnippet-snippets dashboard powershell projectile smex ido-vertical-mode which-key spaceline-all-the-icons dired+ dired-sort-menu+ dired-sort-menu spaceline dired-narrow circe web-mode gruber-darker-theme lyrics xah-find symon omnisharp magit slime dired-launch nyan-mode))
+ '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(pos-tip-background-color "#36473A")
  '(pos-tip-foreground-color "#FFFFC8")
- '(powerline-default-separator-dir (quote (left . left)))
- '(proced-filter (quote all))
- '(projectile-indexing-method (quote alien))
+ '(powerline-default-separator-dir '(left . left))
+ '(proced-filter 'all)
+ '(projectile-indexing-method 'alien)
  '(projectile-mode t nil (projectile))
- '(projectile-switch-project-action (quote projectile-find-file-dwim))
+ '(projectile-switch-project-action 'projectile-find-file-dwim)
  '(scroll-bar-mode nil)
  '(set-mark-command-repeat-pop t)
  '(spaceline-all-the-icons-clock-always-visible nil)
@@ -83,34 +72,28 @@
  '(spaceline-all-the-icons-flycheck-alternate t)
  '(spaceline-all-the-icons-hide-long-buffer-path t)
  '(spaceline-all-the-icons-highlight-file-name t)
- '(spaceline-all-the-icons-icon-set-bookmark (quote star))
- '(spaceline-all-the-icons-icon-set-eyebrowse-slot (quote string))
- '(spaceline-all-the-icons-icon-set-flycheck-slim (quote outline))
- '(spaceline-all-the-icons-icon-set-git-ahead (quote commit))
- '(spaceline-all-the-icons-icon-set-modified (quote chain))
- '(spaceline-all-the-icons-icon-set-sun-time (quote sun/moon))
- '(spaceline-all-the-icons-icon-set-window-numbering (quote square))
+ '(spaceline-all-the-icons-icon-set-bookmark 'star)
+ '(spaceline-all-the-icons-icon-set-eyebrowse-slot 'string)
+ '(spaceline-all-the-icons-icon-set-flycheck-slim 'outline)
+ '(spaceline-all-the-icons-icon-set-git-ahead 'commit)
+ '(spaceline-all-the-icons-icon-set-modified 'chain)
+ '(spaceline-all-the-icons-icon-set-sun-time 'sun/moon)
+ '(spaceline-all-the-icons-icon-set-window-numbering 'square)
  '(spaceline-all-the-icons-primary-separator "")
  '(spaceline-all-the-icons-secondary-separator "")
+ '(spaceline-all-the-icons-separator-type 'slant)
  '(spaceline-all-the-icons-separators-invert-direction t)
  '(spaceline-all-the-icons-slim-render nil)
- '(sql-ms-options nil)
- '(sql-ms-program "sqlcmdline")
- '(sql-product (quote ms))
- '(sunshine-units (quote metric))
+ '(sunshine-units 'metric)
  '(symon-delay 5)
  '(symon-mode t)
- '(symon-monitors
-   (quote
-    (symon-windows-memory-monitor symon-windows-cpu-monitor symon-windows-battery-monitor symon-windows-network-rx-monitor symon-windows-network-tx-monitor)))
  '(symon-refresh-rate 5)
  '(symon-sparkline-use-xpm t)
  '(tool-bar-mode nil)
- '(tramp-syntax (quote default) nil (tramp))
+ '(tramp-syntax 'default nil (tramp))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
-   (quote
-    ((20 . "#BC8383")
+   '((20 . "#BC8383")
      (40 . "#CC9393")
      (60 . "#DFAF8F")
      (80 . "#D0BF8F")
@@ -127,24 +110,22 @@
      (300 . "#7CB8BB")
      (320 . "#8CD0D3")
      (340 . "#94BFF3")
-     (360 . "#DC8CC3"))))
+     (360 . "#DC8CC3")))
  '(vc-annotate-very-old-color "#DC8CC3")
  '(visible-mark-faces
-   (quote
-    (visible-mark-face1 visible-mark-face2 visible-mark-forward-face1 visible-mark-forward-face2)))
+   '(visible-mark-face1 visible-mark-face2 visible-mark-forward-face1 visible-mark-forward-face2))
  '(visible-mark-max 4)
  '(web-mode-enable-css-colorization t)
  '(web-mode-enable-sql-detection t)
  '(which-key-side-window-max-width 0.4)
- '(which-key-sort-order (quote which-key-prefix-then-key-order))
- '(wttrin-default-accept-language (quote ("Accept-Language" . "en-US")))
- '(wttrin-default-cities (quote ("Denver?m" "Buenos Aires?m")))
+ '(which-key-sort-order 'which-key-prefix-then-key-order)
+ '(wttrin-default-accept-language '("Accept-Language" . "en-US"))
+ '(wttrin-default-cities '("Denver?m" "Buenos Aires?m"))
  '(yahoo-weather-format "[%(weather) %(temperature)℃    %(atmosphere-humidity)]")
  '(yahoo-weather-location "Denver, USA")
  '(yahoo-weather-mode t)
  '(yas-prompt-functions
-   (quote
-    (yas-ido-prompt yas-dropdown-prompt yas-completing-prompt yas-maybe-ido-prompt yas-no-prompt))))
+   '(yas-ido-prompt yas-dropdown-prompt yas-completing-prompt yas-maybe-ido-prompt yas-no-prompt)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -175,7 +156,7 @@
  '(ediff-odd-diff-C ((t (:background "dark slate gray"))))
  '(line-number ((t (:foreground "DarkGoldenrod2"))))
  '(line-number-current-line ((t (:inherit line-number :background "dark slate gray"))))
- '(spaceline-unmodified ((t (:background "DodgerBlue1" :foreground "white" :inherit (quote mode-line)))))
+ '(spaceline-unmodified ((t (:background "DodgerBlue1" :foreground "white" :inherit 'mode-line))))
  '(visible-mark-face1 ((t (:box (:line-width 1 :color "turquoise")))))
  '(visible-mark-face2 ((t (:box (:line-width 1 :color "dodger blue")))))
  '(visible-mark-forward-face1 ((t (:box (:line-width 1 :color "dark green")))))
@@ -195,16 +176,25 @@
 (setq initial-buffer-choice  (lambda () (get-buffer "*dashboard*")))
 
 ;; DIRED
+(require 'dired)
 (dired-launch-enable)
 (autoload 'dired-async-mode "dired-async.el" nil t)
 (dired-async-mode 1)
 (global-set-key (kbd "\C-cj") 'dired-jump)
 (define-key dired-mode-map (kbd "\\") 'dired-narrow)
-; from SO, apparently this makes Dired faster on Windows
-(setq directory-free-space-program nil)
 ;; from the manual, to use ls instead of Elisp-ls in Windows
 ;(setq ls-lisp-use-insert-directory-program t)
 ;(setq insert-directory-program "ls")
+
+;; ELFEED
+(global-set-key (kbd "C-c e") 'elfeed)
+(setq elfeed-feeds
+      '("https://blogs.msdn.microsoft.com/oldnewthing/feed"
+        "http://pragmaticemacs.com/feed/"
+        "http://planet.emacsen.org/atom.xml"
+        "http://oremacs.com/atom.xml"
+        "http://endlessparentheses.com/atom.xml"
+        "https://www.jwz.org/blog/feed/"))
 
 ;; ELPY
 (elpy-enable)
@@ -314,28 +304,16 @@ Symbols matching the text at point are put first in the completion list."
 (define-key omnisharp-mode-map (kbd "C-c o t d") 'omnisharp-current-type-documentation)
 (define-key omnisharp-mode-map (kbd "<f5>") 'recompile)
 
-;; ORG MODE
-(defun org-formatted-copy (&optional b e)
-  "Export region between B and E to HTML, and copy it to the clipboard."
-  (interactive "r")
-  (save-window-excursion
-        (shell-command-on-region
-         b
-         e
-         "pandoc -f org -t html | python c:/HomeFolder/PythonModules/htmlclip.py")))
-(global-set-key (kbd "C-M-w") 'org-formatted-copy)
-;see https://superuser.com/questions/71786/can-i-create-a-link-to-a-specific-email-message-in-outlook
-(require 'org-outlook)
-;enable languages in org-babel
-(with-eval-after-load 'org
-  (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t))))
+;; PROJECTILE
+(projectile-mode)
+(setq projectile-switch-project-action 'projectile-find-file-dwim)
 
 ;; SQL MODE
 (require 'sql)
 (sql-set-product-feature 'ms :prompt-regexp "^.*>")
 (sql-set-product-feature 'ms :prompt-cont-regexp "^.*>")
 ;After moving to Emacs 26.0.9, I don't get prompted for buffer name when doing C-u M-x sql-connect
-;added the function below and a call in the SQLi hook to go back to the old behaviour
+;added the function below and a call in the SQLi hook to go back to the old behaviour 
 (defun sql-rename-buffer-prompt ()
   (interactive)
   (let ((current-prefix-arg '(4)))
@@ -354,6 +332,7 @@ Symbols matching the text at point are put first in the completion list."
 ;; SMEX
 (smex-initialize)
 (global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "<menu>") 'smex)
 (global-set-key (kbd "M-X") 'smex-major-mode-commands)
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
@@ -366,10 +345,6 @@ Symbols matching the text at point are put first in the completion list."
 (spaceline-toggle-all-the-icons-hud-off)
 (spaceline-toggle-selection-info-on)
 (spaceline-toggle-global-on)
-
-;; TFSMACS
-(require 'tfsmacs)
-(global-set-key  "\C-ct" 'tfsmacs-map)
 
 ;; WEB MODE
 (require 'web-mode)
@@ -438,32 +413,26 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 This is the same as using \\[set-mark-command] with the prefix argument."
   (interactive)
   (set-mark-command 1))
-
+;until I figure out what works
 (global-set-key (kbd "C-`") 'push-mark-no-activate)
 (global-set-key (kbd "M-`") 'jump-to-mark)
 
-; from: https://emacs.stackexchange.com/questions/7244/enable-emacs-column-selection-using-mouse
-;; (I very rarely use the below function, should I delete it?)
-(defun mouse-start-rectangle (start-event)
-  (interactive "e")
-  (deactivate-mark)
-  (mouse-set-point start-event)
-  (rectangle-mark-mode +1)
-  (let ((drag-event))
-    (track-mouse
-      (while (progn
-               (setq drag-event (read-event))
-               (mouse-movement-p drag-event))
-        (mouse-set-point drag-event)))))
-(global-set-key (kbd "S-<down-mouse-1>") #'mouse-start-rectangle)
+(global-set-key (kbd "C-<f1>")
+  (lambda ()
+    (interactive)
+    (dired "~/")))
 
-;; modified version of the one in https://www.emacswiki.org/emacs/InsertDate
-(defun insert-date (prefix)
-  "Insert the current date.  With PREFIX argument, use ISO format.  
-With two prefix arguments, write out the day and month name."
-  (interactive "P")
-  (let ((format (if prefix "%Y-%m-%dT%H:%M:%S" "%Y-%m-%d")))
-    (insert (format-time-string format))))
-(global-set-key (kbd "C-c d") 'insert-date)
+;; TRAMP
+(defun find-alternative-file-with-sudo ()
+  (interactive)
+  (let ((fname (or buffer-file-name
+		   dired-directory)))
+    (when fname
+      (if (string-match "^/sudo:root@localhost:" fname)
+	  (setq fname (replace-regexp-in-string
+		       "^/sudo:root@localhost:" ""
+		       fname))
+	(setq fname (concat "/sudo:root@localhost:" fname)))
+      (find-alternate-file fname))))
 
-(setq-default bidi-display-reordering nil)
+(global-set-key (kbd "C-c C-r") 'find-alternative-file-with-sudo)
