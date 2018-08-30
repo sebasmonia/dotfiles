@@ -67,7 +67,7 @@
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (gist package-lint tablist yahoo-weather ibuffer-projectile visible-mark elpy wttrin  yasnippet yasnippet-snippets dashboard powershell projectile smex ido-vertical-mode which-key spaceline-all-the-icons dired+ dired-sort-menu+ dired-sort-menu spaceline dired-narrow circe web-mode gruber-darker-theme lyrics xah-find symon omnisharp magit slime bm dired-launch nyan-mode)))
+    (browse-kill-ring gist package-lint tablist yahoo-weather ibuffer-projectile visible-mark elpy wttrin  yasnippet yasnippet-snippets dashboard powershell projectile smex ido-vertical-mode which-key spaceline-all-the-icons dired+ dired-sort-menu+ dired-sort-menu spaceline dired-narrow circe web-mode gruber-darker-theme lyrics xah-find symon omnisharp magit slime bm dired-launch nyan-mode)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#36473A")
  '(pos-tip-foreground-color "#FFFFC8")
@@ -181,6 +181,10 @@
  '(visible-mark-forward-face1 ((t (:box (:line-width 1 :color "dark green")))))
  '(visible-mark-forward-face2 ((t (:background "dark olive green"))) t)
  '(web-mode-block-face ((t nil))))
+
+;; BROWSE-KILL-RING
+(require 'browse-kill-ring)
+(browse-kill-ring-default-keybindings)
 
 ;; COMPANY
 (add-hook 'after-init-hook 'global-company-mode)
