@@ -67,7 +67,7 @@
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (browse-kill-ring gist package-lint tablist yahoo-weather ibuffer-projectile visible-mark elpy wttrin  yasnippet yasnippet-snippets dashboard powershell projectile smex ido-vertical-mode which-key spaceline-all-the-icons dired+ dired-sort-menu+ dired-sort-menu spaceline dired-narrow circe web-mode gruber-darker-theme lyrics xah-find symon omnisharp magit slime bm dired-launch nyan-mode)))
+    (browse-kill-ring gist package-lint tablist yahoo-weather ibuffer-projectile visible-mark elpy wttrin  yasnippet yasnippet-snippets dashboard powershell projectile smex ido-vertical-mode which-key spaceline-all-the-icons dired+ dired-sort-menu+ dired-sort-menu spaceline dired-narrow circe web-mode gruber-darker-theme lyrics xah-find symon omnisharp magit slime bm nyan-mode)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#36473A")
  '(pos-tip-foreground-color "#FFFFC8")
@@ -199,13 +199,16 @@
 (setq initial-buffer-choice  (lambda () (get-buffer "*dashboard*")))
 
 ;; DIRED
-(dired-launch-enable)
 (autoload 'dired-async-mode "dired-async.el" nil t)
 (dired-async-mode 1)
 (global-set-key (kbd "\C-cj") 'dired-jump)
 (define-key dired-mode-map (kbd "\\") 'dired-narrow)
 ; from SO, apparently this makes Dired faster on Windows
 (setq directory-free-space-program nil)
+; from https://stackoverflow.com/questions/2284319/opening-files-with-default-windows-application-from-within-emacs
+(defun w32-browser (doc) (w32-shell-execute 1 doc))
+(define-key dired-mode-map (kbd "\C-cl")
+  (lambda () (interactive) (w32-browser (dired-replace-in-string "/" "\\" (dired-get-filename)))))
 ;; from the manual, to use ls instead of Elisp-ls in Windows
 ;(setq ls-lisp-use-insert-directory-program t)
 ;(setq insert-directory-program "ls")
