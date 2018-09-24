@@ -58,6 +58,8 @@
  '(ls-lisp-use-localized-time-format t)
  '(ls-lisp-verbosity nil)
  '(menu-bar-mode nil)
+ '(minions-mode t)
+ '(minions-mode-line-lighter "#")
  '(nrepl-message-colors
    (quote
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
@@ -67,7 +69,7 @@
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (browse-kill-ring gist package-lint tablist yahoo-weather ibuffer-projectile visible-mark elpy wttrin  yasnippet yasnippet-snippets dashboard powershell projectile smex ido-vertical-mode which-key spaceline-all-the-icons dired+ dired-sort-menu+ dired-sort-menu spaceline dired-narrow circe web-mode gruber-darker-theme lyrics xah-find symon omnisharp magit slime bm nyan-mode)))
+    (company grandshell-theme minions lsp-python lsp-ui lsp-mode browse-kill-ring gist package-lint tablist yahoo-weather ibuffer-projectile visible-mark wttrin dashboard powershell projectile smex ido-vertical-mode which-key spaceline-all-the-icons dired+ dired-sort-menu+ dired-sort-menu spaceline dired-narrow circe web-mode gruber-darker-theme lyrics xah-find symon omnisharp magit slime bm nyan-mode)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#36473A")
  '(pos-tip-foreground-color "#FFFFC8")
@@ -76,29 +78,16 @@
  '(projectile-indexing-method (quote alien))
  '(projectile-mode t nil (projectile))
  '(projectile-switch-project-action (quote projectile-find-file-dwim))
+ '(reb-re-syntax (quote string))
  '(scroll-bar-mode nil)
  '(set-mark-command-repeat-pop t)
- '(spaceline-all-the-icons-clock-always-visible nil)
- '(spaceline-all-the-icons-eyebrowse-display-name nil)
- '(spaceline-all-the-icons-flycheck-alternate t)
- '(spaceline-all-the-icons-hide-long-buffer-path t)
- '(spaceline-all-the-icons-highlight-file-name t)
- '(spaceline-all-the-icons-icon-set-bookmark (quote star))
- '(spaceline-all-the-icons-icon-set-eyebrowse-slot (quote string))
- '(spaceline-all-the-icons-icon-set-flycheck-slim (quote outline))
- '(spaceline-all-the-icons-icon-set-git-ahead (quote commit))
- '(spaceline-all-the-icons-icon-set-modified (quote chain))
- '(spaceline-all-the-icons-icon-set-sun-time (quote sun/moon))
- '(spaceline-all-the-icons-icon-set-window-numbering (quote square))
- '(spaceline-all-the-icons-primary-separator "")
- '(spaceline-all-the-icons-secondary-separator "")
- '(spaceline-all-the-icons-separators-invert-direction t)
+ '(size-indication-mode t)
  '(spaceline-all-the-icons-slim-render nil)
  '(sql-ms-options nil)
  '(sql-ms-program "sqlcmdline")
  '(sql-product (quote ms))
  '(sunshine-units (quote metric))
- '(symon-delay 5)
+ '(symon-delay 10)
  '(symon-mode t)
  '(symon-monitors
    (quote
@@ -139,9 +128,10 @@
  '(which-key-sort-order (quote which-key-prefix-then-key-order))
  '(wttrin-default-accept-language (quote ("Accept-Language" . "en-US")))
  '(wttrin-default-cities (quote ("Denver?m" "Buenos Aires?m")))
- '(yahoo-weather-format "[%(weather) %(temperature)℃    %(atmosphere-humidity)]")
+ '(yahoo-weather-format "[%(weather) %(temperature)℃ %(atmosphere-humidity)%% hum]")
  '(yahoo-weather-location "Denver, USA")
  '(yahoo-weather-mode t)
+ '(yahoo-weather-temperture-format "%.1f")
  '(yas-prompt-functions
    (quote
     (yas-ido-prompt yas-dropdown-prompt yas-completing-prompt yas-maybe-ido-prompt yas-no-prompt))))
@@ -212,12 +202,6 @@
 ;; from the manual, to use ls instead of Elisp-ls in Windows
 ;(setq ls-lisp-use-insert-directory-program t)
 ;(setq insert-directory-program "ls")
-
-;; ELPY
-(elpy-enable)
-(setq flycheck-highlighting-mode 'lines)
-(setq python-shell-interpreter "jupyter"
-      python-shell-interpreter-args "console --simple-prompt")
 
 ;; IBUFFER
 (require 'ibuffer)
@@ -292,6 +276,24 @@ Symbols matching the text at point are put first in the completion list."
 
 (global-set-key (kbd "M-g d") 'ido-imenu)
 
+;; LSP MODE
+;; from https://vxlabs.com/2018/06/08/python-language-server-with-emacs-and-lsp-mode/
+(require 'lsp-mode)
+(require 'lsp-ui)
+(require 'lsp-imenu)
+(add-hook 'lsp-after-open-hook 'lsp-enable-imenu)
+(setq lsp-ui-sideline-ignore-duplicate t)
+(add-hook 'lsp-mode-hook 'lsp-ui-mode)
+(lsp-define-stdio-client lsp-python "python"
+                           #'projectile-project-root
+                           '("pyls"))
+(add-hook 'python-mode-hook
+            (lambda ()
+              (lsp-python-enable)))
+(eval-after-load
+ 'company
+ '(add-to-list 'company-backends 'company-lsp))
+
 ;; MAGIT
 (global-set-key (kbd "C-x g") 'magit-status)
 
@@ -364,16 +366,6 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "M-X") 'smex-major-mode-commands)
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
-;; SPACELINE
-(require 'spaceline-config)
-(spaceline-emacs-theme)
-(require 'spaceline-all-the-icons)
-(spaceline-all-the-icons-theme)
-(spaceline-toggle-all-the-icons-time-off)
-(spaceline-toggle-all-the-icons-hud-off)
-(spaceline-toggle-selection-info-on)
-(spaceline-toggle-global-on)
-
 ;; TFSMACS
 (require 'tfsmacs)
 (global-set-key  "\C-ct" 'tfsmacs-map)
@@ -431,8 +423,8 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "<f6>") 'kmacro-start-macro)
 (global-set-key (kbd "<f7>") 'kmacro-end-macro)
 (global-set-key (kbd "<f8>") 'kmacro-end-and-call-macro)
-(global-set-key (kbd "<f8>") 'kmacro-end-and-call-macro)
-(global-set-key (kbd "<f8>") 'kmacro-end-and-call-macro)
+(global-set-key (kbd "C-z") 'find-name-dired)
+(global-set-key (kbd "M-z") 'rgrep)
 
 ; from: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
 (defun push-mark-no-activate ()
