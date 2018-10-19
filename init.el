@@ -1,8 +1,3 @@
-(setq url-proxy-services
-   '(("no_proxy" . "^\\(localhost\\|10.*\\)")
-     ("http" . "0.0.0.0:8080")
-     ("https" . "0.0.0.0:8080")))
-
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
@@ -19,8 +14,10 @@
  '(ansi-color-faces-vector
    [default default default italic underline success warning error])
  '(ansi-color-names-vector
-   ["#212526" "#ff4b4b" "#b4fa70" "#fce94f" "#729fcf" "#e090d7" "#8cc4ff" "#eeeeec"])
+   ["#100e23" "#ff8080" "#95ffa4" "#ffe9aa" "#91ddff" "#c991e1" "#aaffe4" "#BAC9E4"])
  '(beacon-color "#d54e53")
+ '(blink-cursor-blinks 0)
+ '(blink-cursor-mode nil)
  '(bm-buffer-persistence t)
  '(bm-repository-size 1000)
  '(bubbles-game-theme (quote difficult))
@@ -49,7 +46,7 @@
  '(ediff-quit-hook (quote (ediff-cleanup-mess delete-frame)))
  '(ediff-window-setup-function (quote ediff-setup-windows-plain))
  '(eww-search-prefix "http://www.bing.com/search?q=")
- '(fci-rule-color "#383838")
+ '(fci-rule-color "#858FA5")
  '(flycheck-color-mode-line-face-to-color (quote mode-line-buffer-id))
  '(frame-background-mode (quote dark))
  '(global-flycheck-mode t)
@@ -71,12 +68,12 @@
    (quote
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
  '(omnisharp-imenu-support t)
- '(omnisharp-server-executable-path "C:/HomeFolder/omnisharp_64/OmniSharp.exe")
+ '(omnisharp-server-executable-path "C:/Home/omnisharp_64/OmniSharp.exe")
  '(org-hide-emphasis-markers t)
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (company lsp-python lsp-ui lsp-mode browse-kill-ring 2048-game use-package doom-themes gist package-lint tablist yahoo-weather ibuffer-projectile visible-mark wttrin dashboard powershell projectile smex ido-vertical-mode which-key dired+ dired-sort-menu+ dired-sort-menu dired-narrow circe web-mode gruber-darker-theme lyrics symon omnisharp magit slime nyan-mode)))
+    (json-mode dotnet magit-gitflow company lsp-python browse-kill-ring lsp-ui lsp-mode 2048-game use-package doom-themes gist package-lint yahoo-weather ibuffer-projectile visible-mark wttrin dashboard powershell projectile smex dired-sort-menu dired-sort-menu+ dired+ which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit slime nyan-mode)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#36473A")
  '(pos-tip-foreground-color "#FFFFC8")
@@ -102,28 +99,28 @@
  '(symon-sparkline-use-xpm t)
  '(tool-bar-mode nil)
  '(tramp-syntax (quote default) nil (tramp))
- '(vc-annotate-background "#2B2B2B")
+ '(vc-annotate-background "#1b182c")
  '(vc-annotate-color-map
-   (quote
-    ((20 . "#BC8383")
-     (40 . "#CC9393")
-     (60 . "#DFAF8F")
-     (80 . "#D0BF8F")
-     (100 . "#E0CF9F")
-     (120 . "#F0DFAF")
-     (140 . "#5F7F5F")
-     (160 . "#7F9F7F")
-     (180 . "#8FB28F")
-     (200 . "#9FC59F")
-     (220 . "#AFD8AF")
-     (240 . "#BFEBBF")
-     (260 . "#93E0E3")
-     (280 . "#6CA0A3")
-     (300 . "#7CB8BB")
-     (320 . "#8CD0D3")
-     (340 . "#94BFF3")
-     (360 . "#DC8CC3"))))
- '(vc-annotate-very-old-color "#DC8CC3")
+   (list
+    (cons 20 "#95ffa4")
+    (cons 40 "#b8f7a6")
+    (cons 60 "#dbf0a8")
+    (cons 80 "#ffe9aa")
+    (cons 100 "#ffd799")
+    (cons 120 "#ffc488")
+    (cons 140 "#ffb378")
+    (cons 160 "#eda79b")
+    (cons 180 "#db9cbd")
+    (cons 200 "#c991e1")
+    (cons 220 "#db8bc0")
+    (cons 240 "#ed85a0")
+    (cons 260 "#ff8080")
+    (cons 280 "#d4757d")
+    (cons 300 "#aa6a7a")
+    (cons 320 "#805f77")
+    (cons 340 "#858FA5")
+    (cons 360 "#858FA5")))
+ '(vc-annotate-very-old-color nil)
  '(visible-mark-faces
    (quote
     (visible-mark-face1 visible-mark-face2 visible-mark-forward-face1 visible-mark-forward-face2)))
@@ -134,9 +131,8 @@
  '(which-key-sort-order (quote which-key-prefix-then-key-order))
  '(wttrin-default-accept-language (quote ("Accept-Language" . "en-US")))
  '(wttrin-default-cities (quote ("Denver?m" "Buenos Aires?m")))
- '(yahoo-weather-format "[%(weather) %(temperature)℃ %(atmosphere-humidity)%% hum]")
+ '(yahoo-weather-format "[%(weather) %(temperature)? %(atmosphere-humidity)%% hum]")
  '(yahoo-weather-location "Denver, USA")
- '(yahoo-weather-mode t)
  '(yahoo-weather-temperture-format "%.1f")
  '(yas-prompt-functions
    (quote
@@ -175,7 +171,7 @@
  '(visible-mark-face1 ((t (:box (:line-width 1 :color "turquoise")))))
  '(visible-mark-face2 ((t (:box (:line-width 1 :color "dodger blue")))))
  '(visible-mark-forward-face1 ((t (:box (:line-width 1 :color "dark green")))))
- '(visible-mark-forward-face2 ((t (:background "dark olive green"))) t)
+ '(visible-mark-forward-face2 ((t (:box (:line-width 1 :color "dark olive green")))) t)
  '(web-mode-block-face ((t nil))))
 
 ;; BROWSE-KILL-RING
@@ -208,6 +204,18 @@
 ;; from the manual, to use ls instead of Elisp-ls in Windows
 ;(setq ls-lisp-use-insert-directory-program t)
 ;(setq insert-directory-program "ls")
+;; from https://github.com/roryyorke/picellif/
+(defun picellif-dired-marked-files ()
+  "Send marked files (or current file, if none marked) in current
+Dired buffer to picellif."
+  (interactive)
+  (apply 'call-process "picellif" nil nil nil
+         (dired-get-marked-files)))
+(define-key dired-mode-map (kbd "W") 'picellif-dired-marked-files)
+
+
+;; DOTNET
+(add-hook 'csharp-mode-hook 'dotnet-mode)
 
 ;; IBUFFER
 (require 'ibuffer)
@@ -282,6 +290,10 @@ Symbols matching the text at point are put first in the completion list."
 
 (global-set-key (kbd "M-g d") 'ido-imenu)
 
+;; JSON MODE
+(require 'json-mode)
+(add-to-list 'auto-mode-alist '("\\.json$" . json-mode))
+
 ;; LSP MODE
 ;; from https://vxlabs.com/2018/06/08/python-language-server-with-emacs-and-lsp-mode/
 (require 'lsp-mode)
@@ -302,6 +314,8 @@ Symbols matching the text at point are put first in the completion list."
 
 ;; MAGIT
 (global-set-key (kbd "C-x g") 'magit-status)
+(require 'magit-gitflow)
+(add-hook 'magit-mode-hook 'turn-on-magit-gitflow)
 
 ;; NYAN MODE
 (nyan-mode)
@@ -340,10 +354,10 @@ Symbols matching the text at point are put first in the completion list."
          "pandoc -f org -t html | python c:/HomeFolder/PythonModules/htmlclip.py")))
 (global-set-key (kbd "C-M-w") 'org-formatted-copy)
 ;see https://superuser.com/questions/71786/can-i-create-a-link-to-a-specific-email-message-in-outlook
-(require 'org-outlook)
-;enable languages in org-babel
-(with-eval-after-load 'org
-  (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t))))
+;; (require 'org-outlook)
+;; ;enable languages in org-babel
+;; (with-eval-after-load 'org
+;;   (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t))))
 
 ;; SQL MODE
 (require 'sql)
@@ -373,8 +387,8 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
 ;; TFSMACS
-(require 'tfsmacs)
-(global-set-key  "\C-ct" 'tfsmacs-map)
+;; (require 'tfsmacs)
+;; (global-set-key  "\C-ct" 'tfsmacs-map)
 
 ;; WEB MODE
 (require 'web-mode)
@@ -471,3 +485,8 @@ With two prefix arguments, write out the day and month name."
 (global-set-key (kbd "C-c d") 'insert-date)
 
 (setq-default bidi-display-reordering nil)
+
+;; WORK BINDINGS
+(global-set-key (kbd "<apps>") 'smex)
+(global-set-key (kbd "C-<f1>") (lambda () (interactive) (dired "~/")))
+(global-set-key (kbd "C-<f2>") (lambda () (interactive) (dired "C:/Repos")))
