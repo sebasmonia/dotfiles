@@ -73,7 +73,7 @@
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (json-mode dotnet magit-gitflow company lsp-python browse-kill-ring lsp-ui lsp-mode 2048-game use-package doom-themes gist package-lint yahoo-weather ibuffer-projectile visible-mark wttrin dashboard powershell projectile smex dired-sort-menu dired-sort-menu+ dired+ which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit slime nyan-mode)))
+    (docker elpy company-lsp json-mode dotnet magit-gitflow company lsp-python browse-kill-ring lsp-ui lsp-mode 2048-game use-package doom-themes gist package-lint yahoo-weather ibuffer-projectile visible-mark wttrin dashboard powershell projectile smex dired-sort-menu dired-sort-menu+ dired+ which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit slime nyan-mode)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#36473A")
  '(pos-tip-foreground-color "#FFFFC8")
@@ -213,6 +213,8 @@ Dired buffer to picellif."
          (dired-get-marked-files)))
 (define-key dired-mode-map (kbd "W") 'picellif-dired-marked-files)
 
+;; DOCKER
+(global-set-key (kbd "C-c d") 'docker)
 
 ;; DOTNET
 (add-hook 'csharp-mode-hook 'dotnet-mode)
@@ -294,23 +296,27 @@ Symbols matching the text at point are put first in the completion list."
 (require 'json-mode)
 (add-to-list 'auto-mode-alist '("\\.json$" . json-mode))
 
-;; LSP MODE
+;; ELPY (temp)
+(elpy-enable)
+
+;; ;; LSP MODE
 ;; from https://vxlabs.com/2018/06/08/python-language-server-with-emacs-and-lsp-mode/
-(require 'lsp-mode)
-(require 'lsp-ui)
-(require 'lsp-imenu)
-(add-hook 'lsp-after-open-hook 'lsp-enable-imenu)
-(setq lsp-ui-sideline-ignore-duplicate t)
-(add-hook 'lsp-mode-hook 'lsp-ui-mode)
-(lsp-define-stdio-client lsp-python "python"
-                           #'projectile-project-root
-                           '("pyls"))
-(add-hook 'python-mode-hook
-            (lambda ()
-              (lsp-python-enable)))
-(eval-after-load
- 'company
- '(add-to-list 'company-backends 'company-lsp))
+;; (require 'lsp-mode)
+;; (require 'lsp-ui)
+;; (require 'lsp-imenu)
+;; (add-hook 'lsp-after-open-hook 'lsp-enable-imenu)
+;; (setq lsp-ui-sideline-ignore-duplicate t)
+;; (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+;; (lsp-define-stdio-client lsp-python "python"
+;;                            #'projectile-project-root
+;;                            '("pyls"))
+;; ;; pyls hangs emacs :(
+;; ;; (add-hook 'python-mode-hook
+;; ;;             (lambda ()
+;; ;;               (lsp-python-enable)))
+;; (eval-after-load
+;;  'company
+;;  '(add-to-list 'company-backends 'company-lsp))
 
 ;; MAGIT
 (global-set-key (kbd "C-x g") 'magit-status)
@@ -474,17 +480,6 @@ This is the same as using \\[set-mark-command] with the prefix argument."
                (mouse-movement-p drag-event))
         (mouse-set-point drag-event)))))
 (global-set-key (kbd "S-<down-mouse-1>") #'mouse-start-rectangle)
-
-;; modified version of the one in https://www.emacswiki.org/emacs/InsertDate
-(defun insert-date (prefix)
-  "Insert the current date.  With PREFIX argument, use ISO format.  
-With two prefix arguments, write out the day and month name."
-  (interactive "P")
-  (let ((format (if prefix "%Y-%m-%dT%H:%M:%S" "%Y-%m-%d")))
-    (insert (format-time-string format))))
-(global-set-key (kbd "C-c d") 'insert-date)
-
-(setq-default bidi-display-reordering nil)
 
 ;; WORK BINDINGS
 (global-set-key (kbd "<apps>") 'smex)
