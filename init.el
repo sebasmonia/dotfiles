@@ -23,10 +23,10 @@
  '(bubbles-game-theme (quote difficult))
  '(bubbles-grid-size (quote (20 . 15)))
  '(column-number-mode t)
- '(custom-enabled-themes (quote (doom-challenger-deep)))
+ '(custom-enabled-themes (quote (ujelly)))
  '(custom-safe-themes
    (quote
-    ("a3fa4abaf08cc169b61dea8f6df1bbe4123ec1d2afeb01c17e11fdc31fc66379" default)))
+    ("4138944fbed88c047c9973f68908b36b4153646a045648a22083bd622d1e636d" "a3fa4abaf08cc169b61dea8f6df1bbe4123ec1d2afeb01c17e11fdc31fc66379" default)))
  '(diary-entry-marker (quote font-lock-variable-name-face))
  '(dired-dwim-target t)
  '(dired-listing-switches "-laogGhvD")
@@ -54,6 +54,9 @@
  '(grep-command
    "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
  '(hl-sexp-background-color "#1c1f26")
+ '(jdee-db-active-breakpoint-face-colors (cons "#100e23" "#906cff"))
+ '(jdee-db-requested-breakpoint-face-colors (cons "#100e23" "#95ffa4"))
+ '(jdee-db-spec-breakpoint-face-colors (cons "#100e23" "#565575"))
  '(ls-lisp-dirs-first t)
  '(ls-lisp-format-time-list (quote ("%Y-%m-%d %H:%M" "%Y-%m-%d %H:%M")))
  '(ls-lisp-use-insert-directory-program nil)
@@ -73,7 +76,7 @@
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (docker elpy company-lsp json-mode dotnet magit-gitflow company lsp-python browse-kill-ring lsp-ui lsp-mode 2048-game use-package doom-themes gist package-lint yahoo-weather ibuffer-projectile visible-mark wttrin dashboard powershell projectile smex dired-sort-menu dired-sort-menu+ dired+ which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit slime nyan-mode)))
+    (ujelly-theme deadgrep expand-region format-all lyrics docker elpy company-lsp json-mode dotnet magit-gitflow company lsp-python browse-kill-ring lsp-ui lsp-mode 2048-game use-package doom-themes gist package-lint ibuffer-projectile visible-mark wttrin dashboard powershell projectile smex dired-sort-menu dired-sort-menu+ dired+ which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit slime nyan-mode)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#36473A")
  '(pos-tip-foreground-color "#FFFFC8")
@@ -125,6 +128,10 @@
    (quote
     (visible-mark-face1 visible-mark-face2 visible-mark-forward-face1 visible-mark-forward-face2)))
  '(visible-mark-max 4)
+ '(weather-metno-location-latitude 39)
+ '(weather-metno-location-longitude 104)
+ '(weather-metno-location-msl 1600)
+ '(weather-metno-location-name "Denver")
  '(web-mode-enable-css-colorization t)
  '(web-mode-enable-sql-detection t)
  '(which-key-side-window-max-width 0.4)
@@ -181,6 +188,10 @@
 ;; COMPANY
 (add-hook 'after-init-hook 'global-company-mode)
 
+;; EXPAND REGION
+(require 'expand-region)
+(global-set-key (kbd "C-M-'") 'er/expand-region)
+
 ;; DASHBOARD
 (require 'dashboard)
 (dashboard-setup-startup-hook)
@@ -218,6 +229,9 @@ Dired buffer to picellif."
 
 ;; DOTNET
 (add-hook 'csharp-mode-hook 'dotnet-mode)
+
+;; FORMAT-ALL-THE-CODE
+(global-set-key (kbd "C-c f") 'format-all-buffer)
 
 ;; IBUFFER
 (require 'ibuffer)
@@ -449,7 +463,8 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "<f7>") 'kmacro-end-macro)
 (global-set-key (kbd "<f8>") 'kmacro-end-and-call-macro)
 (global-set-key (kbd "C-z") 'find-name-dired)
-(global-set-key (kbd "M-z") 'rgrep)
+;;(global-set-key (kbd "M-z") 'rgrep)
+(global-set-key (kbd "M-z") 'deadgrep)
 
 ; from: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
 (defun push-mark-no-activate ()
