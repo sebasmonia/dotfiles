@@ -17,16 +17,15 @@
    ["#100e23" "#ff8080" "#95ffa4" "#ffe9aa" "#91ddff" "#c991e1" "#aaffe4" "#BAC9E4"])
  '(beacon-color "#d54e53")
  '(blink-cursor-blinks 0)
- '(blink-cursor-mode nil)
  '(bm-buffer-persistence t)
  '(bm-repository-size 1000)
  '(bubbles-game-theme (quote difficult))
  '(bubbles-grid-size (quote (20 . 15)))
  '(column-number-mode t)
- '(custom-enabled-themes (quote (ujelly)))
+ '(custom-enabled-themes (quote (doom-challenger-deep)))
  '(custom-safe-themes
    (quote
-    ("4138944fbed88c047c9973f68908b36b4153646a045648a22083bd622d1e636d" "a3fa4abaf08cc169b61dea8f6df1bbe4123ec1d2afeb01c17e11fdc31fc66379" default)))
+    ("06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "4138944fbed88c047c9973f68908b36b4153646a045648a22083bd622d1e636d" "a3fa4abaf08cc169b61dea8f6df1bbe4123ec1d2afeb01c17e11fdc31fc66379" default)))
  '(diary-entry-marker (quote font-lock-variable-name-face))
  '(dired-dwim-target t)
  '(dired-listing-switches "-laogGhvD")
@@ -38,8 +37,6 @@
  '(diredp-ignore-compressed-flag t)
  '(display-line-numbers (quote relative))
  '(display-line-numbers-current-absolute nil)
- '(doom-challenger-deep-brighter-comments t)
- '(doom-challenger-deep-brighter-modeline t)
  '(doom-dracula-brighter-comments t)
  '(ediff-highlight-all-diffs t)
  '(ediff-keep-variants nil)
@@ -65,18 +62,20 @@
  '(main-line-color1 "#222232")
  '(main-line-color2 "#333343")
  '(menu-bar-mode nil)
+ '(minions-direct (quote (flycheck-mode)))
  '(minions-mode t)
- '(minions-mode-line-lighter "#")
+ '(minions-mode-line-lighter "^")
  '(nrepl-message-colors
    (quote
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
  '(omnisharp-imenu-support t)
  '(omnisharp-server-executable-path "C:/Home/omnisharp_64/OmniSharp.exe")
+ '(org-fontify-emphasized-text nil)
  '(org-hide-emphasis-markers t)
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (ujelly-theme deadgrep expand-region format-all lyrics docker elpy company-lsp json-mode dotnet magit-gitflow company lsp-python browse-kill-ring lsp-ui lsp-mode 2048-game use-package doom-themes gist package-lint ibuffer-projectile visible-mark wttrin dashboard powershell projectile smex dired-sort-menu dired-sort-menu+ dired+ which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit slime nyan-mode)))
+    (color-theme-sanityinc-tomorrow minions ujelly-theme deadgrep expand-region format-all lyrics docker company-lsp json-mode dotnet company lsp-python browse-kill-ring lsp-ui lsp-mode 2048-game use-package doom-themes gist package-lint ibuffer-projectile visible-mark wttrin dashboard powershell projectile smex dired-sort-menu dired-sort-menu+ dired+ which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit slime nyan-mode)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#36473A")
  '(pos-tip-foreground-color "#FFFFC8")
@@ -102,7 +101,6 @@
  '(symon-sparkline-use-xpm t)
  '(tool-bar-mode nil)
  '(tramp-syntax (quote default) nil (tramp))
- '(vc-annotate-background "#1b182c")
  '(vc-annotate-color-map
    (list
     (cons 20 "#95ffa4")
@@ -123,7 +121,6 @@
     (cons 320 "#805f77")
     (cons 340 "#858FA5")
     (cons 360 "#858FA5")))
- '(vc-annotate-very-old-color nil)
  '(visible-mark-faces
    (quote
     (visible-mark-face1 visible-mark-face2 visible-mark-forward-face1 visible-mark-forward-face2)))
@@ -149,32 +146,33 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Consolas" :foundry "outline" :slant normal :weight normal :height 113 :width normal))))
+ '(default ((((class color) (min-colors 257)) (:background "#1b182c" :foreground "#cbe3e7" :family "Consolas" :foundry "outline" :slant normal :weight normal :height 108 :width normal)) (((class color) (min-colors 256)) (:background "#1c1c1c" :foreground "#2d2d2d" :family "Consolas" :foundry "outline" :slant normal :weight normal :height 108 :width normal)) (((class color) (min-colors 16)) (:background nil :foreground "white" :family "Consolas" :foundry "outline" :slant normal :weight normal :height 108 :width normal))))
  '(diredp-compressed-file-name ((t (:foreground "slate gray"))))
- '(diredp-compressed-file-suffix ((((class color) (min-colors 89)) (:foreground "#b218b2"))))
+ '(diredp-compressed-file-suffix ((((class color) (min-colors 257)) (:foreground "#858FA5")) (((class color) (min-colors 256)) (:foreground "#525252")) (((class color) (min-colors 16)) (:foreground "brightblack"))))
  '(diredp-deletion ((((class color) (min-colors 89)) (:foreground "#ffffff" :background "#a40000"))))
  '(diredp-deletion-file-name ((((class color) (min-colors 89)) (:foreground "#cc0000"))))
- '(diredp-dir-heading ((((class color) (min-colors 89)) (:foreground "#5f5f5f" :background "#d7ff00" :bold t))))
- '(diredp-dir-name ((t (:foreground "gold"))))
+ '(diredp-dir-heading ((((class color) (min-colors 257)) (:foreground "#91ddff" :weight bold)) (((class color) (min-colors 256)) (:foreground "#51afef" :weight bold)) (((class color) (min-colors 16)) (:foreground "brightblue" :weight bold))))
+ '(diredp-dir-name ((((class color) (min-colors 257)) (:foreground "#BAC9E4" :weight bold)) (((class color) (min-colors 256)) (:foreground "#dfdfdf" :weight bold)) (((class color) (min-colors 16)) (:foreground "white" :weight bold))))
  '(diredp-flag-mark ((((class color) (min-colors 89)) (:foreground "#ffffff" :background "#ff1f8b" :bold t))))
  '(diredp-flag-mark-line ((((class color) (min-colors 89)) (:foreground "#5f5f5f" :background "#ff7bbb"))))
- '(diredp-ignored-file-name ((((class color) (min-colors 89)) (:foreground "#b2b2b2"))))
- '(ediff-current-diff-B ((t (:background "#553333"))))
- '(ediff-current-diff-C ((t (:background "#553333"))))
- '(ediff-even-diff-A ((t (:background "dark slate gray"))))
+ '(diredp-ignored-file-name ((((class color) (min-colors 257)) (:foreground "#858FA5")) (((class color) (min-colors 256)) (:foreground "#525252")) (((class color) (min-colors 16)) (:foreground "brightblack"))))
+ '(ediff-current-diff-B ((t (:inherit ediff-current-diff-A))))
+ '(ediff-current-diff-C ((t (:inherit ediff-current-diff-A))))
+ '(ediff-even-diff-A ((t (:inherit hl-line))))
  '(ediff-even-diff-Ancestor ((t (:background "cornflower blue"))))
- '(ediff-even-diff-B ((t (:background "dark slate gray"))))
- '(ediff-even-diff-C ((t (:background "dark slate gray"))))
+ '(ediff-even-diff-B ((t (:inherit ediff-even-diff-A))))
+ '(ediff-even-diff-C ((t (:inherit ediff-even-diff-A))))
  '(ediff-fine-diff-Ancestor ((t (:background "DodgerBlue2"))))
- '(ediff-fine-diff-B ((t (:background "#aa2222"))))
- '(ediff-fine-diff-C ((t (:background "#aa2222"))))
- '(ediff-odd-diff-A ((t (:background "dark slate gray"))))
+ '(ediff-fine-diff-B ((t (:inherit ediff-fine-diff-A))))
+ '(ediff-fine-diff-C ((t (:inherit ediff-fine-diff-A))))
+ '(ediff-odd-diff-A ((t (:inherit ediff-even-diff-A))))
  '(ediff-odd-diff-Ancestor ((t (:background "cornflower blue"))))
- '(ediff-odd-diff-B ((t (:background "dark slate gray"))))
- '(ediff-odd-diff-C ((t (:background "dark slate gray"))))
- '(line-number ((t (:foreground "DarkGoldenrod2"))))
- '(line-number-current-line ((t (:inherit line-number :background "dark slate gray"))))
+ '(ediff-odd-diff-B ((t (:inherit ediff-odd-diff-A))))
+ '(ediff-odd-diff-C ((t (:inherit ediff-odd-diff-A))))
+ '(line-number ((((class color) (min-colors 257)) (:inherit default :foreground "#565575" :distant-foreground nil :weight normal :italic nil :underline nil :strike-through nil)) (((class color) (min-colors 256)) (:inherit default :foreground "#3f3f3f" :distant-foreground nil :weight normal :italic nil :underline nil :strike-through nil)) (((class color) (min-colors 16)) (:inherit default :foreground "brightblack" :distant-foreground nil :weight normal :italic nil :underline nil :strike-through nil))))
+ '(line-number-current-line ((((class color) (min-colors 257)) (:inherit (hl-line default) :foreground "#cbe3e7" :distant-foreground nil :weight normal :italic nil :underline nil :strike-through nil)) (((class color) (min-colors 256)) (:inherit (hl-line default) :foreground "#2d2d2d" :distant-foreground nil :weight normal :italic nil :underline nil :strike-through nil)) (((class color) (min-colors 16)) (:inherit (hl-line default) :foreground "white" :distant-foreground nil :weight normal :italic nil :underline nil :strike-through nil))))
  '(spaceline-unmodified ((t (:background "DodgerBlue1" :foreground "white" :inherit (quote mode-line)))))
+ '(telephone-line-evil ((t (:inherit mode-line :background "dark violet" :foreground "white" :weight bold))))
  '(visible-mark-face1 ((t (:box (:line-width 1 :color "turquoise")))))
  '(visible-mark-face2 ((t (:box (:line-width 1 :color "dodger blue")))))
  '(visible-mark-forward-face1 ((t (:box (:line-width 1 :color "dark green")))))
@@ -191,6 +189,7 @@
 ;; EXPAND REGION
 (require 'expand-region)
 (global-set-key (kbd "C-M-'") 'er/expand-region)
+(global-set-key (kbd "C-S-<SPC>") 'er/expand-region)
 
 ;; DASHBOARD
 (require 'dashboard)
@@ -206,10 +205,14 @@
 (dired-async-mode 1)
 (global-set-key (kbd "\C-cj") 'dired-jump)
 (define-key dired-mode-map (kbd "\\") 'dired-narrow)
-; from SO, apparently this makes Dired faster on Windows
+;; more standard binding for filtering, but I'm so used to \, leaving both
+(define-key dired-mode-map (kbd "/") 'dired-narrow)
+;; from SO, apparently this makes Dired faster on Windows
 (setq directory-free-space-program nil)
-; from https://stackoverflow.com/questions/2284319/opening-files-with-default-windows-application-from-within-emacs
-(defun w32-browser (doc) (w32-shell-execute 1 doc))
+;; from https://stackoverflow.com/questions/2284319/opening-files-with-default-windows-application-from-within-emacs
+(defun w32-browser (doc)
+  "Have Windows start DOC."
+  (w32-shell-execute 1 doc))
 (define-key dired-mode-map (kbd "\C-cl")
   (lambda () (interactive) (w32-browser (dired-replace-in-string "/" "\\" (dired-get-filename)))))
 ;; from the manual, to use ls instead of Elisp-ls in Windows
@@ -217,13 +220,17 @@
 ;(setq insert-directory-program "ls")
 ;; from https://github.com/roryyorke/picellif/
 (defun picellif-dired-marked-files ()
-  "Send marked files (or current file, if none marked) in current
-Dired buffer to picellif."
+  "Send marked files (or current file, if none marked) in current Dired buffer to picellif."
   (interactive)
   (apply 'call-process "picellif" nil nil nil
          (dired-get-marked-files)))
 (define-key dired-mode-map (kbd "W") 'picellif-dired-marked-files)
-
+;; from https://stackoverflow.com/questions/4115465/emacs-dired-too-much-information
+(defun custom-dired-mode-setup ()
+  "Show less information in dired buffers."
+  (dired-hide-details-mode 1))
+(add-hook 'dired-mode-hook 'custom-dired-mode-setup)
+                        
 ;; DOCKER
 (global-set-key (kbd "C-c d") 'docker)
 
@@ -261,7 +268,7 @@ Dired buffer to picellif."
 
 ;; IMENU
 (require 'imenu)
-; from https://gist.github.com/magnars/2360578
+;; from https://gist.github.com/magnars/2360578
 (defun ido-imenu ()
   "Update the imenu index and then use ido to select a symbol to navigate to.
 Symbols matching the text at point are put first in the completion list."
@@ -310,32 +317,30 @@ Symbols matching the text at point are put first in the completion list."
 (require 'json-mode)
 (add-to-list 'auto-mode-alist '("\\.json$" . json-mode))
 
-;; ELPY (temp)
-(elpy-enable)
-
-;; ;; LSP MODE
+;; LSP MODE
 ;; from https://vxlabs.com/2018/06/08/python-language-server-with-emacs-and-lsp-mode/
-;; (require 'lsp-mode)
-;; (require 'lsp-ui)
-;; (require 'lsp-imenu)
-;; (add-hook 'lsp-after-open-hook 'lsp-enable-imenu)
-;; (setq lsp-ui-sideline-ignore-duplicate t)
-;; (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-;; (lsp-define-stdio-client lsp-python "python"
-;;                            #'projectile-project-root
-;;                            '("pyls"))
-;; ;; pyls hangs emacs :(
-;; ;; (add-hook 'python-mode-hook
-;; ;;             (lambda ()
-;; ;;               (lsp-python-enable)))
-;; (eval-after-load
-;;  'company
-;;  '(add-to-list 'company-backends 'company-lsp))
+(require 'lsp-mode)
+(require 'lsp-ui)
+(require 'lsp-imenu)
+(add-hook 'lsp-after-open-hook 'lsp-enable-imenu)
+(setq lsp-ui-sideline-ignore-duplicate t)
+(add-hook 'lsp-mode-hook 'lsp-ui-mode)
+(lsp-define-stdio-client lsp-python "python"
+                           #'projectile-project-root
+                           '("pyls"))
+(add-hook 'python-mode-hook
+            (lambda ()
+              (lsp-python-enable)))
+(eval-after-load
+ 'company
+ '(add-to-list 'company-backends 'company-lsp))
 
 ;; MAGIT
 (global-set-key (kbd "C-x g") 'magit-status)
-(require 'magit-gitflow)
-(add-hook 'magit-mode-hook 'turn-on-magit-gitflow)
+
+;; MINIONS
+(require 'minions)
+(global-set-key [f3] 'minions-minor-modes-menu)
 
 ;; NYAN MODE
 (nyan-mode)
@@ -345,9 +350,9 @@ Symbols matching the text at point are put first in the completion list."
 ;; OMNISHARP
 (require 'omnisharp)
 (add-hook 'csharp-mode-hook 'omnisharp-mode)
-(eval-after-load
- 'company
- '(add-to-list 'company-backends 'company-omnisharp))
+(eval-after-load 
+  'company
+  '(add-to-list 'company-backends 'company-omnisharp))
 (add-hook 'csharp-mode-hook #'company-mode)
 (define-key omnisharp-mode-map (kbd "C-.") 'omnisharp-auto-complete)
 (define-key omnisharp-mode-map (kbd ".") 'omnisharp-add-dot-and-auto-complete)
@@ -386,6 +391,7 @@ Symbols matching the text at point are put first in the completion list."
 ;After moving to Emacs 26.0.9, I don't get prompted for buffer name when doing C-u M-x sql-connect
 ;added the function below and a call in the SQLi hook to go back to the old behaviour
 (defun sql-rename-buffer-prompt ()
+  "Prompts for a rename of the SQLi buffer."
   (interactive)
   (let ((current-prefix-arg '(4)))
     (call-interactively 'sql-rename-buffer)))
@@ -405,6 +411,28 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "M-x") 'smex)
 (global-set-key (kbd "M-X") 'smex-major-mode-commands)
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
+
+;; TELEPHONE LINE
+(require 'telephone-line)
+(defface super-accent-tp '((t (:background "dark slate blue"))) "")
+(setq telephone-line-faces
+      '((super-accent . (super-accent-tp . telephone-line-accent-inactive))
+        (accent . (telephone-line-accent-active . telephone-line-accent-inactive))
+        (nil . (mode-line . mode-line-inactive))))
+(setq telephone-line-primary-left-separator 'telephone-line-identity-right
+      telephone-line-secondary-left-separator 'telephone-line-identity-hollow-right)
+(setq telephone-line-primary-right-separator 'telephone-line-identity-right
+      telephone-line-secondary-right-separator 'telephone-line-identity-hollow-right)
+(setq telephone-line-lhs
+      '((super-accent . (telephone-line-buffer-segment))
+        (nil          . (telephone-line-position-segment))
+        (nil          . (telephone-line-major-mode-segment))))
+(setq telephone-line-rhs
+      '((nil          . (telephone-line-misc-info-segment))
+        (super-accent . (telephone-line-flycheck-segment))
+        (accent       . (telephone-line-vc-segment))
+        (nil          . (telephone-line-projectile-segment))))
+(telephone-line-mode 1)
 
 ;; TFSMACS
 ;; (require 'tfsmacs)
@@ -473,7 +501,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (interactive)
   (push-mark (point) t nil)) ; removed the message, visible-mark takes care of this
 (defun jump-to-mark ()
-  "Jumps to the local mark, respecting the `mark-ring' order.  
+  "Jumps to the local mark, respecting the `mark-ring' order.
 This is the same as using \\[set-mark-command] with the prefix argument."
   (interactive)
   (set-mark-command 1))
@@ -484,6 +512,7 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 ; from: https://emacs.stackexchange.com/questions/7244/enable-emacs-column-selection-using-mouse
 ;; (I very rarely use the below function, should I delete it?)
 (defun mouse-start-rectangle (start-event)
+  "Rectangle selection via mouse.  START-EVENT."
   (interactive "e")
   (deactivate-mark)
   (mouse-set-point start-event)
