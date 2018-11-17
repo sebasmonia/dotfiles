@@ -1,3 +1,19 @@
+;;; .emacs --- My dot emacs file
+
+;; Author: Sebastian Monia <smonia@outlook.com>
+;; URL: https://github.com/sebasmonia/.emacs
+;; Version: 1
+;; Keywords: .emacs dotemacs
+
+;; This file is not part of GNU Emacs.
+
+;;; Commentary:
+
+;; My dot Emacs file
+
+;;; Code:
+
+
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
@@ -15,85 +31,142 @@
    [default default default italic underline success warning error])
  '(ansi-color-names-vector
    ["#212526" "#ff4b4b" "#b4fa70" "#fce94f" "#729fcf" "#e090d7" "#8cc4ff" "#eeeeec"])
- '(bubbles-game-theme 'difficult)
- '(bubbles-grid-size '(20 . 15))
+ '(beacon-color "#cc6666")
+ '(bubbles-game-theme (quote difficult))
+ '(bubbles-grid-size (quote (20 . 15)))
  '(column-number-mode t)
- '(custom-enabled-themes '(gruber-darker))
+ '(custom-enabled-themes (quote (doom-challenger-deep)))
  '(custom-safe-themes
-   '("c2831730b24d526a7b6268a9e42e8e57d2a1279c8f92c5db554af03d4333af2c" "021720af46e6e78e2be7875b2b5b05344f4e21fad70d17af7acfd6922386b61e" "e88abed2a39b47dfedb1272066f214cb2c9db28ee6aa1794bfb27948792f81c0" "a4d03266add9a1c8f12b5309612cbbf96e1291773c7bc4fb685bfdaf83b721c6" "ed0b4fc082715fc1d6a547650752cd8ec76c400ef72eb159543db1770a27caa7" "7356632cebc6a11a87bc5fcffaa49bae528026a78637acd03cae57c091afd9b9" "04dd0236a367865e591927a3810f178e8d33c372ad5bfef48b5ce90d4b476481" "d6922c974e8a78378eacb01414183ce32bc8dbf2de78aabcc6ad8172547cb074" "a24c5b3c12d147da6cef80938dca1223b7c7f70f2f382b26308eba014dc4833a" "c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "3edbdd0ad45cb8f7c2575c0ad8f6625540283c6e928713c328b0bacf4cfbb60f" "eecacf3fb8efc90e6f7478f6143fd168342bbfa261654a754c7d47761cec07c8" "70f073dc36e2421b5f04309792b12852ec464423a213129cbf18663ab8cdaf3f" "ff7625ad8aa2615eae96d6b4469fcc7d3d20b2e1ebc63b761a349bebbb9d23cb" "580d632430ae18daa5109ecd675c1b8df91d7e1e657f049b36bb6fc3c79bfc41" "d61fc0e6409f0c2a22e97162d7d151dee9e192a90fa623f8d6a071dbf49229c6" "dcb9fd142d390bb289fee1d1bb49cb67ab7422cd46baddf11f5c9b7ff756f64c" default))
- '(diary-entry-marker 'font-lock-variable-name-face)
+   (quote
+    ("a3fa4abaf08cc169b61dea8f6df1bbe4123ec1d2afeb01c17e11fdc31fc66379" "ab04c00a7e48ad784b52f34aa6bfa1e80d0c3fcacc50e1189af3651013eb0d58" "8b4d8679804cdca97f35d1b6ba48627e4d733531c64f7324f764036071af6534" "54449a089fc2f95f99ebc9b9b6067c802532fd50097cf44c46a53b4437d5c6cc" "4138944fbed88c047c9973f68908b36b4153646a045648a22083bd622d1e636d" "3860a842e0bf585df9e5785e06d600a86e8b605e5cc0b74320dfe667bcbe816c" "0e89bf7a9d5d2a327b291d5e646f58362b2386f948a594ca993e7b0016b8425a" "d1cc05d755d5a21a31bced25bed40f85d8677e69c73ca365628ce8024827c9e3" "f71859eae71f7f795e734e6e7d178728525008a28c325913f564a42f74042c31" "d8dc153c58354d612b2576fea87fe676a3a5d43bcc71170c62ddde4a1ad9e1fb" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "47ec21abaa6642fefec1b7ace282221574c2dd7ef7715c099af5629926eb4fd7" "a67b6cb65db241e033b6aed5eeaf0805a1b62e598cedc605c71d003a1d5c00c6" "c2831730b24d526a7b6268a9e42e8e57d2a1279c8f92c5db554af03d4333af2c" "021720af46e6e78e2be7875b2b5b05344f4e21fad70d17af7acfd6922386b61e" "e88abed2a39b47dfedb1272066f214cb2c9db28ee6aa1794bfb27948792f81c0" "a4d03266add9a1c8f12b5309612cbbf96e1291773c7bc4fb685bfdaf83b721c6" "ed0b4fc082715fc1d6a547650752cd8ec76c400ef72eb159543db1770a27caa7" "7356632cebc6a11a87bc5fcffaa49bae528026a78637acd03cae57c091afd9b9" "04dd0236a367865e591927a3810f178e8d33c372ad5bfef48b5ce90d4b476481" "d6922c974e8a78378eacb01414183ce32bc8dbf2de78aabcc6ad8172547cb074" "a24c5b3c12d147da6cef80938dca1223b7c7f70f2f382b26308eba014dc4833a" "c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "3edbdd0ad45cb8f7c2575c0ad8f6625540283c6e928713c328b0bacf4cfbb60f" "eecacf3fb8efc90e6f7478f6143fd168342bbfa261654a754c7d47761cec07c8" "70f073dc36e2421b5f04309792b12852ec464423a213129cbf18663ab8cdaf3f" "ff7625ad8aa2615eae96d6b4469fcc7d3d20b2e1ebc63b761a349bebbb9d23cb" "580d632430ae18daa5109ecd675c1b8df91d7e1e657f049b36bb6fc3c79bfc41" "d61fc0e6409f0c2a22e97162d7d151dee9e192a90fa623f8d6a071dbf49229c6" "dcb9fd142d390bb289fee1d1bb49cb67ab7422cd46baddf11f5c9b7ff756f64c" default)))
+ '(diary-entry-marker (quote font-lock-variable-name-face))
  '(dired-dwim-target t)
  '(dired-listing-switches "-laogGhvD")
+ '(dired-narrow-exit-action (quote ignore))
  '(dired-sort-menu-saved-config
-   ('((dired-actual-switches . "-al")
+   ((quote
+     ((dired-actual-switches . "-al")
       (ls-lisp-ignore-case)
-      (ls-lisp-dirs-first . t))))
+      (ls-lisp-dirs-first . t)))))
  '(diredp-ignore-compressed-flag t)
- '(display-line-numbers 'relative)
+ '(display-line-numbers (quote relative))
  '(display-line-numbers-current-absolute nil)
+ '(doom-challenger-deep-brighter-comments t)
  '(ediff-highlight-all-diffs t)
  '(ediff-keep-variants nil)
- '(ediff-quit-hook '(ediff-cleanup-mess delete-frame))
- '(ediff-window-setup-function 'ediff-setup-windows-plain)
+ '(ediff-quit-hook (quote (ediff-cleanup-mess delete-frame)))
+ '(ediff-window-setup-function (quote ediff-setup-windows-plain))
+ '(emms-mode-line-icon-image-cache
+   (quote
+    (image :type xpm :ascent center :data "/* XPM */
+static char *note[] = {
+/* width height num_colors chars_per_pixel */
+\"    10   11        2            1\",
+/* colors */
+\". c #1ba1a1\",
+\"# c None s None\",
+/* pixels */
+\"###...####\",
+\"###.#...##\",
+\"###.###...\",
+\"###.#####.\",
+\"###.#####.\",
+\"#...#####.\",
+\"....#####.\",
+\"#..######.\",
+\"#######...\",
+\"######....\",
+\"#######..#\" };")))
  '(eww-search-prefix "http://www.bing.com/search?q=")
  '(fci-rule-color "#383838")
- '(frame-brackground-mode 'dark)
+ '(flycheck-color-mode-line-face-to-color (quote mode-line-buffer-id))
+ '(frame-background-mode (quote dark))
+ '(frame-brackground-mode (quote dark))
  '(global-flycheck-mode t)
  '(global-visible-mark-mode t)
+ '(gnus-logo-colors (quote ("#4c8383" "#bababa")))
+ '(gnus-mode-line-image-cache
+   (quote
+    (image :type xpm :ascent center :data "/* XPM */
+static char *gnus-pointer[] = {
+/* width height num_colors chars_per_pixel */
+\"    18    13        2            1\",
+/* colors */
+\". c #1ba1a1\",
+\"# c None s None\",
+/* pixels */
+\"##################\",
+\"######..##..######\",
+\"#####........#####\",
+\"#.##.##..##...####\",
+\"#...####.###...##.\",
+\"#..###.######.....\",
+\"#####.########...#\",
+\"###########.######\",
+\"####.###.#..######\",
+\"######..###.######\",
+\"###....####.######\",
+\"###..######.######\",
+\"###########.######\" };")))
  '(grep-command
    "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
  '(hl-sexp-background-color "#1c1f26")
  '(ls-lisp-dirs-first t)
- '(ls-lisp-format-time-list '("%Y-%m-%d %H:%M" "%Y-%m-%d %H:%M"))
+ '(ls-lisp-format-time-list (quote ("%Y-%m-%d %H:%M" "%Y-%m-%d %H:%M")))
  '(ls-lisp-use-insert-directory-program nil)
  '(ls-lisp-use-localized-time-format t)
  '(ls-lisp-verbosity nil)
  '(menu-bar-mode nil)
+ '(minions-mode t)
+ '(minions-mode-line-lighter "#")
  '(nrepl-message-colors
-   '("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3"))
+   (quote
+    ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
  '(omnisharp-imenu-support t)
  '(omnisharp-server-executable-path "C:/HomeFolder/omnisharp_64/OmniSharp.exe")
  '(org-hide-emphasis-markers t)
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
-   '(package-lint tablist yahoo-weather ibuffer-projectile visible-mark elpy wttrin yasnippet yasnippet-snippets dashboard powershell projectile smex ido-vertical-mode which-key spaceline-all-the-icons dired+ dired-sort-menu+ dired-sort-menu spaceline dired-narrow circe web-mode gruber-darker-theme lyrics xah-find symon omnisharp magit slime dired-launch nyan-mode))
- '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
+   (quote
+    (2048-game browse-kill-ring dotnet jsonnet-mode company-lsp docker format-all deadgrep telephone-line pyenv-mode-auto lsp-python lsp-ui lsp-mode grandshell-theme danneskjold-theme cyberpunk-theme doom-themes challenger-deep-theme abyss-theme ## minions tfsmacs package-lint tablist yahoo-weather ibuffer-projectile visible-mark wttrin yasnippet yasnippet-snippets dashboard powershell projectile smex ido-vertical-mode which-key dired+ dired-sort-menu+ dired-sort-menu dired-narrow circe web-mode gruber-darker-theme lyrics xah-find symon omnisharp magit slime dired-launch nyan-mode)))
+ '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#36473A")
  '(pos-tip-foreground-color "#FFFFC8")
- '(powerline-default-separator-dir '(left . left))
- '(proced-filter 'all)
- '(projectile-indexing-method 'alien)
+ '(powerline-default-separator-dir (quote (left . left)))
+ '(proced-filter (quote all))
+ '(projectile-indexing-method (quote alien))
  '(projectile-mode t nil (projectile))
- '(projectile-switch-project-action 'projectile-find-file-dwim)
+ '(projectile-switch-project-action (quote projectile-find-file-dwim))
  '(scroll-bar-mode nil)
  '(set-mark-command-repeat-pop t)
+ '(size-indication-mode t)
  '(spaceline-all-the-icons-clock-always-visible nil)
  '(spaceline-all-the-icons-eyebrowse-display-name nil)
  '(spaceline-all-the-icons-flycheck-alternate t)
  '(spaceline-all-the-icons-hide-long-buffer-path t)
  '(spaceline-all-the-icons-highlight-file-name t)
- '(spaceline-all-the-icons-icon-set-bookmark 'star)
- '(spaceline-all-the-icons-icon-set-eyebrowse-slot 'string)
- '(spaceline-all-the-icons-icon-set-flycheck-slim 'outline)
- '(spaceline-all-the-icons-icon-set-git-ahead 'commit)
- '(spaceline-all-the-icons-icon-set-modified 'chain)
- '(spaceline-all-the-icons-icon-set-sun-time 'sun/moon)
- '(spaceline-all-the-icons-icon-set-window-numbering 'square)
+ '(spaceline-all-the-icons-icon-set-bookmark (quote star))
+ '(spaceline-all-the-icons-icon-set-eyebrowse-slot (quote string))
+ '(spaceline-all-the-icons-icon-set-flycheck-slim (quote outline))
+ '(spaceline-all-the-icons-icon-set-git-ahead (quote commit))
+ '(spaceline-all-the-icons-icon-set-modified (quote chain))
+ '(spaceline-all-the-icons-icon-set-sun-time (quote sun/moon))
+ '(spaceline-all-the-icons-icon-set-window-numbering (quote square))
  '(spaceline-all-the-icons-primary-separator "")
  '(spaceline-all-the-icons-secondary-separator "")
- '(spaceline-all-the-icons-separator-type 'slant)
+ '(spaceline-all-the-icons-separator-type (quote slant))
  '(spaceline-all-the-icons-separators-invert-direction t)
  '(spaceline-all-the-icons-slim-render nil)
- '(sunshine-units 'metric)
+ '(sunshine-units (quote metric))
  '(symon-delay 5)
  '(symon-mode t)
  '(symon-refresh-rate 5)
- '(symon-sparkline-use-xpm t)
  '(tool-bar-mode nil)
- '(tramp-syntax 'default nil (tramp))
+ '(tramp-syntax (quote default) nil (tramp))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
-   '((20 . "#BC8383")
+   (quote
+    ((20 . "#BC8383")
      (40 . "#CC9393")
      (60 . "#DFAF8F")
      (80 . "#D0BF8F")
@@ -110,28 +183,28 @@
      (300 . "#7CB8BB")
      (320 . "#8CD0D3")
      (340 . "#94BFF3")
-     (360 . "#DC8CC3")))
+     (360 . "#DC8CC3"))))
  '(vc-annotate-very-old-color "#DC8CC3")
  '(visible-mark-faces
-   '(visible-mark-face1 visible-mark-face2 visible-mark-forward-face1 visible-mark-forward-face2))
+   (quote
+    (visible-mark-face1 visible-mark-face2 visible-mark-forward-face1 visible-mark-forward-face2)))
  '(visible-mark-max 4)
  '(web-mode-enable-css-colorization t)
  '(web-mode-enable-sql-detection t)
  '(which-key-side-window-max-width 0.4)
- '(which-key-sort-order 'which-key-prefix-then-key-order)
- '(wttrin-default-accept-language '("Accept-Language" . "en-US"))
- '(wttrin-default-cities '("Denver?m" "Buenos Aires?m"))
- '(yahoo-weather-format "[%(weather) %(temperature)℃    %(atmosphere-humidity)]")
+ '(which-key-sort-order (quote which-key-prefix-then-key-order))
+ '(wttrin-default-accept-language (quote ("Accept-Language" . "en-US")))
+ '(wttrin-default-cities (quote ("Denver?m" "Buenos Aires?m")))
  '(yahoo-weather-location "Denver, USA")
- '(yahoo-weather-mode t)
  '(yas-prompt-functions
-   '(yas-ido-prompt yas-dropdown-prompt yas-completing-prompt yas-maybe-ido-prompt yas-no-prompt)))
+   (quote
+    (yas-ido-prompt yas-dropdown-prompt yas-completing-prompt yas-maybe-ido-prompt yas-no-prompt))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Consolas" :foundry "outline" :slant normal :weight normal :height 113 :width normal))))
+ '(default ((t (:family "Consolas" :foundry "MS  " :slant normal :weight normal :height 113 :width normal))))
  '(diredp-compressed-file-name ((t (:foreground "slate gray"))))
  '(diredp-compressed-file-suffix ((((class color) (min-colors 89)) (:foreground "#b218b2"))))
  '(diredp-deletion ((((class color) (min-colors 89)) (:foreground "#ffffff" :background "#a40000"))))
@@ -156,15 +229,25 @@
  '(ediff-odd-diff-C ((t (:background "dark slate gray"))))
  '(line-number ((t (:foreground "DarkGoldenrod2"))))
  '(line-number-current-line ((t (:inherit line-number :background "dark slate gray"))))
- '(spaceline-unmodified ((t (:background "DodgerBlue1" :foreground "white" :inherit 'mode-line))))
+ '(spaceline-unmodified ((t (:background "DodgerBlue1" :foreground "white" :inherit (quote mode-line)))))
  '(visible-mark-face1 ((t (:box (:line-width 1 :color "turquoise")))))
  '(visible-mark-face2 ((t (:box (:line-width 1 :color "dodger blue")))))
  '(visible-mark-forward-face1 ((t (:box (:line-width 1 :color "dark green")))))
  '(visible-mark-forward-face2 ((t (:background "dark olive green"))) t)
  '(web-mode-block-face ((t nil))))
 
+;; BROWSE-KILL-RING
+(require 'browse-kill-ring)
+(browse-kill-ring-default-keybindings)
+
 ;; COMPANY
+(require 'company)
 (add-hook 'after-init-hook 'global-company-mode)
+
+;; EXPAND REGION
+(require 'expand-region)
+(global-set-key (kbd "M-<SPC>") 'er/expand-region)
+(global-set-key (kbd "C-S-<SPC>") 'er/expand-region)
 
 ;; DASHBOARD
 (require 'dashboard)
@@ -179,28 +262,34 @@
 (require 'dired)
 (dired-launch-enable)
 (autoload 'dired-async-mode "dired-async.el" nil t)
-(dired-async-mode 1)
+;(dired-async-mode 1)
 (global-set-key (kbd "\C-cj") 'dired-jump)
 (define-key dired-mode-map (kbd "\\") 'dired-narrow)
+;; more standard binding for filtering, but I'm so used to \, leaving both
+(define-key dired-mode-map (kbd "/") 'dired-narrow)
 ;; from the manual, to use ls instead of Elisp-ls in Windows
 ;(setq ls-lisp-use-insert-directory-program t)
 ;(setq insert-directory-program "ls")
 
-;; ELFEED
-(global-set-key (kbd "C-c e") 'elfeed)
-(setq elfeed-feeds
-      '("https://blogs.msdn.microsoft.com/oldnewthing/feed"
-        "http://pragmaticemacs.com/feed/"
-        "http://planet.emacsen.org/atom.xml"
-        "http://oremacs.com/atom.xml"
-        "http://endlessparentheses.com/atom.xml"
-        "https://www.jwz.org/blog/feed/"))
+;; DOCKER
+(global-set-key (kbd "C-c d") 'docker)
 
-;; ELPY
-(elpy-enable)
-(setq flycheck-highlighting-mode 'lines)
-(setq python-shell-interpreter "jupyter"
-      python-shell-interpreter-args "console --simple-prompt")
+;; DOTNET
+(require 'dotnet)
+(add-hook 'csharp-mode-hook 'dotnet-mode)
+
+;; ;; ELFEED
+;; (global-set-key (kbd "C-c e") 'elfeed)
+;; (setq elfeed-feeds
+;;       '("https://blogs.msdn.microsoft.com/oldnewthing/feed"
+;;         "http://pragmaticemacs.com/feed/"
+;;         "http://planet.emacsen.org/atom.xml"
+;;         "http://oremacs.com/atom.xml"
+;;         "http://endlessparentheses.com/atom.xml"
+;;         "https://www.jwz.org/blog/feed/"))
+
+;; FORMAT-ALL-THE-CODE
+(global-set-key (kbd "C-c f") 'format-all-buffer)
 
 ;; IBUFFER
 (require 'ibuffer)
@@ -230,7 +319,7 @@
 
 ;; IMENU
 (require 'imenu)
-; from https://gist.github.com/magnars/2360578
+;; from https://gist.github.com/magnars/2360578
 (defun ido-imenu ()
   "Update the imenu index and then use ido to select a symbol to navigate to.
 Symbols matching the text at point are put first in the completion list."
@@ -275,25 +364,52 @@ Symbols matching the text at point are put first in the completion list."
 
 (global-set-key (kbd "M-g d") 'ido-imenu)
 
+;; JSON MODE
+(require 'json-mode)
+(add-to-list 'auto-mode-alist '("\\.json$" . json-mode))
+
+;; LSP MODE
+;; from https://vxlabs.com/2018/06/08/python-language-server-with-emacs-and-lsp-mode/
+(require 'lsp-mode)
+(require 'lsp-ui)
+(require 'lsp-imenu)
+(add-hook 'lsp-after-open-hook 'lsp-enable-imenu)
+(setq lsp-ui-sideline-ignore-duplicate t)
+(add-hook 'lsp-mode-hook 'lsp-ui-mode)
+(lsp-define-stdio-client lsp-python "python"
+                           #'projectile-project-root
+                           '("pyls"))
+(add-hook 'python-mode-hook
+            (lambda ()
+              (lsp-python-enable)))
+(eval-after-load
+ 'company
+ '(add-to-list 'company-backends 'company-lsp))
+
 ;; MAGIT
 (global-set-key (kbd "C-x g") 'magit-status)
 
-;; NYAN MODE
-(nyan-mode)
-(nyan-start-animation)
-(nyan-toggle-wavy-trail)
+;; MINIONS
+(require 'minions)
+(global-set-key [f3] 'minions-minor-modes-menu)
+
+;; ;; NYAN MODE
+;; (nyan-mode)
+;; (nyan-start-animation)
+;; (nyan-toggle-wavy-trail)
 
 ;; OMNISHARP
 (require 'omnisharp)
 (add-hook 'csharp-mode-hook 'omnisharp-mode)
 (eval-after-load
- 'company
- '(add-to-list 'company-backends 'company-omnisharp))
+  'company
+  '(add-to-list 'company-backends 'company-omnisharp))
 (add-hook 'csharp-mode-hook #'company-mode)
 (define-key omnisharp-mode-map (kbd "C-.") 'omnisharp-auto-complete)
-(define-key omnisharp-mode-map (kbd ".") 'omnisharp-add-dot-and-auto-complete)
+;; (define-key omnisharp-mode-map (kbd ".") 'omnisharp-add-dot-and-auto-complete)
 (define-key omnisharp-mode-map (kbd "C-c o e") 'omnisharp-solution-errors)
 (define-key omnisharp-mode-map (kbd "C-c o u") 'omnisharp-find-usages)
+(define-key omnisharp-mode-map (kbd "M-?") 'omnisharp-find-usages) ;; "compatibility" with other plaforms
 (define-key omnisharp-mode-map (kbd "C-c o i") 'omnisharp-find-implementations)
 (define-key omnisharp-mode-map (kbd "C-c o d") 'omnisharp-go-to-definition)
 (define-key omnisharp-mode-map (kbd "M-.") 'omnisharp-go-to-definition) ; more standard
@@ -305,8 +421,8 @@ Symbols matching the text at point are put first in the completion list."
 (define-key omnisharp-mode-map (kbd "<f5>") 'recompile)
 
 ;; PROJECTILE
-(projectile-mode)
-(setq projectile-switch-project-action 'projectile-find-file-dwim)
+(require 'projectile)
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
 ;; SQL MODE
 (require 'sql)
@@ -336,15 +452,36 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "M-X") 'smex-major-mode-commands)
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
-;; SPACELINE
-(require 'spaceline-config)
-(spaceline-emacs-theme)
-(require 'spaceline-all-the-icons)
-(spaceline-all-the-icons-theme)
-(spaceline-toggle-all-the-icons-time-off)
-(spaceline-toggle-all-the-icons-hud-off)
-(spaceline-toggle-selection-info-on)
-(spaceline-toggle-global-on)
+;; TELEPHONE LINE
+(require 'telephone-line)
+
+(telephone-line-defsegment* telephone-line-buffer-name-segment ()
+  (telephone-line-raw (buffer-name)))
+
+(telephone-line-defsegment* telephone-line-buffer-modified-segment ()
+    (if (buffer-modified-p)
+        (telephone-line-raw "!")
+      (telephone-line-raw "-")))
+
+(defface theme-accent-tp '((t (:background "dark slate blue"))) "")
+(setq telephone-line-faces
+      '((taccent . (theme-accent-tp . telephone-line-accent-inactive))
+        (accent . (telephone-line-accent-active . telephone-line-accent-inactive))
+        (nil . (mode-line . mode-line-inactive))))
+(setq telephone-line-primary-left-separator 'telephone-line-identity-right
+      telephone-line-secondary-left-separator 'telephone-line-identity-hollow-right)
+(setq telephone-line-primary-right-separator 'telephone-line-identity-right
+      telephone-line-secondary-right-separator 'telephone-line-identity-hollow-right)
+(setq telephone-line-lhs
+      '((accent  . (telephone-line-buffer-modified-segment))
+        (taccent . (telephone-line-buffer-name-segment))
+        (nil     . ((telephone-line-airline-position-segment 0 0)))))
+(setq telephone-line-rhs
+      '((nil     . (telephone-line-misc-info-segment))
+        (accent  . (telephone-line-minions-mode-segment))
+        (taccent . (telephone-line-vc-segment))
+        (nil     . (telephone-line-projectile-segment))))
+(telephone-line-mode 1)
 
 ;; WEB MODE
 (require 'web-mode)
@@ -362,8 +499,7 @@ Symbols matching the text at point are put first in the completion list."
 (setq web-mode-enable-current-element-highlight t)
 (defun my-web-mode-hook ()
   "Hooks for Web mode."
-  (setq web-mode-markup-indent-offset 2)
-)
+  (setq web-mode-markup-indent-offset 2))
 (add-hook 'web-mode-hook  'my-web-mode-hook)
 
 ;; WHICH KEY
@@ -388,11 +524,11 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "C-x 2") (lambda () (interactive)(split-window-below) (other-window 1)))
 (global-set-key (kbd "M-o") 'other-window)
 (global-set-key (kbd "M-O") 'other-frame)
-(global-set-key (kbd "M-N") 'next-buffer)
-(global-set-key (kbd "M-P") 'previous-buffer)
+(global-set-key (kbd "M-n") 'next-buffer)
+(global-set-key (kbd "M-p") 'previous-buffer)
 (global-set-key (kbd "C-x K") 'kill-this-buffer)
 (global-set-key (kbd "C-x C-d") 'find-name-dired)
-(global-set-key (kbd "C-'") 'dabbrev-expand)
+(global-set-key (kbd "C-;") 'dabbrev-expand)
 (global-set-key (kbd "M-*") 'pop-tag-mark)
 (global-set-key (kbd "C-x C-r") 'rgrep)
 (global-set-key (kbd "C-c M-d") 'sql-connect)
@@ -401,6 +537,9 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "<f8>") 'kmacro-end-and-call-macro)
 (global-set-key (kbd "<f8>") 'kmacro-end-and-call-macro)
 (global-set-key (kbd "<f8>") 'kmacro-end-and-call-macro)
+(global-set-key (kbd "C-z") 'find-name-dired)
+;;(global-set-key (kbd "M-z") 'rgrep)
+(global-set-key (kbd "M-z") 'deadgrep)
 
 ; from: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
 (defun push-mark-no-activate ()
@@ -409,13 +548,14 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (interactive)
   (push-mark (point) t nil)) ; removed the message, visible-mark takes care of this
 (defun jump-to-mark ()
-  "Jumps to the local mark, respecting the `mark-ring' order.  
+  "Jumps to the local mark, respecting the `mark-ring' order.
 This is the same as using \\[set-mark-command] with the prefix argument."
   (interactive)
   (set-mark-command 1))
-;until I figure out what works
+
 (global-set-key (kbd "C-`") 'push-mark-no-activate)
 (global-set-key (kbd "M-`") 'jump-to-mark)
+
 
 (global-set-key (kbd "C-<f1>")
   (lambda ()
