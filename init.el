@@ -1,3 +1,18 @@
+;;; .emacs --- My dot emacs file
+
+;; Author: Sebastian Monia <smonia@outlook.com>
+;; URL: https://github.com/sebasmonia/.emacs
+;; Version: 1
+;; Keywords: .emacs dotemacs
+
+;; This file is not part of GNU Emacs.
+
+;;; Commentary:
+
+;; My dot Emacs file
+
+;;; Code:
+
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
@@ -51,6 +66,7 @@
  '(grep-command
    "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
  '(hl-sexp-background-color "#1c1f26")
+ '(ido-default-buffer-method (quote selected-window))
  '(jdee-db-active-breakpoint-face-colors (cons "#100e23" "#906cff"))
  '(jdee-db-requested-breakpoint-face-colors (cons "#100e23" "#95ffa4"))
  '(jdee-db-spec-breakpoint-face-colors (cons "#100e23" "#565575"))
@@ -68,6 +84,9 @@
  '(nrepl-message-colors
    (quote
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
+ '(omnisharp-auto-complete-template-use-yasnippet nil)
+ '(omnisharp-company-begin-after-member-access nil)
+ '(omnisharp-company-template-use-yasnippet nil)
  '(omnisharp-imenu-support t)
  '(omnisharp-server-executable-path "C:/Home/omnisharp_64/OmniSharp.exe")
  '(org-fontify-emphasized-text nil)
@@ -75,7 +94,7 @@
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (color-theme-sanityinc-tomorrow minions ujelly-theme deadgrep expand-region format-all lyrics docker company-lsp json-mode dotnet company lsp-python browse-kill-ring lsp-ui lsp-mode 2048-game use-package doom-themes gist package-lint ibuffer-projectile visible-mark wttrin dashboard powershell projectile smex dired-sort-menu dired-sort-menu+ dired+ which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit slime nyan-mode)))
+    (telephone-line color-theme-sanityinc-tomorrow minions ujelly-theme deadgrep expand-region format-all lyrics docker company-lsp json-mode dotnet company lsp-python browse-kill-ring lsp-ui lsp-mode 2048-game use-package doom-themes gist package-lint ibuffer-projectile visible-mark wttrin dashboard powershell projectile smex dired-sort-menu dired-sort-menu+ dired+ which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit slime nyan-mode)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#36473A")
  '(pos-tip-foreground-color "#FFFFC8")
@@ -171,8 +190,6 @@
  '(ediff-odd-diff-C ((t (:inherit ediff-odd-diff-A))))
  '(line-number ((((class color) (min-colors 257)) (:inherit default :foreground "#565575" :distant-foreground nil :weight normal :italic nil :underline nil :strike-through nil)) (((class color) (min-colors 256)) (:inherit default :foreground "#3f3f3f" :distant-foreground nil :weight normal :italic nil :underline nil :strike-through nil)) (((class color) (min-colors 16)) (:inherit default :foreground "brightblack" :distant-foreground nil :weight normal :italic nil :underline nil :strike-through nil))))
  '(line-number-current-line ((((class color) (min-colors 257)) (:inherit (hl-line default) :foreground "#cbe3e7" :distant-foreground nil :weight normal :italic nil :underline nil :strike-through nil)) (((class color) (min-colors 256)) (:inherit (hl-line default) :foreground "#2d2d2d" :distant-foreground nil :weight normal :italic nil :underline nil :strike-through nil)) (((class color) (min-colors 16)) (:inherit (hl-line default) :foreground "white" :distant-foreground nil :weight normal :italic nil :underline nil :strike-through nil))))
- '(spaceline-unmodified ((t (:background "DodgerBlue1" :foreground "white" :inherit (quote mode-line)))))
- '(telephone-line-evil ((t (:inherit mode-line :background "dark violet" :foreground "white" :weight bold))))
  '(visible-mark-face1 ((t (:box (:line-width 1 :color "turquoise")))))
  '(visible-mark-face2 ((t (:box (:line-width 1 :color "dodger blue")))))
  '(visible-mark-forward-face1 ((t (:box (:line-width 1 :color "dark green")))))
@@ -184,11 +201,12 @@
 (browse-kill-ring-default-keybindings)
 
 ;; COMPANY
+(require 'company)
 (add-hook 'after-init-hook 'global-company-mode)
 
 ;; EXPAND REGION
 (require 'expand-region)
-(global-set-key (kbd "C-M-'") 'er/expand-region)
+(global-set-key (kbd "M-<SPC>") 'er/expand-region)
 (global-set-key (kbd "C-S-<SPC>") 'er/expand-region)
 
 ;; DASHBOARD
@@ -235,6 +253,7 @@
 (global-set-key (kbd "C-c d") 'docker)
 
 ;; DOTNET
+(require 'dotnet)
 (add-hook 'csharp-mode-hook 'dotnet-mode)
 
 ;; FORMAT-ALL-THE-CODE
@@ -343,21 +362,22 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key [f3] 'minions-minor-modes-menu)
 
 ;; NYAN MODE
-(nyan-mode)
-(nyan-start-animation)
-(nyan-toggle-wavy-trail)
+;; (nyan-mode)
+;; (nyan-start-animation)
+;; (nyan-toggle-wavy-trail)
 
 ;; OMNISHARP
 (require 'omnisharp)
 (add-hook 'csharp-mode-hook 'omnisharp-mode)
-(eval-after-load 
+(eval-after-load
   'company
   '(add-to-list 'company-backends 'company-omnisharp))
 (add-hook 'csharp-mode-hook #'company-mode)
 (define-key omnisharp-mode-map (kbd "C-.") 'omnisharp-auto-complete)
-(define-key omnisharp-mode-map (kbd ".") 'omnisharp-add-dot-and-auto-complete)
+;; (define-key omnisharp-mode-map (kbd ".") 'omnisharp-add-dot-and-auto-complete)
 (define-key omnisharp-mode-map (kbd "C-c o e") 'omnisharp-solution-errors)
 (define-key omnisharp-mode-map (kbd "C-c o u") 'omnisharp-find-usages)
+(define-key omnisharp-mode-map (kbd "M-?") 'omnisharp-find-usages) ;; "compatibility" with other plaforms
 (define-key omnisharp-mode-map (kbd "C-c o i") 'omnisharp-find-implementations)
 (define-key omnisharp-mode-map (kbd "C-c o d") 'omnisharp-go-to-definition)
 (define-key omnisharp-mode-map (kbd "M-.") 'omnisharp-go-to-definition) ; more standard
@@ -383,6 +403,10 @@ Symbols matching the text at point are put first in the completion list."
 ;; ;enable languages in org-babel
 ;; (with-eval-after-load 'org
 ;;   (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t))))
+
+;; PROJECTILE
+(require 'projectile)
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
 ;; SQL MODE
 (require 'sql)
@@ -414,9 +438,18 @@ Symbols matching the text at point are put first in the completion list."
 
 ;; TELEPHONE LINE
 (require 'telephone-line)
-(defface super-accent-tp '((t (:background "dark slate blue"))) "")
+
+(telephone-line-defsegment* telephone-line-buffer-name-segment ()
+  (telephone-line-raw (buffer-name)))
+
+(telephone-line-defsegment* telephone-line-buffer-modified-segment ()
+    (if (buffer-modified-p)
+        (telephone-line-raw "!")
+      (telephone-line-raw "-")))
+
+(defface theme-accent-tp '((t (:background "dark slate blue"))) "")
 (setq telephone-line-faces
-      '((super-accent . (super-accent-tp . telephone-line-accent-inactive))
+      '((taccent . (theme-accent-tp . telephone-line-accent-inactive))
         (accent . (telephone-line-accent-active . telephone-line-accent-inactive))
         (nil . (mode-line . mode-line-inactive))))
 (setq telephone-line-primary-left-separator 'telephone-line-identity-right
@@ -424,14 +457,14 @@ Symbols matching the text at point are put first in the completion list."
 (setq telephone-line-primary-right-separator 'telephone-line-identity-right
       telephone-line-secondary-right-separator 'telephone-line-identity-hollow-right)
 (setq telephone-line-lhs
-      '((super-accent . (telephone-line-buffer-segment))
-        (nil          . (telephone-line-position-segment))
-        (nil          . (telephone-line-major-mode-segment))))
+      '((accent  . (telephone-line-buffer-modified-segment))
+        (taccent . (telephone-line-buffer-name-segment))
+        (nil     . ((telephone-line-airline-position-segment 0 0)))))
 (setq telephone-line-rhs
-      '((nil          . (telephone-line-misc-info-segment))
-        (super-accent . (telephone-line-flycheck-segment))
-        (accent       . (telephone-line-vc-segment))
-        (nil          . (telephone-line-projectile-segment))))
+      '((nil     . (telephone-line-misc-info-segment))
+        (accent  . (telephone-line-minions-mode-segment))
+        (taccent . (telephone-line-vc-segment))
+        (nil     . (telephone-line-projectile-segment))))
 (telephone-line-mode 1)
 
 ;; TFSMACS
@@ -480,10 +513,10 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "C-x 2") (lambda () (interactive)(split-window-below) (other-window 1)))
 (global-set-key (kbd "M-o") 'other-window)
 (global-set-key (kbd "M-O") 'other-frame)
-(global-set-key (kbd "M-N") 'next-buffer)
-(global-set-key (kbd "M-P") 'previous-buffer)
+(global-set-key (kbd "M-n") 'next-buffer)
+(global-set-key (kbd "M-p") 'previous-buffer)
 (global-set-key (kbd "C-x K") 'kill-this-buffer)
-(global-set-key (kbd "C-'") 'dabbrev-expand)
+(global-set-key (kbd "C-;") 'dabbrev-expand)
 (global-set-key (kbd "M-*") 'pop-tag-mark)
 (global-set-key (kbd "C-x C-r") 'rgrep)
 (global-set-key (kbd "C-c M-d") 'sql-connect)
@@ -524,6 +557,16 @@ This is the same as using \\[set-mark-command] with the prefix argument."
                (mouse-movement-p drag-event))
         (mouse-set-point drag-event)))))
 (global-set-key (kbd "S-<down-mouse-1>") #'mouse-start-rectangle)
+
+;; from https://stackoverflow.com/a/22176971, move auto saves and
+;; back up files to a different folder so git or dotnet core won't
+;; pick them up as changes or new files in the project
+(setq auto-save-file-name-transforms
+      `((".*" ,(concat user-emacs-directory "auto-save/") t)))
+
+(setq backup-directory-alist
+      `(("." . ,(expand-file-name
+                 (concat user-emacs-directory "backups")))))
 
 ;; WORK BINDINGS
 (global-set-key (kbd "<apps>") 'smex)
