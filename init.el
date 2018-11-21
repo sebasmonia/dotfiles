@@ -52,6 +52,8 @@
  '(diredp-ignore-compressed-flag t)
  '(display-line-numbers (quote relative))
  '(display-line-numbers-current-absolute nil)
+ '(doom-challenger-deep-brighter-comments t)
+ '(doom-challenger-deep-comment-bg t)
  '(doom-dracula-brighter-comments t)
  '(ediff-highlight-all-diffs t)
  '(ediff-keep-variants nil)
@@ -94,8 +96,9 @@
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (telephone-line color-theme-sanityinc-tomorrow minions ujelly-theme deadgrep expand-region format-all lyrics docker company-lsp json-mode dotnet company lsp-python browse-kill-ring lsp-ui lsp-mode 2048-game use-package doom-themes gist package-lint ibuffer-projectile visible-mark wttrin dashboard powershell projectile smex dired-sort-menu dired-sort-menu+ dired+ which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit slime nyan-mode)))
+    (telephone-line pomidor color-theme-sanityinc-tomorrow minions ujelly-theme deadgrep expand-region format-all lyrics docker company-lsp json-mode company lsp-python browse-kill-ring lsp-ui lsp-mode 2048-game use-package doom-themes gist package-lint ibuffer-projectile visible-mark wttrin dashboard powershell projectile smex dired-sort-menu dired-sort-menu+ dired+ which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit slime nyan-mode)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
+ '(pomidor-play-sound-file nil)
  '(pos-tip-background-color "#36473A")
  '(pos-tip-foreground-color "#FFFFC8")
  '(proced-filter (quote all))
@@ -208,6 +211,7 @@
 (require 'expand-region)
 (global-set-key (kbd "M-<SPC>") 'er/expand-region)
 (global-set-key (kbd "C-S-<SPC>") 'er/expand-region)
+
 
 ;; DASHBOARD
 (require 'dashboard)
@@ -354,6 +358,9 @@ Symbols matching the text at point are put first in the completion list."
  'company
  '(add-to-list 'company-backends 'company-lsp))
 
+(require 'lsp-python)
+(add-hook 'python-mode-hook #'lsp-python-enable)
+
 ;; MAGIT
 (global-set-key (kbd "C-x g") 'magit-status)
 
@@ -404,6 +411,10 @@ Symbols matching the text at point are put first in the completion list."
 ;; (with-eval-after-load 'org
 ;;   (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t))))
 
+;; POMIDOR
+(require 'pomidor)
+(global-set-key (kbd "<f12>") #'pomidor)
+
 ;; PROJECTILE
 (require 'projectile)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
@@ -439,27 +450,25 @@ Symbols matching the text at point are put first in the completion list."
 ;; TELEPHONE LINE
 (require 'telephone-line)
 
-(telephone-line-defsegment* telephone-line-buffer-name-segment ()
-  (telephone-line-raw (buffer-name)))
-
-(telephone-line-defsegment* telephone-line-buffer-modified-segment ()
-    (if (buffer-modified-p)
-        (telephone-line-raw "!")
-      (telephone-line-raw "-")))
-
 (defface theme-accent-tp '((t (:background "dark slate blue"))) "")
+(telephone-line-defsegment* telephone-line-buffer-mod-segment ()
+    (if (buffer-modified-p)
+        (propertize "!" 'face '(:foreground "red" :weight bold))
+      "-"))
+
 (setq telephone-line-faces
       '((taccent . (theme-accent-tp . telephone-line-accent-inactive))
         (accent . (telephone-line-accent-active . telephone-line-accent-inactive))
         (nil . (mode-line . mode-line-inactive))))
-(setq telephone-line-primary-left-separator 'telephone-line-identity-right
-      telephone-line-secondary-left-separator 'telephone-line-identity-hollow-right)
-(setq telephone-line-primary-right-separator 'telephone-line-identity-right
-      telephone-line-secondary-right-separator 'telephone-line-identity-hollow-right)
+(setq telephone-line-primary-left-separator 'telephone-line-abs-left
+      telephone-line-secondary-left-separator 'telephone-line-nil)
+(setq telephone-line-primary-right-separator 'telephone-line-abs-right
+      telephone-line-secondary-right-separator 'telephone-line-nil)
 (setq telephone-line-lhs
-      '((accent  . (telephone-line-buffer-modified-segment))
+      '((nil     . (telephone-line-buffer-mod-segment))
         (taccent . (telephone-line-buffer-name-segment))
-        (nil     . ((telephone-line-airline-position-segment 0 0)))))
+        (accent  . (telephone-line-airline-position-segment))
+        (nil     . (telephone-line-process-segment))))
 (setq telephone-line-rhs
       '((nil     . (telephone-line-misc-info-segment))
         (accent  . (telephone-line-minions-mode-segment))
@@ -516,6 +525,7 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "M-n") 'next-buffer)
 (global-set-key (kbd "M-p") 'previous-buffer)
 (global-set-key (kbd "C-x K") 'kill-this-buffer)
+;;(global-set-key (kbd "C-'") 'dabbrev-expand)
 (global-set-key (kbd "C-;") 'dabbrev-expand)
 (global-set-key (kbd "M-*") 'pop-tag-mark)
 (global-set-key (kbd "C-x C-r") 'rgrep)
@@ -558,6 +568,7 @@ This is the same as using \\[set-mark-command] with the prefix argument."
         (mouse-set-point drag-event)))))
 (global-set-key (kbd "S-<down-mouse-1>") #'mouse-start-rectangle)
 
+
 ;; from https://stackoverflow.com/a/22176971, move auto saves and
 ;; back up files to a different folder so git or dotnet core won't
 ;; pick them up as changes or new files in the project
@@ -567,7 +578,6 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 (setq backup-directory-alist
       `(("." . ,(expand-file-name
                  (concat user-emacs-directory "backups")))))
-
 ;; WORK BINDINGS
 (global-set-key (kbd "<apps>") 'smex)
 (global-set-key (kbd "C-<f1>") (lambda () (interactive) (dired "~/")))
