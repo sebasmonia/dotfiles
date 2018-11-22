@@ -13,7 +13,6 @@
 
 ;;; Code:
 
-
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
@@ -42,7 +41,6 @@
  '(diary-entry-marker (quote font-lock-variable-name-face))
  '(dired-dwim-target t)
  '(dired-listing-switches "-laogGhvD")
- '(dired-narrow-exit-action (quote ignore))
  '(dired-sort-menu-saved-config
    ((quote
      ((dired-actual-switches . "-al")
@@ -52,6 +50,7 @@
  '(display-line-numbers (quote relative))
  '(display-line-numbers-current-absolute nil)
  '(doom-challenger-deep-brighter-comments t)
+ '(doom-challenger-deep-comment-bg t)
  '(ediff-highlight-all-diffs t)
  '(ediff-keep-variants nil)
  '(ediff-quit-hook (quote (ediff-cleanup-mess delete-frame)))
@@ -81,7 +80,6 @@ static char *note[] = {
  '(fci-rule-color "#383838")
  '(flycheck-color-mode-line-face-to-color (quote mode-line-buffer-id))
  '(frame-background-mode (quote dark))
- '(frame-brackground-mode (quote dark))
  '(global-flycheck-mode t)
  '(global-visible-mark-mode t)
  '(gnus-logo-colors (quote ("#4c8383" "#bababa")))
@@ -118,10 +116,13 @@ static char *gnus-pointer[] = {
  '(ls-lisp-verbosity nil)
  '(menu-bar-mode nil)
  '(minions-mode t)
- '(minions-mode-line-lighter "#")
+ '(minions-mode-line-lighter "^")
  '(nrepl-message-colors
    (quote
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
+ '(omnisharp-auto-complete-template-use-yasnippet nil)
+ '(omnisharp-company-begin-after-member-access nil)
+ '(omnisharp-company-template-use-yasnippet nil)
  '(omnisharp-imenu-support t)
  '(omnisharp-server-executable-path "C:/HomeFolder/omnisharp_64/OmniSharp.exe")
  '(org-hide-emphasis-markers t)
@@ -132,32 +133,14 @@ static char *gnus-pointer[] = {
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#36473A")
  '(pos-tip-foreground-color "#FFFFC8")
- '(powerline-default-separator-dir (quote (left . left)))
  '(proced-filter (quote all))
  '(projectile-indexing-method (quote alien))
  '(projectile-mode t nil (projectile))
  '(projectile-switch-project-action (quote projectile-find-file-dwim))
+ '(reb-re-syntax (quote string))
  '(scroll-bar-mode nil)
  '(set-mark-command-repeat-pop t)
  '(size-indication-mode t)
- '(spaceline-all-the-icons-clock-always-visible nil)
- '(spaceline-all-the-icons-eyebrowse-display-name nil)
- '(spaceline-all-the-icons-flycheck-alternate t)
- '(spaceline-all-the-icons-hide-long-buffer-path t)
- '(spaceline-all-the-icons-highlight-file-name t)
- '(spaceline-all-the-icons-icon-set-bookmark (quote star))
- '(spaceline-all-the-icons-icon-set-eyebrowse-slot (quote string))
- '(spaceline-all-the-icons-icon-set-flycheck-slim (quote outline))
- '(spaceline-all-the-icons-icon-set-git-ahead (quote commit))
- '(spaceline-all-the-icons-icon-set-modified (quote chain))
- '(spaceline-all-the-icons-icon-set-sun-time (quote sun/moon))
- '(spaceline-all-the-icons-icon-set-window-numbering (quote square))
- '(spaceline-all-the-icons-primary-separator "")
- '(spaceline-all-the-icons-secondary-separator "")
- '(spaceline-all-the-icons-separator-type (quote slant))
- '(spaceline-all-the-icons-separators-invert-direction t)
- '(spaceline-all-the-icons-slim-render nil)
- '(sunshine-units (quote metric))
  '(symon-delay 5)
  '(symon-mode t)
  '(symon-refresh-rate 5)
@@ -195,7 +178,6 @@ static char *gnus-pointer[] = {
  '(which-key-sort-order (quote which-key-prefix-then-key-order))
  '(wttrin-default-accept-language (quote ("Accept-Language" . "en-US")))
  '(wttrin-default-cities (quote ("Denver?m" "Buenos Aires?m")))
- '(yahoo-weather-location "Denver, USA")
  '(yas-prompt-functions
    (quote
     (yas-ido-prompt yas-dropdown-prompt yas-completing-prompt yas-maybe-ido-prompt yas-no-prompt))))
@@ -393,7 +375,7 @@ Symbols matching the text at point are put first in the completion list."
 (require 'minions)
 (global-set-key [f3] 'minions-minor-modes-menu)
 
-;; ;; NYAN MODE
+;; NYAN MODE
 ;; (nyan-mode)
 ;; (nyan-start-animation)
 ;; (nyan-toggle-wavy-trail)
@@ -455,27 +437,25 @@ Symbols matching the text at point are put first in the completion list."
 ;; TELEPHONE LINE
 (require 'telephone-line)
 
-(telephone-line-defsegment* telephone-line-buffer-name-segment ()
-  (telephone-line-raw (buffer-name)))
-
-(telephone-line-defsegment* telephone-line-buffer-modified-segment ()
-    (if (buffer-modified-p)
-        (telephone-line-raw "!")
-      (telephone-line-raw "-")))
-
 (defface theme-accent-tp '((t (:background "dark slate blue"))) "")
+(telephone-line-defsegment* telephone-line-buffer-mod-segment ()
+    (if (buffer-modified-p)
+        (propertize "!" 'face '(:foreground "red" :weight bold))
+      "-"))
+
 (setq telephone-line-faces
       '((taccent . (theme-accent-tp . telephone-line-accent-inactive))
         (accent . (telephone-line-accent-active . telephone-line-accent-inactive))
         (nil . (mode-line . mode-line-inactive))))
-(setq telephone-line-primary-left-separator 'telephone-line-identity-right
-      telephone-line-secondary-left-separator 'telephone-line-identity-hollow-right)
-(setq telephone-line-primary-right-separator 'telephone-line-identity-right
-      telephone-line-secondary-right-separator 'telephone-line-identity-hollow-right)
+(setq telephone-line-primary-left-separator 'telephone-line-abs-left
+      telephone-line-secondary-left-separator 'telephone-line-nil)
+(setq telephone-line-primary-right-separator 'telephone-line-abs-right
+      telephone-line-secondary-right-separator 'telephone-line-nil)
 (setq telephone-line-lhs
-      '((accent  . (telephone-line-buffer-modified-segment))
+      '((nil     . (telephone-line-buffer-mod-segment))
         (taccent . (telephone-line-buffer-name-segment))
-        (nil     . ((telephone-line-airline-position-segment 0 0)))))
+        (accent  . (telephone-line-airline-position-segment))
+        (nil     . (telephone-line-process-segment))))
 (setq telephone-line-rhs
       '((nil     . (telephone-line-misc-info-segment))
         (accent  . (telephone-line-minions-mode-segment))
@@ -527,15 +507,12 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "M-n") 'next-buffer)
 (global-set-key (kbd "M-p") 'previous-buffer)
 (global-set-key (kbd "C-x K") 'kill-this-buffer)
-(global-set-key (kbd "C-x C-d") 'find-name-dired)
 (global-set-key (kbd "C-;") 'dabbrev-expand)
 (global-set-key (kbd "M-*") 'pop-tag-mark)
 (global-set-key (kbd "C-x C-r") 'rgrep)
 (global-set-key (kbd "C-c M-d") 'sql-connect)
 (global-set-key (kbd "<f6>") 'kmacro-start-macro)
 (global-set-key (kbd "<f7>") 'kmacro-end-macro)
-(global-set-key (kbd "<f8>") 'kmacro-end-and-call-macro)
-(global-set-key (kbd "<f8>") 'kmacro-end-and-call-macro)
 (global-set-key (kbd "<f8>") 'kmacro-end-and-call-macro)
 (global-set-key (kbd "C-z") 'find-name-dired)
 ;;(global-set-key (kbd "M-z") 'rgrep)
