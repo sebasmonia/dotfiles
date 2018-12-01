@@ -96,7 +96,7 @@
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (telephone-line pomidor color-theme-sanityinc-tomorrow minions ujelly-theme deadgrep expand-region format-all lyrics docker company-lsp json-mode company lsp-python browse-kill-ring lsp-ui lsp-mode 2048-game use-package doom-themes gist package-lint ibuffer-projectile visible-mark wttrin dashboard powershell projectile smex dired-sort-menu dired-sort-menu+ dired+ which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit slime nyan-mode)))
+    (anzu eglot telephone-line pomidor minions deadgrep expand-region format-all lyrics docker json-mode company browse-kill-ring 2048-game use-package doom-themes gist package-lint ibuffer-projectile visible-mark wttrin dashboard powershell projectile smex dired-sort-menu dired-sort-menu+ dired+ which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit slime nyan-mode)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pomidor-play-sound-file nil)
  '(pos-tip-background-color "#36473A")
@@ -105,6 +105,8 @@
  '(projectile-indexing-method (quote alien))
  '(projectile-mode t nil (projectile))
  '(projectile-switch-project-action (quote projectile-find-file-dwim))
+ '(python-shell-interpreter "ipython")
+ '(python-shell-interpreter-args "-i --simple-prompt")
  '(reb-re-syntax (quote string))
  '(scroll-bar-mode nil)
  '(set-mark-command-repeat-pop t)
@@ -199,6 +201,20 @@
  '(visible-mark-forward-face2 ((t (:box (:line-width 1 :color "dark olive green")))) t)
  '(web-mode-block-face ((t nil))))
 
+;; ANZU
+(require 'anzu)
+(global-anzu-mode +1)
+(set-face-attribute 'anzu-mode-line nil
+                    :foreground "dark slate blue" :weight 'bold)
+(custom-set-variables
+ '(anzu-mode-lighter "")
+ '(anzu-deactivate-region t)
+ '(anzu-search-threshold 1000)
+ '(anzu-replace-threshold 50)
+ '(anzu-replace-to-string-separator " => "))
+(define-key isearch-mode-map [remap isearch-query-replace]  #'anzu-isearch-query-replace)
+(define-key isearch-mode-map [remap isearch-query-replace-regexp] #'anzu-isearch-query-replace-regexp)
+
 ;; BROWSE-KILL-RING
 (require 'browse-kill-ring)
 (browse-kill-ring-default-keybindings)
@@ -211,7 +227,6 @@
 (require 'expand-region)
 (global-set-key (kbd "M-<SPC>") 'er/expand-region)
 (global-set-key (kbd "C-S-<SPC>") 'er/expand-region)
-
 
 ;; DASHBOARD
 (require 'dashboard)
@@ -342,24 +357,27 @@ Symbols matching the text at point are put first in the completion list."
 
 ;; LSP MODE
 ;; from https://vxlabs.com/2018/06/08/python-language-server-with-emacs-and-lsp-mode/
-(require 'lsp-mode)
-(require 'lsp-ui)
-(require 'lsp-imenu)
-(add-hook 'lsp-after-open-hook 'lsp-enable-imenu)
-(setq lsp-ui-sideline-ignore-duplicate t)
-(add-hook 'lsp-mode-hook 'lsp-ui-mode)
-(lsp-define-stdio-client lsp-python "python"
-                           #'projectile-project-root
-                           '("pyls"))
-(add-hook 'python-mode-hook
-            (lambda ()
-              (lsp-python-enable)))
-(eval-after-load
- 'company
- '(add-to-list 'company-backends 'company-lsp))
+;; (require 'lsp-mode)
+;; (require 'lsp-ui)
+;; (require 'lsp-imenu)
+;; (add-hook 'lsp-after-open-hook 'lsp-enable-imenu)
+;; (setq lsp-ui-sideline-ignore-duplicate t)
+;; (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+;; (lsp-define-stdio-client lsp-python "python"
+;;                            #'projectile-project-root
+;;                            '("pyls"))
+;; (add-hook 'python-mode-hook
+;;             (lambda ()
+;;               (lsp-python-enable)))
+;; (eval-after-load
+;;  'company
+;;  '(add-to-list 'company-backends 'company-lsp))
 
-(require 'lsp-python)
-(add-hook 'python-mode-hook #'lsp-python-enable)
+;; (require 'lsp-python)
+;; (add-hook 'python-mode-hook #'lsp-python-enable)
+;; EGLOT
+(require 'eglot)
+(add-hook 'python-mode-hook 'eglot-ensure)
 
 ;; MAGIT
 (global-set-key (kbd "C-x g") 'magit-status)
@@ -369,9 +387,9 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key [f3] 'minions-minor-modes-menu)
 
 ;; NYAN MODE
-;; (nyan-mode)
-;; (nyan-start-animation)
-;; (nyan-toggle-wavy-trail)
+(nyan-mode)
+(nyan-start-animation)
+(nyan-toggle-wavy-trail)
 
 ;; OMNISHARP
 (require 'omnisharp)
@@ -414,6 +432,11 @@ Symbols matching the text at point are put first in the completion list."
 ;; POMIDOR
 (require 'pomidor)
 (global-set-key (kbd "<f12>") #'pomidor)
+
+;; POWERSHELL MODE
+(require 'powershell)
+;; avoid shadowing of global M-` in PS mode
+(define-key powershell-mode-map "\M-`" nil)
 
 ;; PROJECTILE
 (require 'projectile)
@@ -468,7 +491,8 @@ Symbols matching the text at point are put first in the completion list."
       '((nil     . (telephone-line-buffer-mod-segment))
         (taccent . (telephone-line-buffer-name-segment))
         (accent  . (telephone-line-airline-position-segment))
-        (nil     . (telephone-line-process-segment))))
+        (nil     . ((telephone-line-nyan-segment :active)
+                    telephone-line-process-segment))))
 (setq telephone-line-rhs
       '((nil     . (telephone-line-misc-info-segment))
         (accent  . (telephone-line-minions-mode-segment))
@@ -520,12 +544,18 @@ Symbols matching the text at point are put first in the completion list."
 ; adapted for https://stackoverflow.com/questions/6464738/how-can-i-switch-focus-after-buffer-split-in-emacs
 (global-set-key (kbd "C-x 3") (lambda () (interactive)(split-window-right) (other-window 1)))
 (global-set-key (kbd "C-x 2") (lambda () (interactive)(split-window-below) (other-window 1)))
+;; on trial
+(global-set-key (kbd "C-M-{") (lambda () (interactive)(shrink-window-horizontally 5)))
+(global-set-key (kbd "C-M-}") (lambda () (interactive)(enlarge-window-horizontally 5)))
+(global-set-key (kbd "C-M-_") (lambda () (interactive)(shrink-window 5)))
+(global-set-key (kbd "C-M-+") (lambda () (interactive)(shrink-window -5)))
+;; on trial
 (global-set-key (kbd "M-o") 'other-window)
 (global-set-key (kbd "M-O") 'other-frame)
 (global-set-key (kbd "M-n") 'next-buffer)
 (global-set-key (kbd "M-p") 'previous-buffer)
-(global-set-key (kbd "C-x K") 'kill-this-buffer)
-;;(global-set-key (kbd "C-'") 'dabbrev-expand)
+;; used to be C-x K. Honestly I never used C-x C-k (macros) commands that much so :shrug:
+(global-set-key (kbd "C-x C-k") 'kill-this-buffer)
 (global-set-key (kbd "C-;") 'dabbrev-expand)
 (global-set-key (kbd "M-*") 'pop-tag-mark)
 (global-set-key (kbd "C-x C-r") 'rgrep)
