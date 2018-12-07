@@ -30,6 +30,11 @@
    [default default default italic underline success warning error])
  '(ansi-color-names-vector
    ["#100e23" "#ff8080" "#95ffa4" "#ffe9aa" "#91ddff" "#c991e1" "#aaffe4" "#BAC9E4"])
+ '(anzu-deactivate-region t)
+ '(anzu-mode-lighter "")
+ '(anzu-replace-threshold 50)
+ '(anzu-replace-to-string-separator " => ")
+ '(anzu-search-threshold 1000)
  '(beacon-color "#d54e53")
  '(blink-cursor-blinks 0)
  '(bm-buffer-persistence t)
@@ -41,6 +46,9 @@
  '(custom-safe-themes
    (quote
     ("06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "4138944fbed88c047c9973f68908b36b4153646a045648a22083bd622d1e636d" "a3fa4abaf08cc169b61dea8f6df1bbe4123ec1d2afeb01c17e11fdc31fc66379" default)))
+ '(dabbrev-case-distinction nil)
+ '(dabbrev-case-fold-search t)
+ '(dabbrev-case-replace nil)
  '(diary-entry-marker (quote font-lock-variable-name-face))
  '(dired-dwim-target t)
  '(dired-listing-switches "-laogGhvD")
@@ -205,13 +213,8 @@
 (require 'anzu)
 (global-anzu-mode +1)
 (set-face-attribute 'anzu-mode-line nil
-                    :foreground "dark slate blue" :weight 'bold)
-(custom-set-variables
- '(anzu-mode-lighter "")
- '(anzu-deactivate-region t)
- '(anzu-search-threshold 1000)
- '(anzu-replace-threshold 50)
- '(anzu-replace-to-string-separator " => "))
+                    :foreground "light slate blue" :weight 'bold)
+
 (define-key isearch-mode-map [remap isearch-query-replace]  #'anzu-isearch-query-replace)
 (define-key isearch-mode-map [remap isearch-query-replace-regexp] #'anzu-isearch-query-replace-regexp)
 
@@ -273,6 +276,7 @@
 
 ;; DOTNET
 (require 'dotnet)
+(setq dotnet-mode-keymap-prefix (kbd "C-c n"))
 (add-hook 'csharp-mode-hook 'dotnet-mode)
 
 ;; FORMAT-ALL-THE-CODE
@@ -474,10 +478,18 @@ Symbols matching the text at point are put first in the completion list."
 (require 'telephone-line)
 
 (defface theme-accent-tp '((t (:background "dark slate blue"))) "")
+;; (require 'all-the-icons)
+;; (telephone-line-defsegment* telephone-line-buffer-mod1-segment ()
+;;   (cond
+;;    (buffer-read-only (all-the-icons-octicon "lock" :height 0.8 :v-adjust 0.1))
+;;    ((buffer-modified-p) (all-the-icons-faicon "chain-broken" :height 0.8 :v-adjust -0.0 :face '(:foreground "red")))
+;;    (t (all-the-icons-faicon "link" :height 0.8 :v-adjust -0.0))))
+
 (telephone-line-defsegment* telephone-line-buffer-mod-segment ()
-    (if (buffer-modified-p)
-        (propertize "!" 'face '(:foreground "red" :weight bold))
-      "-"))
+   (cond
+    (buffer-read-only "·")
+    ((buffer-modified-p) (propertize "!" 'face '(:foreground "red" :weight bold)))
+    (t "-")))
 
 (setq telephone-line-faces
       '((taccent . (theme-accent-tp . telephone-line-accent-inactive))
@@ -520,8 +532,7 @@ Symbols matching the text at point are put first in the completion list."
 (setq web-mode-enable-current-element-highlight t)
 (defun my-web-mode-hook ()
   "Hooks for Web mode."
-  (setq web-mode-markup-indent-offset 2)
-)
+  (setq web-mode-markup-indent-offset 2))
 (add-hook 'web-mode-hook  'my-web-mode-hook)
 
 ;; WHICH KEY
@@ -554,6 +565,9 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "M-O") 'other-frame)
 (global-set-key (kbd "M-n") 'next-buffer)
 (global-set-key (kbd "M-p") 'previous-buffer)
+;; in some special buffers M-n and M-p are already bound (compilation, for example)
+(global-set-key (kbd "M-N") 'next-buffer)
+(global-set-key (kbd "M-P") 'previous-buffer)
 ;; used to be C-x K. Honestly I never used C-x C-k (macros) commands that much so :shrug:
 (global-set-key (kbd "C-x C-k") 'kill-this-buffer)
 (global-set-key (kbd "C-;") 'dabbrev-expand)
@@ -566,6 +580,7 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "C-z") 'find-name-dired)
 ;;(global-set-key (kbd "M-z") 'rgrep)
 (global-set-key (kbd "M-z") 'deadgrep)
+(global-set-key (kbd "<mouse-3>") 'kill-ring-save)
 
 ; from: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
 (defun push-mark-no-activate ()
@@ -612,3 +627,4 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 (global-set-key (kbd "<apps>") 'smex)
 (global-set-key (kbd "C-<f1>") (lambda () (interactive) (dired "~/")))
 (global-set-key (kbd "C-<f2>") (lambda () (interactive) (dired "C:/Repos")))
+(put 'narrow-to-region 'disabled nil)
