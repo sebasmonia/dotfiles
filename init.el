@@ -35,6 +35,9 @@
  '(anzu-replace-threshold 50)
  '(anzu-replace-to-string-separator " => ")
  '(anzu-search-threshold 1000)
+ '(back-button-global-keystrokes nil)
+ '(back-button-local-keystrokes nil)
+ '(back-button-smartrep-prefix "")
  '(beacon-color "#d54e53")
  '(blink-cursor-blinks 0)
  '(bm-buffer-persistence t)
@@ -60,8 +63,8 @@
  '(diredp-ignore-compressed-flag t)
  '(display-line-numbers (quote relative))
  '(display-line-numbers-current-absolute nil)
- '(doom-challenger-deep-brighter-comments t)
- '(doom-challenger-deep-comment-bg t)
+ '(doom-challenger-deep-brighter-comments nil)
+ '(doom-challenger-deep-brighter-modeline t)
  '(doom-dracula-brighter-comments t)
  '(ediff-highlight-all-diffs t)
  '(ediff-keep-variants nil)
@@ -72,6 +75,7 @@
  '(flycheck-color-mode-line-face-to-color (quote mode-line-buffer-id))
  '(frame-background-mode (quote dark))
  '(global-flycheck-mode t)
+ '(global-mark-ring-max 32)
  '(global-visible-mark-mode t)
  '(grep-command
    "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
@@ -104,7 +108,7 @@
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (anzu eglot telephone-line pomidor minions deadgrep expand-region format-all lyrics docker json-mode company browse-kill-ring 2048-game use-package doom-themes gist package-lint ibuffer-projectile visible-mark wttrin dashboard powershell projectile smex dired-sort-menu dired-sort-menu+ dired+ which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit slime nyan-mode)))
+    (doom-modeline dotnet anzu eglot telephone-line pomidor minions deadgrep expand-region format-all lyrics docker json-mode company browse-kill-ring 2048-game use-package doom-themes gist package-lint ibuffer-projectile visible-mark wttrin dashboard powershell projectile smex dired-sort-menu dired-sort-menu+ dired+ which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit slime nyan-mode)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pomidor-play-sound-file nil)
  '(pos-tip-background-color "#36473A")
@@ -133,6 +137,7 @@
  '(symon-sparkline-use-xpm t)
  '(tool-bar-mode nil)
  '(tramp-syntax (quote default) nil (tramp))
+ '(vc-annotate-background "#1b1d1e")
  '(vc-annotate-color-map
    (list
     (cons 20 "#95ffa4")
@@ -153,6 +158,7 @@
     (cons 320 "#805f77")
     (cons 340 "#858FA5")
     (cons 360 "#858FA5")))
+ '(vc-annotate-very-old-color nil)
  '(visible-mark-faces
    (quote
     (visible-mark-face1 visible-mark-face2 visible-mark-forward-face1 visible-mark-forward-face2)))
@@ -178,7 +184,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((((class color) (min-colors 257)) (:background "#1b182c" :foreground "#cbe3e7" :family "Consolas" :foundry "outline" :slant normal :weight normal :height 108 :width normal)) (((class color) (min-colors 256)) (:background "#1c1c1c" :foreground "#2d2d2d" :family "Consolas" :foundry "outline" :slant normal :weight normal :height 108 :width normal)) (((class color) (min-colors 16)) (:background nil :foreground "white" :family "Consolas" :foundry "outline" :slant normal :weight normal :height 108 :width normal))))
+ '(default ((((class color) (min-colors 257)) (:background "#1b182c" :foreground "#cbe3e7" :family "Hack" :foundry "outline" :slant normal :weight normal :height 110 :width normal)) (((class color) (min-colors 256)) (:background "#1c1c1c" :foreground "#2d2d2d" :family "Hack" :foundry "outline" :slant normal :weight normal :height 110 :width normal)) (((class color) (min-colors 16)) (:background nil :foreground "white" :family "Hack" :foundry "outline" :slant normal :weight normal :height 110 :width normal))))
  '(diredp-compressed-file-name ((t (:foreground "slate gray"))))
  '(diredp-compressed-file-suffix ((((class color) (min-colors 257)) (:foreground "#858FA5")) (((class color) (min-colors 256)) (:foreground "#525252")) (((class color) (min-colors 16)) (:foreground "brightblack"))))
  '(diredp-deletion ((((class color) (min-colors 89)) (:foreground "#ffffff" :background "#a40000"))))
@@ -218,6 +224,14 @@
 (define-key isearch-mode-map [remap isearch-query-replace]  #'anzu-isearch-query-replace)
 (define-key isearch-mode-map [remap isearch-query-replace-regexp] #'anzu-isearch-query-replace-regexp)
 
+;; BACK-BUTTON
+;; from https://github.com/rolandwalker/back-button/
+(require 'back-button)
+(back-button-mode 1)
+(global-set-key (kbd "C-`") 'back-button-push-mark-local-and-global)
+(global-set-key (kbd "M-`") 'back-button-global-backward)
+(global-set-key (kbd "M-~") 'back-button-global-forward)
+
 ;; BROWSE-KILL-RING
 (require 'browse-kill-ring)
 (browse-kill-ring-default-keybindings)
@@ -225,6 +239,23 @@
 ;; COMPANY
 (require 'company)
 (add-hook 'after-init-hook 'global-company-mode)
+
+;; EDIFF
+(require 'ediff)
+; from https://emacs.stackexchange.com/questions/7362/how-to-show-a-diff-between-two-buffers-with-character-level-diffs
+(setq-default ediff-forward-word-function 'forward-char)
+;; from https://stackoverflow.com/a/29757750
+(defun ediff-copy-both-to-C ()
+  "In ediff, copy A and then B to C."
+  (interactive)
+  (ediff-copy-diff ediff-current-difference nil 'C nil
+                   (concat
+                    (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
+                    (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
+(defun add-d-to-ediff-mode-map ()
+  "Add key 'd' for 'copy both to C' functionality in ediff."
+  (define-key ediff-mode-map "d" 'ediff-copy-both-to-C))
+(add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map)
 
 ;; EXPAND REGION
 (require 'expand-region)
@@ -359,26 +390,6 @@ Symbols matching the text at point are put first in the completion list."
 (require 'json-mode)
 (add-to-list 'auto-mode-alist '("\\.json$" . json-mode))
 
-;; LSP MODE
-;; from https://vxlabs.com/2018/06/08/python-language-server-with-emacs-and-lsp-mode/
-;; (require 'lsp-mode)
-;; (require 'lsp-ui)
-;; (require 'lsp-imenu)
-;; (add-hook 'lsp-after-open-hook 'lsp-enable-imenu)
-;; (setq lsp-ui-sideline-ignore-duplicate t)
-;; (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-;; (lsp-define-stdio-client lsp-python "python"
-;;                            #'projectile-project-root
-;;                            '("pyls"))
-;; (add-hook 'python-mode-hook
-;;             (lambda ()
-;;               (lsp-python-enable)))
-;; (eval-after-load
-;;  'company
-;;  '(add-to-list 'company-backends 'company-lsp))
-
-;; (require 'lsp-python)
-;; (add-hook 'python-mode-hook #'lsp-python-enable)
 ;; EGLOT
 (require 'eglot)
 (add-hook 'python-mode-hook 'eglot-ensure)
@@ -391,14 +402,14 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key [f3] 'minions-minor-modes-menu)
 
 ;; NYAN MODE
-(nyan-mode)
-(nyan-start-animation)
-(nyan-toggle-wavy-trail)
+;; (nyan-mode)
+;; (nyan-start-animation)
+;; (nyan-toggle-wavy-trail)
 
 ;; OMNISHARP
 (require 'omnisharp)
 (add-hook 'csharp-mode-hook 'omnisharp-mode)
-(eval-after-load
+(with-eval-after-load
   'company
   '(add-to-list 'company-backends 'company-omnisharp))
 (add-hook 'csharp-mode-hook #'company-mode)
@@ -446,6 +457,11 @@ Symbols matching the text at point are put first in the completion list."
 (require 'projectile)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
+;; SLIME
+(require 'slime)
+(setq inferior-lisp-program "sbcl")
+(load "C:/Home/quicklisp/slime-helper.el")
+
 ;; SQL MODE
 (require 'sql)
 (sql-set-product-feature 'ms :prompt-regexp "^.*>")
@@ -474,43 +490,16 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "M-X") 'smex-major-mode-commands)
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
-;; TELEPHONE LINE
-(require 'telephone-line)
-
-(defface theme-accent-tp '((t (:background "dark slate blue"))) "")
-;; (require 'all-the-icons)
-;; (telephone-line-defsegment* telephone-line-buffer-mod1-segment ()
-;;   (cond
-;;    (buffer-read-only (all-the-icons-octicon "lock" :height 0.8 :v-adjust 0.1))
-;;    ((buffer-modified-p) (all-the-icons-faicon "chain-broken" :height 0.8 :v-adjust -0.0 :face '(:foreground "red")))
-;;    (t (all-the-icons-faicon "link" :height 0.8 :v-adjust -0.0))))
-
-(telephone-line-defsegment* telephone-line-buffer-mod-segment ()
-   (cond
-    (buffer-read-only "·")
-    ((buffer-modified-p) (propertize "!" 'face '(:foreground "red" :weight bold)))
-    (t "-")))
-
-(setq telephone-line-faces
-      '((taccent . (theme-accent-tp . telephone-line-accent-inactive))
-        (accent . (telephone-line-accent-active . telephone-line-accent-inactive))
-        (nil . (mode-line . mode-line-inactive))))
-(setq telephone-line-primary-left-separator 'telephone-line-abs-left
-      telephone-line-secondary-left-separator 'telephone-line-nil)
-(setq telephone-line-primary-right-separator 'telephone-line-abs-right
-      telephone-line-secondary-right-separator 'telephone-line-nil)
-(setq telephone-line-lhs
-      '((nil     . (telephone-line-buffer-mod-segment))
-        (taccent . (telephone-line-buffer-name-segment))
-        (accent  . (telephone-line-airline-position-segment))
-        (nil     . ((telephone-line-nyan-segment :active)
-                    telephone-line-process-segment))))
-(setq telephone-line-rhs
-      '((nil     . (telephone-line-misc-info-segment))
-        (accent  . (telephone-line-minions-mode-segment))
-        (taccent . (telephone-line-vc-segment))
-        (nil     . (telephone-line-projectile-segment))))
-(telephone-line-mode 1)
+;; DOOM-MODELINE
+(require 'doom-modeline)
+(doom-modeline-init)
+(setq doom-modeline-buffer-file-name-style 'buffer-name)
+(setq doom-modeline-icon t)
+(setq doom-modeline-major-mode-icon t)
+(setq doom-modeline-minor-modes t)
+(setq doom-modeline-persp-name nil)
+(setq doom-modeline-lsp nil)
+(setq doom-modeline-github nil)
 
 ;; TFSMACS
 ;; (require 'tfsmacs)
@@ -560,7 +549,6 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "C-M-}") (lambda () (interactive)(enlarge-window-horizontally 5)))
 (global-set-key (kbd "C-M-_") (lambda () (interactive)(shrink-window 5)))
 (global-set-key (kbd "C-M-+") (lambda () (interactive)(shrink-window -5)))
-;; on trial
 (global-set-key (kbd "M-o") 'other-window)
 (global-set-key (kbd "M-O") 'other-frame)
 (global-set-key (kbd "M-n") 'next-buffer)
@@ -571,8 +559,6 @@ Symbols matching the text at point are put first in the completion list."
 ;; used to be C-x K. Honestly I never used C-x C-k (macros) commands that much so :shrug:
 (global-set-key (kbd "C-x C-k") 'kill-this-buffer)
 (global-set-key (kbd "C-;") 'dabbrev-expand)
-(global-set-key (kbd "M-*") 'pop-tag-mark)
-(global-set-key (kbd "C-x C-r") 'rgrep)
 (global-set-key (kbd "C-c M-d") 'sql-connect)
 (global-set-key (kbd "<f6>") 'kmacro-start-macro)
 (global-set-key (kbd "<f7>") 'kmacro-end-macro)
@@ -581,21 +567,26 @@ Symbols matching the text at point are put first in the completion list."
 ;;(global-set-key (kbd "M-z") 'rgrep)
 (global-set-key (kbd "M-z") 'deadgrep)
 (global-set-key (kbd "<mouse-3>") 'kill-ring-save)
+;; helps compilation buffer not slowdown
+;; see https://blog.danielgempesaw.com/post/129841682030/fixing-a-laggy-compilation-buffer
+(setq compilation-error-regexp-alist
+      (delete 'maven compilation-error-regexp-alist))
 
-; from: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
-(defun push-mark-no-activate ()
-  "Pushes `point` to `mark-ring' and does not activate the region.
-Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
-  (interactive)
-  (push-mark (point) t nil)) ; removed the message, visible-mark takes care of this
-(defun jump-to-mark ()
-  "Jumps to the local mark, respecting the `mark-ring' order.
-This is the same as using \\[set-mark-command] with the prefix argument."
-  (interactive)
-  (set-mark-command 1))
-
-(global-set-key (kbd "C-`") 'push-mark-no-activate)
-(global-set-key (kbd "M-`") 'jump-to-mark)
+;; ;; from: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
+;; ;; added code to push the global mark too
+;; (defun push-mark-no-activate ()
+;;   "Pushes `point` to `mark-ring' and does not activate the region.
+;; Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
+;;   (interactive)
+;;   (push-mark (point) t nil)
+;;   (push-global-mark)) ; removed the message, visible-mark takes care of this
+;; (defun jump-to-mark ()
+;;   "Jumps to the local mark, respecting the `mark-ring' order.
+;; This is the same as using \\[set-mark-command] with the prefix argument."
+;;   (interactive)
+;;   (set-mark-command 1))
+;; (global-set-key (kbd "C-`") 'push-mark-no-activate)
+;; (global-set-key (kbd "M-`") 'jump-to-mark)
 
 ; from: https://emacs.stackexchange.com/questions/7244/enable-emacs-column-selection-using-mouse
 ;; (I very rarely use the below function, should I delete it?)
