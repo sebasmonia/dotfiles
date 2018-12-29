@@ -163,19 +163,12 @@
    (quote
     (visible-mark-face1 visible-mark-face2 visible-mark-forward-face1 visible-mark-forward-face2)))
  '(visible-mark-max 4)
- '(weather-metno-location-latitude 39)
- '(weather-metno-location-longitude 104)
- '(weather-metno-location-msl 1600)
- '(weather-metno-location-name "Denver")
  '(web-mode-enable-css-colorization t)
  '(web-mode-enable-sql-detection t)
  '(which-key-side-window-max-width 0.4)
  '(which-key-sort-order (quote which-key-prefix-then-key-order))
  '(wttrin-default-accept-language (quote ("Accept-Language" . "en-US")))
  '(wttrin-default-cities (quote ("Denver?m" "Buenos Aires?m")))
- '(yahoo-weather-format "[%(weather) %(temperature)? %(atmosphere-humidity)%% hum]")
- '(yahoo-weather-location "Denver, USA")
- '(yahoo-weather-temperture-format "%.1f")
  '(yas-prompt-functions
    (quote
     (yas-ido-prompt yas-dropdown-prompt yas-completing-prompt yas-maybe-ido-prompt yas-no-prompt))))
@@ -184,13 +177,13 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((((class color) (min-colors 257)) (:background "#1b182c" :foreground "#cbe3e7" :family "Hack" :foundry "outline" :slant normal :weight normal :height 110 :width normal)) (((class color) (min-colors 256)) (:background "#1c1c1c" :foreground "#2d2d2d" :family "Hack" :foundry "outline" :slant normal :weight normal :height 110 :width normal)) (((class color) (min-colors 16)) (:background nil :foreground "white" :family "Hack" :foundry "outline" :slant normal :weight normal :height 110 :width normal))))
+ '(default ((t (:family "Hack" :foundry "SRC" :slant normal :weight normal :height 98 :width normal))))
  '(diredp-compressed-file-name ((t (:foreground "slate gray"))))
- '(diredp-compressed-file-suffix ((((class color) (min-colors 257)) (:foreground "#858FA5")) (((class color) (min-colors 256)) (:foreground "#525252")) (((class color) (min-colors 16)) (:foreground "brightblack"))))
+ '(diredp-compressed-file-suffix ((((class color) (min-colors 89)) (:foreground "#b218b2"))))
  '(diredp-deletion ((((class color) (min-colors 89)) (:foreground "#ffffff" :background "#a40000"))))
  '(diredp-deletion-file-name ((((class color) (min-colors 89)) (:foreground "#cc0000"))))
- '(diredp-dir-heading ((((class color) (min-colors 257)) (:foreground "#91ddff" :weight bold)) (((class color) (min-colors 256)) (:foreground "#51afef" :weight bold)) (((class color) (min-colors 16)) (:foreground "brightblue" :weight bold))))
- '(diredp-dir-name ((((class color) (min-colors 257)) (:foreground "#BAC9E4" :weight bold)) (((class color) (min-colors 256)) (:foreground "#dfdfdf" :weight bold)) (((class color) (min-colors 16)) (:foreground "white" :weight bold))))
+ '(diredp-dir-heading ((((class color) (min-colors 89)) (:foreground "#5f5f5f" :background "#d7ff00" :bold t))))
+ '(diredp-dir-name ((t (:foreground "gold"))))
  '(diredp-flag-mark ((((class color) (min-colors 89)) (:foreground "#ffffff" :background "#ff1f8b" :bold t))))
  '(diredp-flag-mark-line ((((class color) (min-colors 89)) (:foreground "#5f5f5f" :background "#ff7bbb"))))
  '(diredp-ignored-file-name ((((class color) (min-colors 257)) (:foreground "#858FA5")) (((class color) (min-colors 256)) (:foreground "#525252")) (((class color) (min-colors 16)) (:foreground "brightblack"))))
@@ -205,10 +198,11 @@
  '(ediff-fine-diff-C ((t (:inherit ediff-fine-diff-A))))
  '(ediff-odd-diff-A ((t (:inherit ediff-even-diff-A))))
  '(ediff-odd-diff-Ancestor ((t (:background "cornflower blue"))))
- '(ediff-odd-diff-B ((t (:inherit ediff-odd-diff-A))))
- '(ediff-odd-diff-C ((t (:inherit ediff-odd-diff-A))))
- '(line-number ((((class color) (min-colors 257)) (:inherit default :foreground "#565575" :distant-foreground nil :weight normal :italic nil :underline nil :strike-through nil)) (((class color) (min-colors 256)) (:inherit default :foreground "#3f3f3f" :distant-foreground nil :weight normal :italic nil :underline nil :strike-through nil)) (((class color) (min-colors 16)) (:inherit default :foreground "brightblack" :distant-foreground nil :weight normal :italic nil :underline nil :strike-through nil))))
- '(line-number-current-line ((((class color) (min-colors 257)) (:inherit (hl-line default) :foreground "#cbe3e7" :distant-foreground nil :weight normal :italic nil :underline nil :strike-through nil)) (((class color) (min-colors 256)) (:inherit (hl-line default) :foreground "#2d2d2d" :distant-foreground nil :weight normal :italic nil :underline nil :strike-through nil)) (((class color) (min-colors 16)) (:inherit (hl-line default) :foreground "white" :distant-foreground nil :weight normal :italic nil :underline nil :strike-through nil))))
+ '(ediff-odd-diff-B ((t (:background "dark slate gray"))))
+ '(ediff-odd-diff-C ((t (:background "dark slate gray"))))
+ '(line-number ((t (:foreground "DarkGoldenrod2"))))
+ '(line-number-current-line ((t (:inherit line-number :background "dark slate gray"))))
+ '(spaceline-unmodified ((t (:background "DodgerBlue1" :foreground "white" :inherit (quote mode-line)))))
  '(visible-mark-face1 ((t (:box (:line-width 1 :color "turquoise")))))
  '(visible-mark-face2 ((t (:box (:line-width 1 :color "dodger blue")))))
  '(visible-mark-forward-face1 ((t (:box (:line-width 1 :color "dark green")))))
@@ -272,6 +266,8 @@
 (setq initial-buffer-choice  (lambda () (get-buffer "*dashboard*")))
 
 ;; DIRED
+(require 'dired)
+(dired-launch-enable)
 (autoload 'dired-async-mode "dired-async.el" nil t)
 (dired-async-mode 1)
 (global-set-key (kbd "\C-cj") 'dired-jump)
@@ -428,31 +424,6 @@ Symbols matching the text at point are put first in the completion list."
 (define-key omnisharp-mode-map (kbd "C-c o t d") 'omnisharp-current-type-documentation)
 (define-key omnisharp-mode-map (kbd "<f5>") 'recompile)
 
-;; ORG MODE
-(defun org-formatted-copy (&optional b e)
-  "Export region between B and E to HTML, and copy it to the clipboard."
-  (interactive "r")
-  (save-window-excursion
-        (shell-command-on-region
-         b
-         e
-         "pandoc -f org -t html | python c:/HomeFolder/PythonModules/htmlclip.py")))
-(global-set-key (kbd "C-M-w") 'org-formatted-copy)
-;see https://superuser.com/questions/71786/can-i-create-a-link-to-a-specific-email-message-in-outlook
-;; (require 'org-outlook)
-;; ;enable languages in org-babel
-;; (with-eval-after-load 'org
-;;   (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t))))
-
-;; POMIDOR
-(require 'pomidor)
-(global-set-key (kbd "<f12>") #'pomidor)
-
-;; POWERSHELL MODE
-(require 'powershell)
-;; avoid shadowing of global M-` in PS mode
-(define-key powershell-mode-map "\M-`" nil)
-
 ;; PROJECTILE
 (require 'projectile)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
@@ -487,6 +458,7 @@ Symbols matching the text at point are put first in the completion list."
 ;; SMEX
 (smex-initialize)
 (global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "<menu>") 'smex)
 (global-set-key (kbd "M-X") 'smex-major-mode-commands)
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 

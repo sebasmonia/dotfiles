@@ -17,6 +17,10 @@
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 (package-initialize)
+(package-refresh-contents)
+(message (concat "SELECTED: " (prin1-to-string package-selected-packages)))
+(message (prin1-to-string (package-installed-p 'doom-modeline)))
+
 
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 (prefer-coding-system 'utf-8)
@@ -35,6 +39,9 @@
  '(anzu-replace-threshold 50)
  '(anzu-replace-to-string-separator " => ")
  '(anzu-search-threshold 1000)
+ '(back-button-global-keystrokes nil)
+ '(back-button-local-keystrokes nil)
+ '(back-button-smartrep-prefix "")
  '(beacon-color "#d54e53")
  '(blink-cursor-blinks 0)
  '(bm-buffer-persistence t)
@@ -60,8 +67,8 @@
  '(diredp-ignore-compressed-flag t)
  '(display-line-numbers (quote relative))
  '(display-line-numbers-current-absolute nil)
- '(doom-challenger-deep-brighter-comments t)
- '(doom-challenger-deep-comment-bg t)
+ '(doom-challenger-deep-brighter-comments nil)
+ '(doom-challenger-deep-brighter-modeline t)
  '(doom-dracula-brighter-comments t)
  '(ediff-highlight-all-diffs t)
  '(ediff-keep-variants nil)
@@ -93,7 +100,8 @@ static char *note[] = {
  '(flycheck-color-mode-line-face-to-color (quote mode-line-buffer-id))
  '(frame-background-mode (quote dark))
  '(global-flycheck-mode t)
- '(global-visible-mark-mode t)
+ '(global-mark-ring-max 32)
+ '(global-visible-mark-mode nil)
  '(gnus-logo-colors (quote ("#4c8383" "#bababa")))
  '(gnus-mode-line-image-cache
    (quote
@@ -149,45 +157,53 @@ static char *gnus-pointer[] = {
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (anzu eglot 2048-game browse-kill-ring dotnet jsonnet-mode company-lsp docker format-all deadgrep telephone-line pyenv-mode-auto lsp-python lsp-ui lsp-mode grandshell-theme danneskjold-theme cyberpunk-theme doom-themes challenger-deep-theme abyss-theme ## minions tfsmacs package-lint tablist yahoo-weather ibuffer-projectile visible-mark wttrin yasnippet yasnippet-snippets dashboard powershell projectile smex ido-vertical-mode which-key dired+ dired-sort-menu+ dired-sort-menu dired-narrow circe web-mode gruber-darker-theme lyrics xah-find symon omnisharp magit slime dired-launch nyan-mode)))
+    (doom-modeline dotnet anzu eglot telephone-line pomidor minions deadgrep expand-region format-all lyrics docker json-mode company browse-kill-ring 2048-game use-package doom-themes gist package-lint ibuffer-projectile visible-mark wttrin dashboard powershell projectile smex dired-sort-menu dired-sort-menu+ dired+ which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit slime nyan-mode)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
+ '(pomidor-play-sound-file nil)
  '(pos-tip-background-color "#36473A")
  '(pos-tip-foreground-color "#FFFFC8")
  '(proced-filter (quote all))
  '(projectile-indexing-method (quote alien))
  '(projectile-mode t nil (projectile))
  '(projectile-switch-project-action (quote projectile-find-file-dwim))
+ '(python-shell-interpreter "ipython")
+ '(python-shell-interpreter-args "-i --simple-prompt")
  '(reb-re-syntax (quote string))
  '(scroll-bar-mode nil)
  '(set-mark-command-repeat-pop t)
  '(size-indication-mode t)
+ '(spaceline-all-the-icons-slim-render nil)
+ '(sql-ms-options nil)
+ '(sql-ms-program "sqlcmdline")
+ '(sql-product (quote ms))
+ '(sunshine-units (quote metric))
  '(symon-delay 10)
  '(symon-mode t)
  '(symon-refresh-rate 5)
  '(tool-bar-mode nil)
  '(tramp-syntax (quote default) nil (tramp))
- '(vc-annotate-background "#2B2B2B")
+ '(vc-annotate-background "#1b1d1e")
  '(vc-annotate-color-map
-   (quote
-    ((20 . "#BC8383")
-     (40 . "#CC9393")
-     (60 . "#DFAF8F")
-     (80 . "#D0BF8F")
-     (100 . "#E0CF9F")
-     (120 . "#F0DFAF")
-     (140 . "#5F7F5F")
-     (160 . "#7F9F7F")
-     (180 . "#8FB28F")
-     (200 . "#9FC59F")
-     (220 . "#AFD8AF")
-     (240 . "#BFEBBF")
-     (260 . "#93E0E3")
-     (280 . "#6CA0A3")
-     (300 . "#7CB8BB")
-     (320 . "#8CD0D3")
-     (340 . "#94BFF3")
-     (360 . "#DC8CC3"))))
- '(vc-annotate-very-old-color "#DC8CC3")
+   (list
+    (cons 20 "#95ffa4")
+    (cons 40 "#b8f7a6")
+    (cons 60 "#dbf0a8")
+    (cons 80 "#ffe9aa")
+    (cons 100 "#ffd799")
+    (cons 120 "#ffc488")
+    (cons 140 "#ffb378")
+    (cons 160 "#eda79b")
+    (cons 180 "#db9cbd")
+    (cons 200 "#c991e1")
+    (cons 220 "#db8bc0")
+    (cons 240 "#ed85a0")
+    (cons 260 "#ff8080")
+    (cons 280 "#d4757d")
+    (cons 300 "#aa6a7a")
+    (cons 320 "#805f77")
+    (cons 340 "#858FA5")
+    (cons 360 "#858FA5")))
+ '(vc-annotate-very-old-color nil)
  '(visible-mark-faces
    (quote
     (visible-mark-face1 visible-mark-face2 visible-mark-forward-face1 visible-mark-forward-face2)))
@@ -206,7 +222,7 @@ static char *gnus-pointer[] = {
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Consolas" :foundry "MS  " :slant normal :weight normal :height 113 :width normal))))
+ '(default ((t (:family "Hack" :foundry "SRC" :slant normal :weight normal :height 98 :width normal))))
  '(diredp-compressed-file-name ((t (:foreground "slate gray"))))
  '(diredp-compressed-file-suffix ((((class color) (min-colors 89)) (:foreground "#b218b2"))))
  '(diredp-deletion ((((class color) (min-colors 89)) (:foreground "#ffffff" :background "#a40000"))))
@@ -215,17 +231,17 @@ static char *gnus-pointer[] = {
  '(diredp-dir-name ((t (:foreground "gold"))))
  '(diredp-flag-mark ((((class color) (min-colors 89)) (:foreground "#ffffff" :background "#ff1f8b" :bold t))))
  '(diredp-flag-mark-line ((((class color) (min-colors 89)) (:foreground "#5f5f5f" :background "#ff7bbb"))))
- '(diredp-ignored-file-name ((((class color) (min-colors 89)) (:foreground "#b2b2b2"))))
- '(ediff-current-diff-B ((t (:background "#553333"))))
- '(ediff-current-diff-C ((t (:background "#553333"))))
- '(ediff-even-diff-A ((t (:background "dark slate gray"))))
+ '(diredp-ignored-file-name ((((class color) (min-colors 257)) (:foreground "#858FA5")) (((class color) (min-colors 256)) (:foreground "#525252")) (((class color) (min-colors 16)) (:foreground "brightblack"))))
+ '(ediff-current-diff-B ((t (:inherit ediff-current-diff-A))))
+ '(ediff-current-diff-C ((t (:inherit ediff-current-diff-A))))
+ '(ediff-even-diff-A ((t (:inherit hl-line))))
  '(ediff-even-diff-Ancestor ((t (:background "cornflower blue"))))
- '(ediff-even-diff-B ((t (:background "dark slate gray"))))
- '(ediff-even-diff-C ((t (:background "dark slate gray"))))
+ '(ediff-even-diff-B ((t (:inherit ediff-even-diff-A))))
+ '(ediff-even-diff-C ((t (:inherit ediff-even-diff-A))))
  '(ediff-fine-diff-Ancestor ((t (:background "DodgerBlue2"))))
- '(ediff-fine-diff-B ((t (:background "#aa2222"))))
- '(ediff-fine-diff-C ((t (:background "#aa2222"))))
- '(ediff-odd-diff-A ((t (:background "dark slate gray"))))
+ '(ediff-fine-diff-B ((t (:inherit ediff-fine-diff-A))))
+ '(ediff-fine-diff-C ((t (:inherit ediff-fine-diff-A))))
+ '(ediff-odd-diff-A ((t (:inherit ediff-even-diff-A))))
  '(ediff-odd-diff-Ancestor ((t (:background "cornflower blue"))))
  '(ediff-odd-diff-B ((t (:background "dark slate gray"))))
  '(ediff-odd-diff-C ((t (:background "dark slate gray"))))
@@ -247,6 +263,14 @@ static char *gnus-pointer[] = {
 (define-key isearch-mode-map [remap isearch-query-replace]  #'anzu-isearch-query-replace)
 (define-key isearch-mode-map [remap isearch-query-replace-regexp] #'anzu-isearch-query-replace-regexp)
 
+;; BACK-BUTTON
+;; from https://github.com/rolandwalker/back-button/
+(require 'back-button)
+(back-button-mode 1)
+(global-set-key (kbd "C-`") 'back-button-push-mark-local-and-global)
+(global-set-key (kbd "M-`") 'back-button-global-backward)
+(global-set-key (kbd "M-~") 'back-button-global-forward)
+
 ;; BROWSE-KILL-RING
 (require 'browse-kill-ring)
 (browse-kill-ring-default-keybindings)
@@ -254,6 +278,23 @@ static char *gnus-pointer[] = {
 ;; COMPANY
 (require 'company)
 (add-hook 'after-init-hook 'global-company-mode)
+
+;; EDIFF
+(require 'ediff)
+; from https://emacs.stackexchange.com/questions/7362/how-to-show-a-diff-between-two-buffers-with-character-level-diffs
+(setq-default ediff-forward-word-function 'forward-char)
+;; from https://stackoverflow.com/a/29757750
+(defun ediff-copy-both-to-C ()
+  "In ediff, copy A and then B to C."
+  (interactive)
+  (ediff-copy-diff ediff-current-difference nil 'C nil
+                   (concat
+                    (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
+                    (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
+(defun add-d-to-ediff-mode-map ()
+  "Add key 'd' for 'copy both to C' functionality in ediff."
+  (define-key ediff-mode-map "d" 'ediff-copy-both-to-C))
+(add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map)
 
 ;; EXPAND REGION
 (require 'expand-region)
@@ -289,16 +330,6 @@ static char *gnus-pointer[] = {
 (require 'dotnet)
 (setq dotnet-mode-keymap-prefix (kbd "C-c n"))
 (add-hook 'csharp-mode-hook 'dotnet-mode)
-
-;; ;; ELFEED
-;; (global-set-key (kbd "C-c e") 'elfeed)
-;; (setq elfeed-feeds
-;;       '("https://blogs.msdn.microsoft.com/oldnewthing/feed"
-;;         "http://pragmaticemacs.com/feed/"
-;;         "http://planet.emacsen.org/atom.xml"
-;;         "http://oremacs.com/atom.xml"
-;;         "http://endlessparentheses.com/atom.xml"
-;;         "https://www.jwz.org/blog/feed/"))
 
 ;; FORMAT-ALL-THE-CODE
 (global-set-key (kbd "C-c f") 'format-all-buffer)
@@ -380,26 +411,6 @@ Symbols matching the text at point are put first in the completion list."
 (require 'json-mode)
 (add-to-list 'auto-mode-alist '("\\.json$" . json-mode))
 
-;; LSP MODE
-;; from https://vxlabs.com/2018/06/08/python-language-server-with-emacs-and-lsp-mode/
-;; (require 'lsp-mode)
-;; (require 'lsp-ui)
-;; (require 'lsp-imenu)
-;; (add-hook 'lsp-after-open-hook 'lsp-enable-imenu)
-;; (setq lsp-ui-sideline-ignore-duplicate t)
-;; (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-;; (lsp-define-stdio-client lsp-python "python"
-;;                            #'projectile-project-root
-;;                            '("pyls"))
-;; (add-hook 'python-mode-hook
-;;             (lambda ()
-;;               (lsp-python-enable)))
-;; (eval-after-load
-;;  'company
-;;  '(add-to-list 'company-backends 'company-lsp))
-
-;; (require 'lsp-python)
-;; (add-hook 'python-mode-hook #'lsp-python-enable)
 ;; EGLOT
 (require 'eglot)
 (add-hook 'python-mode-hook 'eglot-ensure)
@@ -419,7 +430,7 @@ Symbols matching the text at point are put first in the completion list."
 ;; OMNISHARP
 (require 'omnisharp)
 (add-hook 'csharp-mode-hook 'omnisharp-mode)
-(eval-after-load
+(with-eval-after-load
   'company
   '(add-to-list 'company-backends 'company-omnisharp))
 (add-hook 'csharp-mode-hook #'company-mode)
@@ -442,12 +453,17 @@ Symbols matching the text at point are put first in the completion list."
 (require 'projectile)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
+;; SLIME
+(require 'slime)
+(setq inferior-lisp-program "sbcl")
+;;(load "C:/Home/quicklisp/slime-helper.el")
+
 ;; SQL MODE
 (require 'sql)
 (sql-set-product-feature 'ms :prompt-regexp "^.*>")
 (sql-set-product-feature 'ms :prompt-cont-regexp "^.*>")
 ;After moving to Emacs 26.0.9, I don't get prompted for buffer name when doing C-u M-x sql-connect
-;added the function below and a call in the SQLi hook to go back to the old behaviour 
+;added the function below and a call in the SQLi hook to go back to the old behaviour
 (defun sql-rename-buffer-prompt ()
   "Prompts for a rename of the SQLi buffer."
   (interactive)
@@ -471,43 +487,20 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "M-X") 'smex-major-mode-commands)
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
-;; TELEPHONE LINE
-(require 'telephone-line)
+;; DOOM-MODELINE
+(require 'doom-modeline)
+(doom-modeline-init)
+(setq doom-modeline-buffer-file-name-style 'buffer-name)
+(setq doom-modeline-icon t)
+(setq doom-modeline-major-mode-icon t)
+(setq doom-modeline-minor-modes t)
+(setq doom-modeline-persp-name nil)
+(setq doom-modeline-lsp nil)
+(setq doom-modeline-github nil)
 
-(defface theme-accent-tp '((t (:background "dark slate blue"))) "")
-;; (require 'all-the-icons)
-;; (telephone-line-defsegment* telephone-line-buffer-mod1-segment ()
-;;   (cond
-;;    (buffer-read-only (all-the-icons-octicon "lock" :height 0.8 :v-adjust 0.1))
-;;    ((buffer-modified-p) (all-the-icons-faicon "chain-broken" :height 0.8 :v-adjust -0.0 :face '(:foreground "red")))
-;;    (t (all-the-icons-faicon "link" :height 0.8 :v-adjust -0.0))))
-
-(telephone-line-defsegment* telephone-line-buffer-mod-segment ()
-   (cond
-    (buffer-read-only "·")
-    ((buffer-modified-p) (propertize "!" 'face '(:foreground "red" :weight bold)))
-    (t "-")))
-
-(setq telephone-line-faces
-      '((taccent . (theme-accent-tp . telephone-line-accent-inactive))
-        (accent . (telephone-line-accent-active . telephone-line-accent-inactive))
-        (nil . (mode-line . mode-line-inactive))))
-(setq telephone-line-primary-left-separator 'telephone-line-abs-left
-      telephone-line-secondary-left-separator 'telephone-line-nil)
-(setq telephone-line-primary-right-separator 'telephone-line-abs-right
-      telephone-line-secondary-right-separator 'telephone-line-nil)
-(setq telephone-line-lhs
-      '((nil     . (telephone-line-buffer-mod-segment))
-        (taccent . (telephone-line-buffer-name-segment))
-        (accent  . (telephone-line-airline-position-segment))
-        (nil     . ((telephone-line-nyan-segment :active)
-                    telephone-line-process-segment))))
-(setq telephone-line-rhs
-      '((nil     . (telephone-line-misc-info-segment))
-        (accent  . (telephone-line-minions-mode-segment))
-        (taccent . (telephone-line-vc-segment))
-        (nil     . (telephone-line-projectile-segment))))
-(telephone-line-mode 1)
+;; TFSMACS
+;; (require 'tfsmacs)
+;; (global-set-key  "\C-ct" 'tfsmacs-map)
 
 ;; WEB MODE
 (require 'web-mode)
@@ -553,7 +546,6 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "C-M-}") (lambda () (interactive)(enlarge-window-horizontally 5)))
 (global-set-key (kbd "C-M-_") (lambda () (interactive)(shrink-window 5)))
 (global-set-key (kbd "C-M-+") (lambda () (interactive)(shrink-window -5)))
-;; on trial
 (global-set-key (kbd "M-o") 'other-window)
 (global-set-key (kbd "M-O") 'other-frame)
 (global-set-key (kbd "M-n") 'next-buffer)
@@ -564,8 +556,6 @@ Symbols matching the text at point are put first in the completion list."
 ;; used to be C-x K. Honestly I never used C-x C-k (macros) commands that much so :shrug:
 (global-set-key (kbd "C-x C-k") 'kill-this-buffer)
 (global-set-key (kbd "C-;") 'dabbrev-expand)
-(global-set-key (kbd "M-*") 'pop-tag-mark)
-(global-set-key (kbd "C-x C-r") 'rgrep)
 (global-set-key (kbd "C-c M-d") 'sql-connect)
 (global-set-key (kbd "<f6>") 'kmacro-start-macro)
 (global-set-key (kbd "<f7>") 'kmacro-end-macro)
@@ -574,39 +564,50 @@ Symbols matching the text at point are put first in the completion list."
 ;;(global-set-key (kbd "M-z") 'rgrep)
 (global-set-key (kbd "M-z") 'deadgrep)
 (global-set-key (kbd "<mouse-3>") 'kill-ring-save)
+;; helps compilation buffer not slowdown
+;; see https://blog.danielgempesaw.com/post/129841682030/fixing-a-laggy-compilation-buffer
+(setq compilation-error-regexp-alist
+      (delete 'maven compilation-error-regexp-alist))
 
-; from: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
-(defun push-mark-no-activate ()
-  "Pushes `point` to `mark-ring' and does not activate the region.
-Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
-  (interactive)
-  (push-mark (point) t nil)) ; removed the message, visible-mark takes care of this
-(defun jump-to-mark ()
-  "Jumps to the local mark, respecting the `mark-ring' order.
-This is the same as using \\[set-mark-command] with the prefix argument."
-  (interactive)
-  (set-mark-command 1))
+;; ;; from: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
+;; ;; added code to push the global mark too
+;; (defun push-mark-no-activate ()
+;;   "Pushes `point` to `mark-ring' and does not activate the region.
+;; Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
+;;   (interactive)
+;;   (push-mark (point) t nil)
+;;   (push-global-mark)) ; removed the message, visible-mark takes care of this
+;; (defun jump-to-mark ()
+;;   "Jumps to the local mark, respecting the `mark-ring' order.
+;; This is the same as using \\[set-mark-command] with the prefix argument."
+;;   (interactive)
+;;   (set-mark-command 1))
+;; (global-set-key (kbd "C-`") 'push-mark-no-activate)
+;; (global-set-key (kbd "M-`") 'jump-to-mark)
 
-(global-set-key (kbd "C-`") 'push-mark-no-activate)
-(global-set-key (kbd "M-`") 'jump-to-mark)
+; from: https://emacs.stackexchange.com/questions/7244/enable-emacs-column-selection-using-mouse
+;; (I very rarely use the below function, should I delete it?)
+(defun mouse-start-rectangle (start-event)
+  "Rectangle selection via mouse.  START-EVENT."
+  (interactive "e")
+  (deactivate-mark)
+  (mouse-set-point start-event)
+  (rectangle-mark-mode +1)
+  (let ((drag-event))
+    (track-mouse
+      (while (progn
+               (setq drag-event (read-event))
+               (mouse-movement-p drag-event))
+        (mouse-set-point drag-event)))))
+(global-set-key (kbd "S-<down-mouse-1>") #'mouse-start-rectangle)
 
 
-(global-set-key (kbd "C-<f1>")
-  (lambda ()
-    (interactive)
-    (dired "~/")))
+;; from https://stackoverflow.com/a/22176971, move auto saves and
+;; back up files to a different folder so git or dotnet core won't
+;; pick them up as changes or new files in the project
+(setq auto-save-file-name-transforms
+      `((".*" ,(concat user-emacs-directory "auto-save/") t)))
 
-;; TRAMP
-(defun find-alternative-file-with-sudo ()
-  (interactive)
-  (let ((fname (or buffer-file-name
-		   dired-directory)))
-    (when fname
-      (if (string-match "^/sudo:root@localhost:" fname)
-	  (setq fname (replace-regexp-in-string
-		       "^/sudo:root@localhost:" ""
-		       fname))
-	(setq fname (concat "/sudo:root@localhost:" fname)))
-      (find-alternate-file fname))))
-
-(global-set-key (kbd "C-c C-r") 'find-alternative-file-with-sudo)
+(setq backup-directory-alist
+      `(("." . ,(expand-file-name
+                 (concat user-emacs-directory "backups")))))
