@@ -8,3 +8,5 @@ Prerequisites for a fresh install:
 Config notes:
 * Whitespace mode made everything too slow under Windows, so it's commented out.
 * Default fullscreen frames are great. But they always open in the main monitor, so also commented that setting. Win+Arrow and then <f-11> it is.
+* Moving computer-specific configuration to an external script. More tidy, but I kind of like having everything in a single place.
+* Need to work on the RPI stuff
