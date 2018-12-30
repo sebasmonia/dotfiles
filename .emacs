@@ -2,7 +2,7 @@
 
 ;; Author: Sebastian Monia <smonia@outlook.com>
 ;; URL: https://github.com/sebasmonia/.emacs
-;; Version: 1
+;; Version: 2
 ;; Keywords: .emacs dotemacs
 
 ;; This file is not part of GNU Emacs.
@@ -10,20 +10,51 @@
 ;;; Commentary:
 
 ;; My dot Emacs file
+;; In theory I should be able to just drop the file in any computer and have
+;; the config synced without merging/adapting anything
 
 ;;; Code:
 
 (require 'package)
+(package-initialize)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
-(package-initialize)
-(package-refresh-contents)
-(message (concat "SELECTED: " (prin1-to-string package-selected-packages)))
-(message (prin1-to-string (package-installed-p 'doom-modeline)))
+(ignore-errors
+  (package-refresh-contents))
 
+(defun hoagie-ensure-package (package)
+  "Guarantee that PACKAGE is installed."
+  (when (not (package-installed-p package))
+    (package-install package))
+  (require package))
+
+(defun hoagie-ensure-selected-packages ()
+  "Guarantee that packages in package-selected-packages are installed."
+  (dolist (p package-selected-packages)
+    (when (not (package-installed-p p))
+      (package-install p))))
+
+(defun hoagie-laptop-p ()
+  "Return t if running in any of the laptops."
+  (or (string-equal (system-name) "HogzLaptop")
+      (string-equal (system-name) "BrokenButWorking")))
+
+(defun hoagie-work-p ()
+  "Return t if running in the work computer."
+  ;; only Win computer is the work one
+  (string-equal system-type "windows-nt"))
+  
+(defun hoagie-rpi-p ()
+  "Return t if running in the raspberry pie."
+  ;; only Win computer is the work one
+  (string-equal system-type "windows-nt"))
 
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 (prefer-coding-system 'utf-8)
+(hoagie-ensure-package 'doom-themes)
+(hoagie-ensure-package 'projectile)
+(add-hook 'after-init-hook 'hoagie-ensure-selected-packages)
+
 ;; CUSTOM-SET
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -50,9 +81,9 @@
  '(bubbles-grid-size (quote (20 . 15)))
  '(column-number-mode t)
  '(custom-enabled-themes (quote (doom-challenger-deep)))
- '(custom-safe-themes
+'(custom-safe-themes
    (quote
-    ("a3fa4abaf08cc169b61dea8f6df1bbe4123ec1d2afeb01c17e11fdc31fc66379" "ab04c00a7e48ad784b52f34aa6bfa1e80d0c3fcacc50e1189af3651013eb0d58" "8b4d8679804cdca97f35d1b6ba48627e4d733531c64f7324f764036071af6534" "54449a089fc2f95f99ebc9b9b6067c802532fd50097cf44c46a53b4437d5c6cc" "4138944fbed88c047c9973f68908b36b4153646a045648a22083bd622d1e636d" "3860a842e0bf585df9e5785e06d600a86e8b605e5cc0b74320dfe667bcbe816c" "0e89bf7a9d5d2a327b291d5e646f58362b2386f948a594ca993e7b0016b8425a" "d1cc05d755d5a21a31bced25bed40f85d8677e69c73ca365628ce8024827c9e3" "f71859eae71f7f795e734e6e7d178728525008a28c325913f564a42f74042c31" "d8dc153c58354d612b2576fea87fe676a3a5d43bcc71170c62ddde4a1ad9e1fb" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "47ec21abaa6642fefec1b7ace282221574c2dd7ef7715c099af5629926eb4fd7" "a67b6cb65db241e033b6aed5eeaf0805a1b62e598cedc605c71d003a1d5c00c6" "c2831730b24d526a7b6268a9e42e8e57d2a1279c8f92c5db554af03d4333af2c" "021720af46e6e78e2be7875b2b5b05344f4e21fad70d17af7acfd6922386b61e" "e88abed2a39b47dfedb1272066f214cb2c9db28ee6aa1794bfb27948792f81c0" "a4d03266add9a1c8f12b5309612cbbf96e1291773c7bc4fb685bfdaf83b721c6" "ed0b4fc082715fc1d6a547650752cd8ec76c400ef72eb159543db1770a27caa7" "7356632cebc6a11a87bc5fcffaa49bae528026a78637acd03cae57c091afd9b9" "04dd0236a367865e591927a3810f178e8d33c372ad5bfef48b5ce90d4b476481" "d6922c974e8a78378eacb01414183ce32bc8dbf2de78aabcc6ad8172547cb074" "a24c5b3c12d147da6cef80938dca1223b7c7f70f2f382b26308eba014dc4833a" "c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "3edbdd0ad45cb8f7c2575c0ad8f6625540283c6e928713c328b0bacf4cfbb60f" "eecacf3fb8efc90e6f7478f6143fd168342bbfa261654a754c7d47761cec07c8" "70f073dc36e2421b5f04309792b12852ec464423a213129cbf18663ab8cdaf3f" "ff7625ad8aa2615eae96d6b4469fcc7d3d20b2e1ebc63b761a349bebbb9d23cb" "580d632430ae18daa5109ecd675c1b8df91d7e1e657f049b36bb6fc3c79bfc41" "d61fc0e6409f0c2a22e97162d7d151dee9e192a90fa623f8d6a071dbf49229c6" "dcb9fd142d390bb289fee1d1bb49cb67ab7422cd46baddf11f5c9b7ff756f64c" default)))
+    ("06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "4138944fbed88c047c9973f68908b36b4153646a045648a22083bd622d1e636d" "a3fa4abaf08cc169b61dea8f6df1bbe4123ec1d2afeb01c17e11fdc31fc66379" default)))
  '(dabbrev-case-distinction nil)
  '(dabbrev-case-fold-search t)
  '(dabbrev-case-replace nil)
@@ -72,29 +103,7 @@
  '(doom-dracula-brighter-comments t)
  '(ediff-highlight-all-diffs t)
  '(ediff-keep-variants nil)
- '(ediff-quit-hook (quote (ediff-cleanup-mess delete-frame)))
  '(ediff-window-setup-function (quote ediff-setup-windows-plain))
- '(emms-mode-line-icon-image-cache
-   (quote
-    (image :type xpm :ascent center :data "/* XPM */
-static char *note[] = {
-/* width height num_colors chars_per_pixel */
-\"    10   11        2            1\",
-/* colors */
-\". c #1ba1a1\",
-\"# c None s None\",
-/* pixels */
-\"###...####\",
-\"###.#...##\",
-\"###.###...\",
-\"###.#####.\",
-\"###.#####.\",
-\"#...#####.\",
-\"....#####.\",
-\"#..######.\",
-\"#######...\",
-\"######....\",
-\"#######..#\" };")))
  '(eww-search-prefix "http://www.bing.com/search?q=")
  '(fci-rule-color "#858FA5")
  '(flycheck-color-mode-line-face-to-color (quote mode-line-buffer-id))
@@ -102,30 +111,6 @@ static char *note[] = {
  '(global-flycheck-mode t)
  '(global-mark-ring-max 32)
  '(global-visible-mark-mode nil)
- '(gnus-logo-colors (quote ("#4c8383" "#bababa")))
- '(gnus-mode-line-image-cache
-   (quote
-    (image :type xpm :ascent center :data "/* XPM */
-static char *gnus-pointer[] = {
-/* width height num_colors chars_per_pixel */
-\"    18    13        2            1\",
-/* colors */
-\". c #1ba1a1\",
-\"# c None s None\",
-/* pixels */
-\"##################\",
-\"######..##..######\",
-\"#####........#####\",
-\"#.##.##..##...####\",
-\"#...####.###...##.\",
-\"#..###.######.....\",
-\"#####.########...#\",
-\"###########.######\",
-\"####.###.#..######\",
-\"######..###.######\",
-\"###....####.######\",
-\"###..######.######\",
-\"###########.######\" };")))
  '(grep-command
    "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
  '(hl-sexp-background-color "#1c1f26")
@@ -157,7 +142,7 @@ static char *gnus-pointer[] = {
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (doom-modeline dotnet anzu eglot telephone-line pomidor minions deadgrep expand-region format-all lyrics docker json-mode company browse-kill-ring 2048-game use-package doom-themes gist package-lint ibuffer-projectile visible-mark wttrin dashboard powershell projectile smex dired-sort-menu dired-sort-menu+ dired+ which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit slime nyan-mode)))
+    (doom-modeline dotnet anzu eglot pomidor minions deadgrep expand-region format-all lyrics docker json-mode company browse-kill-ring 2048-game doom-themes gist ibuffer-projectile wttrin dashboard powershell projectile smex dired+ which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit slime)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pomidor-play-sound-file nil)
  '(pos-tip-background-color "#36473A")
@@ -255,7 +240,7 @@ static char *gnus-pointer[] = {
  '(web-mode-block-face ((t nil))))
 
 ;; ANZU
-(require 'anzu)
+(hoagie-ensure-package 'anzu)
 (global-anzu-mode +1)
 (set-face-attribute 'anzu-mode-line nil
                     :foreground "light slate blue" :weight 'bold)
@@ -272,11 +257,11 @@ static char *gnus-pointer[] = {
 (global-set-key (kbd "M-~") 'back-button-global-forward)
 
 ;; BROWSE-KILL-RING
-(require 'browse-kill-ring)
+(hoagie-ensure-package 'browse-kill-ring)
 (browse-kill-ring-default-keybindings)
 
 ;; COMPANY
-(require 'company)
+(hoagie-ensure-package 'company)
 (add-hook 'after-init-hook 'global-company-mode)
 
 ;; EDIFF
@@ -297,12 +282,11 @@ static char *gnus-pointer[] = {
 (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map)
 
 ;; EXPAND REGION
-(require 'expand-region)
+(hoagie-ensure-package 'expand-region)
 (global-set-key (kbd "M-<SPC>") 'er/expand-region)
-(global-set-key (kbd "C-S-<SPC>") 'er/expand-region)
 
 ;; DASHBOARD
-(require 'dashboard)
+(hoagie-ensure-package 'dashboard)
 (dashboard-setup-startup-hook)
 (setq dashboard-startup-banner 'logo)
 (setq dashboard-banner-logo-title "If anything at all, perfection is finally attained not when there is no longer anything to add, but when there is no longer anything to take away - Exupéry")
@@ -312,26 +296,60 @@ static char *gnus-pointer[] = {
 
 ;; DIRED
 (require 'dired)
-(dired-launch-enable)
-(autoload 'dired-async-mode "dired-async.el" nil t)
-;(dired-async-mode 1)
 (global-set-key (kbd "\C-cj") 'dired-jump)
 (define-key dired-mode-map (kbd "\\") 'dired-narrow)
 ;; more standard binding for filtering, but I'm so used to \, leaving both
 (define-key dired-mode-map (kbd "/") 'dired-narrow)
-;; from the manual, to use ls instead of Elisp-ls in Windows
-;(setq ls-lisp-use-insert-directory-program t)
-;(setq insert-directory-program "ls")
+
+;; temporarily disabled
+;; from https://stackoverflow.com/questions/4115465/emacs-dired-too-much-information
+;; (defun custom-dired-mode-setup ()
+;;   "Show less information in dired buffers."
+;;   (dired-hide-details-mode 1))
+;; (add-hook 'dired-mode-hook 'custom-dired-mode-setup)
+
+;; C-c l to launch a file in Windows similar to running
+;; start "" filename in the console
+(when (hoagie-work-p)
+  (defun w32-browser (doc)
+    "Have Windows start DOC."
+    (w32-shell-execute 1 doc))
+  (define-key dired-mode-map (kbd "\C-cl")
+    (lambda () (interactive) (w32-browser (dired-replace-in-string "/" "\\" (dired-get-filename))))))
+
+;; copy to clipboard from dired, in Windows
+;; useful to copy files and then paste in Outlook
+(when (hoagie-work-p)
+  ;; from https://github.com/roryyorke/picellif/
+  (defun picellif-dired-marked-files ()
+    "Send marked files (or current file, if none marked) in current Dired buffer to picellif."
+    (interactive)
+    (apply 'call-process "picellif" nil nil nil
+           (dired-get-marked-files)))
+  (define-key dired-mode-map (kbd "W") 'picellif-dired-marked-files))
 
 ;; DOCKER
+(hoagie-ensure-package 'docker)
 (global-set-key (kbd "C-c d") 'docker)
 
+;; DOOM-MODELINE
+(hoagie-ensure-package 'doom-modeline)
+(doom-modeline-init)
+(setq doom-modeline-buffer-file-name-style 'buffer-name)
+(setq doom-modeline-icon t)
+(setq doom-modeline-major-mode-icon t)
+(setq doom-modeline-minor-modes t)
+(setq doom-modeline-persp-name nil)
+(setq doom-modeline-lsp nil)
+(setq doom-modeline-github nil)
+
 ;; DOTNET
-(require 'dotnet)
+(hoagie-ensure-package 'dotnet)
 (setq dotnet-mode-keymap-prefix (kbd "C-c n"))
 (add-hook 'csharp-mode-hook 'dotnet-mode)
 
 ;; FORMAT-ALL-THE-CODE
+(hoagie-ensure-package 'format-all)
 (global-set-key (kbd "C-c f") 'format-all-buffer)
 
 ;; IBUFFER
@@ -344,7 +362,7 @@ static char *gnus-pointer[] = {
 	     (ibuffer-switch-to-saved-filter-groups "home")))
 (setq ibuffer-expert t)
 (setq ibuffer-show-empty-filter-groups nil)
-(require 'ibuffer-projectile)
+(hoagie-ensure-package 'ibuffer-projectile)
 (add-hook 'ibuffer-hook
     (lambda ()
       (ibuffer-projectile-set-filter-groups)
@@ -352,7 +370,7 @@ static char *gnus-pointer[] = {
         (ibuffer-do-sort-by-alphabetic))))
 
 ;; IDO
-(require 'ido-vertical-mode)
+(hoagie-ensure-package 'ido-vertical-mode)
 (ido-mode 1)
 (ido-vertical-mode 1)
 (setq ido-vertical-define-keys 'C-n-and-C-p-only)
@@ -408,27 +426,23 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "M-g d") 'ido-imenu)
 
 ;; JSON MODE
-(require 'json-mode)
+(hoagie-ensure-package 'json-mode)
 (add-to-list 'auto-mode-alist '("\\.json$" . json-mode))
 
 ;; EGLOT
-(require 'eglot)
+(hoagie-ensure-package 'eglot)
 (add-hook 'python-mode-hook 'eglot-ensure)
 
 ;; MAGIT
+(hoagie-ensure-package 'magit)
 (global-set-key (kbd "C-x g") 'magit-status)
 
 ;; MINIONS
-(require 'minions)
+(hoagie-ensure-package 'minions)
 (global-set-key [f3] 'minions-minor-modes-menu)
 
-;; NYAN MODE
-;; (nyan-mode)
-;; (nyan-start-animation)
-;; (nyan-toggle-wavy-trail)
-
 ;; OMNISHARP
-(require 'omnisharp)
+(hoagie-ensure-package 'omnisharp)
 (add-hook 'csharp-mode-hook 'omnisharp-mode)
 (with-eval-after-load
   'company
@@ -450,13 +464,29 @@ Symbols matching the text at point are put first in the completion list."
 (define-key omnisharp-mode-map (kbd "<f5>") 'recompile)
 
 ;; PROJECTILE
-(require 'projectile)
+(hoagie-ensure-package 'projectile)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
+;; SHELL
+(add-hook 'shell-mode-hook
+          (lambda ()
+            (toggle-truncate-lines t)))
+
 ;; SLIME
-(require 'slime)
+(hoagie-ensure-package 'slime)
 (setq inferior-lisp-program "sbcl")
-;;(load "C:/Home/quicklisp/slime-helper.el")
+(when (hoagie-work-p)
+  (load "C:/Home/quicklisp/slime-helper.el"))
+
+;; SMEX
+(hoagie-ensure-package 'smex)
+(smex-initialize)
+(global-set-key (kbd "M-x") 'smex)
+(cond
+ ((hoagie-work-p) (global-set-key (kbd "<apps>") 'smex))
+ ((hoagie-laptop-p) (global-set-key (kbd "<menu>") 'smex)))
+(global-set-key (kbd "M-X") 'smex-major-mode-commands)
+(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
 ;; SQL MODE
 (require 'sql)
@@ -475,35 +505,18 @@ Symbols matching the text at point are put first in the completion list."
             (font-lock-mode -1)
             (sql-rename-buffer-prompt)))
 
-;; SHELL
-(add-hook 'shell-mode-hook
-          (lambda ()
-            (toggle-truncate-lines t)))
-
-;; SMEX
-(smex-initialize)
-(global-set-key (kbd "M-x") 'smex)
-(global-set-key (kbd "<menu>") 'smex)
-(global-set-key (kbd "M-X") 'smex-major-mode-commands)
-(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
-
-;; DOOM-MODELINE
-(require 'doom-modeline)
-(doom-modeline-init)
-(setq doom-modeline-buffer-file-name-style 'buffer-name)
-(setq doom-modeline-icon t)
-(setq doom-modeline-major-mode-icon t)
-(setq doom-modeline-minor-modes t)
-(setq doom-modeline-persp-name nil)
-(setq doom-modeline-lsp nil)
-(setq doom-modeline-github nil)
-
+;; SYMON
+(hoagie-ensure-package 'symon)
+(when (hoagie-work-p)
+  (setq symon-monitors
+        (quote
+         (symon-windows-memory-monitor symon-windows-cpu-monitor symon-windows-battery-monitor symon-windows-network-rx-monitor symon-windows-network-tx-monitor))))
 ;; TFSMACS
-;; (require 'tfsmacs)
+;; (hoagie-ensure-package 'tfsmacs)
 ;; (global-set-key  "\C-ct" 'tfsmacs-map)
 
 ;; WEB MODE
-(require 'web-mode)
+(hoagie-ensure-package 'web-mode)
 (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
@@ -522,6 +535,7 @@ Symbols matching the text at point are put first in the completion list."
 (add-hook 'web-mode-hook  'my-web-mode-hook)
 
 ;; WHICH KEY
+(hoagie-ensure-package 'which-key)
 (which-key-mode)
 (which-key-setup-side-window-right-bottom)
 
@@ -548,9 +562,6 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "C-M-+") (lambda () (interactive)(shrink-window -5)))
 (global-set-key (kbd "M-o") 'other-window)
 (global-set-key (kbd "M-O") 'other-frame)
-(global-set-key (kbd "M-n") 'next-buffer)
-(global-set-key (kbd "M-p") 'previous-buffer)
-;; in some special buffers M-n and M-p are already bound (compilation, for example)
 (global-set-key (kbd "M-N") 'next-buffer)
 (global-set-key (kbd "M-P") 'previous-buffer)
 ;; used to be C-x K. Honestly I never used C-x C-k (macros) commands that much so :shrug:
@@ -561,53 +572,40 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "<f7>") 'kmacro-end-macro)
 (global-set-key (kbd "<f8>") 'kmacro-end-and-call-macro)
 (global-set-key (kbd "C-z") 'find-name-dired)
-;;(global-set-key (kbd "M-z") 'rgrep)
 (global-set-key (kbd "M-z") 'deadgrep)
 (global-set-key (kbd "<mouse-3>") 'kill-ring-save)
+(put 'narrow-to-region 'disabled nil)
 ;; helps compilation buffer not slowdown
 ;; see https://blog.danielgempesaw.com/post/129841682030/fixing-a-laggy-compilation-buffer
 (setq compilation-error-regexp-alist
       (delete 'maven compilation-error-regexp-alist))
 
-;; ;; from: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
-;; ;; added code to push the global mark too
-;; (defun push-mark-no-activate ()
-;;   "Pushes `point` to `mark-ring' and does not activate the region.
-;; Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
-;;   (interactive)
-;;   (push-mark (point) t nil)
-;;   (push-global-mark)) ; removed the message, visible-mark takes care of this
-;; (defun jump-to-mark ()
-;;   "Jumps to the local mark, respecting the `mark-ring' order.
-;; This is the same as using \\[set-mark-command] with the prefix argument."
-;;   (interactive)
-;;   (set-mark-command 1))
-;; (global-set-key (kbd "C-`") 'push-mark-no-activate)
-;; (global-set-key (kbd "M-`") 'jump-to-mark)
-
-; from: https://emacs.stackexchange.com/questions/7244/enable-emacs-column-selection-using-mouse
-;; (I very rarely use the below function, should I delete it?)
-(defun mouse-start-rectangle (start-event)
-  "Rectangle selection via mouse.  START-EVENT."
-  (interactive "e")
-  (deactivate-mark)
-  (mouse-set-point start-event)
-  (rectangle-mark-mode +1)
-  (let ((drag-event))
-    (track-mouse
-      (while (progn
-               (setq drag-event (read-event))
-               (mouse-movement-p drag-event))
-        (mouse-set-point drag-event)))))
-(global-set-key (kbd "S-<down-mouse-1>") #'mouse-start-rectangle)
-
-
 ;; from https://stackoverflow.com/a/22176971, move auto saves and
 ;; back up files to a different folder so git or dotnet core won't
 ;; pick them up as changes or new files in the project
+(make-directory (concat user-emacs-directory "auto-save") t)
 (setq auto-save-file-name-transforms
       `((".*" ,(concat user-emacs-directory "auto-save/") t)))
 
+(make-directory (concat user-emacs-directory "backups") t)
 (setq backup-directory-alist
       `(("." . ,(expand-file-name
                  (concat user-emacs-directory "backups")))))
+
+(global-set-key [f1] (lambda () (interactive) (dired "~/")))
+(when (hoagie-work-p)
+  (global-set-key [f2] (lambda () (interactive) (dired "C:/Repos"))))
+
+(when (or (hoagie-laptop-p) (hoagie-rpi-p))
+  (defun find-alternative-file-with-sudo ()
+    (interactive)
+    (let ((fname (or buffer-file-name
+		     dired-directory)))
+      (when fname
+        (if (string-match "^/sudo:root@localhost:" fname)
+	    (setq fname (replace-regexp-in-string
+		         "^/sudo:root@localhost:" ""
+		         fname))
+	  (setq fname (concat "/sudo:root@localhost:" fname)))
+        (find-alternate-file fname))))
+  (global-set-key (kbd "C-x F") 'find-alternative-file-with-sudo))
