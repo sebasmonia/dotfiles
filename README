@@ -1,8 +1,10 @@
 Just a place to store my emacs configuration.
 
-Zenburn has a small change to highlight the region using black background-green letters. Otherwise is identical to the one in the official repository.
+Prerequisites for a fresh install:
 
-Config notes (useful for my future self):
+* Hack font
+* Unless I make some changes to the way the settings are configured (all via customize/none via customize), there's a chance I need to launch Emacs twice
+
+Config notes:
 * Whitespace mode made everything too slow under Windows, so it's commented out.
 * Default fullscreen frames are great. But they always open in the main monitor, so also commented that setting. Win+Arrow and then <f-11> it is.
-* Must update proxy settings, or remove them.

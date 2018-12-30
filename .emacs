@@ -594,7 +594,25 @@ Symbols matching the text at point are put first in the completion list."
 
 (global-set-key [f1] (lambda () (interactive) (dired "~/")))
 (when (hoagie-work-p)
-  (global-set-key [f2] (lambda () (interactive) (dired "C:/Repos"))))
+  (global-set-key [f2] (lambda () (interactive) (dired "C:/Repos")))
+  ;; Font size adjustment
+  (defun hoagie-adjust-font-size (frame)
+    "Inspired by https://emacs.stackexchange.com/a/44930/17066.  FRAME is ignored."
+    (let* ((attrs (frame-monitor-attributes)) ;; gets attribs for current frame
+           (geometry (first attrs))
+           (width (fourth geometry))
+           (size "11")) ;; 11 ==> default size, monitor 3
+      (when (< width 3500) (setq size "9")) ;; monitor 2
+      (when (< width 2000) (setq size "10")) ;; laptop monitor
+      (when (< width 1090) (setq size "10")) ;; laptop monitor
+      (when (= width 1920) (setq size "9")) ;; WFH monitor
+      (set-frame-font (concat "Hack " size))))
+  ;;(add-hook 'window-size-change-functions #'hoagie-adjust-font-size)
+
+  (setq w32-pass-multimedia-buttons-to-system nil) ;; experimental
+  (add-to-list 'load-path "c:/repos/miscscripts")
+  (require 'deploy-status)
+  (global-set-key (kbd "C-c C-m") 'deploy-status))
 
 (when (or (hoagie-laptop-p) (hoagie-rpi-p))
   (defun find-alternative-file-with-sudo ()
