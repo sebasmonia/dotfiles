@@ -1,0 +1,21 @@
+#!/bin/bash
+intern=eDP1
+extern=HDMI1
+
+if xrandr | grep "$extern disconnected"; then
+    xrandr --output "$extern" --off --output "$intern" --auto
+else
+    xrandr --output "$intern" --off --output "$extern" --auto
+fi
+
+echo "Rescaling background with nitrogen"
+nitrogen --restore
+echo "Killing Conky..."
+killall conky
+echo "Starting Conky..."
+start_conky_maia
+echo "Killing keynav..."
+killall keynav
+echo "Starting keynav..."
+/home/hoagie/keynav/keynav
+echo DONE
