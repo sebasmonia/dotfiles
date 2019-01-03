@@ -43,10 +43,10 @@
   "Return t if running in the work computer."
   ;; only Win computer is the work one
   (string-equal system-type "windows-nt"))
-  
+
 (defun hoagie-rpi-p ()
-  "Return t if running in the raspberry pie."
-  ;; only Win computer is the work one
+  "Return t if running in the raspberry pi."
+  ;; TODO
   (string-equal system-type "windows-nt"))
 
 (add-to-list 'load-path "~/.emacs.d/lisp/")
@@ -81,7 +81,7 @@
  '(bubbles-grid-size (quote (20 . 15)))
  '(column-number-mode t)
  '(custom-enabled-themes (quote (doom-challenger-deep)))
-'(custom-safe-themes
+ '(custom-safe-themes
    (quote
     ("06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "4138944fbed88c047c9973f68908b36b4153646a045648a22083bd622d1e636d" "a3fa4abaf08cc169b61dea8f6df1bbe4123ec1d2afeb01c17e11fdc31fc66379" default)))
  '(dabbrev-case-distinction nil)
@@ -118,6 +118,15 @@
  '(jdee-db-active-breakpoint-face-colors (cons "#100e23" "#906cff"))
  '(jdee-db-requested-breakpoint-face-colors (cons "#100e23" "#95ffa4"))
  '(jdee-db-spec-breakpoint-face-colors (cons "#100e23" "#565575"))
+ '(lisp-mode-hook
+   (quote
+    (#[nil "\300\301\302\303\211$\207"
+           [add-hook font-lock-extend-region-functions sly-extend-region-for-font-lock t]
+           5]
+     common-lisp-lisp-mode-hook sly-editing-mode
+     #[nil "\300\301\302\303\211$\207"
+           [add-hook font-lock-extend-region-functions slime-extend-region-for-font-lock t]
+           5])))
  '(ls-lisp-dirs-first t)
  '(ls-lisp-format-time-list (quote ("%Y-%m-%d %H:%M" "%Y-%m-%d %H:%M")))
  '(ls-lisp-use-insert-directory-program nil)
@@ -142,7 +151,7 @@
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (doom-modeline dotnet anzu eglot pomidor minions deadgrep expand-region format-all lyrics docker json-mode company browse-kill-ring 2048-game doom-themes gist ibuffer-projectile wttrin dashboard powershell projectile smex dired+ which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit slime)))
+    (nyan-mode ws-butler sly doom-modeline dotnet anzu eglot pomidor minions deadgrep expand-region format-all lyrics docker json-mode company browse-kill-ring 2048-game doom-themes gist ibuffer-projectile wttrin dashboard powershell projectile smex which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pomidor-play-sound-file nil)
  '(pos-tip-background-color "#36473A")
@@ -230,9 +239,6 @@
  '(ediff-odd-diff-Ancestor ((t (:background "cornflower blue"))))
  '(ediff-odd-diff-B ((t (:background "dark slate gray"))))
  '(ediff-odd-diff-C ((t (:background "dark slate gray"))))
- '(line-number ((t (:foreground "DarkGoldenrod2"))))
- '(line-number-current-line ((t (:inherit line-number :background "dark slate gray"))))
- '(spaceline-unmodified ((t (:background "DodgerBlue1" :foreground "white" :inherit (quote mode-line)))))
  '(visible-mark-face1 ((t (:box (:line-width 1 :color "turquoise")))))
  '(visible-mark-face2 ((t (:box (:line-width 1 :color "dodger blue")))))
  '(visible-mark-forward-face1 ((t (:box (:line-width 1 :color "dark green")))))
@@ -301,13 +307,6 @@
 ;; more standard binding for filtering, but I'm so used to \, leaving both
 (define-key dired-mode-map (kbd "/") 'dired-narrow)
 
-;; temporarily disabled
-;; from https://stackoverflow.com/questions/4115465/emacs-dired-too-much-information
-;; (defun custom-dired-mode-setup ()
-;;   "Show less information in dired buffers."
-;;   (dired-hide-details-mode 1))
-;; (add-hook 'dired-mode-hook 'custom-dired-mode-setup)
-
 ;; C-c l to launch a file in Windows similar to running
 ;; start "" filename in the console
 (when (hoagie-work-p)
@@ -334,14 +333,15 @@
 
 ;; DOOM-MODELINE
 (hoagie-ensure-package 'doom-modeline)
-(doom-modeline-init)
 (setq doom-modeline-buffer-file-name-style 'buffer-name)
 (setq doom-modeline-icon t)
 (setq doom-modeline-major-mode-icon t)
+(setq doom-modeline-major-mode-color-icon t)
 (setq doom-modeline-minor-modes t)
 (setq doom-modeline-persp-name nil)
 (setq doom-modeline-lsp nil)
 (setq doom-modeline-github nil)
+(doom-modeline-init)
 
 ;; DOTNET
 (hoagie-ensure-package 'dotnet)
@@ -433,6 +433,12 @@ Symbols matching the text at point are put first in the completion list."
 (hoagie-ensure-package 'eglot)
 (add-hook 'python-mode-hook 'eglot-ensure)
 
+;; NYAN MODE - now doom-modeline supports it
+(hoagie-ensure-package 'nyan-mode)
+(nyan-mode)
+(nyan-start-animation)
+(nyan-toggle-wavy-trail)
+
 ;; MAGIT
 (hoagie-ensure-package 'magit)
 (global-set-key (kbd "C-x g") 'magit-status)
@@ -472,11 +478,9 @@ Symbols matching the text at point are put first in the completion list."
           (lambda ()
             (toggle-truncate-lines t)))
 
-;; SLIME
-(hoagie-ensure-package 'slime)
+;; SLY
+(hoagie-ensure-package 'sly)
 (setq inferior-lisp-program "sbcl")
-(when (hoagie-work-p)
-  (load "C:/Home/quicklisp/slime-helper.el"))
 
 ;; SMEX
 (hoagie-ensure-package 'smex)
@@ -508,9 +512,12 @@ Symbols matching the text at point are put first in the completion list."
 ;; SYMON
 (hoagie-ensure-package 'symon)
 (when (hoagie-work-p)
+  ;; disable symon before changing the list of monitors
+  (symon-mode nil)
   (setq symon-monitors
         (quote
-         (symon-windows-memory-monitor symon-windows-cpu-monitor symon-windows-battery-monitor symon-windows-network-rx-monitor symon-windows-network-tx-monitor))))
+         (symon-windows-memory-monitor symon-windows-cpu-monitor symon-windows-battery-monitor symon-windows-network-rx-monitor symon-windows-network-tx-monitor)))
+  (symon-mode t))
 ;; TFSMACS
 ;; (hoagie-ensure-package 'tfsmacs)
 ;; (global-set-key  "\C-ct" 'tfsmacs-map)
@@ -538,6 +545,10 @@ Symbols matching the text at point are put first in the completion list."
 (hoagie-ensure-package 'which-key)
 (which-key-mode)
 (which-key-setup-side-window-right-bottom)
+
+;; WS-BUTLER
+(hoagie-ensure-package 'ws-butler)
+(add-hook 'prog-mode-hook #'ws-butler-mode)
 
 ;; MISC
 (setq-default indent-tabs-mode nil)  ; use only spaces and no tabs
@@ -595,24 +606,32 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key [f1] (lambda () (interactive) (dired "~/")))
 (when (hoagie-work-p)
   (global-set-key [f2] (lambda () (interactive) (dired "C:/Repos")))
+
+  ;; from https://stackoverflow.com/questions/4115465/emacs-dired-too-much-information
+  ;; we want to do this only in Windows!
+  (defun custom-dired-mode-setup ()
+    "Show less information in dired buffers."
+    (dired-hide-details-mode 1))
+  (add-hook 'dired-mode-hook 'custom-dired-mode-setup)
+
   ;; Font size adjustment
   (defun hoagie-adjust-font-size (frame)
     "Inspired by https://emacs.stackexchange.com/a/44930/17066.  FRAME is ignored."
     (let* ((attrs (frame-monitor-attributes)) ;; gets attribs for current frame
            (geometry (first attrs))
            (width (fourth geometry))
-           (size "11")) ;; 11 ==> default size, monitor 3
-      (when (< width 3500) (setq size "9")) ;; monitor 2
+           (size "10")) ;; 11 ==> default size, monitor 3
+      (when (< width 3500) (setq size "8")) ;; monitor 2
       (when (< width 2000) (setq size "10")) ;; laptop monitor
-      (when (< width 1090) (setq size "10")) ;; laptop monitor
       (when (= width 1920) (setq size "9")) ;; WFH monitor
       (set-frame-font (concat "Hack " size))))
-  ;;(add-hook 'window-size-change-functions #'hoagie-adjust-font-size)
+  (add-hook 'window-size-change-functions #'hoagie-adjust-font-size)
 
   (setq w32-pass-multimedia-buttons-to-system nil) ;; experimental
   (add-to-list 'load-path "c:/repos/miscscripts")
   (require 'deploy-status)
-  (global-set-key (kbd "C-c C-m") 'deploy-status))
+  (global-set-key (kbd "C-c C-m") 'deploy-status)
+  (global-set-key (kbd "<media-next>") 'deploy-status))
 
 (when (or (hoagie-laptop-p) (hoagie-rpi-p))
   (defun find-alternative-file-with-sudo ()
