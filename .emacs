@@ -70,11 +70,8 @@
  '(anzu-replace-threshold 50)
  '(anzu-replace-to-string-separator " => ")
  '(anzu-search-threshold 1000)
- '(back-button-global-keystrokes nil)
- '(back-button-local-keystrokes nil)
- '(back-button-smartrep-prefix "")
  '(beacon-color "#d54e53")
- '(blink-cursor-blinks 0)
+ '(blink-cursor-mode nil)
  '(bm-buffer-persistence t)
  '(bm-repository-size 1000)
  '(bubbles-game-theme (quote difficult))
@@ -110,7 +107,7 @@
  '(frame-background-mode (quote dark))
  '(global-flycheck-mode t)
  '(global-mark-ring-max 32)
- '(global-visible-mark-mode nil)
+ '(global-visible-mark-mode t)
  '(grep-command
    "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
  '(hl-sexp-background-color "#1c1f26")
@@ -151,7 +148,9 @@
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (nyan-mode ws-butler sly doom-modeline dotnet anzu eglot pomidor minions deadgrep expand-region format-all lyrics docker json-mode company browse-kill-ring 2048-game doom-themes gist ibuffer-projectile wttrin dashboard powershell projectile smex which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit)))
+    (visible-mark package-lint dockerfile-mode quasi-monochrome-theme srcery-theme eww-lnum nyan-mode ws-butler sly doom-modeline dotnet anzu eglot pomidor minions deadgrep expand-region format-all lyrics docker json-mode company browse-kill-ring 2048-game doom-themes gist ibuffer-projectile wttrin dashboard powershell projectile smex which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit)))
+ '(panda-log-responses t)
+ '(panda-username "smonia")
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pomidor-play-sound-file nil)
  '(pos-tip-background-color "#36473A")
@@ -216,7 +215,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Hack" :foundry "SRC" :slant normal :weight normal :height 98 :width normal))))
+ '(default ((t (:family "Hack" :foundry "outline" :slant normal :weight normal :height 83 :width normal))))
  '(diredp-compressed-file-name ((t (:foreground "slate gray"))))
  '(diredp-compressed-file-suffix ((((class color) (min-colors 89)) (:foreground "#b218b2"))))
  '(diredp-deletion ((((class color) (min-colors 89)) (:foreground "#ffffff" :background "#a40000"))))
@@ -254,14 +253,6 @@
 (define-key isearch-mode-map [remap isearch-query-replace]  #'anzu-isearch-query-replace)
 (define-key isearch-mode-map [remap isearch-query-replace-regexp] #'anzu-isearch-query-replace-regexp)
 
-;; BACK-BUTTON
-;; from https://github.com/rolandwalker/back-button/
-(require 'back-button)
-(back-button-mode 1)
-(global-set-key (kbd "C-`") 'back-button-push-mark-local-and-global)
-(global-set-key (kbd "M-`") 'back-button-global-backward)
-(global-set-key (kbd "M-~") 'back-button-global-forward)
-
 ;; BROWSE-KILL-RING
 (hoagie-ensure-package 'browse-kill-ring)
 (browse-kill-ring-default-keybindings)
@@ -290,6 +281,12 @@
 ;; EXPAND REGION
 (hoagie-ensure-package 'expand-region)
 (global-set-key (kbd "M-<SPC>") 'er/expand-region)
+
+;; EWW-LNUM
+(hoagie-ensure-package 'eww-lnum)
+(eval-after-load "eww"
+  '(progn (define-key eww-mode-map "f" 'eww-lnum-follow)
+          (define-key eww-mode-map "F" 'eww-lnum-universal)))
 
 ;; DASHBOARD
 (hoagie-ensure-package 'dashboard)
@@ -350,7 +347,7 @@
 
 ;; FORMAT-ALL-THE-CODE
 (hoagie-ensure-package 'format-all)
-(global-set-key (kbd "C-c f") 'format-all-buffer)
+(global-set-key (kbd "C-c C-f b") 'format-all-buffer)
 
 ;; IBUFFER
 (require 'ibuffer)
@@ -431,7 +428,7 @@ Symbols matching the text at point are put first in the completion list."
 
 ;; EGLOT
 (hoagie-ensure-package 'eglot)
-(add-hook 'python-mode-hook 'eglot-ensure)
+;;(add-hook 'python-mode-hook 'eglot-ensure)
 
 ;; NYAN MODE - now doom-modeline supports it
 (hoagie-ensure-package 'nyan-mode)
@@ -468,6 +465,12 @@ Symbols matching the text at point are put first in the completion list."
 (define-key omnisharp-mode-map (kbd "C-c o t i") 'omnisharp-current-type-information)
 (define-key omnisharp-mode-map (kbd "C-c o t d") 'omnisharp-current-type-documentation)
 (define-key omnisharp-mode-map (kbd "<f5>") 'recompile)
+
+;; POWERSHELL MODE
+(hoagie-ensure-package 'powershell)
+;; this one shadows the command to go back in
+;; the mark ring
+(define-key powershell-mode-map (kbd "M-`") nil)
 
 ;; PROJECTILE
 (hoagie-ensure-package 'projectile)
@@ -567,8 +570,8 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "C-x 3") (lambda () (interactive)(split-window-right) (other-window 1)))
 (global-set-key (kbd "C-x 2") (lambda () (interactive)(split-window-below) (other-window 1)))
 ;; on trial
-(global-set-key (kbd "C-M-{") (lambda () (interactive)(shrink-window-horizontally 5)))
-(global-set-key (kbd "C-M-}") (lambda () (interactive)(enlarge-window-horizontally 5)))
+(global-set-key (kbd "C-M-}") (lambda () (interactive)(shrink-window-horizontally 5)))
+(global-set-key (kbd "C-M-{") (lambda () (interactive)(enlarge-window-horizontally 5)))
 (global-set-key (kbd "C-M-_") (lambda () (interactive)(shrink-window 5)))
 (global-set-key (kbd "C-M-+") (lambda () (interactive)(shrink-window -5)))
 (global-set-key (kbd "M-o") 'other-window)
@@ -585,11 +588,27 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "C-z") 'find-name-dired)
 (global-set-key (kbd "M-z") 'deadgrep)
 (global-set-key (kbd "<mouse-3>") 'kill-ring-save)
+(global-set-key (kbd "<f12>") 'zone)
 (put 'narrow-to-region 'disabled nil)
 ;; helps compilation buffer not slowdown
 ;; see https://blog.danielgempesaw.com/post/129841682030/fixing-a-laggy-compilation-buffer
 (setq compilation-error-regexp-alist
       (delete 'maven compilation-error-regexp-alist))
+
+; from: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
+(defun push-mark-no-activate ()
+  "Pushes `point` to `mark-ring' and does not activate the region.
+Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
+  (interactive)
+  (push-mark (point) t nil)) ; removed the message, visible-mark takes care of this
+(defun jump-to-mark ()
+  "Jumps to the local mark, respecting the `mark-ring' order.
+This is the same as using \\[set-mark-command] with the prefix argument."
+  (interactive)
+  (set-mark-command 1))
+
+(global-set-key (kbd "C-`") 'push-mark-no-activate)
+(global-set-key (kbd "M-`") 'jump-to-mark)
 
 ;; from https://stackoverflow.com/a/22176971, move auto saves and
 ;; back up files to a different folder so git or dotnet core won't
@@ -605,6 +624,9 @@ Symbols matching the text at point are put first in the completion list."
 
 (global-set-key [f1] (lambda () (interactive) (dired "~/")))
 (when (hoagie-work-p)
+  (require 'panda) ;; I don't load this from MELPA
+  (global-set-key (kbd "C-c b") 'panda-map)
+
   (global-set-key [f2] (lambda () (interactive) (dired "C:/Repos")))
 
   ;; from https://stackoverflow.com/questions/4115465/emacs-dired-too-much-information
@@ -620,18 +642,24 @@ Symbols matching the text at point are put first in the completion list."
     (let* ((attrs (frame-monitor-attributes)) ;; gets attribs for current frame
            (geometry (first attrs))
            (width (fourth geometry))
+           (monname (cdr (fourth attrs)))
            (size "10")) ;; 11 ==> default size, monitor 3
-      (when (< width 3500) (setq size "8")) ;; monitor 2
-      (when (< width 2000) (setq size "10")) ;; laptop monitor
-      (when (= width 1920) (setq size "9")) ;; WFH monitor
+      (when (< width 3500)
+        (setq size "8")) ;; monitor 2
+      (when (< width 2000)
+        (setq size "10")) ;; laptop monitor
+      (when (and (= width 1920) (string-suffix-p "DISPLAY2" monname))
+        (setq size "7")) ;; WFH monitor
       (set-frame-font (concat "Hack " size))))
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size)
 
   (setq w32-pass-multimedia-buttons-to-system nil) ;; experimental
+  (add-to-list 'load-path "c:/home/github/panda")
   (add-to-list 'load-path "c:/repos/miscscripts")
   (require 'deploy-status)
   (global-set-key (kbd "C-c C-m") 'deploy-status)
-  (global-set-key (kbd "<media-next>") 'deploy-status))
+  (global-set-key (kbd "<media-next>") 'deploy-status)
+  (server-start)))
 
 (when (or (hoagie-laptop-p) (hoagie-rpi-p))
   (defun find-alternative-file-with-sudo ()
