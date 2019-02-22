@@ -51,6 +51,9 @@
 
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 (prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
 (hoagie-ensure-package 'doom-themes)
 (hoagie-ensure-package 'projectile)
 (add-hook 'after-init-hook 'hoagie-ensure-selected-packages)
@@ -64,7 +67,7 @@
  '(ansi-color-faces-vector
    [default default default italic underline success warning error])
  '(ansi-color-names-vector
-   ["#100e23" "#ff8080" "#95ffa4" "#ffe9aa" "#91ddff" "#c991e1" "#aaffe4" "#BAC9E4"])
+   ["#1b1d1e" "#d02b61" "#60aa00" "#d08928" "#6c9ef8" "#b77fdb" "#00aa80" "#DFDFDF"])
  '(anzu-deactivate-region t)
  '(anzu-mode-lighter "")
  '(anzu-replace-threshold 50)
@@ -80,7 +83,7 @@
  '(custom-enabled-themes (quote (doom-challenger-deep)))
  '(custom-safe-themes
    (quote
-    ("06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "4138944fbed88c047c9973f68908b36b4153646a045648a22083bd622d1e636d" "a3fa4abaf08cc169b61dea8f6df1bbe4123ec1d2afeb01c17e11fdc31fc66379" default)))
+    ("068da66dd5ef78a0fe9245895740a0ba472369032b29bc55df1e7b9db025e46c" "6b2636879127bf6124ce541b1b2824800afc49c6ccd65439d6eb987dbf200c36" "1c082c9b84449e54af757bcae23617d11f563fc9f33a832a8a2813c4d7dfb652" "8aca557e9a17174d8f847fb02870cb2bb67f3b6e808e46c0e54a44e3e18e1020" "75d3dde259ce79660bac8e9e237b55674b910b470f313cdf4b019230d01a982a" "7e78a1030293619094ea6ae80a7579a562068087080e01c2b8b503b27900165c" "d2e9c7e31e574bf38f4b0fb927aaff20c1e5f92f72001102758005e53d77b8c9" "f0dc4ddca147f3c7b1c7397141b888562a48d9888f1595d69572db73be99a024" "a5f068e6c26c2ed952096c034eb49f3ad15a329c905bf3475fae63c1ddb9f402" "144f05e2dfa7a7b50cad0c3519498ac064cc9da1f194b8ea27d0fb20129d8d7a" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "4138944fbed88c047c9973f68908b36b4153646a045648a22083bd622d1e636d" "a3fa4abaf08cc169b61dea8f6df1bbe4123ec1d2afeb01c17e11fdc31fc66379" default)))
  '(dabbrev-case-distinction nil)
  '(dabbrev-case-fold-search t)
  '(dabbrev-case-replace nil)
@@ -102,7 +105,7 @@
  '(ediff-keep-variants nil)
  '(ediff-window-setup-function (quote ediff-setup-windows-plain))
  '(eww-search-prefix "http://www.bing.com/search?q=")
- '(fci-rule-color "#858FA5")
+ '(fci-rule-color "#505050")
  '(flycheck-color-mode-line-face-to-color (quote mode-line-buffer-id))
  '(frame-background-mode (quote dark))
  '(global-flycheck-mode t)
@@ -112,9 +115,10 @@
    "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
  '(hl-sexp-background-color "#1c1f26")
  '(ido-default-buffer-method (quote selected-window))
- '(jdee-db-active-breakpoint-face-colors (cons "#100e23" "#906cff"))
- '(jdee-db-requested-breakpoint-face-colors (cons "#100e23" "#95ffa4"))
- '(jdee-db-spec-breakpoint-face-colors (cons "#100e23" "#565575"))
+ '(ido-ubiquitous-mode t)
+ '(jdee-db-active-breakpoint-face-colors (cons "#1b1d1e" "#fc20bb"))
+ '(jdee-db-requested-breakpoint-face-colors (cons "#1b1d1e" "#60aa00"))
+ '(jdee-db-spec-breakpoint-face-colors (cons "#1b1d1e" "#505050"))
  '(lisp-mode-hook
    (quote
     (#[nil "\300\301\302\303\211$\207"
@@ -148,9 +152,7 @@
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (visible-mark package-lint dockerfile-mode quasi-monochrome-theme srcery-theme eww-lnum nyan-mode ws-butler sly doom-modeline dotnet anzu eglot pomidor minions deadgrep expand-region format-all lyrics docker json-mode company browse-kill-ring 2048-game doom-themes gist ibuffer-projectile wttrin dashboard powershell projectile smex which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit)))
- '(panda-log-responses t)
- '(panda-username "smonia")
+    (json-navigator dired-git-info company-lsp lsp-ui lsp-mode ido-completing-read+ visible-mark package-lint dockerfile-mode quasi-monochrome-theme srcery-theme eww-lnum nyan-mode ws-butler sly doom-modeline dotnet anzu pomidor minions deadgrep expand-region format-all lyrics docker json-mode company browse-kill-ring 2048-game doom-themes gist ibuffer-projectile wttrin dashboard powershell projectile smex which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pomidor-play-sound-file nil)
  '(pos-tip-background-color "#36473A")
@@ -159,8 +161,6 @@
  '(projectile-indexing-method (quote alien))
  '(projectile-mode t nil (projectile))
  '(projectile-switch-project-action (quote projectile-find-file-dwim))
- '(python-shell-interpreter "ipython")
- '(python-shell-interpreter-args "-i --simple-prompt")
  '(reb-re-syntax (quote string))
  '(scroll-bar-mode nil)
  '(set-mark-command-repeat-pop t)
@@ -178,24 +178,24 @@
  '(vc-annotate-background "#1b1d1e")
  '(vc-annotate-color-map
    (list
-    (cons 20 "#95ffa4")
-    (cons 40 "#b8f7a6")
-    (cons 60 "#dbf0a8")
-    (cons 80 "#ffe9aa")
-    (cons 100 "#ffd799")
-    (cons 120 "#ffc488")
-    (cons 140 "#ffb378")
-    (cons 160 "#eda79b")
-    (cons 180 "#db9cbd")
-    (cons 200 "#c991e1")
-    (cons 220 "#db8bc0")
-    (cons 240 "#ed85a0")
-    (cons 260 "#ff8080")
-    (cons 280 "#d4757d")
-    (cons 300 "#aa6a7a")
-    (cons 320 "#805f77")
-    (cons 340 "#858FA5")
-    (cons 360 "#858FA5")))
+    (cons 20 "#60aa00")
+    (cons 40 "#859f0d")
+    (cons 60 "#aa931a")
+    (cons 80 "#d08928")
+    (cons 100 "#d38732")
+    (cons 120 "#d6863d")
+    (cons 140 "#da8548")
+    (cons 160 "#ce8379")
+    (cons 180 "#c281aa")
+    (cons 200 "#b77fdb")
+    (cons 220 "#bf63b2")
+    (cons 240 "#c74789")
+    (cons 260 "#d02b61")
+    (cons 280 "#b0345c")
+    (cons 300 "#903d58")
+    (cons 320 "#704654")
+    (cons 340 "#505050")
+    (cons 360 "#505050")))
  '(vc-annotate-very-old-color nil)
  '(visible-mark-faces
    (quote
@@ -216,6 +216,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "Hack" :foundry "outline" :slant normal :weight normal :height 83 :width normal))))
+ '(dgi-commit-message-face ((t (:foreground "cornflower blue"))))
  '(diredp-compressed-file-name ((t (:foreground "slate gray"))))
  '(diredp-compressed-file-suffix ((((class color) (min-colors 89)) (:foreground "#b218b2"))))
  '(diredp-deletion ((((class color) (min-colors 89)) (:foreground "#ffffff" :background "#a40000"))))
@@ -303,6 +304,8 @@
 (define-key dired-mode-map (kbd "\\") 'dired-narrow)
 ;; more standard binding for filtering, but I'm so used to \, leaving both
 (define-key dired-mode-map (kbd "/") 'dired-narrow)
+(with-eval-after-load 'dired
+  (define-key dired-mode-map ")" 'dired-git-info-mode))
 
 ;; C-c l to launch a file in Windows similar to running
 ;; start "" filename in the console
@@ -368,12 +371,17 @@
 
 ;; IDO
 (hoagie-ensure-package 'ido-vertical-mode)
+(hoagie-ensure-package 'ido-completing-read+)
 (ido-mode 1)
 (ido-vertical-mode 1)
 (setq ido-vertical-define-keys 'C-n-and-C-p-only)
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere t)
 (setq ido-create-new-buffer 'always)
+(ido-ubiquitous-mode 1)
+(setq magit-completing-read-function 'magit-ido-completing-read)
+(require 'icomplete)
+(icomplete-mode 1)
 
 ;; IMENU
 (require 'imenu)
@@ -422,19 +430,18 @@ Symbols matching the text at point are put first in the completion list."
 
 (global-set-key (kbd "M-g d") 'ido-imenu)
 
+;; LSP MODE
+;; (hoagie-ensure-package 'lsp-mode)
+;; (hoagie-ensure-package 'lsp-ui)
+;; (hoagie-ensure-package 'company-lsp)
+;; (require 'lsp-python-ms)
+;; (add-hook 'python-mode-hook #'lsp)
+;; (setq lsp-python-ms-dir "c:/home/github/ms-python-language-server/output/bin/Release/win-x64/publish/")
+;; (setq lsp-python-ms-executable "c:/home/github/ms-python-language-server/output/bin/Release/win-x64/publish/Microsoft.Python.LanguageServer.exe")
+
 ;; JSON MODE
 (hoagie-ensure-package 'json-mode)
 (add-to-list 'auto-mode-alist '("\\.json$" . json-mode))
-
-;; EGLOT
-(hoagie-ensure-package 'eglot)
-;;(add-hook 'python-mode-hook 'eglot-ensure)
-
-;; NYAN MODE - now doom-modeline supports it
-(hoagie-ensure-package 'nyan-mode)
-(nyan-mode)
-(nyan-start-animation)
-(nyan-toggle-wavy-trail)
 
 ;; MAGIT
 (hoagie-ensure-package 'magit)
@@ -443,6 +450,12 @@ Symbols matching the text at point are put first in the completion list."
 ;; MINIONS
 (hoagie-ensure-package 'minions)
 (global-set-key [f3] 'minions-minor-modes-menu)
+
+;; NYAN MODE - now doom-modeline supports it
+(hoagie-ensure-package 'nyan-mode)
+(nyan-mode)
+(nyan-start-animation)
+(nyan-toggle-wavy-trail)
 
 ;; OMNISHARP
 (hoagie-ensure-package 'omnisharp)
@@ -579,7 +592,8 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "M-N") 'next-buffer)
 (global-set-key (kbd "M-P") 'previous-buffer)
 ;; used to be C-x K. Honestly I never used C-x C-k (macros) commands that much so :shrug:
-(global-set-key (kbd "C-x C-k") 'kill-this-buffer)
+;; without the lambda it would simply show the menu like C-x k
+(global-set-key (kbd "C-x C-k") (lambda () (interactive) (kill-buffer)))
 (global-set-key (kbd "C-;") 'dabbrev-expand)
 (global-set-key (kbd "C-c M-d") 'sql-connect)
 (global-set-key (kbd "<f6>") 'kmacro-start-macro)
@@ -595,20 +609,38 @@ Symbols matching the text at point are put first in the completion list."
 (setq compilation-error-regexp-alist
       (delete 'maven compilation-error-regexp-alist))
 
-; from: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
+;; from: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
 (defun push-mark-no-activate ()
   "Pushes `point` to `mark-ring' and does not activate the region.
 Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (interactive)
   (push-mark (point) t nil)) ; removed the message, visible-mark takes care of this
-(defun jump-to-mark ()
-  "Jumps to the local mark, respecting the `mark-ring' order.
-This is the same as using \\[set-mark-command] with the prefix argument."
+;; from https://www.emacswiki.org/emacs/MarkCommands#toc4
+(defun unpop-to-mark-command ()
+  "Unpop off mark ring.  Does nothing if mark ring is empty."
   (interactive)
-  (set-mark-command 1))
+  (when mark-ring
+    (let ((pos (marker-position (car (last mark-ring)))))
+      (if (not (= (point) pos))
+          (goto-char pos)
+        (setq mark-ring (cons (copy-marker (mark-marker)) mark-ring))
+        (set-marker (mark-marker) pos)
+        (setq mark-ring (nbutlast mark-ring))
+        (goto-char (marker-position (car (last mark-ring))))))))
+;; Author: me XD
+(defun pop-to-mark-push-if-first ()
+  "Pop the mark ring, but push a mark if this is a first invocation."
+  ;; The idea is these commands bring me closer to C-- C-_ in Visual Studio
+  ;; But per-buffer :)
+  (interactive)
+  (unless (equal last-command 'pop-to-mark-push-if-first)
+    (push-mark-no-activate)
+    (pop-to-mark-command))
+  (pop-to-mark-command))
 
 (global-set-key (kbd "C-`") 'push-mark-no-activate)
-(global-set-key (kbd "M-`") 'jump-to-mark)
+(global-set-key (kbd "M-`") 'pop-to-mark-push-if-first)
+(global-set-key (kbd "M-~") 'unpop-to-mark-command)
 
 ;; from https://stackoverflow.com/a/22176971, move auto saves and
 ;; back up files to a different folder so git or dotnet core won't
@@ -622,44 +654,27 @@ This is the same as using \\[set-mark-command] with the prefix argument."
       `(("." . ,(expand-file-name
                  (concat user-emacs-directory "backups")))))
 
+;; from https://www.emacswiki.org/emacs/BackwardDeleteWord
+;; because I agree C-backspace shouldn't kill the word!
+;; it litters my kill ring
+(defun delete-word (arg)
+  "Delete characters forward until encountering the end of a word.
+With ARG, do this that many times."
+  (interactive "p")
+  (if (use-region-p)
+      (delete-region (region-beginning) (region-end))
+    (delete-region (point) (progn (forward-word arg) (point)))))
+(defun backward-delete-word (arg)
+  "Delete characters backward until encountering the end of a word.
+With ARG, do this that many times."
+  (interactive "p")
+  (delete-word (- arg)))
+(global-set-key (kbd "C-<backspace>") 'backward-delete-word)
+
 (global-set-key [f1] (lambda () (interactive) (dired "~/")))
+
 (when (hoagie-work-p)
-  (require 'panda) ;; I don't load this from MELPA
-  (global-set-key (kbd "C-c b") 'panda-map)
-
-  (global-set-key [f2] (lambda () (interactive) (dired "C:/Repos")))
-
-  ;; from https://stackoverflow.com/questions/4115465/emacs-dired-too-much-information
-  ;; we want to do this only in Windows!
-  (defun custom-dired-mode-setup ()
-    "Show less information in dired buffers."
-    (dired-hide-details-mode 1))
-  (add-hook 'dired-mode-hook 'custom-dired-mode-setup)
-
-  ;; Font size adjustment
-  (defun hoagie-adjust-font-size (frame)
-    "Inspired by https://emacs.stackexchange.com/a/44930/17066.  FRAME is ignored."
-    (let* ((attrs (frame-monitor-attributes)) ;; gets attribs for current frame
-           (geometry (first attrs))
-           (width (fourth geometry))
-           (monname (cdr (fourth attrs)))
-           (size "10")) ;; 11 ==> default size, monitor 3
-      (when (< width 3500)
-        (setq size "8")) ;; monitor 2
-      (when (< width 2000)
-        (setq size "10")) ;; laptop monitor
-      (when (and (= width 1920) (string-suffix-p "DISPLAY2" monname))
-        (setq size "7")) ;; WFH monitor
-      (set-frame-font (concat "Hack " size))))
-  (add-hook 'window-size-change-functions #'hoagie-adjust-font-size)
-
-  (setq w32-pass-multimedia-buttons-to-system nil) ;; experimental
-  (add-to-list 'load-path "c:/home/github/panda")
-  (add-to-list 'load-path "c:/repos/miscscripts")
-  (require 'deploy-status)
-  (global-set-key (kbd "C-c C-m") 'deploy-status)
-  (global-set-key (kbd "<media-next>") 'deploy-status)
-  (server-start)))
+  (load "c:/repos/miscscripts/workonlyconfig.el"))
 
 (when (or (hoagie-laptop-p) (hoagie-rpi-p))
   (defun find-alternative-file-with-sudo ()
@@ -674,3 +689,5 @@ This is the same as using \\[set-mark-command] with the prefix argument."
 	  (setq fname (concat "/sudo:root@localhost:" fname)))
         (find-alternate-file fname))))
   (global-set-key (kbd "C-x F") 'find-alternative-file-with-sudo))
+(put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
