@@ -50,10 +50,17 @@
   (string-equal system-type "windows-nt"))
 
 (add-to-list 'load-path "~/.emacs.d/lisp/")
-(prefer-coding-system 'utf-8)
+(set-language-environment 'utf-8)
+(set-keyboard-coding-system 'utf-8-mac) ; For old Carbon emacs on OS X only
+(setq locale-coding-system 'utf-8)
 (set-default-coding-systems 'utf-8)
 (set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
+(set-selection-coding-system
+ (if (eq system-type 'windows-nt)
+     'utf-16-le  ;; https://rufflewind.com/2014-07-20/pasting-unicode-in-emacs-on-windows
+   'utf-8))
+(prefer-coding-system 'utf-8)
+
 (hoagie-ensure-package 'doom-themes)
 (hoagie-ensure-package 'projectile)
 (add-hook 'after-init-hook 'hoagie-ensure-selected-packages)
@@ -152,7 +159,7 @@
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (json-navigator dired-git-info company-lsp lsp-ui lsp-mode ido-completing-read+ visible-mark package-lint dockerfile-mode quasi-monochrome-theme srcery-theme eww-lnum nyan-mode ws-butler sly doom-modeline dotnet anzu pomidor minions deadgrep expand-region format-all lyrics docker json-mode company browse-kill-ring 2048-game doom-themes gist ibuffer-projectile wttrin dashboard powershell projectile smex which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit)))
+    (request csv json-navigator dired-git-info company-lsp lsp-ui lsp-mode ido-completing-read+ visible-mark package-lint dockerfile-mode quasi-monochrome-theme srcery-theme eww-lnum nyan-mode ws-butler sly doom-modeline dotnet anzu pomidor minions deadgrep expand-region format-all lyrics docker json-mode company browse-kill-ring 2048-game doom-themes gist ibuffer-projectile wttrin dashboard powershell projectile smex which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pomidor-play-sound-file nil)
  '(pos-tip-background-color "#36473A")
@@ -456,6 +463,18 @@ Symbols matching the text at point are put first in the completion list."
 (nyan-mode)
 (nyan-start-animation)
 (nyan-toggle-wavy-trail)
+
+;; OCCUR
+(require 'replace)
+;; I'm surprised this isn't the default behaviour,
+;; also couldn't find a way to change it from options
+(defun hoagie-occur-dwim ()
+  "Run occur, if there's a region selected use that as input."
+  (interactive)
+  (if (use-region-p)
+      (occur (buffer-substring-no-properties (region-beginning) (region-end)))
+    (call-interactively 'occur)))
+(global-set-key (kbd "M-s o") 'hoagie-occur-dwim)
 
 ;; OMNISHARP
 (hoagie-ensure-package 'omnisharp)
