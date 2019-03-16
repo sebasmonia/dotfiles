@@ -1,4 +1,4 @@
-;;; .emacs --- My dot emacs file
+;; .emacs --- My dot emacs file
 
 ;; Author: Sebastian Monia <smonia@outlook.com>
 ;; URL: https://github.com/sebasmonia/.emacs
@@ -61,7 +61,6 @@
    'utf-8))
 (prefer-coding-system 'utf-8)
 
-(hoagie-ensure-package 'doom-themes)
 (hoagie-ensure-package 'projectile)
 (add-hook 'after-init-hook 'hoagie-ensure-selected-packages)
 
@@ -87,10 +86,10 @@
  '(bubbles-game-theme (quote difficult))
  '(bubbles-grid-size (quote (20 . 15)))
  '(column-number-mode t)
- '(custom-enabled-themes (quote (doom-challenger-deep)))
+ '(custom-enabled-themes (quote (flatland-black)))
  '(custom-safe-themes
    (quote
-    ("068da66dd5ef78a0fe9245895740a0ba472369032b29bc55df1e7b9db025e46c" "6b2636879127bf6124ce541b1b2824800afc49c6ccd65439d6eb987dbf200c36" "1c082c9b84449e54af757bcae23617d11f563fc9f33a832a8a2813c4d7dfb652" "8aca557e9a17174d8f847fb02870cb2bb67f3b6e808e46c0e54a44e3e18e1020" "75d3dde259ce79660bac8e9e237b55674b910b470f313cdf4b019230d01a982a" "7e78a1030293619094ea6ae80a7579a562068087080e01c2b8b503b27900165c" "d2e9c7e31e574bf38f4b0fb927aaff20c1e5f92f72001102758005e53d77b8c9" "f0dc4ddca147f3c7b1c7397141b888562a48d9888f1595d69572db73be99a024" "a5f068e6c26c2ed952096c034eb49f3ad15a329c905bf3475fae63c1ddb9f402" "144f05e2dfa7a7b50cad0c3519498ac064cc9da1f194b8ea27d0fb20129d8d7a" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "4138944fbed88c047c9973f68908b36b4153646a045648a22083bd622d1e636d" "a3fa4abaf08cc169b61dea8f6df1bbe4123ec1d2afeb01c17e11fdc31fc66379" default)))
+    ("36c86cb6c648b9a15d849026c90bd6a4ae76e4d482f7bcd138dedd4707ff26a5" "4e4befa32590db02faa3b1589e7ce9f3b6065cd24e8da804b39b747f2473dd50" "6eb36e7cab0fe6d05e7da2acd8b52fe9daea7edd3922d022b0e8e550c41c3a62" "de9fa4b3614611bed2fe75e105bd0d37542924b977299736f158dd4d7343c666" "54449a089fc2f95f99ebc9b9b6067c802532fd50097cf44c46a53b4437d5c6cc" "6d589ac0e52375d311afaa745205abb6ccb3b21f6ba037104d71111e7e76a3fc" "068da66dd5ef78a0fe9245895740a0ba472369032b29bc55df1e7b9db025e46c" "6b2636879127bf6124ce541b1b2824800afc49c6ccd65439d6eb987dbf200c36" "1c082c9b84449e54af757bcae23617d11f563fc9f33a832a8a2813c4d7dfb652" "8aca557e9a17174d8f847fb02870cb2bb67f3b6e808e46c0e54a44e3e18e1020" "75d3dde259ce79660bac8e9e237b55674b910b470f313cdf4b019230d01a982a" "7e78a1030293619094ea6ae80a7579a562068087080e01c2b8b503b27900165c" "d2e9c7e31e574bf38f4b0fb927aaff20c1e5f92f72001102758005e53d77b8c9" "f0dc4ddca147f3c7b1c7397141b888562a48d9888f1595d69572db73be99a024" "a5f068e6c26c2ed952096c034eb49f3ad15a329c905bf3475fae63c1ddb9f402" "144f05e2dfa7a7b50cad0c3519498ac064cc9da1f194b8ea27d0fb20129d8d7a" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "4138944fbed88c047c9973f68908b36b4153646a045648a22083bd622d1e636d" "a3fa4abaf08cc169b61dea8f6df1bbe4123ec1d2afeb01c17e11fdc31fc66379" default)))
  '(dabbrev-case-distinction nil)
  '(dabbrev-case-fold-search t)
  '(dabbrev-case-replace nil)
@@ -159,7 +158,7 @@
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (request csv json-navigator dired-git-info company-lsp lsp-ui lsp-mode ido-completing-read+ visible-mark package-lint dockerfile-mode quasi-monochrome-theme srcery-theme eww-lnum nyan-mode ws-butler sly doom-modeline dotnet anzu pomidor minions deadgrep expand-region format-all lyrics docker json-mode company browse-kill-ring 2048-game doom-themes gist ibuffer-projectile wttrin dashboard powershell projectile smex which-key ido-vertical-mode dired-narrow circe web-mode symon omnisharp magit)))
+    (flatland-black-theme yaml-mode request csv json-navigator dired-git-info company-lsp lsp-ui lsp-mode ido-completing-read+ visible-mark package-lint dockerfile-mode eww-lnum  ws-butler sly dotnet anzu pomidor minions deadgrep expand-region format-all lyrics docker json-mode company browse-kill-ring 2048-game gist ibuffer-projectile wttrin dashboard powershell projectile smex which-key ido-vertical-mode dired-narrow circe web-mode omnisharp magit)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pomidor-play-sound-file nil)
  '(pos-tip-background-color "#36473A")
@@ -246,6 +245,7 @@
  '(ediff-odd-diff-Ancestor ((t (:background "cornflower blue"))))
  '(ediff-odd-diff-B ((t (:background "dark slate gray"))))
  '(ediff-odd-diff-C ((t (:background "dark slate gray"))))
+ '(hl-line ((t (:inherit nil :background "gray12"))))
  '(visible-mark-face1 ((t (:box (:line-width 1 :color "turquoise")))))
  '(visible-mark-face2 ((t (:box (:line-width 1 :color "dodger blue")))))
  '(visible-mark-forward-face1 ((t (:box (:line-width 1 :color "dark green")))))
@@ -296,15 +296,6 @@
   '(progn (define-key eww-mode-map "f" 'eww-lnum-follow)
           (define-key eww-mode-map "F" 'eww-lnum-universal)))
 
-;; DASHBOARD
-(hoagie-ensure-package 'dashboard)
-(dashboard-setup-startup-hook)
-(setq dashboard-startup-banner 'logo)
-(setq dashboard-banner-logo-title "If anything at all, perfection is finally attained not when there is no longer anything to add, but when there is no longer anything to take away - Exupéry")
-(setq dashboard-items '((projects . 10)
-                        (recents  . 30)))
-(setq initial-buffer-choice  (lambda () (get-buffer "*dashboard*")))
-
 ;; DIRED
 (require 'dired)
 (global-set-key (kbd "\C-cj") 'dired-jump)
@@ -337,18 +328,6 @@
 ;; DOCKER
 (hoagie-ensure-package 'docker)
 (global-set-key (kbd "C-c d") 'docker)
-
-;; DOOM-MODELINE
-(hoagie-ensure-package 'doom-modeline)
-(setq doom-modeline-buffer-file-name-style 'buffer-name)
-(setq doom-modeline-icon t)
-(setq doom-modeline-major-mode-icon t)
-(setq doom-modeline-major-mode-color-icon t)
-(setq doom-modeline-minor-modes t)
-(setq doom-modeline-persp-name nil)
-(setq doom-modeline-lsp nil)
-(setq doom-modeline-github nil)
-(doom-modeline-init)
 
 ;; DOTNET
 (hoagie-ensure-package 'dotnet)
@@ -458,12 +437,6 @@ Symbols matching the text at point are put first in the completion list."
 (hoagie-ensure-package 'minions)
 (global-set-key [f3] 'minions-minor-modes-menu)
 
-;; NYAN MODE - now doom-modeline supports it
-(hoagie-ensure-package 'nyan-mode)
-(nyan-mode)
-(nyan-start-animation)
-(nyan-toggle-wavy-trail)
-
 ;; OCCUR
 (require 'replace)
 ;; I'm surprised this isn't the default behaviour,
@@ -473,7 +446,7 @@ Symbols matching the text at point are put first in the completion list."
   (interactive)
   (if (use-region-p)
       (occur (buffer-substring-no-properties (region-beginning) (region-end)))
-    (call-interactively 'occur)))
+    (command-execute 'occur)))
 (global-set-key (kbd "M-s o") 'hoagie-occur-dwim)
 
 ;; OMNISHARP
@@ -544,15 +517,6 @@ Symbols matching the text at point are put first in the completion list."
             (font-lock-mode -1)
             (sql-rename-buffer-prompt)))
 
-;; SYMON
-(hoagie-ensure-package 'symon)
-(when (hoagie-work-p)
-  ;; disable symon before changing the list of monitors
-  (symon-mode nil)
-  (setq symon-monitors
-        (quote
-         (symon-windows-memory-monitor symon-windows-cpu-monitor symon-windows-battery-monitor symon-windows-network-rx-monitor symon-windows-network-tx-monitor)))
-  (symon-mode t))
 ;; TFSMACS
 ;; (hoagie-ensure-package 'tfsmacs)
 ;; (global-set-key  "\C-ct" 'tfsmacs-map)
@@ -595,6 +559,8 @@ Symbols matching the text at point are put first in the completion list."
 (electric-pair-mode)
 ; see https://emacs.stackexchange.com/questions/33510/unicode-txt-slowness
 (setq inhibit-compacting-font-caches t)
+; see https://emacs.stackexchange.com/a/28746/17066
+(setq auto-window-vscroll nil)
 ; from https://emacs.stackexchange.com/questions/7362/how-to-show-a-diff-between-two-buffers-with-character-level-diffs
 (setq-default ediff-forward-word-function 'forward-char)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
