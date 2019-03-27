@@ -122,9 +122,15 @@
  '(hl-sexp-background-color "#1c1f26")
  '(ido-default-buffer-method (quote selected-window))
  '(ido-ubiquitous-mode t)
- '(jdee-db-active-breakpoint-face-colors (cons "#1b1d1e" "#fc20bb"))
- '(jdee-db-requested-breakpoint-face-colors (cons "#1b1d1e" "#60aa00"))
- '(jdee-db-spec-breakpoint-face-colors (cons "#1b1d1e" "#505050"))
+ '(inhibit-startup-screen t)
+ '(initial-buffer-choice t)
+ '(initial-scratch-message
+   ";; Il semble que la perfection soit atteinte non quand il n'y a plus rien à ajouter, mais quand il n'y a plus rien à retrancher. - Antoine_de_Saint_Exupéry
+;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.
+")
+ '(jdee-db-active-breakpoint-face-colors (cons "#100e23" "#906cff"))
+ '(jdee-db-requested-breakpoint-face-colors (cons "#100e23" "#95ffa4"))
+ '(jdee-db-spec-breakpoint-face-colors (cons "#100e23" "#565575"))
  '(lisp-mode-hook
    (quote
     (#[nil "\300\301\302\303\211$\207"
@@ -158,7 +164,7 @@
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (flatland-black-theme yaml-mode request csv json-navigator dired-git-info company-lsp lsp-ui lsp-mode ido-completing-read+ visible-mark package-lint dockerfile-mode eww-lnum  ws-butler sly dotnet anzu pomidor minions deadgrep expand-region format-all lyrics docker json-mode company browse-kill-ring 2048-game gist ibuffer-projectile wttrin dashboard powershell projectile smex which-key ido-vertical-mode dired-narrow circe web-mode omnisharp magit)))
+    (flatland-black-theme yaml-mode request csv json-navigator dired-git-info company-lsp lsp-ui lsp-mode visible-mark package-lint dockerfile-mode eww-lnum  ws-butler sly dotnet anzu pomidor minions deadgrep expand-region format-all lyrics docker json-mode company browse-kill-ring 2048-game gist ibuffer-projectile wttrin dashboard powershell projectile smex which-key ido-vertical-mode dired-narrow circe web-mode omnisharp magit)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pomidor-play-sound-file nil)
  '(pos-tip-background-color "#36473A")
@@ -174,11 +180,8 @@
  '(spaceline-all-the-icons-slim-render nil)
  '(sql-ms-options nil)
  '(sql-ms-program "sqlcmdline")
- '(sql-product (quote ms))
- '(sunshine-units (quote metric))
- '(symon-delay 10)
- '(symon-mode t)
- '(symon-refresh-rate 5)
+ '(sql-product 'ms)
+ '(sunshine-units 'metric)
  '(tool-bar-mode nil)
  '(tramp-syntax (quote default) nil (tramp))
  '(vc-annotate-background "#1b1d1e")
@@ -221,7 +224,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Hack" :foundry "outline" :slant normal :weight normal :height 83 :width normal))))
+ '(default ((t (:family "Consolas" :foundry "outline" :slant normal :weight normal :height 110 :width normal))))
  '(dgi-commit-message-face ((t (:foreground "cornflower blue"))))
  '(diredp-compressed-file-name ((t (:foreground "slate gray"))))
  '(diredp-compressed-file-suffix ((((class color) (min-colors 89)) (:foreground "#b218b2"))))
@@ -288,6 +291,7 @@
 
 ;; EXPAND REGION
 (hoagie-ensure-package 'expand-region)
+(er/enable-mode-expansions 'csharp-mode 'er/add-cc-mode-expansions)
 (global-set-key (kbd "M-<SPC>") 'er/expand-region)
 
 ;; EWW-LNUM
@@ -357,15 +361,12 @@
 
 ;; IDO
 (hoagie-ensure-package 'ido-vertical-mode)
-(hoagie-ensure-package 'ido-completing-read+)
 (ido-mode 1)
 (ido-vertical-mode 1)
 (setq ido-vertical-define-keys 'C-n-and-C-p-only)
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere t)
 (setq ido-create-new-buffer 'always)
-(ido-ubiquitous-mode 1)
-(setq magit-completing-read-function 'magit-ido-completing-read)
 (require 'icomplete)
 (icomplete-mode 1)
 
@@ -424,6 +425,10 @@ Symbols matching the text at point are put first in the completion list."
 ;; (add-hook 'python-mode-hook #'lsp)
 ;; (setq lsp-python-ms-dir "c:/home/github/ms-python-language-server/output/bin/Release/win-x64/publish/")
 ;; (setq lsp-python-ms-executable "c:/home/github/ms-python-language-server/output/bin/Release/win-x64/publish/Microsoft.Python.LanguageServer.exe")
+(hoagie-ensure-package 'eglot)
+;; (add-hook 'python-mode-hook 'eglot-ensure)
+(add-to-list 'eglot-server-programs
+             `(python-mode . ("c:/home/github/ms-python-language-server/output/bin/Release/win-x64/publish/Microsoft.Python.LanguageServer.exe")))
 
 ;; JSON MODE
 (hoagie-ensure-package 'json-mode)
@@ -502,8 +507,6 @@ Symbols matching the text at point are put first in the completion list."
 
 ;; SQL MODE
 (require 'sql)
-(sql-set-product-feature 'ms :prompt-regexp "^.*>")
-(sql-set-product-feature 'ms :prompt-cont-regexp "^.*>")
 ;After moving to Emacs 26.0.9, I don't get prompted for buffer name when doing C-u M-x sql-connect
 ;added the function below and a call in the SQLi hook to go back to the old behaviour
 (defun sql-rename-buffer-prompt ()
@@ -593,6 +596,14 @@ Symbols matching the text at point are put first in the completion list."
 ;; see https://blog.danielgempesaw.com/post/129841682030/fixing-a-laggy-compilation-buffer
 (setq compilation-error-regexp-alist
       (delete 'maven compilation-error-regexp-alist))
+
+;; from http://www.jurta.org/en/emacs/dotemacs, set the major mode
+;; of buffers that are not visiting a file
+(setq-default major-mode (lambda ()
+                           (if buffer-file-name
+                               (fundamental-mode)
+                             (let ((buffer-file-name (buffer-name)))
+                               (set-auto-mode)))))
 
 ;; from: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
 (defun push-mark-no-activate ()
