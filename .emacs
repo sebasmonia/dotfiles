@@ -16,7 +16,8 @@
 ;;; Code:
 
 (require 'package)
-(package-initialize)
+(unless package--initialized
+  (package-initialize))
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 (ignore-errors
@@ -86,7 +87,9 @@
  '(bubbles-game-theme (quote difficult))
  '(bubbles-grid-size (quote (20 . 15)))
  '(column-number-mode t)
- '(custom-enabled-themes (quote (flatland-black)))
+ '(company-idle-delay 0.1)
+ '(company-minimum-prefix-length 1)
+ '(custom-enabled-themes '(doom-challenger-deep))
  '(custom-safe-themes
    (quote
     ("36c86cb6c648b9a15d849026c90bd6a4ae76e4d482f7bcd138dedd4707ff26a5" "4e4befa32590db02faa3b1589e7ce9f3b6065cd24e8da804b39b747f2473dd50" "6eb36e7cab0fe6d05e7da2acd8b52fe9daea7edd3922d022b0e8e550c41c3a62" "de9fa4b3614611bed2fe75e105bd0d37542924b977299736f158dd4d7343c666" "54449a089fc2f95f99ebc9b9b6067c802532fd50097cf44c46a53b4437d5c6cc" "6d589ac0e52375d311afaa745205abb6ccb3b21f6ba037104d71111e7e76a3fc" "068da66dd5ef78a0fe9245895740a0ba472369032b29bc55df1e7b9db025e46c" "6b2636879127bf6124ce541b1b2824800afc49c6ccd65439d6eb987dbf200c36" "1c082c9b84449e54af757bcae23617d11f563fc9f33a832a8a2813c4d7dfb652" "8aca557e9a17174d8f847fb02870cb2bb67f3b6e808e46c0e54a44e3e18e1020" "75d3dde259ce79660bac8e9e237b55674b910b470f313cdf4b019230d01a982a" "7e78a1030293619094ea6ae80a7579a562068087080e01c2b8b503b27900165c" "d2e9c7e31e574bf38f4b0fb927aaff20c1e5f92f72001102758005e53d77b8c9" "f0dc4ddca147f3c7b1c7397141b888562a48d9888f1595d69572db73be99a024" "a5f068e6c26c2ed952096c034eb49f3ad15a329c905bf3475fae63c1ddb9f402" "144f05e2dfa7a7b50cad0c3519498ac064cc9da1f194b8ea27d0fb20129d8d7a" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "4138944fbed88c047c9973f68908b36b4153646a045648a22083bd622d1e636d" "a3fa4abaf08cc169b61dea8f6df1bbe4123ec1d2afeb01c17e11fdc31fc66379" default)))
@@ -107,6 +110,7 @@
  '(doom-challenger-deep-brighter-comments nil)
  '(doom-challenger-deep-brighter-modeline t)
  '(doom-dracula-brighter-comments t)
+ '(doom-modeline-mode nil)
  '(ediff-highlight-all-diffs t)
  '(ediff-keep-variants nil)
  '(ediff-window-setup-function (quote ediff-setup-windows-plain))
@@ -164,7 +168,7 @@
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
    (quote
-    (flatland-black-theme yaml-mode request csv json-navigator dired-git-info company-lsp lsp-ui lsp-mode visible-mark package-lint dockerfile-mode eww-lnum  ws-butler sly dotnet anzu pomidor minions deadgrep expand-region format-all lyrics docker json-mode company browse-kill-ring 2048-game gist ibuffer-projectile wttrin dashboard powershell projectile smex which-key ido-vertical-mode dired-narrow circe web-mode omnisharp magit)))
+    (doom-modeline doom-themes magit-gitflow flatland-black-theme yaml-mode request csv json-navigator dired-git-info company-lsp lsp-ui lsp-mode visible-mark package-lint dockerfile-mode eww-lnum  ws-butler sly dotnet anzu pomidor minions deadgrep expand-region format-all lyrics docker json-mode company browse-kill-ring 2048-game gist ibuffer-projectile wttrin dashboard powershell projectile smex which-key ido-vertical-mode dired-narrow circe web-mode omnisharp magit)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pomidor-play-sound-file nil)
  '(pos-tip-background-color "#36473A")
@@ -172,8 +176,11 @@
  '(proced-filter (quote all))
  '(projectile-indexing-method (quote alien))
  '(projectile-mode t nil (projectile))
- '(projectile-switch-project-action (quote projectile-find-file-dwim))
- '(reb-re-syntax (quote string))
+ '(projectile-switch-project-action 'projectile-find-file-dwim)
+ '(python-shell-interpreter "ipython")
+ '(python-shell-interpreter-args "--pprint ")
+ '(reb-re-syntax 'string)
+ '(savehist-mode t)
  '(scroll-bar-mode nil)
  '(set-mark-command-repeat-pop t)
  '(size-indication-mode t)
@@ -206,10 +213,10 @@
     (cons 340 "#505050")
     (cons 360 "#505050")))
  '(vc-annotate-very-old-color nil)
- '(visible-mark-faces
-   (quote
-    (visible-mark-face1 visible-mark-face2 visible-mark-forward-face1 visible-mark-forward-face2)))
- '(visible-mark-max 4)
+ '(visible-mark-faces '(visible-mark-face1 visible-mark-face2))
+ '(visible-mark-forward-faces '(visible-mark-forward-face2 visible-mark-forward-face1))
+ '(visible-mark-forward-max 2)
+ '(visible-mark-max 2)
  '(web-mode-enable-css-colorization t)
  '(web-mode-enable-sql-detection t)
  '(which-key-side-window-max-width 0.4)
@@ -248,11 +255,10 @@
  '(ediff-odd-diff-Ancestor ((t (:background "cornflower blue"))))
  '(ediff-odd-diff-B ((t (:background "dark slate gray"))))
  '(ediff-odd-diff-C ((t (:background "dark slate gray"))))
- '(hl-line ((t (:inherit nil :background "gray12"))))
- '(visible-mark-face1 ((t (:box (:line-width 1 :color "turquoise")))))
- '(visible-mark-face2 ((t (:box (:line-width 1 :color "dodger blue")))))
- '(visible-mark-forward-face1 ((t (:box (:line-width 1 :color "dark green")))))
- '(visible-mark-forward-face2 ((t (:box (:line-width 1 :color "dark olive green")))) t)
+ '(visible-mark-face1 ((t (:box (:line-width 1 :color "red")))))
+ '(visible-mark-face2 ((t (:box (:line-width 1 :color "orange")))))
+ '(visible-mark-forward-face1 ((t (:box (:line-width 1 :color "green")))))
+ '(visible-mark-forward-face2 ((t (:box (:line-width 1 :color "yellow")))) t)
  '(web-mode-block-face ((t nil))))
 
 ;; ANZU
@@ -302,7 +308,12 @@
 
 ;; DIRED
 (require 'dired)
-(global-set-key (kbd "\C-cj") 'dired-jump)
+(defun hoagie-dired-jump (&optional arg)
+  "Call dired-jump.  With prefix ARG, open in current window."
+  (interactive "P")
+  (let ((inverted (not arg)))
+    (dired-jump inverted)))
+(global-set-key (kbd "C-c j") 'hoagie-dired-jump)
 (define-key dired-mode-map (kbd "\\") 'dired-narrow)
 ;; more standard binding for filtering, but I'm so used to \, leaving both
 (define-key dired-mode-map (kbd "/") 'dired-narrow)
@@ -332,6 +343,23 @@
 ;; DOCKER
 (hoagie-ensure-package 'docker)
 (global-set-key (kbd "C-c d") 'docker)
+
+;; DOOM-MODELINE
+(hoagie-ensure-package 'doom-modeline)
+(setq doom-modeline-buffer-file-name-style 'buffer-name)
+(setq doom-modeline-icon t)
+(setq doom-modeline-major-mode-icon t)
+(setq doom-modeline-major-mode-color-icon nil)
+(setq doom-modeline-minor-modes t)
+(setq doom-modeline-enable-word-count t)
+(setq doom-modeline-checker-simple-format t)
+(setq doom-modeline-persp-name nil)
+(setq doom-modeline-lsp nil)
+(setq doom-modeline-github nil)
+(setq doom-modeline-env-version nil)
+(setq doom-modeline-mu4e nil)
+(setq doom-modeline-irc nil)
+(doom-modeline-mode 1)
 
 ;; DOTNET
 (hoagie-ensure-package 'dotnet)
@@ -436,7 +464,9 @@ Symbols matching the text at point are put first in the completion list."
 
 ;; MAGIT
 (hoagie-ensure-package 'magit)
+(hoagie-ensure-package 'magit-gitflow)
 (global-set-key (kbd "C-x g") 'magit-status)
+(add-hook 'magit-mode-hook 'turn-on-magit-gitflow)
 
 ;; MINIONS
 (hoagie-ensure-package 'minions)
@@ -557,7 +587,7 @@ Symbols matching the text at point are put first in the completion list."
 (setq default-tab-width 4)
 (global-hl-line-mode t)
 (setq frame-title-format "%b - Emacs")
-(global-set-key (kbd "M-RET") 'toggle-frame-fullscreen)
+(setq save-interprogram-paste-before-kill t)
 (delete-selection-mode t)
 (electric-pair-mode)
 ; see https://emacs.stackexchange.com/questions/33510/unicode-txt-slowness
@@ -590,7 +620,16 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "C-z") 'find-name-dired)
 (global-set-key (kbd "M-z") 'deadgrep)
 (global-set-key (kbd "<mouse-3>") 'kill-ring-save)
-(global-set-key (kbd "<f12>") 'zone)
+
+(defun hoagie-kill-buffer-filename ()
+  "Sends the current buffer's filename to the kill ring."
+  (interactive)
+  (let ((name (buffer-file-name)))
+    (when name
+      (kill-new name))
+    (message (format "Filename: %s" (or name "-No file for this buffer-")))))
+(global-set-key (kbd "<C-f1>") 'hoagie-kill-buffer-filename)
+(define-key dired-mode-map (kbd "<C-f1>") (lambda () (interactive) (dired-copy-filename-as-kill 0)))
 (put 'narrow-to-region 'disabled nil)
 ;; helps compilation buffer not slowdown
 ;; see https://blog.danielgempesaw.com/post/129841682030/fixing-a-laggy-compilation-buffer
@@ -666,6 +705,35 @@ With ARG, do this that many times."
   (interactive "p")
   (delete-word (- arg)))
 (global-set-key (kbd "C-<backspace>") 'backward-delete-word)
+
+;; from https://stackoverflow.com/a/33456622/91877, just like ediff's |
+(defun toggle-window-split ()
+  "Swap two windows between vertical and horizontal split."
+  (interactive)
+  (if (= (count-windows) 2)
+      (let* ((this-win-buffer (window-buffer))
+         (next-win-buffer (window-buffer (next-window)))
+         (this-win-edges (window-edges (selected-window)))
+         (next-win-edges (window-edges (next-window)))
+         (this-win-2nd (not (and (<= (car this-win-edges)
+                     (car next-win-edges))
+                     (<= (cadr this-win-edges)
+                     (cadr next-win-edges)))))
+         (splitter
+          (if (= (car this-win-edges)
+             (car (window-edges (next-window))))
+          'split-window-horizontally
+        'split-window-vertically)))
+    (delete-other-windows)
+    (let ((first-win (selected-window)))
+      (funcall splitter)
+      (if this-win-2nd (other-window 1))
+      (set-window-buffer (selected-window) this-win-buffer)
+      (set-window-buffer (next-window) next-win-buffer)
+      (select-window first-win)
+      (if this-win-2nd (other-window 1))))))
+(global-set-key (kbd "C-M-|") 'toggle-window-split)
+
 
 (global-set-key [f1] (lambda () (interactive) (dired "~/")))
 
