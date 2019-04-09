@@ -84,8 +84,8 @@
  '(blink-cursor-mode nil)
  '(bm-buffer-persistence t)
  '(bm-repository-size 1000)
- '(bubbles-game-theme (quote difficult))
- '(bubbles-grid-size (quote (20 . 15)))
+ '(bubbles-game-theme 'difficult)
+ '(bubbles-grid-size '(20 . 15))
  '(column-number-mode t)
  '(company-idle-delay 0.1)
  '(company-minimum-prefix-length 1)
@@ -96,16 +96,15 @@
  '(dabbrev-case-distinction nil)
  '(dabbrev-case-fold-search t)
  '(dabbrev-case-replace nil)
- '(diary-entry-marker (quote font-lock-variable-name-face))
+ '(diary-entry-marker 'font-lock-variable-name-face)
  '(dired-dwim-target t)
  '(dired-listing-switches "-laogGhvD")
  '(dired-sort-menu-saved-config
-   (quote
-    ((dired-actual-switches . "-al")
+   '((dired-actual-switches . "-al")
      (ls-lisp-ignore-case)
-     (ls-lisp-dirs-first . t))))
+     (ls-lisp-dirs-first . t)))
  '(diredp-ignore-compressed-flag t)
- '(display-line-numbers (quote relative))
+ '(display-line-numbers 'relative)
  '(display-line-numbers-current-absolute nil)
  '(doom-challenger-deep-brighter-comments nil)
  '(doom-challenger-deep-brighter-modeline t)
@@ -113,51 +112,49 @@
  '(doom-modeline-mode nil)
  '(ediff-highlight-all-diffs t)
  '(ediff-keep-variants nil)
- '(ediff-window-setup-function (quote ediff-setup-windows-plain))
+ '(ediff-window-setup-function 'ediff-setup-windows-plain)
  '(eww-search-prefix "http://www.bing.com/search?q=")
- '(fci-rule-color "#505050")
- '(flycheck-color-mode-line-face-to-color (quote mode-line-buffer-id))
- '(frame-background-mode (quote dark))
+ '(fci-rule-color "#858FA5")
+ '(flycheck-color-mode-line-face-to-color 'mode-line-buffer-id)
+ '(frame-background-mode 'dark)
  '(global-flycheck-mode t)
  '(global-mark-ring-max 32)
  '(global-visible-mark-mode t)
  '(grep-command
    "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
  '(hl-sexp-background-color "#1c1f26")
- '(ido-default-buffer-method (quote selected-window))
+ '(ido-default-buffer-method 'selected-window)
  '(ido-ubiquitous-mode t)
  '(inhibit-startup-screen t)
  '(initial-buffer-choice t)
  '(initial-scratch-message
-   ";; Il semble que la perfection soit atteinte non quand il n'y a plus rien à ajouter, mais quand il n'y a plus rien à retrancher. - Antoine_de_Saint_Exupéry
+   ";; Il semble que la perfection soit atteinte non quand il n'y a plus rien à ajouter, mais quand il n'y a plus à retrancher. - Antoine_de_Saint_Exupéry
 ;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.
 ")
  '(jdee-db-active-breakpoint-face-colors (cons "#100e23" "#906cff"))
  '(jdee-db-requested-breakpoint-face-colors (cons "#100e23" "#95ffa4"))
  '(jdee-db-spec-breakpoint-face-colors (cons "#100e23" "#565575"))
  '(lisp-mode-hook
-   (quote
-    (#[nil "\300\301\302\303\211$\207"
+   '(#[nil "\300\301\302\303\211$\207"
            [add-hook font-lock-extend-region-functions sly-extend-region-for-font-lock t]
            5]
      common-lisp-lisp-mode-hook sly-editing-mode
      #[nil "\300\301\302\303\211$\207"
            [add-hook font-lock-extend-region-functions slime-extend-region-for-font-lock t]
-           5])))
+           5]))
  '(ls-lisp-dirs-first t)
- '(ls-lisp-format-time-list (quote ("%Y-%m-%d %H:%M" "%Y-%m-%d %H:%M")))
+ '(ls-lisp-format-time-list '("%Y-%m-%d %H:%M" "%Y-%m-%d %H:%M"))
  '(ls-lisp-use-insert-directory-program nil)
  '(ls-lisp-use-localized-time-format t)
  '(ls-lisp-verbosity nil)
  '(main-line-color1 "#222232")
  '(main-line-color2 "#333343")
  '(menu-bar-mode nil)
- '(minions-direct (quote (flycheck-mode)))
+ '(minions-direct '(flycheck-mode))
  '(minions-mode t)
  '(minions-mode-line-lighter "^")
  '(nrepl-message-colors
-   (quote
-    ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
+   '("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3"))
  '(omnisharp-auto-complete-template-use-yasnippet nil)
  '(omnisharp-company-begin-after-member-access nil)
  '(omnisharp-company-template-use-yasnippet nil)
@@ -167,14 +164,13 @@
  '(org-hide-emphasis-markers t)
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
-   (quote
-    (doom-modeline doom-themes magit-gitflow flatland-black-theme yaml-mode request csv json-navigator dired-git-info company-lsp lsp-ui lsp-mode visible-mark package-lint dockerfile-mode eww-lnum  ws-butler sly dotnet anzu pomidor minions deadgrep expand-region format-all lyrics docker json-mode company browse-kill-ring 2048-game gist ibuffer-projectile wttrin dashboard powershell projectile smex which-key ido-vertical-mode dired-narrow circe web-mode omnisharp magit)))
- '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
+   '(doom-modeline doom-themes expand-region eglot flatland-black-theme yaml-mode magit-gitflow request android-mode csv json-navigator dired-git-info company-lsp lsp-ui lsp-mode visible-mark package-lint dockerfile-mode eww-lnum ws-butler sly dotnet anzu pomidor minions deadgrep format-all lyrics docker json-mode company browse-kill-ring 2048-game gist ibuffer-projectile powershell projectile smex which-key ido-vertical-mode dired-narrow circe web-mode omnisharp magit))
+ '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(pomidor-play-sound-file nil)
  '(pos-tip-background-color "#36473A")
  '(pos-tip-foreground-color "#FFFFC8")
- '(proced-filter (quote all))
- '(projectile-indexing-method (quote alien))
+ '(proced-filter 'all)
+ '(projectile-indexing-method 'alien)
  '(projectile-mode t nil (projectile))
  '(projectile-switch-project-action 'projectile-find-file-dwim)
  '(python-shell-interpreter "ipython")
@@ -190,28 +186,28 @@
  '(sql-product 'ms)
  '(sunshine-units 'metric)
  '(tool-bar-mode nil)
- '(tramp-syntax (quote default) nil (tramp))
- '(vc-annotate-background "#1b1d1e")
+ '(tramp-syntax 'default nil (tramp))
+ '(vc-annotate-background "#1b182c")
  '(vc-annotate-color-map
    (list
-    (cons 20 "#60aa00")
-    (cons 40 "#859f0d")
-    (cons 60 "#aa931a")
-    (cons 80 "#d08928")
-    (cons 100 "#d38732")
-    (cons 120 "#d6863d")
-    (cons 140 "#da8548")
-    (cons 160 "#ce8379")
-    (cons 180 "#c281aa")
-    (cons 200 "#b77fdb")
-    (cons 220 "#bf63b2")
-    (cons 240 "#c74789")
-    (cons 260 "#d02b61")
-    (cons 280 "#b0345c")
-    (cons 300 "#903d58")
-    (cons 320 "#704654")
-    (cons 340 "#505050")
-    (cons 360 "#505050")))
+    (cons 20 "#95ffa4")
+    (cons 40 "#b8f7a6")
+    (cons 60 "#dbf0a8")
+    (cons 80 "#ffe9aa")
+    (cons 100 "#ffd799")
+    (cons 120 "#ffc488")
+    (cons 140 "#ffb378")
+    (cons 160 "#eda79b")
+    (cons 180 "#db9cbd")
+    (cons 200 "#c991e1")
+    (cons 220 "#db8bc0")
+    (cons 240 "#ed85a0")
+    (cons 260 "#ff8080")
+    (cons 280 "#d4757d")
+    (cons 300 "#aa6a7a")
+    (cons 320 "#805f77")
+    (cons 340 "#858FA5")
+    (cons 360 "#858FA5")))
  '(vc-annotate-very-old-color nil)
  '(visible-mark-faces '(visible-mark-face1 visible-mark-face2))
  '(visible-mark-forward-faces '(visible-mark-forward-face2 visible-mark-forward-face1))
@@ -220,12 +216,11 @@
  '(web-mode-enable-css-colorization t)
  '(web-mode-enable-sql-detection t)
  '(which-key-side-window-max-width 0.4)
- '(which-key-sort-order (quote which-key-prefix-then-key-order))
- '(wttrin-default-accept-language (quote ("Accept-Language" . "en-US")))
- '(wttrin-default-cities (quote ("Denver?m" "Buenos Aires?m")))
+ '(which-key-sort-order 'which-key-prefix-then-key-order)
+ '(wttrin-default-accept-language '("Accept-Language" . "en-US"))
+ '(wttrin-default-cities '("Denver?m" "Buenos Aires?m"))
  '(yas-prompt-functions
-   (quote
-    (yas-ido-prompt yas-dropdown-prompt yas-completing-prompt yas-maybe-ido-prompt yas-no-prompt))))
+   '(yas-ido-prompt yas-dropdown-prompt yas-completing-prompt yas-maybe-ido-prompt yas-no-prompt)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -313,7 +308,7 @@
   (interactive "P")
   (let ((inverted (not arg)))
     (dired-jump inverted)))
-(global-set-key (kbd "C-c j") 'hoagie-dired-jump)
+(global-set-key (kbd "H-j") 'hoagie-dired-jump)
 (define-key dired-mode-map (kbd "\\") 'dired-narrow)
 ;; more standard binding for filtering, but I'm so used to \, leaving both
 (define-key dired-mode-map (kbd "/") 'dired-narrow)
@@ -323,11 +318,15 @@
 ;; C-c l to launch a file in Windows similar to running
 ;; start "" filename in the console
 (when (hoagie-work-p)
-  (defun w32-browser (doc)
-    "Have Windows start DOC."
-    (w32-shell-execute 1 doc))
-  (define-key dired-mode-map (kbd "\C-cl")
-    (lambda () (interactive) (w32-browser (dired-replace-in-string "/" "\\" (dired-get-filename))))))
+  (defun hoagie-dired-winstart ()
+    "Start the file under point on Windows."
+    (interactive)
+    (let ((filename (dired-replace-in-string "/"
+                                             "\\"
+                                             (dired-get-filename))))
+      (w32-shell-execute 1 filename)))
+  (define-key dired-mode-map (kbd "H-l") 'hoagie-dired-winstart))
+
 
 ;; copy to clipboard from dired, in Windows
 ;; useful to copy files and then paste in Outlook
@@ -368,7 +367,7 @@
 
 ;; FORMAT-ALL-THE-CODE
 (hoagie-ensure-package 'format-all)
-(global-set-key (kbd "C-c C-f b") 'format-all-buffer)
+(global-set-key (kbd "C-c f") 'format-all-buffer)
 
 ;; IBUFFER
 (require 'ibuffer)
@@ -465,7 +464,7 @@ Symbols matching the text at point are put first in the completion list."
 ;; MAGIT
 (hoagie-ensure-package 'magit)
 (hoagie-ensure-package 'magit-gitflow)
-(global-set-key (kbd "C-x g") 'magit-status)
+(global-set-key (kbd "H-m") 'magit-status)
 (add-hook 'magit-mode-hook 'turn-on-magit-gitflow)
 
 ;; MINIONS
@@ -482,7 +481,7 @@ Symbols matching the text at point are put first in the completion list."
   (if (use-region-p)
       (occur (buffer-substring-no-properties (region-beginning) (region-end)))
     (command-execute 'occur)))
-(global-set-key (kbd "M-s o") 'hoagie-occur-dwim)
+(global-set-key (kbd "H-o") 'hoagie-occur-dwim)
 
 ;; OMNISHARP
 (hoagie-ensure-package 'omnisharp)
@@ -528,10 +527,7 @@ Symbols matching the text at point are put first in the completion list."
 ;; SMEX
 (hoagie-ensure-package 'smex)
 (smex-initialize)
-(global-set-key (kbd "M-x") 'smex)
-(cond
- ((hoagie-work-p) (global-set-key (kbd "<apps>") 'smex))
- ((hoagie-laptop-p) (global-set-key (kbd "<menu>") 'smex)))
+(global-set-key (kbd "H-x") 'smex)
 (global-set-key (kbd "M-X") 'smex-major-mode-commands)
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
@@ -607,18 +603,22 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "C-M-+") (lambda () (interactive)(shrink-window -5)))
 (global-set-key (kbd "M-o") 'other-window)
 (global-set-key (kbd "M-O") 'other-frame)
-(global-set-key (kbd "M-N") 'next-buffer)
-(global-set-key (kbd "M-P") 'previous-buffer)
+(global-set-key (kbd "H-n") 'next-buffer)
+(global-set-key (kbd "H-p") 'previous-buffer)
 ;; used to be C-x K. Honestly I never used C-x C-k (macros) commands that much so :shrug:
 ;; without the lambda it would simply show the menu like C-x k
-(global-set-key (kbd "C-x C-k") (lambda () (interactive) (kill-buffer)))
+(defun hoagie-kill-this-buffer ()
+  "Kill the current buffer.
+If defined as a lambda then it shows a ? in the bindings list."
+  (interactive)
+  (kill-buffer))
+(global-set-key (kbd "H-k") 'hoagie-kill-this-buffer)
 (global-set-key (kbd "C-;") 'dabbrev-expand)
-(global-set-key (kbd "C-c M-d") 'sql-connect)
 (global-set-key (kbd "<f6>") 'kmacro-start-macro)
 (global-set-key (kbd "<f7>") 'kmacro-end-macro)
 (global-set-key (kbd "<f8>") 'kmacro-end-and-call-macro)
-(global-set-key (kbd "C-z") 'find-name-dired)
-(global-set-key (kbd "M-z") 'deadgrep)
+(global-set-key (kbd "H-f") 'find-name-dired)
+(global-set-key (kbd "H-g") 'deadgrep)
 (global-set-key (kbd "<mouse-3>") 'kill-ring-save)
 
 (defun hoagie-kill-buffer-filename ()
@@ -733,6 +733,7 @@ With ARG, do this that many times."
       (select-window first-win)
       (if this-win-2nd (other-window 1))))))
 (global-set-key (kbd "C-M-|") 'toggle-window-split)
+(global-set-key (kbd "H-|") 'toggle-window-split)
 
 
 (global-set-key [f1] (lambda () (interactive) (dired "~/")))
