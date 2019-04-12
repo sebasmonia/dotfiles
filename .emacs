@@ -256,6 +256,12 @@
  '(visible-mark-forward-face2 ((t (:box (:line-width 1 :color "yellow")))) t)
  '(web-mode-block-face ((t nil))))
 
+;; based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html
+;; CUSTOM KEYMAP
+(defvar hoagie-keymap (define-prefix-command 'hoagie-keymap) "My custom bindings.")
+(define-key key-translation-map (kbd "<apps>") (kbd "<menu>"))
+(global-set-key (kbd "<menu>") 'hoagie-keymap)
+
 ;; ANZU
 (hoagie-ensure-package 'anzu)
 (global-anzu-mode +1)
@@ -308,7 +314,7 @@
   (interactive "P")
   (let ((inverted (not arg)))
     (dired-jump inverted)))
-(global-set-key (kbd "H-j") 'hoagie-dired-jump)
+(define-key hoagie-keymap (kbd "j") 'hoagie-dired-jump)
 (define-key dired-mode-map (kbd "\\") 'dired-narrow)
 ;; more standard binding for filtering, but I'm so used to \, leaving both
 (define-key dired-mode-map (kbd "/") 'dired-narrow)
@@ -325,8 +331,7 @@
                                              "\\"
                                              (dired-get-filename))))
       (w32-shell-execute 1 filename)))
-  (define-key dired-mode-map (kbd "H-l") 'hoagie-dired-winstart))
-
+  (define-key hoagie-keymap (kbd "l") 'hoagie-dired-winstart))
 
 ;; copy to clipboard from dired, in Windows
 ;; useful to copy files and then paste in Outlook
@@ -464,7 +469,7 @@ Symbols matching the text at point are put first in the completion list."
 ;; MAGIT
 (hoagie-ensure-package 'magit)
 (hoagie-ensure-package 'magit-gitflow)
-(global-set-key (kbd "H-m") 'magit-status)
+(define-key hoagie-keymap (kbd "m") 'magit-status)
 (add-hook 'magit-mode-hook 'turn-on-magit-gitflow)
 
 ;; MINIONS
@@ -481,7 +486,7 @@ Symbols matching the text at point are put first in the completion list."
   (if (use-region-p)
       (occur (buffer-substring-no-properties (region-beginning) (region-end)))
     (command-execute 'occur)))
-(global-set-key (kbd "H-o") 'hoagie-occur-dwim)
+(define-key hoagie-keymap (kbd "o") 'hoagie-occur-dwim)
 
 ;; OMNISHARP
 (hoagie-ensure-package 'omnisharp)
@@ -527,7 +532,9 @@ Symbols matching the text at point are put first in the completion list."
 ;; SMEX
 (hoagie-ensure-package 'smex)
 (smex-initialize)
-(global-set-key (kbd "H-x") 'smex)
+(define-key hoagie-keymap (kbd "x") 'smex)
+(define-key hoagie-keymap (kbd "<menu>") 'smex)
+(global-set-key (kbd "M-x") 'smex)
 (global-set-key (kbd "M-X") 'smex-major-mode-commands)
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
@@ -603,8 +610,8 @@ Symbols matching the text at point are put first in the completion list."
 (global-set-key (kbd "C-M-+") (lambda () (interactive)(shrink-window -5)))
 (global-set-key (kbd "M-o") 'other-window)
 (global-set-key (kbd "M-O") 'other-frame)
-(global-set-key (kbd "H-n") 'next-buffer)
-(global-set-key (kbd "H-p") 'previous-buffer)
+(define-key hoagie-keymap (kbd "n") 'next-buffer)
+(define-key hoagie-keymap (kbd "p") 'previous-buffer)
 ;; used to be C-x K. Honestly I never used C-x C-k (macros) commands that much so :shrug:
 ;; without the lambda it would simply show the menu like C-x k
 (defun hoagie-kill-this-buffer ()
@@ -612,13 +619,13 @@ Symbols matching the text at point are put first in the completion list."
 If defined as a lambda then it shows a ? in the bindings list."
   (interactive)
   (kill-buffer))
-(global-set-key (kbd "H-k") 'hoagie-kill-this-buffer)
+(define-key hoagie-keymap (kbd "k") 'hoagie-kill-this-buffer)
 (global-set-key (kbd "C-;") 'dabbrev-expand)
 (global-set-key (kbd "<f6>") 'kmacro-start-macro)
 (global-set-key (kbd "<f7>") 'kmacro-end-macro)
 (global-set-key (kbd "<f8>") 'kmacro-end-and-call-macro)
-(global-set-key (kbd "H-f") 'find-name-dired)
-(global-set-key (kbd "H-g") 'deadgrep)
+(define-key hoagie-keymap (kbd "f") 'find-name-dired)
+(define-key hoagie-keymap (kbd "g") 'deadgrep)
 (global-set-key (kbd "<mouse-3>") 'kill-ring-save)
 
 (defun hoagie-kill-buffer-filename ()
@@ -733,8 +740,7 @@ With ARG, do this that many times."
       (select-window first-win)
       (if this-win-2nd (other-window 1))))))
 (global-set-key (kbd "C-M-|") 'toggle-window-split)
-(global-set-key (kbd "H-|") 'toggle-window-split)
-
+(define-key hoagie-keymap (kbd "|") 'toggle-window-split)
 
 (global-set-key [f1] (lambda () (interactive) (dired "~/")))
 
