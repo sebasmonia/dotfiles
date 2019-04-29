@@ -1,10 +1,1 @@
-clear control
-add control = Control_R
-clear mod3
-clear mod4
-add mod3 = Hyper_L
-add mod4 = Super_L
 keycode 66 = Control_R
-keycode 135 = Hyper_L
-keycode 105 = Menu
-
