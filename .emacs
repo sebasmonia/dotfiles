@@ -50,7 +50,7 @@
   ;; TODO
   (string-equal system-type "windows-nt"))
 
-(add-to-list 'load-path "~/.emacs.d/lisp/")
+(add-to-list 'load-path (expand-file-name  "~/.emacs.d/lisp/"))
 (set-language-environment 'utf-8)
 (set-keyboard-coding-system 'utf-8-mac) ; For old Carbon emacs on OS X only
 (setq locale-coding-system 'utf-8)
@@ -88,7 +88,7 @@
  '(bubbles-grid-size '(20 . 15))
  '(column-number-mode t)
  '(company-idle-delay 0.1)
- '(company-minimum-prefix-length 1)
+ '(company-minimum-prefix-length 2)
  '(custom-enabled-themes '(doom-challenger-deep))
  '(custom-safe-themes
    (quote
@@ -164,7 +164,7 @@
  '(org-hide-emphasis-markers t)
  '(org-plantuml-jar-path "c:/HomeFolder/PlantUML/plantuml.jar")
  '(package-selected-packages
-   '(doom-modeline doom-themes expand-region eglot flatland-black-theme yaml-mode magit-gitflow request android-mode csv json-navigator dired-git-info company-lsp lsp-ui lsp-mode visible-mark package-lint dockerfile-mode eww-lnum ws-butler sly dotnet anzu pomidor minions deadgrep format-all lyrics docker json-mode company browse-kill-ring 2048-game gist ibuffer-projectile powershell projectile smex which-key ido-vertical-mode dired-narrow circe web-mode omnisharp magit))
+   '(cheat-sh better-shell doom-modeline doom-themes expand-region eglot flatland-black-theme yaml-mode magit-gitflow request android-mode csv json-navigator dired-git-info company-lsp lsp-ui lsp-mode visible-mark package-lint dockerfile-mode eww-lnum ws-butler sly dotnet anzu pomidor minions deadgrep format-all lyrics docker json-mode company browse-kill-ring 2048-game gist ibuffer-projectile powershell projectile smex which-key ido-vertical-mode dired-narrow circe web-mode omnisharp magit))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(pomidor-play-sound-file nil)
  '(pos-tip-background-color "#36473A")
@@ -226,7 +226,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Consolas" :foundry "outline" :slant normal :weight normal :height 110 :width normal))))
+ '(default ((t (:family "Consolas" :foundry "outline" :slant normal :weight normal :height 102 :width normal))))
  '(dgi-commit-message-face ((t (:foreground "cornflower blue"))))
  '(diredp-compressed-file-name ((t (:foreground "slate gray"))))
  '(diredp-compressed-file-suffix ((((class color) (min-colors 89)) (:foreground "#b218b2"))))
@@ -275,6 +275,11 @@
 (hoagie-ensure-package 'browse-kill-ring)
 (browse-kill-ring-default-keybindings)
 
+;; CHEAT-SH
+(require 'cheat-sh)
+(global-set-key (kbd "C-c s") 'cheat-sh-maybe-region)
+(global-set-key (kbd "C-c S") 'cheat-sh-search-topic)
+
 ;; COMPANY
 (hoagie-ensure-package 'company)
 (add-hook 'after-init-hook 'global-company-mode)
@@ -315,6 +320,7 @@
   (let ((inverted (not arg)))
     (dired-jump inverted)))
 (define-key hoagie-keymap (kbd "j") 'hoagie-dired-jump)
+(define-key hoagie-keymap (kbd "J") (lambda () (interactive) (hoagie-dired-jump 4)))
 (define-key dired-mode-map (kbd "\\") 'dired-narrow)
 ;; more standard binding for filtering, but I'm so used to \, leaving both
 (define-key dired-mode-map (kbd "/") 'dired-narrow)
@@ -367,8 +373,9 @@
 
 ;; DOTNET
 (hoagie-ensure-package 'dotnet)
-(setq dotnet-mode-keymap-prefix (kbd "C-c n"))
-(add-hook 'csharp-mode-hook 'dotnet-mode)
+(setq dotnet-mode-keymap-prefix nil)
+(define-key hoagie-keymap (kbd "d") dotnet-mode-command-map)
+
 
 ;; FORMAT-ALL-THE-CODE
 (hoagie-ensure-package 'format-all)
@@ -524,6 +531,8 @@ Symbols matching the text at point are put first in the completion list."
 (add-hook 'shell-mode-hook
           (lambda ()
             (toggle-truncate-lines t)))
+(hoagie-ensure-package 'better-shell)
+(define-key hoagie-keymap (kbd "`") 'better-shell-for-current-dir)
 
 ;; SLY
 (hoagie-ensure-package 'sly)
@@ -592,7 +601,8 @@ Symbols matching the text at point are put first in the completion list."
 (setq frame-title-format "%b - Emacs")
 (setq save-interprogram-paste-before-kill t)
 (delete-selection-mode t)
-(electric-pair-mode)
+;; sometimes this is great...other times it's annoying...
+;; (electric-pair-mode)
 ; see https://emacs.stackexchange.com/questions/33510/unicode-txt-slowness
 (setq inhibit-compacting-font-caches t)
 ; see https://emacs.stackexchange.com/a/28746/17066
@@ -620,7 +630,6 @@ If defined as a lambda then it shows a ? in the bindings list."
   (interactive)
   (kill-buffer))
 (define-key hoagie-keymap (kbd "k") 'hoagie-kill-this-buffer)
-(global-set-key (kbd "C-x k") 'hoagie-kill-this-buffer)
 (global-set-key (kbd "C-;") 'dabbrev-expand)
 (global-set-key (kbd "<f6>") 'kmacro-start-macro)
 (global-set-key (kbd "<f7>") 'kmacro-end-macro)
