@@ -620,6 +620,7 @@ If defined as a lambda then it shows a ? in the bindings list."
   (interactive)
   (kill-buffer))
 (define-key hoagie-keymap (kbd "k") 'hoagie-kill-this-buffer)
+(global-set-key (kbd "C-x k") 'hoagie-kill-this-buffer)
 (global-set-key (kbd "C-;") 'dabbrev-expand)
 (global-set-key (kbd "<f6>") 'kmacro-start-macro)
 (global-set-key (kbd "<f7>") 'kmacro-end-macro)
