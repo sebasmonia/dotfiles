@@ -409,6 +409,10 @@
 (require 'icomplete)
 (icomplete-mode 1)
 
+;; IMENU
+(hoagie-ensure-package 'idomenu)
+(global-set-key (kbd "M-g d") 'idomenu)
+
 ;; LSP MODE
 ;; (hoagie-ensure-package 'lsp-mode)
 ;; (hoagie-ensure-package 'lsp-ui)
