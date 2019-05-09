@@ -36,20 +36,6 @@
 (setq use-package-verbose t)
 (setq use-package-always-ensure t)
 
-(defun hoagie-laptop-p ()
-  "Return t if running in any of the laptops."
-  (string-equal (system-name) "HogzLaptop"))
-
-(defun hoagie-work-p ()
-  "Return t if running in the work computer."
-  ;; only Win computer is the work one
-  (string-equal system-type "windows-nt"))
-
-(defun hoagie-rpi-p ()
-  "Return t if running in the raspberry pi."
-  ;; TODO
-  (string-equal system-type "windows-nt"))
-
 (setq custom-file "~/.emacscustom.el")
 (load custom-file)
 
@@ -132,28 +118,7 @@
       (let ((inverted (not arg)))
         (dired-jump inverted)))
     (define-key hoagie-keymap (kbd "j") 'hoagie-dired-jump)
-    (define-key hoagie-keymap (kbd "J") (lambda () (interactive) (hoagie-dired-jump 4)))
-    ;; TODO: hoagie-work-p didn't work...
-    (when (hoagie-work-p)
-      ;; C-c l to launch a file in Windows similar to running
-      ;; start "" filename in the console
-      (defun hoagie-dired-winstart ()
-        "Start the file under point on Windows."
-        (interactive)
-        (let ((filename (dired-replace-in-string "/"
-                                                 "\\"
-                                                 (dired-get-filename))))
-          (w32-shell-execute 1 filename)))
-      (define-key hoagie-keymap (kbd "l") 'hoagie-dired-winstart)
-      ;; copy to clipboard from dired, in Windows
-      ;; useful to copy files and then paste in Outlook
-      ;; from https://github.com/roryyorke/picellif/
-      (defun picellif-dired-marked-files ()
-        "Send marked files (or current file, if none marked) in current Dired buffer to picellif."
-        (interactive)
-        (apply 'call-process "picellif" nil nil nil
-               (dired-get-marked-files)))
-      (define-key dired-mode-map (kbd "W") 'picellif-dired-marked-files))))
+    (define-key hoagie-keymap (kbd "J") (lambda () (interactive) (hoagie-dired-jump 4)))))
 
 (use-package dired-narrow
   :after dired
@@ -209,7 +174,7 @@
   :config
   (progn
     (setq dotnet-mode-keymap-prefix nil)
-    (define-key hoagie-keymap (kbd "d") dotnet-mode-command-map)))
+    (define-key hoagie-keymap (kbd "n") dotnet-mode-command-map)))
 
 (use-package format-all
   :bind ("C-c f" . format-all-buffer))
@@ -296,16 +261,19 @@
   (minions-mode-line-lighter "^"))
 
 ;; TODO: convert to use-package
-(require 'replace)
-;; I'm surprised this isn't the default behaviour,
-;; also couldn't find a way to change it from options
-(defun hoagie-occur-dwim ()
-  "Run occur, if there's a region selected use that as input."
-  (interactive)
-  (if (use-region-p)
-      (occur (buffer-substring-no-properties (region-beginning) (region-end)))
-    (command-execute 'occur)))
-(define-key hoagie-keymap (kbd "o") 'hoagie-occur-dwim)
+(use-package replace
+  :ensure nil
+  :config
+  (progn
+    ;; I'm surprised this isn't the default behaviour,
+    ;; also couldn't find a way to change it from options
+    (defun hoagie-occur-dwim ()
+      "Run occur, if there's a region selected use that as input."
+      (interactive)
+      (if (use-region-p)
+          (occur (buffer-substring-no-properties (region-beginning) (region-end)))
+        (command-execute 'occur)))
+    (define-key hoagie-keymap (kbd "o") 'hoagie-occur-dwim)))
 
 (use-package omnisharp
   :config
@@ -457,8 +425,8 @@
 ; adapted for https://stackoverflow.com/questions/6464738/how-can-i-switch-focus-after-buffer-split-in-emacs
 (global-set-key (kbd "C-x 3") (lambda () (interactive)(split-window-right) (other-window 1)))
 (global-set-key (kbd "C-x 2") (lambda () (interactive)(split-window-below) (other-window 1)))
-(global-set-key (kbd "C-M-}") (lambda () (interactive)(shrink-window-horizontally 5)))
-(global-set-key (kbd "C-M-{") (lambda () (interactive)(enlarge-window-horizontally 5)))
+(global-set-key (kbd "C-M-{") (lambda () (interactive)(shrink-window-horizontally 5)))
+(global-set-key (kbd "C-M-}") (lambda () (interactive)(enlarge-window-horizontally 5)))
 (global-set-key (kbd "C-M-_") (lambda () (interactive)(shrink-window 5)))
 (global-set-key (kbd "C-M-+") (lambda () (interactive)(shrink-window -5)))
 (global-set-key (kbd "M-o") 'other-window)
@@ -601,10 +569,10 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
       (if this-win-2nd (other-window 1))))))
 (global-set-key (kbd "C-M-|") 'toggle-window-split)
 
-(when (hoagie-work-p)
+(when (string= system-type "windows-nt")
   (load "c:/repos/miscscripts/workonlyconfig.el"))
 
-(when (or (hoagie-laptop-p) (hoagie-rpi-p))
+(when (string= system-type "gnu/linux")
   (defun find-alternative-file-with-sudo ()
     (interactive)
     (let ((fname (or buffer-file-name
