@@ -20,9 +20,21 @@
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 
+
+;; GC config from https://gitlab.com/jessieh/dot-emacs/
+;; Increase the garbage collection threshold to 100MB for a faster startup time.
+(setq-default gc-cons-threshold 100000000
+              gc-cons-percentage 0.6)
+
+;; Restore it to 8MB after initialization is finished.
+(add-hook 'emacs-startup-hook (lambda () (setq gc-cons-threshold 8000000
+                                               gc-cons-percentage 0.1)))
+;; Collect all garbage whenever Emacs loses focus.
+(add-hook 'focus-out-hook #'garbage-collect)
+
+
 (package-initialize)
 (package-refresh-contents)
-
 ;; Try to refresh package contents,  handle error and
 ;; print message if it fails (no internet connection?)
 ;;(condition-case err
@@ -48,9 +60,11 @@
   :commands 2048-game)
 
 (use-package anzu
-  :bind-keymap
-  (([remap isearch-query-replace]  . anzu-isearch-query-replace)
-   ([remap isearch-query-replace-regexp] . anzu-isearch-query-replace-regexp))
+  :bind
+  (("<remap> <isearch-query-replace>" . anzu-isearch-query-replace)
+   ("<remap> <isearch-query-replace-regexp>" . anzu-isearch-query-replace-regexp)
+   ("<remap> <query-replace>" . anzu-query-replace)
+   ("<remap> <query-replace-regexp>" . anzu-query-replace-regexp))
   :init
   (global-anzu-mode 1)
   :custom
@@ -148,25 +162,12 @@
   :demand t ;; not sure if really needed
   )
 
-(use-package doom-modeline
-  :hook (after-init . doom-modeline-mode)
-  :custom
-  (doom-modeline-buffer-file-name-style 'buffer-name)
-  (doom-modeline-icon t)
-  (doom-modeline-major-mode-icon t)
-  (doom-modeline-major-mode-color-icon nil)
-  (doom-modeline-minor-modes t)
-  (doom-modeline-enable-word-count t)
-  (doom-modeline-checker-simple-format t)
-  (doom-modeline-persp-name nil)
-  (doom-modeline-lsp nil)
-  (doom-modeline-github nil)
-  (doom-modeline-env-version nil)
-  (doom-modeline-mu4e nil)
-  (doom-modeline-irc nil))
+(use-package mood-line
+  :demand t
+  :config
+  (mood-line-mode))
 
-(use-package doom-themes
-  :demand t)
+(use-package challenger-deep-theme)
 
 (add-to-list 'load-path "c:/home/github/dotnet.el")
 (use-package dotnet
@@ -224,12 +225,15 @@
 (use-package idomenu
   :bind ("M-g d" . idomenu))
 
-(use-package lsp-mode
-  :commands lsp)
-;; TODO: convert hook
-(add-hook 'python-mode-hook #'lsp)
-(use-package lsp-ui :commands lsp-ui-mode)
-(use-package company-lsp :commands company-lsp)
+;; LSP is still too slow on Windows
+;; (use-package lsp-mode
+;;   :commands lsp
+;;   :custom
+;;   (lsp-enable-snippet nil)
+;; ;; TODO: convert hook
+;; (add-hook 'python-mode-hook #'lsp)
+;; (use-package lsp-ui :commands lsp-ui-mode)
+;; (use-package company-lsp :commands company-lsp)
 
 ;; (use-package lsp-python-ms
 ;;   :config
@@ -248,8 +252,7 @@
   (use-package magit-gitflow
     :commands (turn-on-magit-gitflow))
   :bind
-  (:map hoagie-keymap
-              ("m" . magit-status))
+  ("C-x g" . magit-status)
   :hook
   (magit-mode . turn-on-magit-gitflow))
 
@@ -260,7 +263,6 @@
   (minions-direct  '(flycheck-mode))
   (minions-mode-line-lighter "^"))
 
-;; TODO: convert to use-package
 (use-package replace
   :ensure nil
   :config
@@ -425,8 +427,8 @@
 ; adapted for https://stackoverflow.com/questions/6464738/how-can-i-switch-focus-after-buffer-split-in-emacs
 (global-set-key (kbd "C-x 3") (lambda () (interactive)(split-window-right) (other-window 1)))
 (global-set-key (kbd "C-x 2") (lambda () (interactive)(split-window-below) (other-window 1)))
-(global-set-key (kbd "C-M-{") (lambda () (interactive)(shrink-window-horizontally 5)))
-(global-set-key (kbd "C-M-}") (lambda () (interactive)(enlarge-window-horizontally 5)))
+(global-set-key (kbd "C-M-}") (lambda () (interactive)(shrink-window-horizontally 5)))
+(global-set-key (kbd "C-M-{") (lambda () (interactive)(enlarge-window-horizontally 5)))
 (global-set-key (kbd "C-M-_") (lambda () (interactive)(shrink-window 5)))
 (global-set-key (kbd "C-M-+") (lambda () (interactive)(shrink-window -5)))
 (global-set-key (kbd "M-o") 'other-window)

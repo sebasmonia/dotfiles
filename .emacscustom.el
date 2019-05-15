@@ -21,10 +21,8 @@
  '(default-frame-alist (quote ((fullscreen . maximized))))
  '(delete-by-moving-to-trash t)
  '(delete-selection-mode t)
- '(doom-challenger-deep-brighter-comments nil)
- '(doom-challenger-deep-brighter-modeline t)
- '(doom-challenger-deep-comment-bg t)
- '(doom-dracula-brighter-comments t)
+ '(dired-dwim-target t)
+ '(dired-listing-switches "-laogGhvD")
  '(eww-search-prefix "http://www.bing.com/search?q=")
  '(flycheck-color-mode-line-face-to-color (quote mode-line-buffer-id))
  '(global-flycheck-mode t)
@@ -52,9 +50,6 @@
  '(menu-bar-mode nil)
  '(org-fontify-emphasized-text nil)
  '(org-hide-emphasis-markers t)
- '(package-selected-packages
-   (quote
-    (csv android-mode yaml-mode ws-butler which-key web-mode visible-mark smex sly better-shell ibuffer-projectile projectile powershell package-lint omnisharp minions magit-gitflow magit lyrics company-lsp lsp-ui lsp-mode idomenu ido-vertical-mode format-all dotnet doom-themes doom-modeline dockerfile-mode docker deadgrep dired-git-info dired-narrow eww-lnum expand-region company browse-kill-ring anzu 2048-game use-package)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pomidor-play-sound-file nil)
  '(proced-filter (quote all))
