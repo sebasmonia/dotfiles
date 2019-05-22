@@ -167,7 +167,37 @@
   :config
   (mood-line-mode))
 
-(use-package challenger-deep-theme)
+;; (use-package doom-modeline
+;;   :hook (after-init . doom-modeline-mode)
+;;   :config
+;;   (progn
+;;     (setq doom-modeline-height 5) ;; try minimum height possible
+;;     )
+;;   :custom
+;;   (doom-modeline-buffer-file-name-style 'buffer-name)
+;;   (doom-modeline-icon t)
+;;   (doom-modeline-major-mode-icon t)
+;;   (doom-modeline-major-mode-color-icon t)
+;;   (doom-modeline-buffer-state-icon t)
+;;   (doom-modeline-buffer-modification-icon t)
+;;   (doom-modeline-minor-modes t)
+;;   (doom-modeline-enable-word-count nil)
+;;   (doom-modeline-checker-simple-format t)
+;;   (doom-modeline-persp-name nil)
+;;   (doom-modeline-lsp nil)
+;;   (doom-modeline-github nil)
+;;   (doom-modeline-env-version nil)
+;;   (doom-modeline-mu4e nil)
+;;   (doom-modeline-irc nil)
+;;   (doom-modeline-buffer-encoding nil)
+;;   (doom-modeline-indent-info nil))
+
+;; (use-package challenger-deep-theme)
+(use-package doom-themes
+  :ensure t
+  :config
+  (progn
+    (load-theme 'doom-challenger-deep t)))
 
 (add-to-list 'load-path "c:/home/github/dotnet.el")
 (use-package dotnet
@@ -225,21 +255,23 @@
 (use-package idomenu
   :bind ("M-g d" . idomenu))
 
-;; LSP is still too slow on Windows
-;; (use-package lsp-mode
-;;   :commands lsp
-;;   :custom
-;;   (lsp-enable-snippet nil)
-;; ;; TODO: convert hook
-;; (add-hook 'python-mode-hook #'lsp)
-;; (use-package lsp-ui :commands lsp-ui-mode)
-;; (use-package company-lsp :commands company-lsp)
+(use-package eglot
+  :commands (eglot eglot-ensure)
+  :config
+  (progn
+    (defclass eglot-pyls (eglot-lsp-server) ()
+      :documentation
+      "Microsoft's Python Language Server.")
 
-;; (use-package lsp-python-ms
-;;   :config
-;;   (progn
-;;     (setq lsp-python-ms-dir "c:/home/github/ms-python-language-server/output/bin/Release/win-x64/publish/")
-;;     (setq lsp-python-ms-executable "c:/home/github/ms-python-language-server/output/bin/Release/win-x64/publish/Microsoft.Python.LanguageServer.exe")))
+    (cl-defmethod eglot-initialization-options ((server eglot-pyls))
+      "Passes through required pyls initialization options."
+      `(:interpreter (:properties (:UseDefaultDatabase t))))
+
+    ;; (add-to-list 'eglot-server-programs
+    ;;              `(python-mode eglot-pyls
+    ;;                            "dotnet"
+    ;;                            "c:/Home/github/ms-python-language-server/output/bin/Release/Microsoft.Python.LanguageServer.dll"))
+    ))
 
 (use-package json-mode
   :mode "\\.json$")
@@ -355,6 +387,11 @@
   (visible-mark-faces '(visible-mark-face1 visible-mark-face2))
   (visible-mark-forward-max 2)
   (visible-mark-forward-faces '(visible-mark-forward-face1 visible-mark-forward-face2)))
+
+(use-package vlf
+  :ensure t
+  :config
+  (require 'vlf-setup))
 
 (use-package web-mode
   :mode
@@ -476,6 +513,19 @@ With ARG, do this that many times."
   (delete-word (- arg)))
 (global-set-key (kbd "C-<backspace>") 'backward-delete-word)
 
+;; Convenient to work with AWS timestamps
+(defun hoagie-convert-timestamp (&optional timestamp)
+  "Convert a Unix TIMESTAMP (as string) to date.  If the parameter is not provided use word at point."
+  (interactive)
+  (setq timestamp (or timestamp (thing-at-point 'word t)))
+  (let ((to-convert (if (< 10 (length timestamp)) (substring timestamp 0 10) timestamp))
+        (millis (if (< 10 (length timestamp)) (substring timestamp 10 (length timestamp)) "000")))
+    (message "%s.%s"
+             (format-time-string "%Y-%m-%d %H:%M:%S"
+                                 (seconds-to-time
+                                  (string-to-number to-convert)))
+             millis)))
+(global-set-key (kbd "C-c C-t") 'hoagie-convert-timestamp)
 
 ;; MARK PUSH AND POP - should make a package out of this
 ;; including a macro or common func to "push a mark if first time"

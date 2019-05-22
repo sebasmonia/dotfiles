@@ -23,7 +23,7 @@
  '(delete-selection-mode t)
  '(dired-dwim-target t)
  '(dired-listing-switches "-laogGhvD")
- '(eww-search-prefix "http://www.bing.com/search?q=")
+ '(eww-search-prefix "https://www.google.com/search?q=")
  '(flycheck-color-mode-line-face-to-color (quote mode-line-buffer-id))
  '(global-flycheck-mode t)
  '(global-mark-ring-max 32)
