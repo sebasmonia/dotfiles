@@ -20,19 +20,6 @@
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 
-
-;; GC config from https://gitlab.com/jessieh/dot-emacs/
-;; Increase the garbage collection threshold to 100MB for a faster startup time.
-(setq-default gc-cons-threshold 100000000
-              gc-cons-percentage 0.6)
-
-;; Restore it to 8MB after initialization is finished.
-(add-hook 'emacs-startup-hook (lambda () (setq gc-cons-threshold 8000000
-                                               gc-cons-percentage 0.1)))
-;; Collect all garbage whenever Emacs loses focus.
-(add-hook 'focus-out-hook #'garbage-collect)
-
-
 (package-initialize)
 (package-refresh-contents)
 ;; Try to refresh package contents,  handle error and
@@ -162,17 +149,70 @@
   :demand t ;; not sure if really needed
   )
 
-(use-package mood-line
-  :demand t
+(use-package telephone-line
   :config
-  (mood-line-mode))
+  (progn
+    (defface telephone-line-extra-accent-active
+      '((t (:foreground "white" :background "dark slate blue" :inherit mode-line)))
+      "Extra accent face for my telephone-line."
+      :group 'telephone-line)
+
+    (defface telephone-line-extra-accent-inactive
+      '((t (:foreground "white" :background "grey14" :inherit mode-line-inactive)))
+      "Extra accent face for my telephone-line."
+      :group 'telephone-line)
+
+    (telephone-line-defsegment* telephone-line-buffer-mod-segment ()
+                                (cond
+                                 (buffer-read-only "·")
+                                 ((buffer-modified-p) (propertize "!" 'face '(:foreground "red" :weight bold)))
+                                 (t "-")))
+
+    (telephone-line-defsegment* telephone-line-vc-nobackend-segment ()
+      (if vc-mode
+          (substring-no-properties vc-mode (+ 1 (string-match "[-:@!?]" vc-mode)))
+        " - "))
+
+    (telephone-line-defsegment* telephone-line-buffer-shortname-segment ()
+      ;; Avoids the padding in the regular "buffer only" segment
+      (buffer-name))
+
+    (telephone-line-defsegment* telephone-line-position+region-segment ()
+      (let ((region-size (when (use-region-p)
+                           (format " (%sL:%sC)"
+                                   (count-lines (region-beginning)
+                                                (region-end))
+                                   (- (region-end) (region-beginning))))))
+        (list "%l:%c" region-size)))
+
+    (setq telephone-line-faces
+          '((extra-accent . (telephone-line-extra-accent-active . telephone-line-extra-accent-inactive))
+            (accent . (telephone-line-accent-active . telephone-line-accent-inactive))
+            (nil . (mode-line . mode-line-inactive))))
+    (setq telephone-line-primary-left-separator 'telephone-line-abs-left
+          telephone-line-secondary-left-separator 'telephone-line-abs-left)
+    (setq telephone-line-primary-right-separator 'telephone-line-abs-right
+          telephone-line-secondary-right-separator 'telephone-line-abs-right)
+    (setq telephone-line-lhs
+          '((nil          . (telephone-line-buffer-mod-segment))
+            (extra-accent . (telephone-line-buffer-shortname-segment))
+            (accent       . (telephone-line-projectile-segment))
+            (nil          . (telephone-line-position+region-segment
+                             telephone-line-narrow-segment))))
+    (setq telephone-line-rhs
+          '((nil          . (telephone-line-process-segment
+                             telephone-line-misc-info-segment))
+            (extra-accent . (telephone-line-vc-nobackend-segment))
+            (accent       . (telephone-line-minions-mode-segment))))
+    (telephone-line-mode t)))
+
+;; (use-package mood-line
+;;   :demand t
+;;   :config
+;;   (mood-line-mode))
 
 ;; (use-package doom-modeline
 ;;   :hook (after-init . doom-modeline-mode)
-;;   :config
-;;   (progn
-;;     (setq doom-modeline-height 5) ;; try minimum height possible
-;;     )
 ;;   :custom
 ;;   (doom-modeline-buffer-file-name-style 'buffer-name)
 ;;   (doom-modeline-icon t)
@@ -192,12 +232,12 @@
 ;;   (doom-modeline-buffer-encoding nil)
 ;;   (doom-modeline-indent-info nil))
 
-;; (use-package challenger-deep-theme)
-(use-package doom-themes
-  :ensure t
-  :config
-  (progn
-    (load-theme 'doom-challenger-deep t)))
+(use-package challenger-deep-theme)
+;; (use-package doom-themes
+;;   :ensure t
+;;   :config
+;;   (progn
+;;     (load-theme 'doom-challenger-deep t)))
 
 (add-to-list 'load-path "c:/home/github/dotnet.el")
 (use-package dotnet
@@ -225,13 +265,7 @@
   :custom
   (ibuffer-default-sorting-mode 'major-mode)
   (ibuffer-expert t)
-  (ibuffer-show-empty-filter-groups nil)
-  :config
-  (use-package ibuffer-projectile
-    :hook (ibuffer . (lambda ()
-                       (ibuffer-projectile-set-filter-groups)
-                       (unless (eq ibuffer-sorting-mode 'alphabetic)
-                         (ibuffer-do-sort-by-alphabetic))))))
+  (ibuffer-show-empty-filter-groups nil))
 
 (use-package ido
   :init
@@ -255,23 +289,21 @@
 (use-package idomenu
   :bind ("M-g d" . idomenu))
 
+;; ;; LSP is still too slow on Windows
+;; (use-package lsp-mode
+;;   :commands lsp
+;;   :custom
+;;   (lsp-enable-snippet nil))
+;; (add-hook 'python-mode-hook #'lsp)
+;; (use-package lsp-ui :commands lsp-ui-mode)
+;; (use-package company-lsp :commands company-lsp)
+
 (use-package eglot
   :commands (eglot eglot-ensure)
   :config
-  (progn
-    (defclass eglot-pyls (eglot-lsp-server) ()
-      :documentation
-      "Microsoft's Python Language Server.")
-
-    (cl-defmethod eglot-initialization-options ((server eglot-pyls))
-      "Passes through required pyls initialization options."
-      `(:interpreter (:properties (:UseDefaultDatabase t))))
-
-    ;; (add-to-list 'eglot-server-programs
-    ;;              `(python-mode eglot-pyls
-    ;;                            "dotnet"
-    ;;                            "c:/Home/github/ms-python-language-server/output/bin/Release/Microsoft.Python.LanguageServer.dll"))
-    ))
+  (define-key eglot-mode-map (kbd "C-c e r") 'eglot-rename)
+  (define-key eglot-mode-map (kbd "C-c e f") 'eglot-format)
+  (define-key eglot-mode-map (kbd "C-c e h") 'eglot-help-at-point))
 
 (use-package json-mode
   :mode "\\.json$")
@@ -292,7 +324,7 @@
   :config
   (minions-mode 1)
   :custom
-  (minions-direct  '(flycheck-mode))
+  (minions-direct '(flycheck-mode))
   (minions-mode-line-lighter "^"))
 
 (use-package replace
