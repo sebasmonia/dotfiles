@@ -162,11 +162,10 @@
       "Extra accent face for my telephone-line."
       :group 'telephone-line)
 
-    (telephone-line-defsegment* telephone-line-buffer-mod-segment ()
-                                (cond
-                                 (buffer-read-only "·")
-                                 ((buffer-modified-p) (propertize "!" 'face '(:foreground "red" :weight bold)))
-                                 (t "-")))
+    (defface telephone-line-buffer-modified-face
+      '((t (:foreground "white" :background "firebrick1" :inherit mode-line)))
+      "Face for buffer modified segment."
+      :group 'telephone-line)
 
     (telephone-line-defsegment* telephone-line-vc-nobackend-segment ()
       (if vc-mode
@@ -185,16 +184,30 @@
                                    (- (region-end) (region-beginning))))))
         (list "%l:%c" region-size)))
 
+    (defun telephone-line-buffer-mod-color-segment-face (active)
+      "Determine the color for a buffer modified segment."
+      (if (and active (not buffer-read-only) (buffer-modified-p))
+          'telephone-line-buffer-modified-face
+        'telephone-line-accent-inactive))
+
+    (telephone-line-defsegment* telephone-line-buffer-mod-segment ()
+      (cond
+       (buffer-read-only "·")
+       ((buffer-modified-p) "!")
+       (t "-")))
+
     (setq telephone-line-faces
           '((extra-accent . (telephone-line-extra-accent-active . telephone-line-extra-accent-inactive))
             (accent . (telephone-line-accent-active . telephone-line-accent-inactive))
-            (nil . (mode-line . mode-line-inactive))))
+            (nil . (mode-line . mode-line-inactive))
+            (buffer-state . telephone-line-buffer-mod-color-segment-face)))
+
     (setq telephone-line-primary-left-separator 'telephone-line-abs-left
           telephone-line-secondary-left-separator 'telephone-line-abs-left)
     (setq telephone-line-primary-right-separator 'telephone-line-abs-right
           telephone-line-secondary-right-separator 'telephone-line-abs-right)
     (setq telephone-line-lhs
-          '((nil          . (telephone-line-buffer-mod-segment))
+          '((buffer-state . (telephone-line-buffer-mod-segment))
             (extra-accent . (telephone-line-buffer-shortname-segment))
             (accent       . (telephone-line-projectile-segment))
             (nil          . (telephone-line-position+region-segment
