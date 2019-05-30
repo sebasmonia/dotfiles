@@ -113,6 +113,6 @@
  '(diredp-flag-mark-line ((((class color) (min-colors 89)) (:foreground "#5f5f5f" :background "#ff7bbb"))))
  '(diredp-ignored-file-name ((((class color) (min-colors 257)) (:foreground "#858FA5")) (((class color) (min-colors 256)) (:foreground "#525252")) (((class color) (min-colors 16)) (:foreground "brightblack"))))
  '(visible-mark-face1 ((t (:box (:line-width 1 :color "red")))))
- '(visible-mark-face2 ((t (:box (:line-width 1 :color "orange")))))
+ '(visible-mark-face2 ((t (:box (:line-width 1 :color "violet")))))
  '(visible-mark-forward-face1 ((t (:box (:line-width 1 :color "green")))))
- '(visible-mark-forward-face2 ((t (:box (:line-width 1 :color "yellow")))) t))
+ '(visible-mark-forward-face2 ((t (:box (:line-width 1 :color "light slate blue")))) t))
