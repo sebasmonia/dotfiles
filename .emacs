@@ -246,11 +246,6 @@
 ;;   (doom-modeline-indent-info nil))
 
 (use-package challenger-deep-theme)
-;; (use-package doom-themes
-;;   :ensure t
-;;   :config
-;;   (progn
-;;     (load-theme 'doom-challenger-deep t)))
 
 (add-to-list 'load-path "c:/home/github/dotnet.el")
 (use-package dotnet
@@ -328,6 +323,8 @@
   :init
   (use-package magit-gitflow
     :commands (turn-on-magit-gitflow))
+  (use-package git-timemachine
+    :bind ("C-x M-G" . git-timemachine))
   :bind
   ("C-x g" . magit-status)
   :hook
@@ -385,6 +382,13 @@
 (use-package package-lint
   :commands package-lint-current-buffer)
 
+(use-package plantuml-mode
+  :commands plantuml-mode
+  :mode (("\\.puml$" . plantuml-mode)
+	 ("\\.plantuml$" . plantuml-mode))
+  :config
+  (setq plantuml-jar-path "~/plantuml.jar"))
+
 (use-package powershell
   :bind
   ;; this one shadows the command to go back in
@@ -409,6 +413,11 @@
   :hook
   (shell-mode . (lambda ()
                   (toggle-truncate-lines t))))
+
+(use-package terraform-mode
+  :mode "\\.tf$"
+  :config
+  (add-hook 'terraform-mode-hook #'terraform-format-on-save-mode))
 
 (use-package sly
   :commands sly
