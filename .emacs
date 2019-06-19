@@ -149,103 +149,17 @@
   :demand t ;; not sure if really needed
   )
 
-(use-package telephone-line
+(use-package mood-line
+  :demand t
   :config
-  (progn
-    (defface telephone-line-extra-accent-active
-      '((t (:foreground "white" :background "dark slate blue" :inherit mode-line)))
-      "Extra accent face for my telephone-line."
-      :group 'telephone-line)
+  (mood-line-mode))
 
-    (defface telephone-line-extra-accent-inactive
-      '((t (:foreground "white" :background "grey14" :inherit mode-line-inactive)))
-      "Extra accent face for my telephone-line."
-      :group 'telephone-line)
+(use-package constant-theme
+  :ensure t
+  :config (load-theme 'constant t))
 
-    (defface telephone-line-buffer-modified-face
-      '((t (:foreground "white" :background "firebrick1" :inherit mode-line)))
-      "Face for buffer modified segment."
-      :group 'telephone-line)
-
-    (telephone-line-defsegment* telephone-line-vc-nobackend-segment ()
-      (if vc-mode
-          (substring-no-properties vc-mode (+ 1 (string-match "[-:@!?]" vc-mode)))
-        " - "))
-
-    (telephone-line-defsegment* telephone-line-buffer-shortname-segment ()
-      ;; Avoids the padding in the regular "buffer only" segment
-      (buffer-name))
-
-    (telephone-line-defsegment* telephone-line-position+region-segment ()
-      (let ((region-size (when (use-region-p)
-                           (format " (%sL:%sC)"
-                                   (count-lines (region-beginning)
-                                                (region-end))
-                                   (- (region-end) (region-beginning))))))
-        (list "%l:%c" region-size)))
-
-    (defun telephone-line-buffer-mod-color-segment-face (active)
-      "Determine the color for a buffer modified segment."
-      (if (and active (not buffer-read-only) (buffer-modified-p))
-          'telephone-line-buffer-modified-face
-        'telephone-line-accent-inactive))
-
-    (telephone-line-defsegment* telephone-line-buffer-mod-segment ()
-      (cond
-       (buffer-read-only "·")
-       ((buffer-modified-p) "!")
-       (t "-")))
-
-    (setq telephone-line-faces
-          '((extra-accent . (telephone-line-extra-accent-active . telephone-line-extra-accent-inactive))
-            (accent . (telephone-line-accent-active . telephone-line-accent-inactive))
-            (nil . (mode-line . mode-line-inactive))
-            (buffer-state . telephone-line-buffer-mod-color-segment-face)))
-
-    (setq telephone-line-primary-left-separator 'telephone-line-abs-left
-          telephone-line-secondary-left-separator 'telephone-line-abs-left)
-    (setq telephone-line-primary-right-separator 'telephone-line-abs-right
-          telephone-line-secondary-right-separator 'telephone-line-abs-right)
-    (setq telephone-line-lhs
-          '((buffer-state . (telephone-line-buffer-mod-segment))
-            (extra-accent . (telephone-line-buffer-shortname-segment))
-            (accent       . (telephone-line-projectile-segment))
-            (nil          . (telephone-line-position+region-segment
-                             telephone-line-narrow-segment))))
-    (setq telephone-line-rhs
-          '((nil          . (telephone-line-process-segment
-                             telephone-line-misc-info-segment))
-            (extra-accent . (telephone-line-vc-nobackend-segment))
-            (accent       . (telephone-line-minions-mode-segment))))
-    (telephone-line-mode t)))
-
-;; (use-package mood-line
-;;   :demand t
-;;   :config
-;;   (mood-line-mode))
-
-;; (use-package doom-modeline
-;;   :hook (after-init . doom-modeline-mode)
-;;   :custom
-;;   (doom-modeline-buffer-file-name-style 'buffer-name)
-;;   (doom-modeline-icon t)
-;;   (doom-modeline-major-mode-icon t)
-;;   (doom-modeline-major-mode-color-icon t)
-;;   (doom-modeline-buffer-state-icon t)
-;;   (doom-modeline-buffer-modification-icon t)
-;;   (doom-modeline-minor-modes t)
-;;   (doom-modeline-enable-word-count nil)
-;;   (doom-modeline-checker-simple-format t)
-;;   (doom-modeline-persp-name nil)
-;;   (doom-modeline-lsp nil)
-;;   (doom-modeline-github nil)
-;;   (doom-modeline-env-version nil)
-;;   (doom-modeline-mu4e nil)
-;;   (doom-modeline-irc nil)
-;;   (doom-modeline-buffer-encoding nil)
-;;   (doom-modeline-indent-info nil))
-
-(use-package challenger-deep-theme)
+;; (use-package arc-dark-theme
+;;   :config (load-theme 'arc-dark t))
 
 (add-to-list 'load-path "c:/home/github/dotnet.el")
 (use-package dotnet
@@ -502,17 +416,17 @@
                                (fundamental-mode)
                              (let ((buffer-file-name (buffer-name)))
                                (set-auto-mode)))))
-;; from https://stackoverflow.com/a/22176971, move auto saves and
-;; back up files to a different folder so git or dotnet core won't
-;; pick them up as changes or new files in the project
-(make-directory (concat user-emacs-directory "auto-save") t)
-(setq auto-save-file-name-transforms
-      `((".*" ,(concat user-emacs-directory "auto-save/") t)))
+;; ;; from https://stackoverflow.com/a/22176971, move auto saves and
+;; ;; back up files to a different folder so git or dotnet core won't
+;; ;; pick them up as changes or new files in the project
+;; (make-directory (concat user-emacs-directory "auto-save") t)
+;; (setq auto-save-file-name-transforms
+;;       `((".*" ,(concat user-emacs-directory "auto-save/") t)))
 
-(make-directory (concat user-emacs-directory "backups") t)
-(setq backup-directory-alist
-      `(("." . ,(expand-file-name
-                 (concat user-emacs-directory "backups")))))
+;; (make-directory (concat user-emacs-directory "backups") t)
+;; (setq backup-directory-alist
+;;       `(("." . ,(expand-file-name
+;;                  (concat user-emacs-directory "backups")))))
 
 ;; OTHER BINDINGS
 ; adapted for https://stackoverflow.com/questions/6464738/how-can-i-switch-focus-after-buffer-split-in-emacs
@@ -695,3 +609,23 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
+
+
+;; Trial stuff
+
+(defun hoagie-move-buffer-other-frame ()
+  "Meh."
+  (interactive)
+  (let ((this-buffer (buffer-name)))
+    (other-frame 1) ;; go away
+    (switch-to-buffer this-buffer) ;; change it
+    (other-frame 1))) ;; come back
+
+(global-set-key (kbd "C-M-O") 'hoagie-move-buffer-other-frame)
+
+(defun hoagie-kill-buffer-and-window ()
+  "Meh."
+  (interactive)
+  (kill-buffer)
+  (delete-window))
+(define-key hoagie-keymap  (kbd "0") 'hoagie-kill-buffer-and-window)
