@@ -154,12 +154,25 @@
   :config
   (mood-line-mode))
 
-(use-package constant-theme
+;; (use-package challenger-deep-theme)
+(use-package danneskjold-theme
   :ensure t
-  :config (load-theme 'constant t))
+  :config
+  (progn
+    (load-theme 'danneskjold t)
+    (face-spec-set 'hl-line '((t :background "#151515")))
+    (face-spec-set 'region  '((t :foreground "#FFFFFF" :background "#353535")))))
 
-;; (use-package arc-dark-theme
-;;   :config (load-theme 'arc-dark t))
+;; (use-package ujelly-theme
+;;   :ensure t
+;;   :config (load-theme 'ujelly t))
+
+;; (use-package constant-theme
+;;   :ensure t
+;;   :config
+;;   (progn
+;;     (load-theme 'constant t)
+;;     (face-spec-set 'hl-line '((t :background "black")))))
 
 (add-to-list 'load-path "c:/home/github/dotnet.el")
 (use-package dotnet
@@ -222,10 +235,14 @@
 
 (use-package eglot
   :commands (eglot eglot-ensure)
+  :hook ((python-mode . eglot-ensure))
   :config
-  (define-key eglot-mode-map (kbd "C-c e r") 'eglot-rename)
-  (define-key eglot-mode-map (kbd "C-c e f") 'eglot-format)
-  (define-key eglot-mode-map (kbd "C-c e h") 'eglot-help-at-point))
+  (progn
+    (define-key eglot-mode-map (kbd "C-c e r") 'eglot-rename)
+    (define-key eglot-mode-map (kbd "C-c e f") 'eglot-format)
+    (define-key eglot-mode-map (kbd "C-c e h") 'eglot-help-at-point)))
+    ;; (add-to-list 'eglot-server-programs
+    ;;          `(csharp-mode . ("C:/Home/omnisharp_64/OmniSharp.exe" "-stdio" "-lsp")))))
 
 (use-package json-mode
   :mode "\\.json$")

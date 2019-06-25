@@ -11,7 +11,6 @@
  '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(confirm-nonexistent-file-or-buffer nil)
- '(custom-enabled-themes (quote (doom-challenger-deep)))
  '(custom-safe-themes
    (quote
     ("a3fa4abaf08cc169b61dea8f6df1bbe4123ec1d2afeb01c17e11fdc31fc66379" default)))
