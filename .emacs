@@ -21,15 +21,17 @@
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 
 (package-initialize)
-(package-refresh-contents)
+
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
 ;; Try to refresh package contents,  handle error and
 ;; print message if it fails (no internet connection?)
 ;;(condition-case err
 ;;  (package-refresh-contents)
 ;;  (error
 ;;   (message "%s" (error-message-string err))))
-
-(package-install 'use-package)
 
 (require 'use-package)
 (setq use-package-verbose t)
@@ -43,23 +45,30 @@
 (define-key key-translation-map (kbd "<apps>") (kbd "<menu>")) ;; compat Linux-Windows
 (global-set-key (kbd "<menu>") 'hoagie-keymap)
 
+;; Load selected theme
+
+;; DARK:
+(use-package challenger-deep-theme
+  :config (load-theme 'challenger-deep t))
+;; (use-package danneskjold-theme
+;;   :ensure t
+;;   :config
+;;   (progn
+;;     (load-theme 'danneskjold t)
+;;     (face-spec-set 'hl-line '((t :background "#151515")))
+;;     (face-spec-set 'region  '((t :foreground "#FFFFFF" :background "#353535")))))
+;; (use-package rebecca-theme
+;;   :config (load-theme 'rebecca t))
+;; LIGHT
+;; (use-package plan9-theme
+;;   :init
+;;   (load-theme 'plan9 t))
+;; (use-package cloud-theme
+;;     :config
+;;     (load-theme 'cloud t))
+
 (use-package 2048-game
   :commands 2048-game)
-
-(use-package anzu
-  :bind
-  (("<remap> <isearch-query-replace>" . anzu-isearch-query-replace)
-   ("<remap> <isearch-query-replace-regexp>" . anzu-isearch-query-replace-regexp)
-   ("<remap> <query-replace>" . anzu-query-replace)
-   ("<remap> <query-replace-regexp>" . anzu-query-replace-regexp))
-  :init
-  (global-anzu-mode 1)
-  :custom
-  (anzu-deactivate-region t)
-  (anzu-mode-lighter "")
-  (anzu-replace-threshold 50)
-  (anzu-replace-to-string-separator " => ")
-  (anzu-search-threshold 1000))
 
 (use-package browse-kill-ring
   :config
@@ -71,38 +80,30 @@
   (company-idle-delay 0.1)
   (company-minimum-prefix-length 2))
 
-(use-package ediff
+(use-package smex ;; Not used directly, but counsel-M-x benefits from it
+  :demand)
+(use-package counsel ;; includes ivy and swiper
   :demand
+  :commands (counsel-M-x ivy-mode swiper)
   :custom
-  (ediff-forward-word-function 'forward-char) ;; from https://emacs.stackexchange.com/a/9411/17066
-  (ediff-highlight-all-diffs t)
-  (ediff-keep-variants nil)
-  (ediff-window-setup-function 'ediff-setup-windows-plain)
+  (ivy-initial-inputs-alist nil) ;; don't prefix input with ^ anywhere
+  (ivy-use-virtual-buffers t)
+  (enable-recursive-minibuffers t)
+  (ivy-count-format "%d/%d ")
+  (swiper-stay-on-quit t)
   :config
   (progn
-    ;; from https://stackoverflow.com/a/29757750
-    (defun ediff-copy-both-to-C ()
-      "In ediff, copy A and then B to C."
-      (interactive)
-      (ediff-copy-diff ediff-current-difference nil 'C nil
-                       (concat
-                        (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
-                        (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
-    (defun add-d-to-ediff-mode-map ()
-      "Add key 'd' for 'copy both to C' functionality in ediff."
-      (define-key ediff-mode-map "d" 'ediff-copy-both-to-C))
-    (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map)))
+    (ivy-mode 1)
+    (define-key hoagie-keymap (kbd "<menu>") 'counsel-M-x)
+    (global-set-key (kbd "C-s") 'swiper)))
 
-(use-package expand-region
-  :bind
-  ("M-<SPC>" . er/expand-region)
-  :config
-  (er/enable-mode-expansions 'csharp-mode 'er/add-cc-mode-expansions))
-
-(use-package eww-lnum
-  :config
-  '(progn (define-key eww-mode-map "f" 'eww-lnum-follow)
-          (define-key eww-mode-map "F" 'eww-lnum-universal)))
+(use-package csharp-mode ;; manual load since I removed omnisharp
+  :demand
+  :hook
+  (csharp-mode-hook . (lambda () (setq-local fill-function-arguments-first-argument-same-line t)
+                                 (setq-local fill-function-arguments-second-argument-same-line t)
+                                 (setq-local fill-function-arguments-last-argument-same-line t)
+                                 (define-key csharp-mode-map [remap c-fill-paragraph] 'fill-function-arguments-dwim))))
 
 (use-package dired
   :ensure nil
@@ -112,7 +113,13 @@
   :config
   (progn
     (global-set-key [f1] (lambda () (interactive) (dired "~/")))
-    (define-key hoagie-keymap (kbd "f") 'find-name-dired)
+    (defun hoagie-find-name-project-root ()
+      (interactive)
+      (let ((root-dir (cdr (project-current)))
+            (partial-name (read-string "Partial filename: ")))
+        (find-name-dired root-dir (format "*%s*" partial-name))))
+    (define-key hoagie-keymap (kbd "f") 'hoagie-find-name-project-root)
+    (define-key hoagie-keymap (kbd "F") 'find-name-dired)
     (defun hoagie-dired-jump (&optional arg)
       "Call dired-jump.  With prefix ARG, open in current window."
       (interactive "P")
@@ -149,38 +156,80 @@
   :demand t ;; not sure if really needed
   )
 
-(use-package mood-line
-  :demand t
-  :config
-  (mood-line-mode))
-
-;; (use-package challenger-deep-theme)
-(use-package danneskjold-theme
-  :ensure t
-  :config
-  (progn
-    (load-theme 'danneskjold t)
-    (face-spec-set 'hl-line '((t :background "#151515")))
-    (face-spec-set 'region  '((t :foreground "#FFFFFF" :background "#353535")))))
-
-;; (use-package ujelly-theme
-;;   :ensure t
-;;   :config (load-theme 'ujelly t))
-
-;; (use-package constant-theme
-;;   :ensure t
-;;   :config
-;;   (progn
-;;     (load-theme 'constant t)
-;;     (face-spec-set 'hl-line '((t :background "black")))))
-
-(add-to-list 'load-path "c:/home/github/dotnet.el")
 (use-package dotnet
   :demand t  ;; needed since the global keybinding has to be ready. I think.
   :config
   (progn
     (setq dotnet-mode-keymap-prefix nil)
     (define-key hoagie-keymap (kbd "n") dotnet-mode-command-map)))
+
+(use-package ediff
+  :demand
+  :custom
+  (ediff-forward-word-function 'forward-char) ;; from https://emacs.stackexchange.com/a/9411/17066
+  (ediff-highlight-all-diffs t)
+  (ediff-keep-variants nil)
+  (ediff-window-setup-function 'ediff-setup-windows-plain)
+  :config
+  (progn
+    ;; from https://stackoverflow.com/a/29757750
+    (defun ediff-copy-both-to-C ()
+      "In ediff, copy A and then B to C."
+      (interactive)
+      (ediff-copy-diff ediff-current-difference nil 'C nil
+                       (concat
+                        (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
+                        (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
+    (defun add-d-to-ediff-mode-map ()
+      "Add key 'd' for 'copy both to C' functionality in ediff."
+      (define-key ediff-mode-map "d" 'ediff-copy-both-to-C))
+    (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map)))
+
+(use-package eglot
+  :commands (eglot eglot-ensure)
+  :hook ((python-mode . eglot-ensure)
+         (csharp-mode . eglot-ensure))
+  :config
+  (progn
+    (use-package eldoc-box
+      :commands (eldoc-box-eglot-help-at-point))
+    (define-key eglot-mode-map (kbd "C-c e r") 'eglot-rename)
+    (define-key eglot-mode-map (kbd "C-c e f") 'eglot-format)
+    (define-key eglot-mode-map (kbd "C-c e h") 'eglot-help-at-point)
+    (define-key eglot-mode-map (kbd "C-M-?") 'eldoc-box-eglot-help-at-point)
+    (add-to-list 'eglot-server-programs
+                 `(csharp-mode . ("C:/Home/omnisharp_64/OmniSharp.exe" "-lsp")))))
+
+(use-package expand-region
+  :bind
+  ("M-<SPC>" . er/expand-region)
+  :config
+  (er/enable-mode-expansions 'csharp-mode 'er/add-cc-mode-expansions))
+
+(use-package eww-lnum
+  :config
+  '(progn (define-key eww-mode-map "f" 'eww-lnum-follow)
+          (define-key eww-mode-map "F" 'eww-lnum-universal)))
+
+(use-package fill-function-arguments
+  :commands (fill-function-arguments-dwim)
+  :custom
+  (fill-function-arguments-indent-after-fill t)
+  :config
+  (progn
+    ;; taken literally from the project's readme.
+    ;; reformat for more use-packageness if this sticks
+    (add-hook 'prog-mode-hook (lambda () (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))
+    (add-hook 'sgml-mode-hook (lambda ()
+                          (setq-local fill-function-arguments-first-argument-same-line t)
+                          (setq-local fill-function-arguments-argument-sep " ")
+                          (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))
+    (add-hook 'emacs-lisp-mode-hook (lambda ()
+                                  (setq-local fill-function-arguments-first-argument-same-line t)
+                                  (setq-local fill-function-arguments-second-argument-same-line t)
+                                  (setq-local fill-function-arguments-last-argument-same-line t)
+                                  (setq-local fill-function-arguments-argument-separator " ")
+                                  (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))))
 
 (use-package format-all
   :bind ("C-c f" . format-all-buffer))
@@ -201,48 +250,6 @@
   (ibuffer-default-sorting-mode 'major-mode)
   (ibuffer-expert t)
   (ibuffer-show-empty-filter-groups nil))
-
-(use-package ido
-  :init
-  (progn
-    (ido-mode 1)
-    (use-package ido-vertical-mode
-      :config
-      (ido-vertical-mode 1)
-      :custom
-      (ido-vertical-define-keys 'C-n-and-C-p-only)))
-  :custom
-  (ido-enable-flex-matching t)
-  (ido-everywhere t)
-  (ido-create-new-buffer 'always)
-  (ido-default-buffer-method 'selected-window))
-
-(use-package icomplete
-  :config
-  (icomplete-mode 1))
-
-(use-package idomenu
-  :bind ("M-g d" . idomenu))
-
-;; ;; LSP is still too slow on Windows
-;; (use-package lsp-mode
-;;   :commands lsp
-;;   :custom
-;;   (lsp-enable-snippet nil))
-;; (add-hook 'python-mode-hook #'lsp)
-;; (use-package lsp-ui :commands lsp-ui-mode)
-;; (use-package company-lsp :commands company-lsp)
-
-(use-package eglot
-  :commands (eglot eglot-ensure)
-  :hook ((python-mode . eglot-ensure))
-  :config
-  (progn
-    (define-key eglot-mode-map (kbd "C-c e r") 'eglot-rename)
-    (define-key eglot-mode-map (kbd "C-c e f") 'eglot-format)
-    (define-key eglot-mode-map (kbd "C-c e h") 'eglot-help-at-point)))
-    ;; (add-to-list 'eglot-server-programs
-    ;;          `(csharp-mode . ("C:/Home/omnisharp_64/OmniSharp.exe" "-stdio" "-lsp")))))
 
 (use-package json-mode
   :mode "\\.json$")
@@ -265,50 +272,12 @@
   :config
   (minions-mode 1)
   :custom
-  (minions-direct '(flycheck-mode))
   (minions-mode-line-lighter "^"))
 
-(use-package replace
-  :ensure nil
+(use-package mood-line
+  :demand t
   :config
-  (progn
-    ;; I'm surprised this isn't the default behaviour,
-    ;; also couldn't find a way to change it from options
-    (defun hoagie-occur-dwim ()
-      "Run occur, if there's a region selected use that as input."
-      (interactive)
-      (if (use-region-p)
-          (occur (buffer-substring-no-properties (region-beginning) (region-end)))
-        (command-execute 'occur)))
-    (define-key hoagie-keymap (kbd "o") 'hoagie-occur-dwim)))
-
-(use-package omnisharp
-  :config
-  (with-eval-after-load
-      'company
-    '(add-to-list 'company-backends 'company-omnisharp))
-  :hook
-  (csharp-mode . omnisharp-mode)
-  :bind (:map omnisharp-mode-map
-              ("C-." . omnisharp-auto-complete)
-              ("C-c o e" . omnisharp-solution-errors)
-              ("C-c o u" . omnisharp-find-usages-with-ido)
-              ("M-?" . omnisharp-find-usages) ;; "compatibility" with other plaforms
-              ("C-c o i" . omnisharp-find-implementations-with-ido)
-              ("C-c o d" . omnisharp-go-to-definition-other-window)
-              ("M-." . omnisharp-go-to-definition) ; more standard
-              ("C-c o q" . omnisharp-run-code-action-refactoring)
-              ("C-c o f" . omnisharp-fix-code-issue-at-point)
-              ("C-c o r" . omnisharp-rename)
-              ("C-c o t i" . omnisharp-current-type-information)
-              ("C-c o t d" . omnisharp-current-type-documentation)
-              ("<f5>" . recompile))
-  :custom
-  (omnisharp-auto-complete-template-use-yasnippet nil)
-  (omnisharp-company-begin-after-member-access nil)
-  (omnisharp-company-template-use-yasnippet nil)
-  (omnisharp-imenu-support t)
-  (omnisharp-server-executable-path "C:/Home/omnisharp_64/OmniSharp.exe"))
+  (mood-line-mode))
 
 (use-package package-lint
   :commands package-lint-current-buffer)
@@ -333,8 +302,23 @@
   :init
   (projectile-mode)
   :custom
+  (projectile-completion-system 'ivy)
   (projectile-indexing-method 'alien)
   (projectile-switch-project-action 'projectile-find-file-dwim))
+
+(use-package replace
+  :ensure nil
+  :config
+  (progn
+    ;; I'm surprised this isn't the default behaviour,
+    ;; also couldn't find a way to change it from options
+    (defun hoagie-occur-dwim ()
+      "Run occur, if there's a region selected use that as input."
+      (interactive)
+      (if (use-region-p)
+          (occur (buffer-substring-no-properties (region-beginning) (region-end)))
+        (command-execute 'occur)))
+    (define-key hoagie-keymap (kbd "o") 'hoagie-occur-dwim)))
 
 (use-package shell
   :init
@@ -345,23 +329,18 @@
   (shell-mode . (lambda ()
                   (toggle-truncate-lines t))))
 
-(use-package terraform-mode
-  :mode "\\.tf$"
-  :config
-  (add-hook 'terraform-mode-hook #'terraform-format-on-save-mode))
-
 (use-package sly
   :commands sly
   :config
   (setq inferior-lisp-program "sbcl"))
 
-(use-package smex
-  :init
-  (smex-initialize)
-  :bind
-  (("M-x" . smex)
-   :map hoagie-keymap
-   ("<menu>" . smex)))
+(use-package speed-type
+  :commands (speed-type-text speed-type-region speed-type-buffer))
+
+(use-package terraform-mode
+  :mode "\\.tf$"
+  :config
+  (add-hook 'terraform-mode-hook #'terraform-format-on-save-mode))
 
 (use-package visible-mark
   :demand t ;; has to be loaded, no command
@@ -416,6 +395,7 @@
 
 ;; MISC STUFF THAT IS NOT IN CUSTOMIZE (or easier to customize here)
 (defalias 'yes-or-no-p 'y-or-n-p)
+(electric-pair-mode 1)
 (setq frame-title-format "%b - Emacs")
 (setq inhibit-compacting-font-caches t)
 ; see https://emacs.stackexchange.com/a/28746/17066
@@ -433,6 +413,10 @@
                                (fundamental-mode)
                              (let ((buffer-file-name (buffer-name)))
                                (set-auto-mode)))))
+;; Better defaults from https://github.com/jacmoe/emacs.d/blob/master/jacmoe.org
+(setq help-window-select t)
+(add-hook 'focus-out-hook 'garbage-collect)
+
 ;; ;; from https://stackoverflow.com/a/22176971, move auto saves and
 ;; ;; back up files to a different folder so git or dotnet core won't
 ;; ;; pick them up as changes or new files in the project
@@ -457,6 +441,11 @@
 (global-set-key (kbd "M-O") 'other-frame)
 (global-set-key (kbd "M-N") 'next-buffer)
 (global-set-key (kbd "M-P") 'previous-buffer)
+(global-set-key (kbd "C-d") 'delete-forward-char) ;; replace delete-char
+(global-set-key (kbd "M-c") 'capitalize-dwim)
+(global-set-key (kbd "M-u") 'upcase-dwim)
+(global-set-key (kbd "M-l") 'downcase-dwim)
+(define-key hoagie-keymap (kbd "b") 'browse-url-at-point)
 ;; used to be C-x K. Honestly I never used C-x C-k (macros) commands that much so :shrug:
 ;; without the lambda it would simply show the menu like C-x k
 (defun hoagie-kill-this-buffer ()
@@ -465,6 +454,7 @@ If defined as a lambda then it shows a ? in the bindings list."
   (interactive)
   (kill-buffer))
 (define-key hoagie-keymap (kbd "k") 'hoagie-kill-this-buffer)
+(global-set-key (kbd "C-c !") 'flymake-show-diagnostics-buffer) ;; like flycheck's C-c ! l
 (global-set-key (kbd "C-;") 'dabbrev-expand)
 (global-set-key (kbd "<f6>") 'kmacro-start-macro)
 (global-set-key (kbd "<f7>") 'kmacro-end-macro)
@@ -645,4 +635,4 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (interactive)
   (kill-buffer)
   (delete-window))
-(define-key hoagie-keymap  (kbd "0") 'hoagie-kill-buffer-and-window)
+(define-key hoagie-keymap (kbd "0") 'hoagie-kill-buffer-and-window)
