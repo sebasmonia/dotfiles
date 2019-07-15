@@ -90,7 +90,6 @@
   (ivy-use-virtual-buffers t)
   (enable-recursive-minibuffers t)
   (ivy-count-format "%d/%d ")
-  (swiper-stay-on-quit t)
   :config
   (progn
     (ivy-mode 1)
@@ -544,13 +543,15 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 ;; from https://blogs.msdn.microsoft.com/zainnab/2010/03/01/navigate-backward-and-navigate-forward/
 ;; I finally know the conditions that trigger adding a marker in Visual Studio. I used those a lot.
 ;; The hook below pushes the mark when exiting isearch to match #1 in that post
-(require 'isearch)
-(add-hook 'isearch-mode-end-hook 'hoagie-isearch-end-push-mark)
-(defun hoagie-isearch-end-push-mark ()
+;; UPDATE: converted hook to advice as per https://github.com/abo-abo/swiper/issues/2128
+;;the idea with this is similar to the "11 lines away" comment in the post above
+(defun hoagie-isearch-end-push-mark (&rest _)
   "Push the mark -without activating- when exiting isearch."
   (unless isearch-mode-end-hook-quit
     (push-mark-no-activate)))
-;; the idea with this is similar to the "11 lines away" comment in the post above
+(advice-add 'swiper--action :after 'hoagie-isearch-end-push-mark)
+(advice-add 'swiper-isearch-action :after 'hoagie-isearch-end-push-mark)
+
 (defun hoagie-scroll-down-with-mark ()
   "Like `scroll-down-command`, but push a mark if this is not a repeat invocation."
   (interactive)
@@ -621,12 +622,15 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 ;; Trial stuff
 
 (defun hoagie-move-buffer-other-frame ()
-  "Meh."
+  "Send the buffer to the next frame.  If no other frame, behave like C-x 5 b."
   (interactive)
-  (let ((this-buffer (buffer-name)))
-    (other-frame 1) ;; go away
-    (switch-to-buffer this-buffer) ;; change it
-    (other-frame 1))) ;; come back
+  (let ((this-buffer (buffer-name))
+        (frame-count (length (frame-list))))
+    (if (equal frame-count 1)
+        (switch-to-buffer-other-frame this-buffer)
+      (other-frame 1) ;; go away
+      (switch-to-buffer this-buffer) ;; change it
+      (other-frame 1)))) ;; come back
 
 (global-set-key (kbd "C-M-O") 'hoagie-move-buffer-other-frame)
 
