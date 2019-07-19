@@ -48,8 +48,8 @@
 ;; Load selected theme
 
 ;; DARK:
-(use-package challenger-deep-theme
-  :config (load-theme 'challenger-deep t))
+;; (use-package challenger-deep-theme
+;;   :config (load-theme 'challenger-deep t))
 ;; (use-package danneskjold-theme
 ;;   :ensure t
 ;;   :config
@@ -59,13 +59,19 @@
 ;;     (face-spec-set 'region  '((t :foreground "#FFFFFF" :background "#353535")))))
 ;; (use-package rebecca-theme
 ;;   :config (load-theme 'rebecca t))
-;; LIGHT
-;; (use-package plan9-theme
+;; (use-package molokai-theme
 ;;   :init
-;;   (load-theme 'plan9 t))
+;;   (load-theme 'molokai t))
+;; LIGHT
+;; (use-package habamax-theme
+;;   :init
+;;   (load-theme 'habamax t))
 ;; (use-package cloud-theme
 ;;     :config
 ;;     (load-theme 'cloud t))
+(use-package pastelmac-theme
+  :init
+  (load-theme 'pastelmac t))
 
 (use-package 2048-game
   :commands 2048-game)
@@ -113,8 +119,9 @@
   (progn
     (global-set-key [f1] (lambda () (interactive) (dired "~/")))
     (defun hoagie-find-name-project-root ()
+      "Call find-name-dired with a broad pattern and using project.el if available."
       (interactive)
-      (let ((root-dir (cdr (project-current)))
+      (let ((root-dir (or (cdr (project-current)) default-directory))
             (partial-name (read-string "Partial filename: ")))
         (find-name-dired root-dir (format "*%s*" partial-name))))
     (define-key hoagie-keymap (kbd "f") 'hoagie-find-name-project-root)
