@@ -59,9 +59,9 @@
 ;;     (face-spec-set 'region  '((t :foreground "#FFFFFF" :background "#353535")))))
 ;; (use-package rebecca-theme
 ;;   :config (load-theme 'rebecca t))
-;; (use-package molokai-theme
-;;   :init
-;;   (load-theme 'molokai t))
+(use-package molokai-theme
+  :init
+  (load-theme 'molokai t))
 ;; LIGHT
 ;; (use-package habamax-theme
 ;;   :init
@@ -69,9 +69,9 @@
 ;; (use-package cloud-theme
 ;;     :config
 ;;     (load-theme 'cloud t))
-(use-package pastelmac-theme
-  :init
-  (load-theme 'pastelmac t))
+;; (use-package pastelmac-theme
+;;   :init
+;;   (load-theme 'pastelmac t))
 
 (use-package 2048-game
   :commands 2048-game)
@@ -100,7 +100,8 @@
   (progn
     (ivy-mode 1)
     (define-key hoagie-keymap (kbd "<menu>") 'counsel-M-x)
-    (global-set-key (kbd "C-s") 'swiper)))
+    (global-set-key (kbd "C-s") 'swiper-isearch)
+    (global-set-key (kbd "C-r") 'swiper-isearch-backward)))
 
 (use-package csharp-mode ;; manual load since I removed omnisharp
   :demand
@@ -627,7 +628,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 
 
 ;; Trial stuff
-
 (defun hoagie-move-buffer-other-frame ()
   "Send the buffer to the next frame.  If no other frame, behave like C-x 5 b."
   (interactive)
