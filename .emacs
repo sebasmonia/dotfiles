@@ -45,34 +45,6 @@
 (define-key key-translation-map (kbd "<apps>") (kbd "<menu>")) ;; compat Linux-Windows
 (global-set-key (kbd "<menu>") 'hoagie-keymap)
 
-;; Load selected theme
-
-;; DARK:
-;; (use-package challenger-deep-theme
-;;   :config (load-theme 'challenger-deep t))
-;; (use-package danneskjold-theme
-;;   :ensure t
-;;   :config
-;;   (progn
-;;     (load-theme 'danneskjold t)
-;;     (face-spec-set 'hl-line '((t :background "#151515")))
-;;     (face-spec-set 'region  '((t :foreground "#FFFFFF" :background "#353535")))))
-;; (use-package rebecca-theme
-;;   :config (load-theme 'rebecca t))
-(use-package molokai-theme
-  :init
-  (load-theme 'molokai t))
-;; LIGHT
-;; (use-package habamax-theme
-;;   :init
-;;   (load-theme 'habamax t))
-;; (use-package cloud-theme
-;;     :config
-;;     (load-theme 'cloud t))
-;; (use-package pastelmac-theme
-;;   :init
-;;   (load-theme 'pastelmac t))
-
 (use-package 2048-game
   :commands 2048-game)
 
@@ -80,11 +52,12 @@
   :config
   (browse-kill-ring-default-keybindings))
 
-(use-package company
-  :hook (after-init . global-company-mode)
-  :custom
-  (company-idle-delay 0.1)
-  (company-minimum-prefix-length 2))
+;; under test: replace company with ivy for completion
+;; (use-package company
+;;   :hook (after-init . global-company-mode)
+;;   :custom
+;;   (company-idle-delay 0.1)
+;;   (company-minimum-prefix-length 2))
 
 (use-package smex ;; Not used directly, but counsel-M-x benefits from it
   :demand)
@@ -281,11 +254,6 @@
   :custom
   (minions-mode-line-lighter "^"))
 
-(use-package mood-line
-  :demand t
-  :config
-  (mood-line-mode))
-
 (use-package package-lint
   :commands package-lint-current-buffer)
 
@@ -402,7 +370,6 @@
 
 ;; MISC STUFF THAT IS NOT IN CUSTOMIZE (or easier to customize here)
 (defalias 'yes-or-no-p 'y-or-n-p)
-(electric-pair-mode 1)
 (setq frame-title-format "%b - Emacs")
 (setq inhibit-compacting-font-caches t)
 ; see https://emacs.stackexchange.com/a/28746/17066
@@ -647,3 +614,33 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (kill-buffer)
   (delete-window))
 (define-key hoagie-keymap (kbd "0") 'hoagie-kill-buffer-and-window)
+
+;; Load selected theme
+
+;; DARK:
+(use-package challenger-deep-theme
+  :config (load-theme 'challenger-deep t))
+;; (use-package danneskjold-theme
+;;   :ensure t
+;;   :config
+;;   (progn
+;;     (load-theme 'danneskjold t)
+;;     (face-spec-set 'hl-line '((t :background "#151515")))
+;;     (face-spec-set 'region  '((t :foreground "#FFFFFF" :background "#353535")))))
+;; (use-package rebecca-theme
+;;   :config (load-theme 'rebecca t))
+;; LIGHT
+;; (use-package habamax-theme
+;;   :init
+;;   (load-theme 'habamax t))
+;; (use-package cloud-theme
+;;     :config
+;;     (load-theme 'cloud t))
+;; (use-package pastelmac-theme
+;;   :init
+;;   (load-theme 'pastelmac t))
+
+(use-package mood-line
+  :demand t
+  :config
+  (mood-line-mode))
