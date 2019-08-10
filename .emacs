@@ -52,12 +52,11 @@
   :config
   (browse-kill-ring-default-keybindings))
 
-;; under test: replace company with ivy for completion
-;; (use-package company
-;;   :hook (after-init . global-company-mode)
-;;   :custom
-;;   (company-idle-delay 0.1)
-;;   (company-minimum-prefix-length 2))
+(use-package company
+  :hook (after-init . global-company-mode)
+  :custom
+  (company-idle-delay 0.1)
+  (company-minimum-prefix-length 2))
 
 (use-package smex ;; Not used directly, but counsel-M-x benefits from it
   :demand)
@@ -171,12 +170,9 @@
          (csharp-mode . eglot-ensure))
   :config
   (progn
-    (use-package eldoc-box
-      :commands (eldoc-box-eglot-help-at-point))
     (define-key eglot-mode-map (kbd "C-c e r") 'eglot-rename)
     (define-key eglot-mode-map (kbd "C-c e f") 'eglot-format)
     (define-key eglot-mode-map (kbd "C-c e h") 'eglot-help-at-point)
-    (define-key eglot-mode-map (kbd "C-M-?") 'eldoc-box-eglot-help-at-point)
     (add-to-list 'eglot-server-programs
                  `(csharp-mode . ("C:/Home/omnisharp_64/OmniSharp.exe" "-lsp")))))
 
@@ -618,29 +614,47 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 ;; Load selected theme
 
 ;; DARK:
-(use-package challenger-deep-theme
-  :config (load-theme 'challenger-deep t))
+;; (use-package challenger-deep-theme
+;;   :config (load-theme 'challenger-deep t))
 ;; (use-package danneskjold-theme
 ;;   :ensure t
 ;;   :config
 ;;   (progn
 ;;     (load-theme 'danneskjold t)
-;;     (face-spec-set 'hl-line '((t :background "#151515")))
-;;     (face-spec-set 'region  '((t :foreground "#FFFFFF" :background "#353535")))))
+;;     ;; (face-spec-set 'hl-line '((t :background "#151515")))
+;;     ;; (face-spec-set 'region  '((t :foreground "#ffffff" :background "#353535")))
+;;     ))
 ;; (use-package rebecca-theme
 ;;   :config (load-theme 'rebecca t))
 ;; LIGHT
 ;; (use-package habamax-theme
-;;   :init
-;;   (load-theme 'habamax t))
+;;  :init
+;;  (load-theme 'habamax t))
 ;; (use-package cloud-theme
 ;;     :config
 ;;     (load-theme 'cloud t))
-;; (use-package pastelmac-theme
-;;   :init
-;;   (load-theme 'pastelmac t))
+(use-package pastelmac-theme
+  :init
+  (load-theme 'pastelmac t))
 
 (use-package mood-line
   :demand t
   :config
   (mood-line-mode))
+;; Updates to run after a mood-line update...until they are added
+;; or I just branch the package. AND BYTE-COMPILE AFTERWARDS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ;; I like this better than the default. No "Top" "Bottom" + region size ;;
+;; (defun mood-line-segment-position ()                                    ;;
+;;   "Displays the current cursor position in the mode-line."              ;;
+;;   (let ((region-size (when (use-region-p)                               ;;
+;;                        (format " (%sL:%sC)"                             ;;
+;;                                (count-lines (region-beginning)          ;;
+;;                                             (region-end))               ;;
+;;                                (- (region-end) (region-beginning))))))  ;;
+;;     (list "%l:%c" region-size)))                                        ;;
+;;                                                                         ;;
+;; ;; replace  mood-line-segment-position with these two:                  ;;
+;; (:eval (mood-line-segment-position))                                    ;;
+;; (:eval (lambda () mode-line-misc-info))))                               ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
