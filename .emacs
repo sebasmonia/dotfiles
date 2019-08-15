@@ -53,6 +53,8 @@
   (browse-kill-ring-default-keybindings))
 
 (use-package company
+  :bind
+  ("M-S-<SPC>" . company-complete)
   :hook (after-init . global-company-mode)
   :custom
   (company-idle-delay 0.1)
@@ -291,14 +293,29 @@
         (command-execute 'occur)))
     (define-key hoagie-keymap (kbd "o") 'hoagie-occur-dwim)))
 
-(use-package shell
-  :init
-  (use-package better-shell
-    :bind (:map hoagie-keymap
-                ("`" . better-shell-for-current-dir)))
-  :hook
-  (shell-mode . (lambda ()
-                  (toggle-truncate-lines t))))
+;; (use-package shell
+;;   :init
+;;   (use-package better-shell
+;;     :bind (:map hoagie-keymap
+;;                 ("`" . better-shell-for-current-dir)))
+;;   :hook
+;;   (shell-mode . (lambda ()
+;;                   (toggle-truncate-lines t))))
+
+(defun hoagie-eshell-to-current-dir ()
+  "Pop eshell to current dir.
+Based on https://www.reddit.com/r/emacs/comments/1zkj2d/advanced_usage_of_eshell/cfuhl2x?utm_source=share&utm_medium=web2x"
+  (interactive)
+  (let ((dir default-directory)
+        (eshell-buf (or (get-buffer "*eshell*") (eshell))))
+    (with-current-buffer eshell-buf
+      (goto-char (point-max))
+      (eshell/pushd ".")
+      (cd dir)
+      (eshell-kill-input)
+      (eshell-send-input))
+    (pop-to-buffer eshell-buf)))
+(define-key hoagie-keymap (kbd "`") 'hoagie-eshell-to-current-dir)
 
 (use-package sly
   :commands sly
@@ -604,12 +621,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 
 (global-set-key (kbd "C-M-O") 'hoagie-move-buffer-other-frame)
 
-(defun hoagie-kill-buffer-and-window ()
-  "Meh."
-  (interactive)
-  (kill-buffer)
-  (delete-window))
-(define-key hoagie-keymap (kbd "0") 'hoagie-kill-buffer-and-window)
+(define-key hoagie-keymap (kbd "0") 'kill-buffer-and-window)
 
 ;; Load selected theme
 
