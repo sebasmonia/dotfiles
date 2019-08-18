@@ -55,6 +55,8 @@
 (use-package company
   :bind
   ("M-S-<SPC>" . company-complete)
+  (:map hoagie-keymap
+        ("<SPC>" . company-complete))
   :hook (after-init . global-company-mode)
   :custom
   (company-idle-delay 0.1)
@@ -176,7 +178,11 @@
     (define-key eglot-mode-map (kbd "C-c e f") 'eglot-format)
     (define-key eglot-mode-map (kbd "C-c e h") 'eglot-help-at-point)
     (add-to-list 'eglot-server-programs
-                 `(csharp-mode . ("C:/Home/omnisharp_64/OmniSharp.exe" "-lsp")))))
+                 `(csharp-mode . ("C:/Home/omnisharp_64/OmniSharp.exe" "-lsp")))
+    ;; patch the argument. When nil, use "" instead.
+    (defun eglot--format-markup-patch (args)
+      (list (or (car args) "")))
+    (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch)))
 
 (use-package expand-region
   :bind
@@ -623,50 +629,41 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 
 (define-key hoagie-keymap (kbd "0") 'kill-buffer-and-window)
 
-;; Load selected theme
-
-;; DARK:
-;; (use-package challenger-deep-theme
-;;   :config (load-theme 'challenger-deep t))
-;; (use-package danneskjold-theme
-;;   :ensure t
-;;   :config
-;;   (progn
-;;     (load-theme 'danneskjold t)
-;;     ;; (face-spec-set 'hl-line '((t :background "#151515")))
-;;     ;; (face-spec-set 'region  '((t :foreground "#ffffff" :background "#353535")))
-;;     ))
-;; (use-package rebecca-theme
-;;   :config (load-theme 'rebecca t))
-;; LIGHT
-;; (use-package habamax-theme
-;;  :init
-;;  (load-theme 'habamax t))
-;; (use-package cloud-theme
-;;     :config
-;;     (load-theme 'cloud t))
-(use-package pastelmac-theme
-  :init
-  (load-theme 'pastelmac t))
-
-(use-package mood-line
-  :demand t
+(use-package doom-themes
+  :demand
   :config
-  (mood-line-mode))
-;; Updates to run after a mood-line update...until they are added
-;; or I just branch the package. AND BYTE-COMPILE AFTERWARDS
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ;; I like this better than the default. No "Top" "Bottom" + region size ;;
-;; (defun mood-line-segment-position ()                                    ;;
-;;   "Displays the current cursor position in the mode-line."              ;;
-;;   (let ((region-size (when (use-region-p)                               ;;
-;;                        (format " (%sL:%sC)"                             ;;
-;;                                (count-lines (region-beginning)          ;;
-;;                                             (region-end))               ;;
-;;                                (- (region-end) (region-beginning))))))  ;;
-;;     (list "%l:%c" region-size)))                                        ;;
-;;                                                                         ;;
-;; ;; replace  mood-line-segment-position with these two:                  ;;
-;; (:eval (mood-line-segment-position))                                    ;;
-;; (:eval (lambda () mode-line-misc-info))))                               ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (progn
+    (setq doom-challenger-deep-brighter-comments t)
+    (setq doom-challenger-deep-comment-bg nil)
+    (load-theme 'doom-challenger-deep t)
+    (face-spec-set 'header-line '((t :background "#23214b")))))
+;;    (face-spec-set 'header-line '((t :background "#858FA5")))))
+
+(use-package doom-modeline
+      :ensure t
+      :hook (after-init . doom-modeline-mode)
+      :config
+      (progn
+        ;; How tall the mode-line should be. It's only respected in GUI.
+        ;; If the actual char height is larger, it respects the actual height.
+        ;; (setq doom-modeline-height 25)
+        (setq doom-modeline-buffer-file-name-style 'buffer-name)
+        (setq doom-modeline-icon (display-graphic-p))
+        (setq doom-modeline-major-mode-icon t)
+        (setq doom-modeline-major-mode-color-icon t)
+        (setq doom-modeline-buffer-state-icon t)
+        (setq doom-modeline-buffer-modification-icon t)
+        (setq doom-modeline-minor-modes (featurep 'minions))
+        (setq doom-modeline-enable-word-count nil)
+        (setq doom-modeline-buffer-encoding nil)
+        (setq doom-modeline-indent-info nil)
+        ;; If non-nil, only display one number for checker information if applicable.
+        (setq doom-modeline-checker-simple-format t)
+        (setq doom-modeline-vcs-max-length 20)
+        (setq doom-modeline-persp-name nil)
+        (setq doom-modeline-persp-name-icon nil)
+        (setq doom-modeline-lsp t)
+        (setq doom-modeline-github nil)
+        (setq doom-modeline-mu4e nil)
+        (setq doom-modeline-irc nil)
+        (setq doom-modeline-env-version nil)))
