@@ -2,8 +2,7 @@ Just a place to store my Emacs configuration plus other misc scripts.
 
 Prerequisites for a fresh install:
 
-* Consolas font (yes, can be installed in Linux too)
-* For the theme to load correctly you need to launch Emacs twice
+* IBM Plex Mono font
 * Deadgrep requires rg
 
 There are other third party dependencies, but those should leave the more important things working
@@ -17,4 +16,13 @@ Almost like a fresh start! :)
 
 i3 config notes:
 * The monitor switch bound to Win+P  is tied to my specific needs to my current laptop, didn't try to make it generic.
-* .xmodmap is limited to making CAPS act like Control. Seems a better choice than setxbmap, since it works with BT keyboard even after it sleeps.
+* .xmodmap swaps ctrl and caps, also makes left control menu for the BT keyboard
+* From https://bbs.archlinux.org/viewtopic.php?id=223949, to activate BT @ startup:
+
+```
+  1. set bluetooth service to start on boot: systemctl enable bluetooth.service
+  2. set bluetooth adapter to automatically power on: edit /etc/bluetooth/main.conf and set AutoEnable=true
+  3. set paired devices as trusted *this is what I was missing*: from the bluetoothctl util, enter trust XX:XX:XX:XX:XX:XX for each paired device (replace XX... with mac address)
+  Also:
+  https://wiki.archlinux.org/index.php/Bluetooth_keyboard
+```

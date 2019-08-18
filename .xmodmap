@@ -1,1 +1,5 @@
+clear lock
+remove control = Control_R
 keycode 66 = Control_R
+keycode 105 = Menu
+add control = Control_R
