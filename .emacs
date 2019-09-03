@@ -76,6 +76,8 @@
   (progn
     (ivy-mode 1)
     (define-key hoagie-keymap (kbd "<menu>") 'counsel-M-x)
+    ;; the default is 'ivy-partial-or-done
+    (define-key ivy-minibuffer-map (kbd "TAB") 'ivy-partial)
     (global-set-key (kbd "C-s") 'swiper-isearch)
     (global-set-key (kbd "C-r") 'swiper-isearch-backward)))
 
@@ -129,7 +131,13 @@
 (use-package deadgrep
   :bind
   (:map hoagie-keymap
-        ("g" . deadgrep)))
+        ("g" . deadgrep))
+  :config
+  (progn
+    (defun deadgrep--format-command-patch (rg-command)
+      "Add --hidden to rg-command."
+      (replace-regexp-in-string "^rg " "rg --hidden " rg-command))
+    (advice-add 'deadgrep--format-command :filter-return #'deadgrep--format-command-patch)))
 
 (use-package docker
   :bind
@@ -316,25 +324,43 @@
 ;;   (shell-mode . (lambda ()
 ;;                   (toggle-truncate-lines t))))
 
-(defun hoagie-eshell-to-current-dir ()
-  "Pop eshell to current dir.
+(use-package eshell
+  :demand nil
+  :hook
+  (eshell-mode . (lambda ()
+                  (toggle-truncate-lines t)))
+  :config
+  (progn
+    (defun hoagie-eshell-to-current-dir ()
+      "Pop eshell to current dir.
 Based on https://www.reddit.com/r/emacs/comments/1zkj2d/advanced_usage_of_eshell/cfuhl2x?utm_source=share&utm_medium=web2x"
-  (interactive)
-  (let ((dir default-directory)
-        (eshell-buf (or (get-buffer "*eshell*") (eshell))))
-    (with-current-buffer eshell-buf
-      (goto-char (point-max))
-      (eshell/pushd ".")
-      (cd dir)
-      (eshell-kill-input)
-      (eshell-send-input))
-    (pop-to-buffer eshell-buf)))
-(define-key hoagie-keymap (kbd "`") 'hoagie-eshell-to-current-dir)
+      (interactive)
+      (let ((dir default-directory)
+            (eshell-buf (or (get-buffer "*eshell*") (eshell))))
+        (with-current-buffer eshell-buf
+          (goto-char (point-max))
+          (eshell/pushd ".")
+          (cd dir)
+          (goto-char (point-max))
+          (eshell-kill-input)
+          (goto-char (point-max))
+          (eshell-send-input))
+        (pop-to-buffer eshell-buf)))
+    (define-key hoagie-keymap (kbd "`") 'hoagie-eshell-to-current-dir)
+    (with-eval-after-load 'eshell
+      (defun hoagie-eshell-prompt ()
+        (concat (eshell/pwd) "\n$ "))
+      (setq eshell-prompt-regexp "^[^#$\n]*[#$] "
+            eshell-prompt-function #'hoagie-eshell-prompt))))
+      ;; (eshell/alias "ff" "find-file $1")
+      ;; (eshell/alias "ffo" "find-file-other-window $1")
+      ;; (eshell/alias "d" "dired $1"))))
 
 (use-package sly
   :commands sly
   :config
-  (setq inferior-lisp-program "sbcl"))
+  (setq inferior-lisp-program "sbcl")
+  (use-package sly-quicklisp))
 
 (use-package speed-type
   :commands (speed-type-text speed-type-region speed-type-buffer))
@@ -447,6 +473,7 @@ Based on https://www.reddit.com/r/emacs/comments/1zkj2d/advanced_usage_of_eshell
 (global-set-key (kbd "M-u") 'upcase-dwim)
 (global-set-key (kbd "M-l") 'downcase-dwim)
 (define-key hoagie-keymap (kbd "b") 'browse-url-at-point)
+(define-key hoagie-keymap (kbd "t") 'toggle-truncate-lines)
 ;; used to be C-x K. Honestly I never used C-x C-k (macros) commands that much so :shrug:
 ;; without the lambda it would simply show the menu like C-x k
 (defun hoagie-kill-this-buffer ()
@@ -501,7 +528,7 @@ With ARG, do this that many times."
                                  (seconds-to-time
                                   (string-to-number to-convert)))
              millis)))
-(global-set-key (kbd "C-c C-t") 'hoagie-convert-timestamp)
+(define-key hoagie-keymap (kbd "t") 'hoagie-convert-timestamp)
 
 ;; MARK PUSH AND POP - should make a package out of this
 ;; including a macro or common func to "push a mark if first time"
