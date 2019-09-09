@@ -607,13 +607,12 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 ;; I finally know the conditions that trigger adding a marker in Visual Studio. I used those a lot.
 ;; The hook below pushes the mark when exiting isearch to match #1 in that post
 ;; UPDATE: converted hook to advice as per https://github.com/abo-abo/swiper/issues/2128
+;; UPDATE 2: kept advice but with isearch, as using the hook pushed mark first in search destination, then
+;; in search start position. Using the advice pushes first at destination then at search start.
 ;;the idea with this is similar to the "11 lines away" comment in the post above
 (require 'isearch)
-(add-hook 'isearch-mode-end-hook 'hoagie-isearch-end-push-mark)
-(defun hoagie-isearch-end-push-mark ()
-  "Push the mark -without activating- when exiting isearch."
-  (unless isearch-mode-end-hook-quit
-    (push-mark-no-activate)))
+(advice-add 'isearch-forward :after #'push-mark-no-activate)
+(advice-add 'isearch-backward :after #'push-mark-no-activate)
 
 ;; the idea with the next two functions is similar to the "11 lines away" comment in the post above
 (defun hoagie-scroll-down-with-mark ()
