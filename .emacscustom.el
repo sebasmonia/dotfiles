@@ -10,6 +10,7 @@
    ["#100e23" "#ff8080" "#95ffa4" "#ffe9aa" "#91ddff" "#c991e1" "#aaffe4" "#BAC9E4"])
  '(blink-cursor-mode nil)
  '(column-number-mode t)
+ '(completion-styles '(flex basic emacs22))
  '(confirm-nonexistent-file-or-buffer nil)
  '(custom-safe-themes
    (quote

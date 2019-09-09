@@ -48,6 +48,21 @@
 (use-package 2048-game
   :commands 2048-game)
 
+(use-package anzu
+  :bind
+  (("<remap> <isearch-query-replace>" . anzu-isearch-query-replace)
+   ("<remap> <isearch-query-replace-regexp>" . anzu-isearch-query-replace-regexp)
+   ("<remap> <query-replace>" . anzu-query-replace)
+   ("<remap> <query-replace-regexp>" . anzu-query-replace-regexp))
+  :init
+  (global-anzu-mode 1)
+  :custom
+  (anzu-deactivate-region t)
+  (anzu-mode-lighter "")
+  (anzu-replace-threshold 50)
+  (anzu-replace-to-string-separator " => ")
+  (anzu-search-threshold 1000))
+
 (use-package browse-kill-ring
   :config
   (browse-kill-ring-default-keybindings))
@@ -62,24 +77,10 @@
   (company-idle-delay 0.1)
   (company-minimum-prefix-length 3))
 
-(use-package smex ;; Not used directly, but counsel-M-x benefits from it
-  :demand)
-(use-package counsel ;; includes ivy and swiper
-  :demand
-  :commands (counsel-M-x ivy-mode swiper)
-  :custom
-  (ivy-initial-inputs-alist nil) ;; don't prefix input with ^ anywhere
-  (ivy-use-virtual-buffers t)
-  (enable-recursive-minibuffers t)
-  (ivy-count-format "%d/%d ")
-  :config
-  (progn
-    (ivy-mode 1)
-    (define-key hoagie-keymap (kbd "<menu>") 'counsel-M-x)
-    ;; the default is 'ivy-partial-or-done
-    (define-key ivy-minibuffer-map (kbd "TAB") 'ivy-partial)
-    (global-set-key (kbd "C-s") 'swiper-isearch)
-    (global-set-key (kbd "C-r") 'swiper-isearch-backward)))
+(use-package awscli-capf :load-path "~/github/awscli-capf"
+  :commands (awscli-add-to-capf)
+  :hook ((shell-mode . awscli-capf-add)
+         (eshell-mode . awscli-capf-add)))
 
 (use-package csharp-mode ;; manual load since I removed omnisharp
   :demand
@@ -243,6 +244,29 @@
   (ibuffer-expert t)
   (ibuffer-show-empty-filter-groups nil))
 
+(use-package ido
+  :init
+  (progn
+    (ido-mode 1)
+    (use-package ido-vertical-mode
+      :config
+      (ido-vertical-mode 1)
+      :custom
+      (ido-vertical-define-keys 'C-n-and-C-p-only)))
+  :custom
+  (ido-enable-flex-matching t)
+  (ido-everywhere t)
+  (ido-create-new-buffer 'always)
+  (ido-default-buffer-method 'selected-window))
+
+(use-package ido-completing-read+
+  :demand t
+  :init
+  (ido-ubiquitous-mode 1))
+
+(use-package idomenu
+  :bind ("M-g d" . idomenu))
+
 (use-package json-mode
   :mode "\\.json$")
 
@@ -362,6 +386,14 @@ Based on https://www.reddit.com/r/emacs/comments/1zkj2d/advanced_usage_of_eshell
   (setq inferior-lisp-program "sbcl")
   (use-package sly-quicklisp))
 
+(use-package smex
+  :init
+  (smex-initialize)
+  :bind
+  (("M-x" . smex)
+   :map hoagie-keymap
+   ("<menu>" . smex)))
+
 (use-package speed-type
   :commands (speed-type-text speed-type-region speed-type-buffer))
 
@@ -427,6 +459,8 @@ Based on https://www.reddit.com/r/emacs/comments/1zkj2d/advanced_usage_of_eshell
 (setq inhibit-compacting-font-caches t)
 ; see https://emacs.stackexchange.com/a/28746/17066
 (setq auto-window-vscroll nil)
+;; helps with company and capf all the same
+(setq completion-ignore-case t)
 ; from https://emacs.stackexchange.com/questions/7362/how-to-show-a-diff-between-two-buffers-with-character-level-diffs
 (setq-default ediff-forward-word-function 'forward-char)
 ;; helps compilation buffer not slowdown
@@ -574,13 +608,14 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 ;; The hook below pushes the mark when exiting isearch to match #1 in that post
 ;; UPDATE: converted hook to advice as per https://github.com/abo-abo/swiper/issues/2128
 ;;the idea with this is similar to the "11 lines away" comment in the post above
-(defun hoagie-isearch-end-push-mark (&rest _)
+(require 'isearch)
+(add-hook 'isearch-mode-end-hook 'hoagie-isearch-end-push-mark)
+(defun hoagie-isearch-end-push-mark ()
   "Push the mark -without activating- when exiting isearch."
   (unless isearch-mode-end-hook-quit
     (push-mark-no-activate)))
-(advice-add 'swiper--action :after 'hoagie-isearch-end-push-mark)
-(advice-add 'swiper-isearch-action :after 'hoagie-isearch-end-push-mark)
 
+;; the idea with the next two functions is similar to the "11 lines away" comment in the post above
 (defun hoagie-scroll-down-with-mark ()
   "Like `scroll-down-command`, but push a mark if this is not a repeat invocation."
   (interactive)
