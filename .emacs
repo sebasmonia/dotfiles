@@ -74,8 +74,8 @@
         ("<SPC>" . company-complete))
   :hook (after-init . global-company-mode)
   :custom
-  (company-idle-delay 0.1)
-  (company-minimum-prefix-length 3))
+  (company-idle-delay 0)
+  (company-minimum-prefix-length 1))
 
 (use-package awscli-capf :load-path "~/github/awscli-capf"
   :commands (awscli-add-to-capf)
@@ -252,7 +252,8 @@
       :config
       (ido-vertical-mode 1)
       :custom
-      (ido-vertical-define-keys 'C-n-and-C-p-only)))
+      (ido-vertical-define-keys 'c-n-and-c-p-only)
+      (ido-use-virtual-buffers t)))
   :custom
   (ido-enable-flex-matching t)
   (ido-everywhere t)
@@ -321,7 +322,7 @@
   :init
   (projectile-mode)
   :custom
-  (projectile-completion-system 'ivy)
+  (projectile-completion-system 'ido)
   (projectile-indexing-method 'alien)
   (projectile-switch-project-action 'projectile-find-file-dwim))
 
@@ -481,14 +482,14 @@ Based on https://www.reddit.com/r/emacs/comments/1zkj2d/advanced_usage_of_eshell
 ;; ;; from https://stackoverflow.com/a/22176971, move auto saves and
 ;; ;; back up files to a different folder so git or dotnet core won't
 ;; ;; pick them up as changes or new files in the project
-;; (make-directory (concat user-emacs-directory "auto-save") t)
-;; (setq auto-save-file-name-transforms
-;;       `((".*" ,(concat user-emacs-directory "auto-save/") t)))
+(make-directory (concat user-emacs-directory "auto-save") t)
+(setq auto-save-file-name-transforms
+      `((".*" ,(concat user-emacs-directory "auto-save/") t)))
 
-;; (make-directory (concat user-emacs-directory "backups") t)
-;; (setq backup-directory-alist
-;;       `(("." . ,(expand-file-name
-;;                  (concat user-emacs-directory "backups")))))
+(make-directory (concat user-emacs-directory "backups") t)
+(setq backup-directory-alist
+      `(("." . ,(expand-file-name
+                 (concat user-emacs-directory "backups")))))
 
 ;; OTHER BINDINGS
 ; adapted for https://stackoverflow.com/questions/6464738/how-can-i-switch-focus-after-buffer-split-in-emacs
@@ -698,9 +699,24 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 
 (define-key hoagie-keymap (kbd "0") 'kill-buffer-and-window)
 
+
+(use-package challenger-deep-theme
+  :demand t)
+
 (use-package pastelmac-theme
   :init
   (load-theme 'pastelmac t))
+
+
+(defun hoagie-toggle-lights ()
+  "Swap my preferred light and dark themes."
+  (interactive)
+  (let* ((themes '(challenger-deep pastelmac))
+         (current (car custom-enabled-themes))
+         (to-load (car (remove current themes))))
+    (mapc #'disable-theme custom-enabled-themes)
+    (load-theme to-load t)))
+(global-set-key (kbd "C-<f11>") 'hoagie-toggle-lights)
 
 (use-package mood-line
   :demand t
