@@ -69,13 +69,19 @@
 
 (use-package company
   :bind
-  ("M-S-<SPC>" . company-complete)
+  ("M-S-<SPC>" . company-complete-common)
   (:map hoagie-keymap
-        ("<SPC>" . company-complete))
+        ("<SPC>" . company-complete-common))
   :hook (after-init . global-company-mode)
   :custom
   (company-idle-delay 0)
-  (company-minimum-prefix-length 1))
+  (company-minimum-prefix-length 1)
+  :config
+  (define-key company-active-map [return] nil)
+  (define-key company-active-map (kbd "C-<return>") 'company-complete-selection)
+  (define-key company-active-map [tab] 'company-complete-selection)
+  (define-key company-active-map [tab] 'company-complete-selection)
+  (define-key company-active-map (kbd "TAB") 'company-complete-selection))
 
 (use-package awscli-capf :load-path "~/github/awscli-capf"
   :commands (awscli-add-to-capf)
@@ -460,6 +466,11 @@ Based on https://www.reddit.com/r/emacs/comments/1zkj2d/advanced_usage_of_eshell
 (setq inhibit-compacting-font-caches t)
 ; see https://emacs.stackexchange.com/a/28746/17066
 (setq auto-window-vscroll nil)
+;; behaviour for C-l. I prefer one extra line rather than top & bottom
+;; and also start with the top position, which I found more useful
+(setq recenter-positions '(1 middle -2))
+;; Flex is a newer completion style that works as advertised...flex
+(setq completion-styles '(flex basic emacs22))
 ;; helps with company and capf all the same
 (setq completion-ignore-case t)
 ; from https://emacs.stackexchange.com/questions/7362/how-to-show-a-diff-between-two-buffers-with-character-level-diffs
@@ -468,6 +479,7 @@ Based on https://www.reddit.com/r/emacs/comments/1zkj2d/advanced_usage_of_eshell
 ;; see https://blog.danielgempesaw.com/post/129841682030/fixing-a-laggy-compilation-buffer
 (setq compilation-error-regexp-alist
       (delete 'maven compilation-error-regexp-alist))
+(add-hook 'sql-interactive-mode-hook (lambda () (setq truncate-lines t)))
 ;; from http://www.jurta.org/en/emacs/dotemacs, set the major mode
 ;; of buffers that are not visiting a file
 (setq-default major-mode (lambda ()
@@ -699,6 +711,20 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 
 (define-key hoagie-keymap (kbd "0") 'kill-buffer-and-window)
 
+;; simplified version that toggles full focus vs stored window config from
+;; https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
+(defvar hoagie-window-configuration nil "Last window configuration saved.")
+(defun hoagie-toggle-focus-windows ()
+  "Toggle between focusing on a single window or restoring an existing config.
+Uses `hoagie-window-configuration' to store the current setup."
+  (interactive)
+  (if hoagie-window-configuration
+      (progn
+        (set-window-configuration hoagie-window-configuration)
+        (setq hoagie-window-configuration nil))
+    (setq hoagie-window-configuration (current-window-configuration))
+    (delete-other-windows)))
+(define-key hoagie-keymap (kbd "1") 'hoagie-toggle-focus-windows)
 
 (use-package challenger-deep-theme
   :demand t)
@@ -706,7 +732,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (use-package pastelmac-theme
   :init
   (load-theme 'pastelmac t))
-
 
 (defun hoagie-toggle-lights ()
   "Swap my preferred light and dark themes."
