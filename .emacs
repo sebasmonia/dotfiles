@@ -81,7 +81,14 @@
   (define-key company-active-map (kbd "C-<return>") 'company-complete-selection)
   (define-key company-active-map [tab] 'company-complete-selection)
   (define-key company-active-map [tab] 'company-complete-selection)
-  (define-key company-active-map (kbd "TAB") 'company-complete-selection))
+  (define-key company-active-map (kbd "TAB") 'company-complete-selection)
+  (define-key company-active-map (kbd "C-n") 'company-select-next)
+  (define-key company-active-map (kbd "C-p") 'company-select-previous))
+
+(use-package company-quickhelp
+  :ensure t
+  :defer t
+  :init (add-hook 'global-company-mode-hook #'company-quickhelp-mode))
 
 (use-package awscli-capf :load-path "~/github/awscli-capf"
   :commands (awscli-add-to-capf)
