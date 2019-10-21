@@ -48,6 +48,7 @@
 (use-package 2048-game
   :commands 2048-game)
 
+;; could be replaced by isearch-lazy-count...
 (use-package anzu
   :bind
   (("<remap> <isearch-query-replace>" . anzu-isearch-query-replace)
@@ -76,19 +77,14 @@
   :custom
   (company-idle-delay 0)
   (company-minimum-prefix-length 1)
+  (company-selection-wrap-around t)
   :config
-  (define-key company-active-map [return] nil)
-  (define-key company-active-map (kbd "C-<return>") 'company-complete-selection)
-  (define-key company-active-map [tab] 'company-complete-selection)
-  (define-key company-active-map [tab] 'company-complete-selection)
-  (define-key company-active-map (kbd "TAB") 'company-complete-selection)
-  (define-key company-active-map (kbd "C-n") 'company-select-next)
-  (define-key company-active-map (kbd "C-p") 'company-select-previous))
-
-(use-package company-quickhelp
-  :ensure t
-  :defer t
-  :init (add-hook 'global-company-mode-hook #'company-quickhelp-mode))
+  (define-key company-active-map (kbd "C-<return>") #'company-abort)
+  (define-key company-active-map [tab] #'company-complete-selection)
+  (define-key company-active-map [tab] #'company-complete-selection)
+  (define-key company-active-map (kbd "TAB") #'company-complete-selection)
+  (define-key company-active-map (kbd "C-n") #'company-select-next)
+  (define-key company-active-map (kbd "C-p") #'company-select-previous))
 
 (use-package awscli-capf :load-path "~/github/awscli-capf"
   :commands (awscli-add-to-capf)
@@ -98,10 +94,12 @@
 (use-package csharp-mode ;; manual load since I removed omnisharp
   :demand
   :hook
-  (csharp-mode-hook . (lambda () (setq-local fill-function-arguments-first-argument-same-line t)
-                                 (setq-local fill-function-arguments-second-argument-same-line t)
-                                 (setq-local fill-function-arguments-last-argument-same-line t)
-                                 (define-key csharp-mode-map [remap c-fill-paragraph] 'fill-function-arguments-dwim))))
+  (csharp-mode . (lambda ()
+                        (subword-mode)
+                        (setq-local fill-function-arguments-first-argument-same-line t)
+                        (setq-local fill-function-arguments-second-argument-same-line t)
+                        (setq-local fill-function-arguments-last-argument-same-line t)
+                        (define-key csharp-mode-map [remap c-fill-paragraph] 'fill-function-arguments-dwim))))
 
 (use-package dired
   :ensure nil
@@ -115,7 +113,9 @@
       "Call find-name-dired with a broad pattern and using project.el if available."
       (interactive)
       (let ((root-dir (or (cdr (project-current)) default-directory))
-            (partial-name (read-string "Partial filename: ")))
+            (partial-name (if (use-region-p)
+                              (buffer-substring-no-properties (region-beginning) (region-end))
+                            (string-join (split-string (read-string "Partial filename: ") " ") "*"))))
         (find-name-dired root-dir (format "*%s*" partial-name))))
     (define-key hoagie-keymap (kbd "f") 'hoagie-find-name-project-root)
     (define-key hoagie-keymap (kbd "F") 'find-name-dired)
@@ -141,6 +141,19 @@
   :bind
   (:map dired-mode-map
         (")" . dired-git-info-mode)))
+
+(use-package dired-sidebar
+  :bind (("M-z" . dired-sidebar-toggle-sidebar))
+  :commands (dired-sidebar-toggle-sidebar)
+  :init
+  (add-hook 'dired-sidebar-mode-hook
+            (lambda ()
+              (unless (file-remote-p default-directory)
+                (auto-revert-mode))))
+  :config
+  (setq dired-sidebar-toggle-hidden-commands '(rotate-windows toggle-window-split balance-windows))
+  (setq dired-sidebar-theme 'ascii)
+  (setq dired-sidebar-subtree-line-prefix "__"))
 
 (use-package deadgrep
   :bind
@@ -205,6 +218,7 @@
     (defun eglot--format-markup-patch (args)
       (list (or (car args) "")))
     (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch)))
+
 
 (use-package expand-region
   :bind
@@ -353,46 +367,14 @@
         (command-execute 'occur)))
     (define-key hoagie-keymap (kbd "o") 'hoagie-occur-dwim)))
 
-;; (use-package shell
-;;   :init
-;;   (use-package better-shell
-;;     :bind (:map hoagie-keymap
-;;                 ("`" . better-shell-for-current-dir)))
-;;   :hook
-;;   (shell-mode . (lambda ()
-;;                   (toggle-truncate-lines t))))
-
-(use-package eshell
-  :demand nil
+(use-package shell
+  :init
+  (use-package better-shell
+    :bind (:map hoagie-keymap
+                ("`" . better-shell-for-current-dir)))
   :hook
-  (eshell-mode . (lambda ()
-                  (toggle-truncate-lines t)))
-  :config
-  (progn
-    (defun hoagie-eshell-to-current-dir ()
-      "Pop eshell to current dir.
-Based on https://www.reddit.com/r/emacs/comments/1zkj2d/advanced_usage_of_eshell/cfuhl2x?utm_source=share&utm_medium=web2x"
-      (interactive)
-      (let ((dir default-directory)
-            (eshell-buf (or (get-buffer "*eshell*") (eshell))))
-        (with-current-buffer eshell-buf
-          (goto-char (point-max))
-          (eshell/pushd ".")
-          (cd dir)
-          (goto-char (point-max))
-          (eshell-kill-input)
-          (goto-char (point-max))
-          (eshell-send-input))
-        (pop-to-buffer eshell-buf)))
-    (define-key hoagie-keymap (kbd "`") 'hoagie-eshell-to-current-dir)
-    (with-eval-after-load 'eshell
-      (defun hoagie-eshell-prompt ()
-        (concat (eshell/pwd) "\n$ "))
-      (setq eshell-prompt-regexp "^[^#$\n]*[#$] "
-            eshell-prompt-function #'hoagie-eshell-prompt))))
-      ;; (eshell/alias "ff" "find-file $1")
-      ;; (eshell/alias "ffo" "find-file-other-window $1")
-      ;; (eshell/alias "d" "dired $1"))))
+  (shell-mode . (lambda ()
+                  (toggle-truncate-lines t))))
 
 (use-package sly
   :commands sly
@@ -425,11 +407,6 @@ Based on https://www.reddit.com/r/emacs/comments/1zkj2d/advanced_usage_of_eshell
   (visible-mark-faces '(visible-mark-face1 visible-mark-face2))
   (visible-mark-forward-max 2)
   (visible-mark-forward-faces '(visible-mark-forward-face1 visible-mark-forward-face2)))
-
-(use-package vlf
-  :ensure t
-  :config
-  (require 'vlf-setup))
 
 (use-package web-mode
   :mode
@@ -476,8 +453,8 @@ Based on https://www.reddit.com/r/emacs/comments/1zkj2d/advanced_usage_of_eshell
 ;; behaviour for C-l. I prefer one extra line rather than top & bottom
 ;; and also start with the top position, which I found more useful
 (setq recenter-positions '(1 middle -2))
-;; Flex is a newer completion style that works as advertised...flex
-(setq completion-styles '(flex basic emacs22))
+;; Substring is matchier than basic but not as much as flex
+(setq completion-styles '(substring basic emacs22))
 ;; helps with company and capf all the same
 (setq completion-ignore-case t)
 ; from https://emacs.stackexchange.com/questions/7362/how-to-show-a-diff-between-two-buffers-with-character-level-diffs
@@ -633,6 +610,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (require 'isearch)
 (advice-add 'isearch-forward :after #'push-mark-no-activate)
 (advice-add 'isearch-backward :after #'push-mark-no-activate)
+;; (setq isearch-lazy-count t) ;; new in Emacs 27!
 
 ;; the idea with the next two functions is similar to the "11 lines away" comment in the post above
 (defun hoagie-scroll-down-with-mark ()
@@ -712,26 +690,23 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
         (switch-to-buffer-other-frame this-buffer)
       (other-frame 1) ;; go away
       (switch-to-buffer this-buffer) ;; change it
-      (other-frame 1)))) ;; come back
+      (other-frame 1)) ;; come back
+    (switch-to-prev-buffer)))
 
 (global-set-key (kbd "C-M-O") 'hoagie-move-buffer-other-frame)
 
 (define-key hoagie-keymap (kbd "0") 'kill-buffer-and-window)
 
-;; simplified version that toggles full focus vs stored window config from
-;; https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
+;; simplified version that restores stored window config and advices delete-other-windows
+;; idea from https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
 (defvar hoagie-window-configuration nil "Last window configuration saved.")
-(defun hoagie-toggle-focus-windows ()
-  "Toggle between focusing on a single window or restoring an existing config.
-Uses `hoagie-window-configuration' to store the current setup."
+(defun hoagie-restore-window-configuration ()
+  "Uses `hoagie-window-configuration' to restore the window setup."
   (interactive)
-  (if hoagie-window-configuration
-      (progn
-        (set-window-configuration hoagie-window-configuration)
-        (setq hoagie-window-configuration nil))
-    (setq hoagie-window-configuration (current-window-configuration))
-    (delete-other-windows)))
-(define-key hoagie-keymap (kbd "1") 'hoagie-toggle-focus-windows)
+  (when hoagie-window-configuration
+    (set-window-configuration hoagie-window-configuration)))
+(define-key hoagie-keymap (kbd "1") #'hoagie-restore-window-configuration)
+(advice-add 'delete-other-windows :before (lambda () (setq hoagie-window-configuration (current-window-configuration))))
 
 (use-package challenger-deep-theme
   :demand t)
@@ -748,7 +723,7 @@ Uses `hoagie-window-configuration' to store the current setup."
          (to-load (car (remove current themes))))
     (mapc #'disable-theme custom-enabled-themes)
     (load-theme to-load t)))
-(global-set-key (kbd "C-<f11>") 'hoagie-toggle-lights)
+(global-set-key (kbd "C-<f11>") #'hoagie-toggle-lights)
 
 (use-package mood-line
   :demand t

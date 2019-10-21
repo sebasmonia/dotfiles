@@ -37,15 +37,6 @@
    ";; Il semble que la perfection soit atteinte non quand il n'y a plus rien à ajouter, mais quand il n'y a plus à retrancher. - Antoine de Saint Exupéry
 ;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.
 ")
- '(lisp-mode-hook
-   (quote
-    (#[nil "\300\301\302\303\211$\207"
-           [add-hook font-lock-extend-region-functions sly-extend-region-for-font-lock t]
-           5]
-     common-lisp-lisp-mode-hook sly-editing-mode
-     #[nil "\300\301\302\303\211$\207"
-           [add-hook font-lock-extend-region-functions slime-extend-region-for-font-lock t]
-           5])))
  '(mark-ring-max 32)
  '(menu-bar-mode nil)
  '(org-fontify-emphasized-text nil)
@@ -56,7 +47,7 @@
  '(python-shell-interpreter "ipython")
  '(python-shell-interpreter-args "--pprint ")
  '(reb-re-syntax 'string)
- '(recenter-positions '(middle 0.1 0.9))
+ '(recenter-positions '(middle 1 -2))
  '(revert-without-query '(".*"))
  '(save-interprogram-paste-before-kill t)
  '(savehist-mode t)
@@ -102,7 +93,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "IBM Plex Mono" :foundry "outline" :slant normal :weight normal :height 81 :width normal))))
+ '(default ((t (:family "IBM Plex Mono Medium" :foundry "outline" :slant normal :weight normal :height 132 :width normal))))
  '(dgi-commit-message-face ((t (:foreground "cornflower blue"))))
  '(diredp-compressed-file-name ((t (:foreground "slate gray"))))
  '(diredp-compressed-file-suffix ((((class color) (min-colors 89)) (:foreground "#b218b2"))))
