@@ -93,7 +93,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "IBM Plex Mono Medium" :foundry "outline" :slant normal :weight normal :height 132 :width normal))))
+ '(default ((t (:family "Consolas" :foundry "outline" :slant normal :weight normal :height 78 :width normal))))
  '(dgi-commit-message-face ((t (:foreground "cornflower blue"))))
  '(diredp-compressed-file-name ((t (:foreground "slate gray"))))
  '(diredp-compressed-file-suffix ((((class color) (min-colors 89)) (:foreground "#b218b2"))))
