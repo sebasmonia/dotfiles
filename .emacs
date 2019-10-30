@@ -203,6 +203,13 @@
       (define-key ediff-mode-map "d" 'ediff-copy-both-to-C))
     (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map)))
 
+;; In work config there's a font size adjustment for multi monitor.
+;; Given a "size" per monitor, then:
+;; (set-frame-font (format "Consolas %s" size))
+;; (set-face-attribute 'eldoc-box-body frame :inherit 'default :height 1.2)
+(use-package eldoc-box
+  :hook (eldoc-mode . eldoc-box-hover-at-point-mode))
+
 (use-package eglot
   :commands (eglot eglot-ensure)
   :hook ((python-mode . eglot-ensure)
@@ -217,8 +224,8 @@
     ;; patch the argument. When nil, use "" instead.
     (defun eglot--format-markup-patch (args)
       (list (or (car args) "")))
-    (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch)))
-
+    (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch)
+    (add-hook 'eglot--managed-mode-hook #'eldoc-box-hover-mode t)))
 
 (use-package expand-region
   :bind
@@ -709,41 +716,99 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (advice-add 'delete-other-windows :before (lambda () (setq hoagie-window-configuration (current-window-configuration))))
 
 (use-package challenger-deep-theme
-  :demand t)
-
-(use-package pastelmac-theme
   :init
-  (load-theme 'pastelmac t))
+  (load-theme 'challenger-deep t))
 
-(defun hoagie-toggle-lights ()
-  "Swap my preferred light and dark themes."
-  (interactive)
-  (let* ((themes '(challenger-deep pastelmac))
-         (current (car custom-enabled-themes))
-         (to-load (car (remove current themes))))
-    (mapc #'disable-theme custom-enabled-themes)
-    (load-theme to-load t)))
-(global-set-key (kbd "C-<f11>") #'hoagie-toggle-lights)
+;; (add-to-list 'load-path "c:/Home/github/spotify.el")
+;; (require 'spotify)
+;; (setq spotify-transport 'connect)
+;; (setq spotify-oauth2-client-secret "e11eb2e4583f497c9b07b91cda534f82")
+;; (setq spotify-oauth2-client-id "0f3b9c19b0b44c5cadab58e411121758")
+;; (setq spotify-mode-line-refresh-interval 15)
+;; (global-spotify-remote-mode)
+;; (setq spotify-mode-line-playing-text ">")
+;; (setq spotify-mode-line-paused-text "|")
+;; (setq spotify-mode-line-stopped-text ".")
+;; (setq spotify-mode-line-format  "[%p %a: %t|%r%s]")
+;; ;; Free M-p for other modes, use C-z instead because I don't have another use for it
+;; ;; also bind it to my <menu> map...see which one I use more commonly to decide
+;; (defvar spotify-keymap (define-prefix-command 'spotify-keymap) "My custom bindings for spotify-remote-mode.")
+;; (define-key spotify-keymap (kbd "r") #'spotify-toggle-repeat)
+;; (define-key spotify-keymap (kbd "s") #'spotify-toggle-shuffle)
+;; (define-key spotify-keymap (kbd "p") #'spotify-toggle-play)
+;; (define-key spotify-keymap (kbd "b") #'spotify-previous-track)
+;; (define-key spotify-keymap (kbd "f") #'spotify-next-track)
+;; (define-key spotify-keymap (kbd "m") #'spotify-my-playlists)
+;; (define-key spotify-keymap (kbd "d") #'spotify-select-device)
+;; (global-set-key (kbd "C-z") spotify-keymap)
+;; (define-key hoagie-keymap (kbd "p") spotify-keymap)
 
-(use-package mood-line
-  :demand t
+(use-package telephone-line :load-path "~/github/telephone-line"
   :config
-  (mood-line-mode))
+  (progn
+    (defface telephone-line-extra-accent-active
+      '((t (:foreground "white" :background "dark slate blue" :inherit mode-line)))
+      "Extra accent face for my telephone-line."
+      :group 'telephone-line)
 
-;; Updates to run after a mood-line update...until they are added
-;; or I just branch the package. AND BYTE-COMPILE AFTERWARDS
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ;; I like this better than the default. No "Top" "Bottom" + region size ;;
-;; (defun mood-line-segment-position ()                                    ;;
-;;   "Displays the current cursor position in the mode-line."              ;;
-;;   (let ((region-size (when (use-region-p)                               ;;
-;;                        (format " (%sL:%sC)"                             ;;
-;;                                (count-lines (region-beginning)          ;;
-;;                                             (region-end))               ;;
-;;                                (- (region-end) (region-beginning))))))  ;;
-;;     (list "%l:%c" region-size)))                                        ;;
-;;                                                                         ;;
-;; ;; replace  mood-line-segment-position with these two:                  ;;
-;; (:eval (mood-line-segment-position))                                    ;;
-;; (:eval (lambda () mode-line-misc-info))))                               ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    (defface telephone-line-extra-accent-inactive
+      '((t (:foreground "white" :background "grey14" :inherit mode-line-inactive)))
+      "Extra accent face for my telephone-line."
+      :group 'telephone-line)
+
+    (defface telephone-line-buffer-modified-face
+      '((t (:foreground "red" :background "grey22" :weight black :inherit mode-line)))
+      "Face for buffer modified segment."
+      :group 'telephone-line)
+
+    (telephone-line-defsegment* telephone-line-vc-nobackend-segment ()
+      (if vc-mode
+          (substring-no-properties vc-mode (+ 1 (string-match "[-:@!?]" vc-mode)))
+        " - "))
+
+    (telephone-line-defsegment* telephone-line-buffer-shortname-segment ()
+      ;; Avoids the padding in the regular "buffer only" segment
+      (buffer-name))
+
+    (telephone-line-defsegment* telephone-line-position+region-segment ()
+      (let ((region-size (when (use-region-p)
+                           (format " (%sL:%sC)"
+                                   (count-lines (region-beginning)
+                                                (region-end))
+                                   (- (region-end) (region-beginning))))))
+        (list "%l:%c" region-size)))
+
+    (defun telephone-line-buffer-mod-color-segment-face (active)
+      "Determine the color for a buffer modified segment."
+      (if (and active (not buffer-read-only) (buffer-modified-p))
+          'telephone-line-buffer-modified-face
+        'telephone-line-accent-inactive))
+
+    (telephone-line-defsegment* telephone-line-buffer-mod-segment ()
+      (cond
+       (buffer-read-only "·")
+       ((buffer-modified-p) "!")
+       (t "-")))
+
+    (setq telephone-line-faces
+          '((extra-accent . (telephone-line-extra-accent-active . telephone-line-extra-accent-inactive))
+            (accent . (telephone-line-accent-active . telephone-line-accent-inactive))
+            (nil . (mode-line . mode-line-inactive))
+            (buffer-state . telephone-line-buffer-mod-color-segment-face)))
+
+    (setq telephone-line-primary-left-separator 'telephone-line-abs-left
+          telephone-line-secondary-left-separator 'telephone-line-abs-left)
+    (setq telephone-line-primary-right-separator 'telephone-line-abs-right
+          telephone-line-secondary-right-separator 'telephone-line-abs-right)
+    (setq telephone-line-lhs
+          '((buffer-state . (telephone-line-buffer-mod-segment))
+            (extra-accent . (telephone-line-buffer-shortname-segment))
+            (accent       . (telephone-line-projectile-segment))
+            (nil          . (telephone-line-position+region-segment
+                             telephone-line-narrow-segment))))
+    (setq telephone-line-rhs
+          '((nil          . (telephone-line-process-segment
+                             telephone-line-misc-info-segment))
+            (extra-accent . (telephone-line-vc-nobackend-segment))
+            (accent       . (telephone-line-minions-mode-segment))))
+    (telephone-line-mode t)))
