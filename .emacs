@@ -203,13 +203,6 @@
       (define-key ediff-mode-map "d" 'ediff-copy-both-to-C))
     (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map)))
 
-;; In work config there's a font size adjustment for multi monitor.
-;; Given a "size" per monitor, then:
-;; (set-frame-font (format "Consolas %s" size))
-;; (set-face-attribute 'eldoc-box-body frame :inherit 'default :height 1.2)
-(use-package eldoc-box
-  :hook (eldoc-mode . eldoc-box-hover-at-point-mode))
-
 (use-package eglot
   :commands (eglot eglot-ensure)
   :hook ((python-mode . eglot-ensure)
@@ -718,30 +711,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (use-package challenger-deep-theme
   :init
   (load-theme 'challenger-deep t))
-
-;; (add-to-list 'load-path "c:/Home/github/spotify.el")
-;; (require 'spotify)
-;; (setq spotify-transport 'connect)
-;; (setq spotify-oauth2-client-secret "e11eb2e4583f497c9b07b91cda534f82")
-;; (setq spotify-oauth2-client-id "0f3b9c19b0b44c5cadab58e411121758")
-;; (setq spotify-mode-line-refresh-interval 15)
-;; (global-spotify-remote-mode)
-;; (setq spotify-mode-line-playing-text ">")
-;; (setq spotify-mode-line-paused-text "|")
-;; (setq spotify-mode-line-stopped-text ".")
-;; (setq spotify-mode-line-format  "[%p %a: %t|%r%s]")
-;; ;; Free M-p for other modes, use C-z instead because I don't have another use for it
-;; ;; also bind it to my <menu> map...see which one I use more commonly to decide
-;; (defvar spotify-keymap (define-prefix-command 'spotify-keymap) "My custom bindings for spotify-remote-mode.")
-;; (define-key spotify-keymap (kbd "r") #'spotify-toggle-repeat)
-;; (define-key spotify-keymap (kbd "s") #'spotify-toggle-shuffle)
-;; (define-key spotify-keymap (kbd "p") #'spotify-toggle-play)
-;; (define-key spotify-keymap (kbd "b") #'spotify-previous-track)
-;; (define-key spotify-keymap (kbd "f") #'spotify-next-track)
-;; (define-key spotify-keymap (kbd "m") #'spotify-my-playlists)
-;; (define-key spotify-keymap (kbd "d") #'spotify-select-device)
-;; (global-set-key (kbd "C-z") spotify-keymap)
-;; (define-key hoagie-keymap (kbd "p") spotify-keymap)
 
 (use-package telephone-line :load-path "~/github/telephone-line"
   :config
