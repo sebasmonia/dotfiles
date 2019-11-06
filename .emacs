@@ -203,29 +203,34 @@
       (define-key ediff-mode-map "d" 'ediff-copy-both-to-C))
     (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map)))
 
-;; In work config there's a font size adjustment for multi monitor.
-;; Given a "size" per monitor, then:
-;; (set-frame-font (format "Consolas %s" size))
-;; (set-face-attribute 'eldoc-box-body frame :inherit 'default :height 1.2)
-(use-package eldoc-box
-  :hook (eldoc-mode . eldoc-box-hover-at-point-mode))
-
 (use-package eglot
   :commands (eglot eglot-ensure)
   :hook ((python-mode . eglot-ensure)
          (csharp-mode . eglot-ensure))
+  :bind
+  (:map eglot-mode-map
+        (("C-c e r" . eglot-rename)
+         ("C-c e f" . eglot-format)
+         ("C-c e h" . eglot-help-at-point)))
   :config
   (progn
-    (define-key eglot-mode-map (kbd "C-c e r") 'eglot-rename)
-    (define-key eglot-mode-map (kbd "C-c e f") 'eglot-format)
-    (define-key eglot-mode-map (kbd "C-c e h") 'eglot-help-at-point)
     (add-to-list 'eglot-server-programs
                  `(csharp-mode . ("C:/Home/omnisharp_64/OmniSharp.exe" "-lsp")))
     ;; patch the argument. When nil, use "" instead.
     (defun eglot--format-markup-patch (args)
       (list (or (car args) "")))
-    (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch)
-    (add-hook 'eglot--managed-mode-hook #'eldoc-box-hover-mode t)))
+    (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch)))
+
+(use-package eldoc-box
+  :hook (prog-mode . eldoc-box-hover-mode)
+  :config
+  (setq eldoc-box-max-pixel-width 1024
+        eldoc-box-max-pixel-height 768)
+  (setq eldoc-idle-delay 0.1)
+  ;; Set the child frame face as 1.0 relative to the default font
+  ;; at work, the adjustment in "workonlyconfig.el" takes care of
+  ;; adjusting the child frames with the parent frame size
+  (set-face-attribute 'eldoc-box-body nil :inherit 'default :height 1.0))
 
 (use-package expand-region
   :bind
@@ -481,6 +486,12 @@
 ;; Better defaults from https://github.com/jacmoe/emacs.d/blob/master/jacmoe.org
 (setq help-window-select t)
 (add-hook 'focus-out-hook 'garbage-collect)
+;; From https://github.com/wasamasa/dotemacs/blob/master/init.org
+(setq line-number-display-limit-width 10000)
+(setq comint-prompt-read-only t)
+(defun my-shell-turn-echo-off ()
+  (setq comint-process-echoes t))
+(add-hook 'shell-mode-hook 'my-shell-turn-echo-off)
 
 ;; ;; from https://stackoverflow.com/a/22176971, move auto saves and
 ;; ;; back up files to a different folder so git or dotnet core won't
@@ -708,107 +719,45 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 ;; idea from https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
 (defvar hoagie-window-configuration nil "Last window configuration saved.")
 (defun hoagie-restore-window-configuration ()
-  "Uses `hoagie-window-configuration' to restore the window setup."
+  "Use `hoagie-window-configuration' to restore the window setup."
   (interactive)
   (when hoagie-window-configuration
     (set-window-configuration hoagie-window-configuration)))
 (define-key hoagie-keymap (kbd "1") #'hoagie-restore-window-configuration)
 (advice-add 'delete-other-windows :before (lambda () (setq hoagie-window-configuration (current-window-configuration))))
 
-(use-package challenger-deep-theme
+(use-package doom-themes
   :init
-  (load-theme 'challenger-deep t))
+  (setq doom-challenger-deep-brighter-comments t)
+  (load-theme 'doom-challenger-deep t)
+  (doom-themes-org-config))
 
-;; (add-to-list 'load-path "c:/Home/github/spotify.el")
-;; (require 'spotify)
-;; (setq spotify-transport 'connect)
-;; (setq spotify-oauth2-client-secret "e11eb2e4583f497c9b07b91cda534f82")
-;; (setq spotify-oauth2-client-id "0f3b9c19b0b44c5cadab58e411121758")
-;; (setq spotify-mode-line-refresh-interval 15)
-;; (global-spotify-remote-mode)
-;; (setq spotify-mode-line-playing-text ">")
-;; (setq spotify-mode-line-paused-text "|")
-;; (setq spotify-mode-line-stopped-text ".")
-;; (setq spotify-mode-line-format  "[%p %a: %t|%r%s]")
-;; ;; Free M-p for other modes, use C-z instead because I don't have another use for it
-;; ;; also bind it to my <menu> map...see which one I use more commonly to decide
-;; (defvar spotify-keymap (define-prefix-command 'spotify-keymap) "My custom bindings for spotify-remote-mode.")
-;; (define-key spotify-keymap (kbd "r") #'spotify-toggle-repeat)
-;; (define-key spotify-keymap (kbd "s") #'spotify-toggle-shuffle)
-;; (define-key spotify-keymap (kbd "p") #'spotify-toggle-play)
-;; (define-key spotify-keymap (kbd "b") #'spotify-previous-track)
-;; (define-key spotify-keymap (kbd "f") #'spotify-next-track)
-;; (define-key spotify-keymap (kbd "m") #'spotify-my-playlists)
-;; (define-key spotify-keymap (kbd "d") #'spotify-select-device)
-;; (global-set-key (kbd "C-z") spotify-keymap)
-;; (define-key hoagie-keymap (kbd "p") spotify-keymap)
-
-(use-package telephone-line :load-path "~/github/telephone-line"
-  :config
-  (progn
-    (defface telephone-line-extra-accent-active
-      '((t (:foreground "white" :background "dark slate blue" :inherit mode-line)))
-      "Extra accent face for my telephone-line."
-      :group 'telephone-line)
-
-    (defface telephone-line-extra-accent-inactive
-      '((t (:foreground "white" :background "grey14" :inherit mode-line-inactive)))
-      "Extra accent face for my telephone-line."
-      :group 'telephone-line)
-
-    (defface telephone-line-buffer-modified-face
-      '((t (:foreground "red" :background "grey22" :weight black :inherit mode-line)))
-      "Face for buffer modified segment."
-      :group 'telephone-line)
-
-    (telephone-line-defsegment* telephone-line-vc-nobackend-segment ()
-      (if vc-mode
-          (substring-no-properties vc-mode (+ 1 (string-match "[-:@!?]" vc-mode)))
-        " - "))
-
-    (telephone-line-defsegment* telephone-line-buffer-shortname-segment ()
-      ;; Avoids the padding in the regular "buffer only" segment
-      (buffer-name))
-
-    (telephone-line-defsegment* telephone-line-position+region-segment ()
-      (let ((region-size (when (use-region-p)
-                           (format " (%sL:%sC)"
-                                   (count-lines (region-beginning)
-                                                (region-end))
-                                   (- (region-end) (region-beginning))))))
-        (list "%l:%c" region-size)))
-
-    (defun telephone-line-buffer-mod-color-segment-face (active)
-      "Determine the color for a buffer modified segment."
-      (if (and active (not buffer-read-only) (buffer-modified-p))
-          'telephone-line-buffer-modified-face
-        'telephone-line-accent-inactive))
-
-    (telephone-line-defsegment* telephone-line-buffer-mod-segment ()
-      (cond
-       (buffer-read-only "·")
-       ((buffer-modified-p) "!")
-       (t "-")))
-
-    (setq telephone-line-faces
-          '((extra-accent . (telephone-line-extra-accent-active . telephone-line-extra-accent-inactive))
-            (accent . (telephone-line-accent-active . telephone-line-accent-inactive))
-            (nil . (mode-line . mode-line-inactive))
-            (buffer-state . telephone-line-buffer-mod-color-segment-face)))
-
-    (setq telephone-line-primary-left-separator 'telephone-line-abs-left
-          telephone-line-secondary-left-separator 'telephone-line-abs-left)
-    (setq telephone-line-primary-right-separator 'telephone-line-abs-right
-          telephone-line-secondary-right-separator 'telephone-line-abs-right)
-    (setq telephone-line-lhs
-          '((buffer-state . (telephone-line-buffer-mod-segment))
-            (extra-accent . (telephone-line-buffer-shortname-segment))
-            (accent       . (telephone-line-projectile-segment))
-            (nil          . (telephone-line-position+region-segment
-                             telephone-line-narrow-segment))))
-    (setq telephone-line-rhs
-          '((nil          . (telephone-line-process-segment
-                             telephone-line-misc-info-segment))
-            (extra-accent . (telephone-line-vc-nobackend-segment))
-            (accent       . (telephone-line-minions-mode-segment))))
-    (telephone-line-mode t)))
+(use-package doom-modeline
+      :ensure t
+      :hook (after-init . doom-modeline-mode)
+      :init
+      (setq doom-modeline-project-detection 'project)
+      (setq doom-modeline-buffer-file-name-style 'buffer-name)
+      (setq doom-modeline-icon (display-graphic-p))
+      (setq doom-modeline-major-mode-icon t)
+      (setq doom-modeline-major-mode-color-icon t)
+      (setq doom-modeline-buffer-state-icon t)
+      (setq doom-modeline-buffer-modification-icon t)
+      (setq doom-modeline-unicode-fallback nil)
+      (setq doom-modeline-minor-modes (featurep 'minions))
+      (setq doom-modeline-buffer-encoding nil)
+      (setq doom-modeline-indent-info nil)
+      (setq doom-modeline-checker-simple-format t)
+      (setq doom-modeline-number-limit 99)
+      (setq doom-modeline-vcs-max-length 25)
+      (setq doom-modeline-lsp t)
+      (setq doom-modeline-github nil)
+      (setq doom-modeline-github-interval (* 30 60))
+      (setq doom-modeline-mu4e nil)
+      (setq doom-modeline-irc nil)
+      (setq doom-modeline-env-version nil)
+      (setq doom-modeline-env-python-executable "ipython")
+      (setq doom-modeline-env-load-string "...")
+      ;; Hooks that run before/after the modeline version string is updated
+      (setq doom-modeline-before-update-env-hook nil)
+      (setq doom-modeline-after-update-env-hook nil))
