@@ -726,38 +726,20 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (define-key hoagie-keymap (kbd "1") #'hoagie-restore-window-configuration)
 (advice-add 'delete-other-windows :before (lambda () (setq hoagie-window-configuration (current-window-configuration))))
 
-(use-package doom-themes
+(use-package challenger-deep-theme
+  :demand t
   :init
-  (setq doom-challenger-deep-brighter-comments t)
-  (load-theme 'doom-challenger-deep t)
-  (doom-themes-org-config))
+  (load-theme 'challenger-deep t))
 
-(use-package doom-modeline
-      :ensure t
-      :hook (after-init . doom-modeline-mode)
-      :init
-      (setq doom-modeline-project-detection 'project)
-      (setq doom-modeline-buffer-file-name-style 'buffer-name)
-      (setq doom-modeline-icon (display-graphic-p))
-      (setq doom-modeline-major-mode-icon t)
-      (setq doom-modeline-major-mode-color-icon t)
-      (setq doom-modeline-buffer-state-icon t)
-      (setq doom-modeline-buffer-modification-icon t)
-      (setq doom-modeline-unicode-fallback nil)
-      (setq doom-modeline-minor-modes (featurep 'minions))
-      (setq doom-modeline-buffer-encoding nil)
-      (setq doom-modeline-indent-info nil)
-      (setq doom-modeline-checker-simple-format t)
-      (setq doom-modeline-number-limit 99)
-      (setq doom-modeline-vcs-max-length 25)
-      (setq doom-modeline-lsp t)
-      (setq doom-modeline-github nil)
-      (setq doom-modeline-github-interval (* 30 60))
-      (setq doom-modeline-mu4e nil)
-      (setq doom-modeline-irc nil)
-      (setq doom-modeline-env-version nil)
-      (setq doom-modeline-env-python-executable "ipython")
-      (setq doom-modeline-env-load-string "...")
-      ;; Hooks that run before/after the modeline version string is updated
-      (setq doom-modeline-before-update-env-hook nil)
-      (setq doom-modeline-after-update-env-hook nil))
+(use-package mood-line
+  :demand t
+  :init
+  (mood-line-mode)
+  (defun mood-line-segment-position ()
+    "Displays the current cursor position in the mode-line, with region size if applicable."
+    (let ((region-size (when (use-region-p)
+                         (format " (%sL:%sC)"
+                                 (count-lines (region-beginning)
+                                              (region-end))
+                                 (- (region-end) (region-beginning))))))
+    (list "%l:%c" region-size))))
