@@ -37,8 +37,10 @@
 (setq use-package-verbose t)
 (setq use-package-always-ensure t)
 
-(setq custom-file "~/.emacscustom.el")
-(load custom-file)
+(setq custom-file (concat user-emacs-directory "custom.el"))
+
+(custom-set-faces
+ '(default ((t (:family "Consolas" :foundry "outline" :slant normal :weight normal :height 78 :width normal)))))
 
 ;; based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html
 (defvar hoagie-keymap (define-prefix-command 'hoagie-keymap) "My custom bindings.")
@@ -108,14 +110,14 @@
   (dired-listing-switches "-laogGhvD")
   :config
   (progn
-    (global-set-key [f1] (lambda () (interactive) (dired "~/")))
+    (global-set-key (kbd "<f1>") (lambda () (interactive) (dired "~/")))
     (defun hoagie-find-name-project-root ()
       "Call find-name-dired with a broad pattern and using project.el if available."
       (interactive)
       (let ((root-dir (or (cdr (project-current)) default-directory))
             (partial-name (if (use-region-p)
                               (buffer-substring-no-properties (region-beginning) (region-end))
-                            (string-join (split-string (read-string "Partial filename: ") " ") "*"))))
+                            (string-join (split-string (read-string "Filename search regexp (spaces treated as *): ") " ") "*"))))
         (find-name-dired root-dir (format "*%s*" partial-name))))
     (define-key hoagie-keymap (kbd "f") 'hoagie-find-name-project-root)
     (define-key hoagie-keymap (kbd "F") 'find-name-dired)
@@ -215,7 +217,7 @@
   :config
   (progn
     (add-to-list 'eglot-server-programs
-                 `(csharp-mode . ("C:/Home/omnisharp_64/OmniSharp.exe" "-lsp")))
+                 `(csharp-mode . ("c:/home/omnisharp_64/omnisharp.exe" "-lsp")))
     ;; patch the argument. When nil, use "" instead.
     (defun eglot--format-markup-patch (args)
       (list (or (car args) "")))
@@ -226,7 +228,7 @@
   :config
   (setq eldoc-box-max-pixel-width 1024
         eldoc-box-max-pixel-height 768)
-  (setq eldoc-idle-delay 0.1)
+  (setq eldoc-idle-delay 0.25)
   ;; Set the child frame face as 1.0 relative to the default font
   ;; at work, the adjustment in "workonlyconfig.el" takes care of
   ;; adjusting the child frames with the parent frame size
@@ -291,8 +293,7 @@
       :config
       (ido-vertical-mode 1)
       :custom
-      (ido-vertical-define-keys 'c-n-and-c-p-only)
-      (ido-use-virtual-buffers t)))
+      (ido-vertical-define-keys 'c-n-and-c-p-only)))
   :custom
   (ido-enable-flex-matching t)
   (ido-everywhere t)
@@ -365,6 +366,12 @@
   (projectile-indexing-method 'alien)
   (projectile-switch-project-action 'projectile-find-file-dwim))
 
+(use-package python
+  :ensure nil
+  :custom
+  (python-shell-interpreter "ipython")
+  (python-shell-interpreter-args "--pprint "))
+
 (use-package replace
   :ensure nil
   :config
@@ -414,6 +421,11 @@
   :demand t ;; has to be loaded, no command
   :config
   (global-visible-mark-mode t)
+  :custom-face
+  (visible-mark-face1 ((t (:box (:line-width 2 :color "red")))))
+  (visible-mark-face2 ((t (:box (:line-width 1 :color "orange")))))
+  (visible-mark-forward-face1 ((t (:box (:line-width 2 :color "chartreuse")))))
+  (visible-mark-forward-face2 ((t (:box (:line-width 1 :color "purple1")))))
   :custom
   (visible-mark-max 2)
   (visible-mark-faces '(visible-mark-face1 visible-mark-face2))
@@ -457,6 +469,7 @@
   :mode "\\.yml$")
 
 ;; MISC STUFF THAT IS NOT IN CUSTOMIZE (or easier to customize here)
+;; and stuff that I moved from Custom to here hehehehe
 (defalias 'yes-or-no-p 'y-or-n-p)
 (setq frame-title-format "%b - Emacs")
 (setq inhibit-compacting-font-caches t)
@@ -492,6 +505,38 @@
 (defun my-shell-turn-echo-off ()
   (setq comint-process-echoes t))
 (add-hook 'shell-mode-hook 'my-shell-turn-echo-off)
+;; tired of this question. Sorry not sorry:
+(setq custom-safe-themes t)
+;; Separate from the "~" shortcut
+(global-set-key (kbd "<S-f1>") (lambda () (interactive) (find-file user-init-file)))
+;; What was in custom that didn't get use-package'd:
+(tool-bar-mode 0)
+(scroll-bar-mode 0)
+(menu-bar-mode 0)
+(delete-selection-mode)
+(blink-cursor-mode -1)
+(column-number-mode 1)
+(horizontal-scroll-bar-mode -1)
+(savehist-mode)
+(setq-default indent-tabs-mode nil)
+(setq
+      dabbrev-case-distinction nil
+      dabbrev-case-fold-search t
+      dabbrev-case-replace nil
+      default-frame-alist '((fullscreen . maximized))
+      delete-by-moving-to-trash t
+      enable-recursive-minibuffers t
+      global-mark-ring-max 32
+      grep-command "grep --color=always -nHi -r --include=*.* -e \"pattern\" ."
+      inhibit-startup-screen t
+      initial-buffer-choice t
+      initial-scratch-message
+      ";; Il semble que la perfection soit atteinte non quand il n'y a plus rien à ajouter, mais quand il n'y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n"
+      mark-ring-max 32
+      proced-filter 'all
+      save-interprogram-paste-before-kill t
+      set-mark-command-repeat-pop t
+      visible-bell t)
 
 ;; ;; from https://stackoverflow.com/a/22176971, move auto saves and
 ;; ;; back up files to a different folder so git or dotnet core won't
@@ -726,10 +771,28 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (define-key hoagie-keymap (kbd "1") #'hoagie-restore-window-configuration)
 (advice-add 'delete-other-windows :before (lambda () (setq hoagie-window-configuration (current-window-configuration))))
 
+(use-package habamax-theme
+  :demand t)
+
+(use-package pastelmac-theme
+  :demand t)
+
 (use-package challenger-deep-theme
-  :demand t
-  :init
-  (load-theme 'challenger-deep t))
+  :demand t)
+
+(defun hoagie-load-theme (new-theme)
+  "Pick a theme to load from a harcoded list. Or load NEW-THEME."
+  (interactive (list (completing-read "Theme:"
+                                      '(habamax
+                                        pastelmac
+                                        challenger-deep)
+                                      nil
+                                      t)))
+    (mapc 'disable-theme custom-enabled-themes)
+    (load-theme (intern new-theme) t))
+
+(global-set-key (kbd "C-<f11>") #'hoagie-load-theme)
+(hoagie-load-theme "habamax")
 
 (use-package mood-line
   :demand t
