@@ -1,0 +1,47 @@
+conky.config = {
+	alignment = 'top_left',
+	background = true,
+	color2 = '2ECC71',
+	cpu_avg_samples = 2,
+	default_color = 'FFFFFF',
+	double_buffer = true,
+	font = 'Bitstream Vera Sans:size=8',
+	gap_x = 25,
+	gap_y = 25,
+	minimum_width = 200,
+	no_buffers = true,
+	own_window = true,
+	own_window_type = 'override',
+	own_window_transparent = true,
+	update_interval = 2.0,
+	use_xft = true,
+}
+conky.text = [[
+${color2}-- Menus --${color}
+mod + d: dmenu (launch app)
+mod + z: morc menu (system menu)
+mod + b: bmenu (system admin via keyb)
+mod + x: lock/hibernate/shut down menu
+mod + p: enable HDMI monitor if present
+
+${color2}-- Apps --${color}
+mod + Enter: terminal
+mod + shift + Enter: new Emacs frame
+mod + F2: firefox
+mod + F3: pcmanfm (file manager).
+    Add shift for sudo
+mod + shift + r: restart i3
+
+${color2}-- Window Management --${color}
+mod + shift + q: kill app
+mod + j k l ;: move focus, alt. use arrows
+mod + shift + j k l ;: move window
+mod + r: resize window with jkl;/arrows
+mod + h: split horizontally
+mod + v: split vertically
+mod + f: toggle fullscreen
+mod + space: toggle focus floating
+    (add shift to toggle app)
+mod + a: focus parent
+mod + m: toggle status bar
+]]
