@@ -223,17 +223,6 @@
       (list (or (car args) "")))
     (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch)))
 
-(use-package eldoc-box
-  :hook (prog-mode . eldoc-box-hover-mode)
-  :config
-  (setq eldoc-box-max-pixel-width 1024
-        eldoc-box-max-pixel-height 768)
-  (setq eldoc-idle-delay 0.25)
-  ;; Set the child frame face as 1.0 relative to the default font
-  ;; at work, the adjustment in "workonlyconfig.el" takes care of
-  ;; adjusting the child frames with the parent frame size
-  (set-face-attribute 'eldoc-box-body nil :inherit 'default :height 1.0))
-
 (use-package expand-region
   :bind
   ("M-<SPC>" . er/expand-region)
@@ -548,7 +537,7 @@
 (make-directory (concat user-emacs-directory "backups") t)
 (setq backup-directory-alist
       `(("." . ,(expand-file-name
-                 (concat user-emacs-directory "backups")))))
+                 (concat user-emacs-directory "backups/")))))
 
 ;; OTHER BINDINGS
 ; adapted for https://stackoverflow.com/questions/6464738/how-can-i-switch-focus-after-buffer-split-in-emacs
@@ -760,6 +749,29 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 
 (define-key hoagie-keymap (kbd "0") 'kill-buffer-and-window)
 
+
+;; (defun top-left-tooltip (msg)
+;;   "Show MSG in a tooltip at the top-left corner of the frame."
+;;   (let* ((top-left-alist (frame-position))
+;;          (tooltip-frame-parameters `((name . "tooltip")
+;;                                     (internal-border-width . 2)
+;;                                     (border-width . 1)
+;;                                     (no-special-glyphs . t)
+;;                                     (left . ,(+ 50 (car top-left-alist)))
+;;                                     (top . ,(+ 50 (cdr top-left-alist))))))
+;;     (tooltip-show msg)))
+
+;; (require 'tooltip)
+;; (set-face-attribute 'tooltip nil :family "Consolas" :height 1.0)
+;; (require 'eldoc)
+;; (setq eldoc-idle-delay 0.25)
+;; (defun hoagie-eldoc-tooltip (format-string &rest args)
+;;   "Display eldoc message using `top-left-tooltip'."
+;;   (when format-string
+;;     (top-left-tooltip (apply 'format format-string args))))
+;; (setq eldoc-message-function #'hoagie-eldoc-tooltip)
+
+
 ;; simplified version that restores stored window config and advices delete-other-windows
 ;; idea from https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
 (defvar hoagie-window-configuration nil "Last window configuration saved.")
@@ -780,8 +792,11 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (use-package challenger-deep-theme
   :demand t)
 
+(use-package danneskjold-theme
+  :demand t)
+
 (defun hoagie-load-theme (new-theme)
-  "Pick a theme to load from a harcoded list. Or load NEW-THEME."
+  "Pick a theme to load from a harcoded list. Or load NEW-THEME string."
   (interactive (list (completing-read "Theme:"
                                       '(habamax
                                         pastelmac
@@ -801,7 +816,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (defun mood-line-segment-position ()
     "Displays the current cursor position in the mode-line, with region size if applicable."
     (let ((region-size (when (use-region-p)
-                         (format " (%sL:%sC)"
+                         (format " (%sl:%sc)"
                                  (count-lines (region-beginning)
                                               (region-end))
                                  (- (region-end) (region-beginning))))))
