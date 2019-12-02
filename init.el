@@ -111,15 +111,7 @@
   :config
   (progn
     (global-set-key (kbd "<f1>") (lambda () (interactive) (dired "~/")))
-    (defun hoagie-find-name-project-root ()
-      "Call find-name-dired with a broad pattern and using project.el if available."
-      (interactive)
-      (let ((root-dir (or (cdr (project-current)) default-directory))
-            (partial-name (if (use-region-p)
-                              (buffer-substring-no-properties (region-beginning) (region-end))
-                            (string-join (split-string (read-string "Filename search regexp (spaces treated as *): ") " ") "*"))))
-        (find-name-dired root-dir (format "*%s*" partial-name))))
-    (define-key hoagie-keymap (kbd "f") 'hoagie-find-name-project-root)
+    (define-key hoagie-keymap (kbd "f") 'project-find-file)
     (define-key hoagie-keymap (kbd "F") 'find-name-dired)
     (defun hoagie-dired-jump (&optional arg)
       "Call dired-jump.  With prefix ARG, open in current window."
