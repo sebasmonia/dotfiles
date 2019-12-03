@@ -98,6 +98,10 @@ bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
+# move focused workspace between monitors
+bindsym $mod+Ctrl+semicolon move workspace to output right
+bindsym $mod+Ctrl+j move workspace to output left
+
 # split orientation
 bindsym $mod+h split h;exec notify-send 'tile horizontally'
 bindsym $mod+v split v;exec notify-send 'tile vertically'
