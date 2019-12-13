@@ -111,15 +111,7 @@
   :config
   (progn
     (global-set-key (kbd "<f1>") (lambda () (interactive) (dired "~/")))
-    (defun hoagie-find-name-project-root ()
-      "Call find-name-dired with a broad pattern and using project.el if available."
-      (interactive)
-      (let ((root-dir (or (cdr (project-current)) default-directory))
-            (partial-name (if (use-region-p)
-                              (buffer-substring-no-properties (region-beginning) (region-end))
-                            (string-join (split-string (read-string "Filename search regexp (spaces treated as *): ") " ") "*"))))
-        (find-name-dired root-dir (format "*%s*" partial-name))))
-    (define-key hoagie-keymap (kbd "f") 'hoagie-find-name-project-root)
+    (define-key hoagie-keymap (kbd "f") 'project-find-file)
     (define-key hoagie-keymap (kbd "F") 'find-name-dired)
     (defun hoagie-dired-jump (&optional arg)
       "Call dired-jump.  With prefix ARG, open in current window."
@@ -266,13 +258,29 @@
 
 (use-package ibuffer
   :bind ("C-x C-b" . ibuffer-other-window)
-  :hook (ibuffer-mode . (lambda ()
-                          (ibuffer-auto-mode 1)
-                          (ibuffer-switch-to-saved-filter-groups "home")))
   :custom
   (ibuffer-default-sorting-mode 'major-mode)
   (ibuffer-expert t)
   (ibuffer-show-empty-filter-groups nil))
+
+(use-package ibuffer-vc
+  :demand t
+  :after ibuffer
+  :hook (ibuffer-mode . (lambda ()
+                          (ibuffer-vc-set-filter-groups-by-vc-root)
+                          (unless (eq ibuffer-sorting-mode 'alphabetic)
+                            (ibuffer-do-sort-by-alphabetic))))
+  :init
+  (setq ibuffer-formats '((mark modified read-only vc-status-mini " "
+                                (name 18 18 :left :elide)
+                                " "
+                                (size 9 -1 :right)
+                                " "
+                                (mode 16 16 :left :elide)
+                                " "
+                                (vc-status 16 16 :left)
+                                " "
+                                vc-relative-file))))
 
 (use-package ido
   :init
@@ -345,21 +353,11 @@
   (:map powershell-mode-map
         ("M-`" . nil)))
 
-(use-package projectile
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :init
-  (projectile-mode)
-  :custom
-  (projectile-completion-system 'ido)
-  (projectile-indexing-method 'alien)
-  (projectile-switch-project-action 'projectile-find-file-dwim))
-
 (use-package python
   :ensure nil
   :custom
   (python-shell-interpreter "ipython")
-  (python-shell-interpreter-args "--pprint "))
+  (python-shell-interpreter-args "--pprint --simple-prompt --no-color-info"))
 
 (use-package replace
   :ensure nil
@@ -471,6 +469,8 @@
 (setq completion-styles '(substring basic emacs22))
 ;; helps with company and capf all the same
 (setq completion-ignore-case t)
+;; Useful in Linux
+(setq read-file-name-completion-ignore-case t)
 ; from https://emacs.stackexchange.com/questions/7362/how-to-show-a-diff-between-two-buffers-with-character-level-diffs
 (setq-default ediff-forward-word-function 'forward-char)
 ;; helps compilation buffer not slowdown
@@ -783,13 +783,10 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (define-key hoagie-keymap (kbd "1") #'hoagie-restore-window-configuration)
 (advice-add 'delete-other-windows :before (lambda () (setq hoagie-window-configuration (current-window-configuration))))
 
-(use-package habamax-theme
+(use-package modus-vivendi-theme
   :demand t)
 
-(use-package pastelmac-theme
-  :demand t)
-
-(use-package challenger-deep-theme
+(use-package modus-operandi-theme
   :demand t)
 
 (use-package danneskjold-theme
@@ -798,16 +795,15 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (defun hoagie-load-theme (new-theme)
   "Pick a theme to load from a harcoded list. Or load NEW-THEME string."
   (interactive (list (completing-read "Theme:"
-                                      '(habamax
-                                        pastelmac
-                                        challenger-deep)
+                                      '(modus-vivendi
+                                        modus-operandi)
                                       nil
                                       t)))
     (mapc 'disable-theme custom-enabled-themes)
     (load-theme (intern new-theme) t))
 
 (global-set-key (kbd "C-<f11>") #'hoagie-load-theme)
-(hoagie-load-theme "habamax")
+(hoagie-load-theme "modus-operandi")
 
 (use-package mood-line
   :demand t
