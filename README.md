@@ -17,7 +17,7 @@ Almost like a fresh start! :)
 ## i3 config notes:
 
 * The monitor switch bound to Win+P  is tied to my specific needs to my current laptop, didn't try to make it generic.
-* .xmodmap swaps ctrl and caps
+* .Xmodmap swaps ctrl and caps
 * From https://bbs.archlinux.org/viewtopic.php?id=223949, to activate BT @ startup:
 
 ```
@@ -28,3 +28,11 @@ Almost like a fresh start! :)
   https://wiki.archlinux.org/index.php/Bluetooth_keyboard
 ```
 * Should move the conky changes to my home folder. This time I modified in place the Manjaro defaults
+
+## Thinkpad tablet mode notes
+
+* Firefox touch scroll and zoom via: https://superuser.com/a/1485044
+* Screen rotation via autorotate.sh, autostarted in i3 config
+** Script rotates all three screen input (touch + 2 devices for pen)
+* Pen button configuration coming soon
+* There is a chance the fingerprint reader can work. Coming soon too
