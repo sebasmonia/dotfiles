@@ -33,6 +33,6 @@ Almost like a fresh start! :)
 
 * Firefox touch scroll and zoom via: https://superuser.com/a/1485044
 * Screen rotation via autorotate.sh, autostarted in i3 config
-** Script rotates all three screen input (touch + 2 devices for pen)
+  * Script rotates all three screen input (touch + 2 devices for pen)
 * Pen button configuration coming soon
 * There is a chance the fingerprint reader can work. Coming soon too
