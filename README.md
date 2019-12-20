@@ -4,6 +4,7 @@ A place to store my i3 and Emacs configuration, plus other misc scripts.
 
 * Manjaro i3 (duh!)
 * Consolas font
+* i3blocks, sysstat (for tablet mode i3status)
 * Deadgrep requires rg
 
 There are other third party dependencies, but those should leave the more important things working
@@ -34,6 +35,7 @@ private repo @ work, since they only make sense in that environment.
 * Firefox touch scroll and zoom via: https://superuser.com/a/1485044
 * Screen rotation via autorotate.sh, autostarted in i3 config
   * Script rotates all three screen inputs (touch + 2 devices for pen)
+* Screen keyboard is `onboard`, added to the lightdm greeter
+* Using i3blocks can add 3 buttons to the status bar: next/prev workspace, screen keyboard
 * Pen button configuration coming soon
 * There is a chance the fingerprint reader can work. Coming soon too
-* Touch keyboard via `onboard`, started/stopped via libinput-gestures
