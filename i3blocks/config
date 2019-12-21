@@ -2,16 +2,20 @@
 full_text= 
 
 [left_ws]
-full_text=     ←    
-command=i3-msg -q workspace prev
+full_text=     +    
+command=dmenu_recency
+
+[new_ws]
+full_text=     ⇄    
+command=i3-msg -q workspace `/home/hoagie/.config/i3blocks/workspace_menu`
+
+[right_ws]
+full_text=     x    
+command=i3-msg -q kill
 
 [keyb]
 full_text=     ⌨    
 command=onboard
-
-[right_ws]
-full_text=    →    
-command=i3-msg -q workspace next
 
 [blank2]
 full_text=      

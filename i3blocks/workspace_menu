@@ -1,0 +1,4 @@
+#!/bin/sh
+selection=`echo -e "Workspace 1\nWorkspace 2\nWorkspace 3\nWorkspace 4\nWorkspace 5\nWorkspace 6\nWorkspace 7\nWorkspace 8\nWorkspace 9" | dmenu -l 10`
+workspace_number=($(echo $selection | tr " " "\n"))
+echo ${workspace_number[1]}
