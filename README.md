@@ -34,8 +34,11 @@ private repo @ work, since they only make sense in that environment.
 
 * Firefox touch scroll and zoom via: https://superuser.com/a/1485044
 * Screen rotation via autorotate.sh, autostarted in i3 config
-  * Script rotates all three screen inputs (touch + 2 devices for pen)
+  * Script rotates three screen inputs (touch + 2 devices for pen)
 * Screen keyboard is `onboard`, added to the lightdm greeter
-* Using i3blocks can add 3 buttons to the status bar: next/prev workspace, screen keyboard
-* Pen button configuration coming soon
-* There is a chance the fingerprint reader can work. Coming soon too
+* Using i3blocks, I am experimenting with buttons in the status bar for some actions
+* Pen button configuration:
+  * Tip is left click
+  * Lower button is middle click
+  * Top button (eraser) is right click
+* Fingerprint reader doesn't have a driver yet.

@@ -3,7 +3,7 @@ full_text=
 
 [left_ws]
 full_text=     +    
-command=dmenu_recency
+command=morc_menu &
 
 [new_ws]
 full_text=     ⇄    
