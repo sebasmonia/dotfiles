@@ -388,13 +388,16 @@
   (setq inferior-lisp-program "sbcl")
   (use-package sly-quicklisp))
 
-(use-package smex
-  :init
-  (smex-initialize)
-  :bind
-  (("M-x" . smex)
-   :map hoagie-keymap
-   ("<menu>" . smex)))
+(use-package amx
+  :demand t
+  :commands (amx-mode amx)
+  :custom
+  (amx-backend 'ido)
+  (amx-history-length 25)
+  :config
+  (progn
+    (define-key hoagie-keymap (kbd "<menu>") #'amx)
+    (amx-mode)))
 
 (use-package speed-type
   :commands (speed-type-text speed-type-region speed-type-buffer))
@@ -749,29 +752,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 
 (define-key hoagie-keymap (kbd "0") 'kill-buffer-and-window)
 
-
-;; (defun top-left-tooltip (msg)
-;;   "Show MSG in a tooltip at the top-left corner of the frame."
-;;   (let* ((top-left-alist (frame-position))
-;;          (tooltip-frame-parameters `((name . "tooltip")
-;;                                     (internal-border-width . 2)
-;;                                     (border-width . 1)
-;;                                     (no-special-glyphs . t)
-;;                                     (left . ,(+ 50 (car top-left-alist)))
-;;                                     (top . ,(+ 50 (cdr top-left-alist))))))
-;;     (tooltip-show msg)))
-
-;; (require 'tooltip)
-;; (set-face-attribute 'tooltip nil :family "Consolas" :height 1.0)
-;; (require 'eldoc)
-;; (setq eldoc-idle-delay 0.25)
-;; (defun hoagie-eldoc-tooltip (format-string &rest args)
-;;   "Display eldoc message using `top-left-tooltip'."
-;;   (when format-string
-;;     (top-left-tooltip (apply 'format format-string args))))
-;; (setq eldoc-message-function #'hoagie-eldoc-tooltip)
-
-
 ;; simplified version that restores stored window config and advices delete-other-windows
 ;; idea from https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
 (defvar hoagie-window-configuration nil "Last window configuration saved.")
@@ -787,9 +767,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   :demand t)
 
 (use-package modus-operandi-theme
-  :demand t)
-
-(use-package danneskjold-theme
   :demand t)
 
 (defun hoagie-load-theme (new-theme)
