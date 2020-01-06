@@ -8,14 +8,8 @@ else
     xrandr --output eDP1 --primary --auto --output HDMI1 --auto --right-of eDP1
 fi
 
-echo "Rescaling background with nitrogen"
 nitrogen --restore
-# echo "Killing Conky..."
-# killall conky
-# echo "Starting Conky..."
-# start_conky_maia
-echo "Killing keynav..."
+killall conky
+start_conky_green
 killall keynav
-echo "Starting keynav..."
 /home/hoagie/keynav/keynav
-echo DONE
