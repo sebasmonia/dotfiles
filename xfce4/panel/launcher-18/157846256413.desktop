@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Volume UP
+Comment=
+Exec=xdotool key XF86AudioRaiseVolume
+Icon=audio-volume-high
+Path=
+Terminal=false
+StartupNotify=false

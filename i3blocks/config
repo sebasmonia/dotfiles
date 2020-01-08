@@ -1,24 +1,17 @@
 [blank1]
 full_text= 
 
-[left_ws]
-full_text=     +    
-command=i3-msg -q "exec --no-startup-id morc_menu"
-
-[new_ws]
-full_text=     ⇄    
-command=i3-msg -q workspace `/home/hoagie/.config/i3blocks/workspace_menu`
-
-[right_ws]
-full_text=     x    
-command=i3-msg -q kill
+[menu_panel]
+full_text=          +         
+command=i3-msg -q "exec --no-startup-id xfce4-panel -d"
 
 [keyb]
 full_text=     ⌨    
 command=onboard
 
-[blank2]
-full_text=      
+[right_ws]
+full_text=     x    
+command=i3-msg -q kill
 
 [cpu_usage]
 command=/home/hoagie/.config/i3blocks/cpu_usage

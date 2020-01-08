@@ -31,6 +31,8 @@ bindsym $mod+Return exec terminal
 
 # kill focused window
 bindsym $mod+Shift+q kill
+# Also kill with middle click (the stylus lower button)
+bindsym --release button2 kill
 
 # start program launcher
 bindsym $mod+d exec --no-startup-id dmenu_recency
@@ -42,11 +44,11 @@ bindsym $mod+z exec --no-startup-id morc_menu
 ## sound-section - DO NOT EDIT if you wish to automatically upgrade Alsa -> Pulseaudio later! ##
 ################################################################################################
 
-exec --no-startup-id volumeicon
-bindsym $mod+Ctrl+m exec terminal -e 'alsamixer'
-#exec --no-startup-id pulseaudio
-#exec --no-startup-id pa-applet
-#bindsym $mod+Ctrl+m exec pavucontrol
+#exec --no-startup-id volumeicon
+#bindsym $mod+Ctrl+m exec terminal -e 'alsamixer'
+exec --no-startup-id start-pulseaudio-x11
+exec --no-startup-id pa-applet
+bindsym $mod+Ctrl+m exec pavucontrol
 
 ################################################################################################
 
@@ -58,7 +60,9 @@ bindsym $mod+Ctrl+m exec terminal -e 'alsamixer'
 bindsym $mod++b exec terminal -e 'bmenu'
 bindsym $mod+F2 exec firefox
 bindsym $mod+F3 exec pcmanfm
-bindsym $mod+Shift+F3 exec gksu pcmanfm
+#from mine: bindsym $mod+Shift+F3 exec gksu pcmanfm
+# new:
+bindsym $mod+Shift+F3 exec pcmanfm_pkexec
 bindsym $mod+F5 exec terminal -e 'mocp'
 bindsym $mod+t exec --no-startup-id pkill compton
 bindsym $mod+Ctrl+t exec --no-startup-id compton -b
@@ -196,6 +200,7 @@ for_window [title="alsamixer"] floating enable border pixel 1
 for_window [class="calamares"] floating enable border normal
 for_window [class="Clipgrab"] floating enable
 for_window [title="File Transfer*"] floating enable
+for_window [class="fpakman"] floating enable
 for_window [class="Galculator"] floating enable border pixel 1
 for_window [class="GParted"] floating enable border normal
 for_window [title="i3_help"] floating enable sticky enable border normal
@@ -290,6 +295,7 @@ exec_always --no-startup-id fix_xcursor
 # Autostart custom
 ## exec --no-startup-id xautolock -time 10 -locker blurlock # disabled auto lock
 ## exec --no-startup-id /home/hoagie/keynav/keynav
+exec --no-startup-id dunst
 exec --no-startup-id emacs --daemon
 exec --no-startup-id exec /home/hoagie/.i3/autorotate.sh
 exec --no-startup-id exec /home/hoagie/.i3/wacomconfig.sh

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Brightness UP
+Comment=
+Exec=xdotool key XF86MonBrightnessUp
+Icon=sunflower
+Path=
+Terminal=false
+StartupNotify=false

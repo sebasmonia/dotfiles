@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Volume DOWN
+Comment=
+Exec=xdotool key XF86AudioLowerVolume
+Icon=audio-volume-low
+Path=
+Terminal=false
+StartupNotify=false

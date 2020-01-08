@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Workspace 2
+Comment=
+Exec=i3-msg -q workspace 2
+Icon=
+Path=
+Terminal=false
+StartupNotify=false

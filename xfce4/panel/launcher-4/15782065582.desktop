@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Close panel
+Comment=
+Exec=killall xfce4-panel
+Icon=preferences-system-network-server-installation
+Path=
+Terminal=true
+StartupNotify=false

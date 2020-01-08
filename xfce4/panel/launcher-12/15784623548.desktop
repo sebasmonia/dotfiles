@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Workspace 7
+Comment=
+Exec=i3-msg -q workspace 7
+Icon=
+Path=
+Terminal=false
+StartupNotify=false
