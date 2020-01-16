@@ -159,11 +159,6 @@ bindsym $mod+8 workspace $ws8
 bindsym $mod+9 workspace $ws9
 bindsym $mod+0 workspace $ws0
 
-# navigate workspaces next / previous
-bindsym $mod+Ctrl+Right workspace next  
-bindsym $mod+Ctrl+Left workspace prev
-
-
 # Move focused container to workspace
 bindsym $mod+Ctrl+1 move container to workspace $ws1
 bindsym $mod+Ctrl+2 move container to workspace $ws2
@@ -342,6 +337,7 @@ bar {
 	# status_command i3status
         status_command i3blocks
 	position bottom
+        tray_output primary
 
 ## please set your primary output first. Example: 'xrandr --output eDP1 --primary'
 #	tray_output primary

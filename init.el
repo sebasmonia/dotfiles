@@ -99,7 +99,7 @@
   (csharp-mode . (lambda ()
                         (subword-mode)
                         (setq-local fill-function-arguments-first-argument-same-line t)
-                        (setq-local fill-function-arguments-second-argument-same-line t)
+                        (setq-local fill-function-arguments-second-argument-same-line nil)
                         (setq-local fill-function-arguments-last-argument-same-line t)
                         (define-key csharp-mode-map [remap c-fill-paragraph] 'fill-function-arguments-dwim))))
 
@@ -763,24 +763,31 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (define-key hoagie-keymap (kbd "1") #'hoagie-restore-window-configuration)
 (advice-add 'delete-other-windows :before (lambda () (setq hoagie-window-configuration (current-window-configuration))))
 
-(use-package modus-vivendi-theme
-  :demand t)
+;; (use-package modus-vivendi-theme
+;;   :demand t)
 
-(use-package modus-operandi-theme
+;; (use-package modus-operandi-theme
+;;   :demand t)
+
+;; (use-package habamax-theme
+;;   :demand t)
+
+(use-package challenger-deep-theme
   :demand t)
 
 (defun hoagie-load-theme (new-theme)
-  "Pick a theme to load from a harcoded list. Or load NEW-THEME string."
+  "Pick a theme to load from a harcoded list. Or load NEW-THEME."
   (interactive (list (completing-read "Theme:"
                                       '(modus-vivendi
-                                        modus-operandi)
+                                        modus-operandi
+                                        challenger-deep)
                                       nil
                                       t)))
     (mapc 'disable-theme custom-enabled-themes)
     (load-theme (intern new-theme) t))
 
 (global-set-key (kbd "C-<f11>") #'hoagie-load-theme)
-(hoagie-load-theme "modus-operandi")
+(hoagie-load-theme "challenger-deep")
 
 (use-package mood-line
   :demand t

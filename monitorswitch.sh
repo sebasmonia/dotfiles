@@ -10,4 +10,4 @@ fi
 
 nitrogen --restore
 killall conky
-start_conky_green &
+start_conky_green
