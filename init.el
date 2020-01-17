@@ -515,7 +515,7 @@
       dabbrev-case-distinction nil
       dabbrev-case-fold-search t
       dabbrev-case-replace nil
-      default-frame-alist '((fullscreen . maximized))
+      default-frame-alist '((fullscreen . maximized) (vertical-scroll-bars . nil) (horizontal-scroll-bars . nil))
       delete-by-moving-to-trash t
       enable-recursive-minibuffers t
       global-mark-ring-max 32
