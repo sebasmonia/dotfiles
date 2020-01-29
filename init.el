@@ -530,6 +530,30 @@
       set-mark-command-repeat-pop t
       visible-bell t)
 
+;; Using the code in link below as starting point:
+;; https://protesilaos.com/dotemacs/#h:3d8ebbb1-f749-412e-9c72-5d65f48d5957
+;; My config is a lot simpler for now. Just display most things below, use
+;; 1/3rd of the screen. On the left shell/xref on the left and on the right
+;; compilation/help/messages and a few others
+(setq display-buffer-alist
+      '(;; top side window
+        ("\\*\\(something\\|somethingelse\\).*"
+         (display-buffer-in-side-window)
+         (window-width . 0.4)
+         (side . right)
+         (slot . 0))
+        ;; bottom side window
+        ("\\*\\(e?shell.*\\|xref\\)"
+         (display-buffer-in-side-window)
+         (window-height . 0.33)
+         (side . bottom)
+         (slot . 0))
+        ("\\*\\(Backtrace\\|Warnings\\|compilation\\|[Hh]elp\\|Messages\\|Flymake.*\\|eglot.*\\)\\*"
+         (display-buffer-in-side-window)
+         (window-height . 0.33)
+         (side . bottom)
+         (slot . 1))))
+
 ;; ;; from https://stackoverflow.com/a/22176971, move auto saves and
 ;; ;; back up files to a different folder so git or dotnet core won't
 ;; ;; pick them up as changes or new files in the project
