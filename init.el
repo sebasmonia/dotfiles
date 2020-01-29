@@ -316,7 +316,9 @@
   :bind
   ("C-x g" . magit-status)
   :hook
-  (magit-mode . turn-on-magit-gitflow))
+  (magit-mode . turn-on-magit-gitflow)
+  :custom
+  (magit-display-buffer-function 'display-buffer))
 
 (use-package magit-gitflow
   :after magit
@@ -697,18 +699,18 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 ;; 1/3rd of the screen. On the left shell/xref on the left and on the right
 ;; compilation/help/messages and a few others
 (setq display-buffer-alist
-      '(;; stuff that splits to the right
-        ("\\(magit\\|somethingelse\\).*"
-         (display-buffer-reuse-window
-          display-buffer-in-direction)
-         (window-width . 0.5)
-         (direction . right))
-        ;; bottom left side window
-        ("\\*\\(e?shell.*\\|xref\\)"
+      '(;; bottom left side window
+        ("\\*\\(e?shell.*\\|xref.*\\)"
          (display-buffer-in-side-window)
          (window-height . 0.33)
          (side . bottom)
          (slot . 0))
+        ;; bottom right side window - no reuse
+        ("\\(COMMIT_EDITMSG\\|\\*Occur\\*\\)"
+         (display-buffer-in-side-window)
+         (window-height . 0.33)
+         (side . bottom)
+         (slot . 1))
         ;; bottom right side window - reuse if in another frame
         ("\\*\\(Backtrace\\|Warnings\\|compilation\\|[Hh]elp\\|Messages\\|Flymake.*\\|eglot.*\\)\\*"
          (display-buffer-reuse-window
@@ -716,7 +718,13 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
          (window-height . 0.33)
          (reusable-frames . visible)
          (side . bottom)
-         (slot . 1))))
+         (slot . 1))
+        ;; stuff that splits to the right
+        ("\\(magit\\|somethingelse\\).*"
+         (display-buffer-reuse-window
+          display-buffer-in-direction)
+         (window-width . 0.5)
+         (direction . right))))
 
 ;; function from https://lunaryorn.com/2015/04/29/the-power-of-display-buffer-alist.html
 ;; (via wayback machine)
