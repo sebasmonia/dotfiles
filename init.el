@@ -530,29 +530,9 @@
       set-mark-command-repeat-pop t
       visible-bell t)
 
-;; Using the code in link below as starting point:
-;; https://protesilaos.com/dotemacs/#h:3d8ebbb1-f749-412e-9c72-5d65f48d5957
-;; My config is a lot simpler for now. Just display most things below, use
-;; 1/3rd of the screen. On the left shell/xref on the left and on the right
-;; compilation/help/messages and a few others
-(setq display-buffer-alist
-      '(;; top side window
-        ("\\*\\(something\\|somethingelse\\).*"
-         (display-buffer-in-side-window)
-         (window-width . 0.4)
-         (side . right)
-         (slot . 0))
-        ;; bottom side window
-        ("\\*\\(e?shell.*\\|xref\\)"
-         (display-buffer-in-side-window)
-         (window-height . 0.33)
-         (side . bottom)
-         (slot . 0))
-        ("\\*\\(Backtrace\\|Warnings\\|compilation\\|[Hh]elp\\|Messages\\|Flymake.*\\|eglot.*\\)\\*"
-         (display-buffer-in-side-window)
-         (window-height . 0.33)
-         (side . bottom)
-         (slot . 1))))
+(put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
+(put 'narrow-to-region 'disabled nil)
 
 ;; ;; from https://stackoverflow.com/a/22176971, move auto saves and
 ;; ;; back up files to a different folder so git or dotnet core won't
@@ -709,6 +689,43 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (global-set-key (kbd "C-v") 'hoagie-scroll-up-with-mark)
 (global-set-key (kbd "M-v") 'hoagie-scroll-down-with-mark)
 
+;; Emacs window management
+
+;; Using the code in link below as starting point:
+;; https://protesilaos.com/dotemacs/#h:3d8ebbb1-f749-412e-9c72-5d65f48d5957
+;; My config is a lot simpler for now. Just display most things below, use
+;; 1/3rd of the screen. On the left shell/xref on the left and on the right
+;; compilation/help/messages and a few others
+(setq display-buffer-alist
+      '(;; stuff that splits to the right
+        ("\\(magit\\|somethingelse\\).*"
+         (display-buffer-reuse-window
+          display-buffer-in-direction)
+         (window-width . 0.5)
+         (direction . right))
+        ;; bottom left side window
+        ("\\*\\(e?shell.*\\|xref\\)"
+         (display-buffer-in-side-window)
+         (window-height . 0.33)
+         (side . bottom)
+         (slot . 0))
+        ;; bottom right side window - reuse if in another frame
+        ("\\*\\(Backtrace\\|Warnings\\|compilation\\|[Hh]elp\\|Messages\\|Flymake.*\\|eglot.*\\)\\*"
+         (display-buffer-reuse-window
+          display-buffer-in-side-window)
+         (window-height . 0.33)
+         (reusable-frames . visible)
+         (side . bottom)
+         (slot . 1))))
+
+;; function from https://lunaryorn.com/2015/04/29/the-power-of-display-buffer-alist.html
+;; (via wayback machine)
+(defun hoagie-quit-side-windows ()
+  "Quit side windows of the current frame."
+  (interactive)
+  (dolist (window (window-at-side-list))
+    (quit-window nil window)))
+
 ;; from https://stackoverflow.com/a/33456622/91877, just like ediff's |
 (defun toggle-window-split ()
   "Swap two windows between vertical and horizontal split."
@@ -737,27 +754,18 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
       (if this-win-2nd (other-window 1))))))
 (global-set-key (kbd "C-M-|") 'toggle-window-split)
 
-(when (string= system-type "windows-nt")
-  (load "c:/repos/miscscripts/workonlyconfig.el"))
+;; simplified version that restores stored window config and advices delete-other-windows
+;; idea from https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
+(defvar hoagie-window-configuration nil "Last window configuration saved.")
+(defun hoagie-restore-window-configuration ()
+  "Use `hoagie-window-configuration' to restore the window setup."
+  (interactive)
+  (when hoagie-window-configuration
+    (set-window-configuration hoagie-window-configuration)))
+(define-key hoagie-keymap (kbd "1") #'hoagie-restore-window-configuration)
+(advice-add 'delete-other-windows :before (lambda () (setq hoagie-window-configuration (current-window-configuration))))
 
-(when (string= system-type "gnu/linux")
-  (defun find-alternative-file-with-sudo ()
-    (interactive)
-    (let ((fname (or buffer-file-name
-		     dired-directory)))
-      (when fname
-        (if (string-match "^/sudo:root@localhost:" fname)
-	    (setq fname (replace-regexp-in-string
-		         "^/sudo:root@localhost:" ""
-		         fname))
-	  (setq fname (concat "/sudo:root@localhost:" fname)))
-        (find-alternate-file fname))))
-  (global-set-key (kbd "C-x F") 'find-alternative-file-with-sudo))
-
-(put 'downcase-region 'disabled nil)
-(put 'upcase-region 'disabled nil)
-(put 'narrow-to-region 'disabled nil)
-
+(define-key hoagie-keymap (kbd "0") #'hoagie-quit-side-windows)
 
 ;; Trial stuff
 (defun hoagie-move-buffer-other-frame ()
@@ -774,27 +782,13 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 
 (global-set-key (kbd "C-M-O") 'hoagie-move-buffer-other-frame)
 
-(define-key hoagie-keymap (kbd "0") 'kill-buffer-and-window)
+;; THEMES
 
-;; simplified version that restores stored window config and advices delete-other-windows
-;; idea from https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
-(defvar hoagie-window-configuration nil "Last window configuration saved.")
-(defun hoagie-restore-window-configuration ()
-  "Use `hoagie-window-configuration' to restore the window setup."
-  (interactive)
-  (when hoagie-window-configuration
-    (set-window-configuration hoagie-window-configuration)))
-(define-key hoagie-keymap (kbd "1") #'hoagie-restore-window-configuration)
-(advice-add 'delete-other-windows :before (lambda () (setq hoagie-window-configuration (current-window-configuration))))
+(use-package modus-vivendi-theme
+  :demand t)
 
-;; (use-package modus-vivendi-theme
-;;   :demand t)
-
-;; (use-package modus-operandi-theme
-;;   :demand t)
-
-;; (use-package habamax-theme
-;;   :demand t)
+(use-package modus-operandi-theme
+  :demand t)
 
 (use-package challenger-deep-theme
   :demand t)
@@ -825,3 +819,22 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
                                               (region-end))
                                  (- (region-end) (region-beginning))))))
     (list "%l:%c" region-size))))
+
+;; Per-OS configuration
+
+(when (string= system-type "windows-nt")
+  (load "c:/repos/miscscripts/workonlyconfig.el"))
+
+(when (string= system-type "gnu/linux")
+  (defun find-alternative-file-with-sudo ()
+    (interactive)
+    (let ((fname (or buffer-file-name
+		     dired-directory)))
+      (when fname
+        (if (string-match "^/sudo:root@localhost:" fname)
+	    (setq fname (replace-regexp-in-string
+		         "^/sudo:root@localhost:" ""
+		         fname))
+	  (setq fname (concat "/sudo:root@localhost:" fname)))
+        (find-alternate-file fname))))
+  (global-set-key (kbd "C-x F") 'find-alternative-file-with-sudo))
