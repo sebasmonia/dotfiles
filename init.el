@@ -78,7 +78,7 @@
   :hook (after-init . global-company-mode)
   :custom
   (company-idle-delay 0)
-  (company-minimum-prefix-length 1)
+  (company-minimum-prefix-length 3)
   (company-selection-wrap-around t)
   :config
   (define-key company-active-map (kbd "C-<return>") #'company-abort)
@@ -136,18 +136,18 @@
   (:map dired-mode-map
         (")" . dired-git-info-mode)))
 
-(use-package dired-sidebar
-  :bind (("M-z" . dired-sidebar-toggle-sidebar))
-  :commands (dired-sidebar-toggle-sidebar)
-  :init
-  (add-hook 'dired-sidebar-mode-hook
-            (lambda ()
-              (unless (file-remote-p default-directory)
-                (auto-revert-mode))))
-  :config
-  (setq dired-sidebar-toggle-hidden-commands '(rotate-windows toggle-window-split balance-windows))
-  (setq dired-sidebar-theme 'ascii)
-  (setq dired-sidebar-subtree-line-prefix "__"))
+;; (use-package dired-sidebar
+;;   :bind (("M-z" . dired-sidebar-toggle-sidebar))
+;;   :commands (dired-sidebar-toggle-sidebar)
+;;   :init
+;;   (add-hook 'dired-sidebar-mode-hook
+;;             (lambda ()
+;;               (unless (file-remote-p default-directory)
+;;                 (auto-revert-mode))))
+;;   :config
+;;   (setq dired-sidebar-toggle-hidden-commands '(rotate-windows toggle-window-split balance-windows))
+;;   (setq dired-sidebar-theme 'ascii)
+;;   (setq dired-sidebar-subtree-line-prefix "__"))
 
 (use-package deadgrep
   :bind
@@ -215,6 +215,12 @@
       (list (or (car args) "")))
     (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch)))
 
+(use-package eldoc-box
+  :demand t
+  :commands (eldoc-box-hover-at-point-mode eldoc-box-hover-mode)
+  :hook ((eglot--managed-mode . eldoc-box-hover-mode)
+         (eldoc-mode . eldoc-box-hover-mode)))
+
 (use-package expand-region
   :bind
   ("M-<SPC>" . er/expand-region)
@@ -223,8 +229,8 @@
 
 (use-package eww-lnum
   :config
-  '(progn (define-key eww-mode-map "f" 'eww-lnum-follow)
-          (define-key eww-mode-map "F" 'eww-lnum-universal)))
+  '(progn (define-key eww-mode-map "f" #'eww-lnum-follow)
+          (define-key eww-mode-map "F" #'eww-lnum-universal)))
 
 (use-package fill-function-arguments
   :commands (fill-function-arguments-dwim)
@@ -236,21 +242,21 @@
     ;; reformat for more use-packageness if this sticks
     (add-hook 'prog-mode-hook (lambda () (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))
     (add-hook 'sgml-mode-hook (lambda ()
-                          (setq-local fill-function-arguments-first-argument-same-line t)
-                          (setq-local fill-function-arguments-argument-sep " ")
-                          (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))
+                                (setq-local fill-function-arguments-first-argument-same-line t)
+                                (setq-local fill-function-arguments-argument-sep " ")
+                                (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))
     (add-hook 'emacs-lisp-mode-hook (lambda ()
-                                  (setq-local fill-function-arguments-first-argument-same-line t)
-                                  (setq-local fill-function-arguments-second-argument-same-line t)
-                                  (setq-local fill-function-arguments-last-argument-same-line t)
-                                  (setq-local fill-function-arguments-argument-separator " ")
-                                  (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))))
+                                      (setq-local fill-function-arguments-first-argument-same-line t)
+                                      (setq-local fill-function-arguments-second-argument-same-line t)
+                                      (setq-local fill-function-arguments-last-argument-same-line t)
+                                      (setq-local fill-function-arguments-argument-separator " ")
+                                      (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))))
 
 (use-package format-all
   :bind ("C-c f" . format-all-buffer))
 
-(use-package gud-cdb :load-path "~/.emacs.d/lisp/"
-  :commands (cdb))
+;; (use-package gud-cdb :load-path "~/.emacs.d/lisp/"
+;;   :commands (cdb))
 
 (use-package hl-line
   :init
@@ -387,8 +393,18 @@
 (use-package sly
   :commands sly
   :config
-  (setq inferior-lisp-program "sbcl")
-  (use-package sly-quicklisp))
+  (setq inferior-lisp-program "sbcl"))
+
+(use-package sly-quicklisp
+  :after sly)
+
+(use-package sql
+  :ensure nil
+  :custom
+  (sql-ms-options nil)
+  (sql-ms-program "sqlcmdline")
+  :config
+  (add-hook 'sql-interactive-mode-hook (lambda () (setq truncate-lines t))))
 
 (use-package amx
   :demand t
@@ -449,7 +465,7 @@
   :config
   (progn
     (which-key-mode)
-    (which-key-setup-side-window-right-bottom))
+    (which-key-setup-side-window-bottom))
   :custom
   (which-key-side-window-max-width 0.4)
   (which-key-sort-order 'which-key-prefix-then-key-order))
@@ -476,13 +492,10 @@
 (setq completion-ignore-case t)
 ;; Useful in Linux
 (setq read-file-name-completion-ignore-case t)
-; from https://emacs.stackexchange.com/questions/7362/how-to-show-a-diff-between-two-buffers-with-character-level-diffs
-(setq-default ediff-forward-word-function 'forward-char)
 ;; helps compilation buffer not slowdown
 ;; see https://blog.danielgempesaw.com/post/129841682030/fixing-a-laggy-compilation-buffer
 (setq compilation-error-regexp-alist
       (delete 'maven compilation-error-regexp-alist))
-(add-hook 'sql-interactive-mode-hook (lambda () (setq truncate-lines t)))
 ;; from http://www.jurta.org/en/emacs/dotemacs, set the major mode
 ;; of buffers that are not visiting a file
 (setq-default major-mode (lambda ()
@@ -492,7 +505,8 @@
                                (set-auto-mode)))))
 ;; Better defaults from https://github.com/jacmoe/emacs.d/blob/master/jacmoe.org
 (setq help-window-select t)
-(add-hook 'focus-out-hook 'garbage-collect)
+;; Removed the one below, I think it impacts child frames and tooltips negatively
+;; (add-hook 'focus-out-hook 'garbage-collect)
 ;; From https://github.com/wasamasa/dotemacs/blob/master/init.org
 (setq line-number-display-limit-width 10000)
 (setq comint-prompt-read-only t)
@@ -529,7 +543,6 @@
       mark-ring-max 32
       proced-filter 'all
       save-interprogram-paste-before-kill t
-      set-mark-command-repeat-pop t
       visible-bell t)
 
 (put 'downcase-region 'disabled nil)
@@ -564,10 +577,11 @@
 (global-set-key (kbd "M-c") 'capitalize-dwim)
 (global-set-key (kbd "M-u") 'upcase-dwim)
 (global-set-key (kbd "M-l") 'downcase-dwim)
+(global-set-key (kbd "C-c r") 'recompile)
 (define-key hoagie-keymap (kbd "b") 'browse-url-at-point)
 (define-key hoagie-keymap (kbd "t") 'toggle-truncate-lines)
 ;; used to be C-x K. Honestly I never used C-x C-k (macros) commands that much so :shrug:
-;; without the lambda it would simply show the menu like C-x k
+;; without the function it would simply show the menu like C-x k
 (defun hoagie-kill-this-buffer ()
   "Kill the current buffer.
 If defined as a lambda then it shows a ? in the bindings list."
@@ -579,7 +593,6 @@ If defined as a lambda then it shows a ? in the bindings list."
 (global-set-key (kbd "<f6>") 'kmacro-start-macro)
 (global-set-key (kbd "<f7>") 'kmacro-end-macro)
 (global-set-key (kbd "<f8>") 'kmacro-end-and-call-macro)
-(global-set-key (kbd "<mouse-3>") 'kill-ring-save)
 
 (defun hoagie-kill-buffer-filename ()
   "Sends the current buffer's filename to the kill ring."
@@ -671,7 +684,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (require 'isearch)
 (advice-add 'isearch-forward :after #'push-mark-no-activate)
 (advice-add 'isearch-backward :after #'push-mark-no-activate)
-;; (setq isearch-lazy-count t) ;; new in Emacs 27!
+;; (setq isearch-lazy-count t) ;; new in Emacs 27! But Anzu still offers a few extras
 
 ;; the idea with the next two functions is similar to the "11 lines away" comment in the post above
 (defun hoagie-scroll-down-with-mark ()
@@ -698,41 +711,44 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 ;; My config is a lot simpler for now. Just display most things below, use
 ;; 1/3rd of the screen. On the left shell/xref on the left and on the right
 ;; compilation/help/messages and a few others
-(setq display-buffer-alist
-      '(;; bottom left side window
-        ("\\*\\(e?shell.*\\|xref.*\\)"
-         (display-buffer-in-side-window)
-         (window-height . 0.33)
-         (side . bottom)
-         (slot . 0))
-        ;; bottom right side window - no reuse
-        ("\\(COMMIT_EDITMSG\\|\\*Occur\\*\\)"
-         (display-buffer-in-side-window)
-         (window-height . 0.33)
-         (side . bottom)
-         (slot . 1))
-        ;; bottom right side window - reuse if in another frame
-        ("\\*\\(Backtrace\\|Warnings\\|compilation\\|[Hh]elp\\|Messages\\|Flymake.*\\|eglot.*\\)\\*"
-         (display-buffer-reuse-window
-          display-buffer-in-side-window)
-         (window-height . 0.33)
-         (reusable-frames . visible)
-         (side . bottom)
-         (slot . 1))
-        ;; stuff that splits to the right
-        ("\\(magit\\|somethingelse\\).*"
-         (display-buffer-reuse-window
-          display-buffer-in-direction)
-         (window-width . 0.5)
-         (direction . right))))
+;; (setq display-buffer-alist
+;;       '(;; bottom left side window
+;;         ("\\*\\(e?shell.*\\|xref.*\\)"
+;;          (display-buffer-in-side-window)
+;;          (window-height . 0.33)
+;;          (side . bottom)
+;;          (slot . 0))
+;;         ;; bottom right side window - no reuse
+;;         ("\\(COMMIT_EDITMSG\\|\\*Occur\\*\\)"
+;;          (display-buffer-in-side-window)
+;;          (window-height . 0.33)
+;;          (side . bottom)
+;;          (slot . 1))
+;;         ;; bottom right side window - reuse if in another frame
+;;         ("\\*\\(Backtrace\\|Warnings\\|Environments .*\\|Builds .*\\|compilation\\|[Hh]elp\\|Messages\\|Flymake.*\\|eglot.*\\)\\*"
+;;          (display-buffer-reuse-window
+;;           display-buffer-in-side-window)
+;;          (window-height . 0.33)
+;;          (reusable-frames . visible)
+;;          (side . bottom)
+;;          (slot . 1))
+;;         ;; stuff that splits to the right
+;;         ("\\(magit\\|somethingelse\\).*"
+;;          (display-buffer-reuse-window
+;;           display-buffer-in-direction)
+;;          (window-width . 0.5)
+;;          (direction . right))))
+;; (setq switch-to-buffer-obey-display-actions t)
+
 
 ;; function from https://lunaryorn.com/2015/04/29/the-power-of-display-buffer-alist.html
 ;; (via wayback machine)
-(defun hoagie-quit-side-windows ()
-  "Quit side windows of the current frame."
-  (interactive)
-  (dolist (window (window-at-side-list))
-    (quit-window nil window)))
+;; (defun hoagie-quit-side-windows ()
+;;   "Quit side windows of the current frame."
+;;   (interactive)
+;;   (dolist (window (window-at-side-list))
+;;     (quit-window nil window)))
+;; (define-key hoagie-keymap (kbd "0") #'hoagie-quit-side-windows)
 
 ;; from https://stackoverflow.com/a/33456622/91877, just like ediff's |
 (defun toggle-window-split ()
@@ -773,47 +789,26 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (define-key hoagie-keymap (kbd "1") #'hoagie-restore-window-configuration)
 (advice-add 'delete-other-windows :before (lambda () (setq hoagie-window-configuration (current-window-configuration))))
 
-(define-key hoagie-keymap (kbd "0") #'hoagie-quit-side-windows)
-
-;; Trial stuff
-(defun hoagie-move-buffer-other-frame ()
-  "Send the buffer to the next frame.  If no other frame, behave like C-x 5 b."
-  (interactive)
-  (let ((this-buffer (buffer-name))
-        (frame-count (length (frame-list))))
-    (if (equal frame-count 1)
-        (switch-to-buffer-other-frame this-buffer)
-      (other-frame 1) ;; go away
-      (switch-to-buffer this-buffer) ;; change it
-      (other-frame 1)) ;; come back
-    (switch-to-prev-buffer)))
-
-(global-set-key (kbd "C-M-O") 'hoagie-move-buffer-other-frame)
-
 ;; THEMES
 
-(use-package modus-vivendi-theme
-  :demand t)
-
-(use-package modus-operandi-theme
-  :demand t)
-
 (use-package challenger-deep-theme
+  :demand t)
+
+(use-package cloud-theme
   :demand t)
 
 (defun hoagie-load-theme (new-theme)
   "Pick a theme to load from a harcoded list. Or load NEW-THEME."
   (interactive (list (completing-read "Theme:"
-                                      '(modus-vivendi
-                                        modus-operandi
-                                        challenger-deep)
+                                      '(challenger-deep
+                                        cloud)
                                       nil
                                       t)))
     (mapc 'disable-theme custom-enabled-themes)
     (load-theme (intern new-theme) t))
 
 (global-set-key (kbd "C-<f11>") #'hoagie-load-theme)
-(hoagie-load-theme "challenger-deep")
+(hoagie-load-theme "cloud")
 
 (use-package mood-line
   :demand t
@@ -846,3 +841,39 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 	  (setq fname (concat "/sudo:root@localhost:" fname)))
         (find-alternate-file fname))))
   (global-set-key (kbd "C-x F") 'find-alternative-file-with-sudo))
+
+
+;; (require 'eldoc)
+;; (custom-set-faces '(tooltip ((t (:inherit default :height 1.0)))))
+;; (setq tooltip-reuse-hidden-frame t)
+;; (defun top-left-tooltip (msg)
+;;   "Show MSG in a tooltip at the top-left corner of the frame.
+;; If the message is empty, do nothing."
+;;   (let* ((top-left-alist (frame-position))
+;;          (tooltip-frame-parameters `((name . "tooltip")
+;;                                     (internal-border-width . 2)
+;;                                     (border-width . 1)
+;;                                     (no-special-glyphs . t)
+;;                                     (left . ,(+ 50 (car top-left-alist)))
+;;                                     (top . ,(+ 50 (cdr top-left-alist))))))
+;;     (tooltip-show msg)))
+;; (defun point-tooltip (msg)
+;;   "Show MSG in a tooltip at the top-left corner of the frame.
+;; If the message is empty, do nothing."
+;;   (let* ((point-pos-alist (window-absolute-pixel-position))
+;;          (tooltip-frame-parameters `((name . "tooltip")
+;;                                      (internal-border-width . 2)
+;;                                      (border-width . 1)
+;;                                      (no-special-glyphs . t)
+;;                                      (left . ,(+ 0 (car point-pos-alist)))
+;;                                      (top . ,(+ 25 (cdr point-pos-alist))))))
+;;     (tooltip-show msg)))
+;; ;; (setq eldoc-idle-delay 0.25)
+;; (defun hoagie-eldoc-tooltip (format-string &rest args)
+;;   "Display eldoc message using `top-left-tooltip'."
+;;   ;; all these checks are because eglot + omnisharp send empty newlines and I just
+;;   ;; didn't like the empty tooltip :)
+;;   ;; (when format-string ...) should be enough
+;;   (when (and format-string (car args) (not (string-empty-p (string-trim (car args)))))
+;;     (point-tooltip (apply 'format format-string args))))
+;; (setq eldoc-message-function #'hoagie-eldoc-tooltip)
