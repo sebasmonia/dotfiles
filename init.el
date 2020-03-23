@@ -136,19 +136,6 @@
   (:map dired-mode-map
         (")" . dired-git-info-mode)))
 
-;; (use-package dired-sidebar
-;;   :bind (("M-z" . dired-sidebar-toggle-sidebar))
-;;   :commands (dired-sidebar-toggle-sidebar)
-;;   :init
-;;   (add-hook 'dired-sidebar-mode-hook
-;;             (lambda ()
-;;               (unless (file-remote-p default-directory)
-;;                 (auto-revert-mode))))
-;;   :config
-;;   (setq dired-sidebar-toggle-hidden-commands '(rotate-windows toggle-window-split balance-windows))
-;;   (setq dired-sidebar-theme 'ascii)
-;;   (setq dired-sidebar-subtree-line-prefix "__"))
-
 (use-package deadgrep
   :bind
   (:map hoagie-keymap
@@ -214,12 +201,6 @@
     (defun eglot--format-markup-patch (args)
       (list (or (car args) "")))
     (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch)))
-
-(use-package eldoc-box
-  :demand t
-  :commands (eldoc-box-hover-at-point-mode eldoc-box-hover-mode)
-  :hook ((eglot--managed-mode . eldoc-box-hover-mode)
-         (eldoc-mode . eldoc-box-hover-mode)))
 
 (use-package expand-region
   :bind
@@ -704,52 +685,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (global-set-key (kbd "C-v") 'hoagie-scroll-up-with-mark)
 (global-set-key (kbd "M-v") 'hoagie-scroll-down-with-mark)
 
-;; Emacs window management
-
-;; Using the code in link below as starting point:
-;; https://protesilaos.com/dotemacs/#h:3d8ebbb1-f749-412e-9c72-5d65f48d5957
-;; My config is a lot simpler for now. Just display most things below, use
-;; 1/3rd of the screen. On the left shell/xref on the left and on the right
-;; compilation/help/messages and a few others
-;; (setq display-buffer-alist
-;;       '(;; bottom left side window
-;;         ("\\*\\(e?shell.*\\|xref.*\\)"
-;;          (display-buffer-in-side-window)
-;;          (window-height . 0.33)
-;;          (side . bottom)
-;;          (slot . 0))
-;;         ;; bottom right side window - no reuse
-;;         ("\\(COMMIT_EDITMSG\\|\\*Occur\\*\\)"
-;;          (display-buffer-in-side-window)
-;;          (window-height . 0.33)
-;;          (side . bottom)
-;;          (slot . 1))
-;;         ;; bottom right side window - reuse if in another frame
-;;         ("\\*\\(Backtrace\\|Warnings\\|Environments .*\\|Builds .*\\|compilation\\|[Hh]elp\\|Messages\\|Flymake.*\\|eglot.*\\)\\*"
-;;          (display-buffer-reuse-window
-;;           display-buffer-in-side-window)
-;;          (window-height . 0.33)
-;;          (reusable-frames . visible)
-;;          (side . bottom)
-;;          (slot . 1))
-;;         ;; stuff that splits to the right
-;;         ("\\(magit\\|somethingelse\\).*"
-;;          (display-buffer-reuse-window
-;;           display-buffer-in-direction)
-;;          (window-width . 0.5)
-;;          (direction . right))))
-;; (setq switch-to-buffer-obey-display-actions t)
-
-
-;; function from https://lunaryorn.com/2015/04/29/the-power-of-display-buffer-alist.html
-;; (via wayback machine)
-;; (defun hoagie-quit-side-windows ()
-;;   "Quit side windows of the current frame."
-;;   (interactive)
-;;   (dolist (window (window-at-side-list))
-;;     (quit-window nil window)))
-;; (define-key hoagie-keymap (kbd "0") #'hoagie-quit-side-windows)
-
 ;; from https://stackoverflow.com/a/33456622/91877, just like ediff's |
 (defun toggle-window-split ()
   "Swap two windows between vertical and horizontal split."
@@ -840,8 +775,27 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 		         fname))
 	  (setq fname (concat "/sudo:root@localhost:" fname)))
         (find-alternate-file fname))))
-  (global-set-key (kbd "C-x F") 'find-alternative-file-with-sudo))
+  (global-set-key (kbd "C-x F") 'find-alternative-file-with-sudo)
 
+  ;; Dynamic font size adjustment per monitor
+  (require 'cl-lib)
+  (defun hoagie-adjust-font-size (frame)
+    "Inspired by https://emacs.stackexchange.com/a/44930/17066. FRAME is ignored.
+If I let Windows handle DPI everything looks blurry."
+    (let* ((attrs (frame-monitor-attributes)) ;; gets attribs for current frame
+           (monitor-name (alist-get 'name attrs))
+           (width-mm (cl-first (alist-get 'mm-size attrs)))
+           (width-px (cl-third (alist-get 'workarea attrs)))
+           (size "14")) ;; default size, go big just in case
+      (when (equal width-mm 290) ;; laptop screen
+        (setq size "14"))
+      (when (eq width-mm 530) ;; monitor
+        (setq size "10"))
+      ;; add more screens here ;;
+      (when (eq (length (display-monitor-attributes-list)) 1) ;; override everything if no external monitors!
+        (setq size "12"))
+      (set-frame-font (concat "Consolas " size))))
+  (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
 
 ;; (require 'eldoc)
 ;; (custom-set-faces '(tooltip ((t (:inherit default :height 1.0)))))
