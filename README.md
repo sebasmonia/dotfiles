@@ -36,8 +36,7 @@ private repo @ work, since they only make sense in that environment.
 
 * Firefox touch scroll and zoom via: https://superuser.com/a/1485044
 * Screen rotation via autorotate.sh, autostarted in i3 config
-  * Script rotates three screen inputs (touch + 2 devices for pen)
-* Screen keyboard is `onboard`, added to the lightdm greeter
+  * Script rotates three screen inputs (touch, pen input, pen eraser)
 * Via i3blocks,there are  buttons in the status bar for some actions:
   * First one opens xfce4-panel
   * Next is `onboard`
@@ -47,6 +46,12 @@ private repo @ work, since they only make sense in that environment.
   * Lower button is middle click
   * Top button (eraser) is right click
 * Fingerprint reader doesn't have a driver yet.
+
+### Touch keyboard
+
+* Testing CellWriter as an input method. Like it quite a bit
+* Screen keyboard is `onboard`, added to the lightdm greeter
+* Change `/usr/bin/i3exit` to use `dm-tool lock` instead of `blurlock`
 
 ### xfce4-panel
 
