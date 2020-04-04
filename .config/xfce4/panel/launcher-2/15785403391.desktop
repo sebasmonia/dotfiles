@@ -1,10 +1,10 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=Workspace 6
+Name=Suspend
 Comment=
-Exec=i3-msg -q workspace 6
-Icon=
+Exec=i3exit suspend
+Icon=system-suspend
 Path=
 Terminal=false
 StartupNotify=false

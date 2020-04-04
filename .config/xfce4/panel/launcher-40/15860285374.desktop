@@ -1,9 +1,9 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=Workspace 1
+Name=prev ws   >
 Comment=
-Exec=i3-msg workspace 1
+Exec=i3-msg workspace next
 Icon=
 Path=
 Terminal=false

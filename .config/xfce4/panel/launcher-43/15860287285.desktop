@@ -1,9 +1,9 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=Workspace 10
+Name=move to new ws
 Comment=
-Exec=i3-msg -q workspace 10
+Exec=/home/hoagie/.i3/move_to_first_available_workspace.py
 Icon=
 Path=
 Terminal=false

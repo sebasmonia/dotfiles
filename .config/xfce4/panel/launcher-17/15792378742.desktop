@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Name=Xournal++
+Comment=Take handwritten notes
+Exec=xournalpp %f
+Terminal=false
+StartupNotify=true
+MimeType=application/x-xoj;application/x-xojpp;application/x-xopp;application/x-xopt;application/pdf;
+Icon=com.github.xournalpp.xournalpp
+Categories=Office;GNOME;GTK;
+X-XFCE-Source=file:///usr/share/applications/com.github.xournalpp.xournalpp.desktop

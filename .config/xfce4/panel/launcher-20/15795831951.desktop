@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Name=CellWriter
+GenericName=Handwriting input panel
+Comment=Grid-entry handwriting recognition input panel
+Exec=cellwriter
+Icon=cellwriter
+StartupNotify=true
+Terminal=false
+Type=Application
+Categories=GNOME;GTK;Utility;Accessibility;
+X-XFCE-Source=file:///usr/share/applications/cellwriter.desktop

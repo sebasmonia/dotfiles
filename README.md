@@ -3,7 +3,6 @@ A place to store my i3 and Emacs configuration, plus other misc scripts.
 ## Prerequisites for a fresh install:
 
 * Manjaro i3 (duh!)
-* i3blocks
 * Consolas font
 * i3blocks, sysstat (for tablet mode i3status)
 * Deadgrep requires rg
@@ -29,7 +28,6 @@ private repo @ work, since they only make sense in that environment.
   https://wiki.archlinux.org/index.php/Bluetooth_keyboard
 ```
 * Probaly should move the conky changes to my home folder. I usually drop the files in this repo to /usr/share/conky, overriding the defaults
-* All `sh` scripts go in /home/hoagie/.i3
 * If brightness keys do nothing, remember to check xfce4-powermanager
 
 ## Thinkpad tablet mode notes
@@ -43,7 +41,7 @@ private repo @ work, since they only make sense in that environment.
   * Last button is to close the current application
 * Pen button configuration:
   * Tip is left click
-  * Lower button is middle click
+  * Lower button is ~~middle click~~ CellWriter
   * Top button (eraser) is right click
 * Fingerprint reader doesn't have a driver yet.
 
@@ -55,9 +53,15 @@ private repo @ work, since they only make sense in that environment.
 
 ### xfce4-panel
 
-Modified from the idea of https://peterme.net/adding-touch-controls-to-the-i3-window-manager.html, it has two panels.
+Modified from the idea of https://peterme.net/adding-touch-controls-to-the-i3-window-manager.html, it has a single panel at the bototom.
 
-Panel 1: switch workspaces
-Panel 2: close panel, volume up/down, brightness up/down, onboard/folders/application menu, sleep/shutdown
+Buttons:
+* close panel
+* move to previous/next workspace
+* move current app to a new workspace (uses `move_to_first_available_workspace.py`)
+* volume up/down
+* brightness up/down,
+* CellWriter/folders/application menu/Xournal++
+* sleep/shutdown
 
 Will keep experimenting with the buttons to see what else I need and what I can discard. Configuring the panel is a drag, I added to the repository all the xfce4 config stuff (panel + power manager).
