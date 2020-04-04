@@ -53,7 +53,7 @@ private repo @ work, since they only make sense in that environment.
 
 ### xfce4-panel
 
-Modified from the idea of https://peterme.net/adding-touch-controls-to-the-i3-window-manager.html, it has a single panel at the bototom.
+Modified from the idea of https://peterme.net/adding-touch-controls-to-the-i3-window-manager.html, it has a single panel at the bottom of the screen.
 
 Buttons:
 * close panel
