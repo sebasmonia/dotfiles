@@ -1,9 +1,9 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=prev ws   >
+Name=next ws   >
 Comment=
-Exec=i3-msg workspace next
+Exec=/home/hoagie/.i3/go_to_workspace.py next
 Icon=
 Path=
 Terminal=false
