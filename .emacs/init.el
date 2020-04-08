@@ -88,7 +88,8 @@
   (define-key company-active-map (kbd "C-n") #'company-select-next)
   (define-key company-active-map (kbd "C-p") #'company-select-previous))
 
-(use-package awscli-capf :load-path "~/github/awscli-capf"
+(use-package awscli-capf
+  :ensure t
   :commands (awscli-add-to-capf)
   :hook ((shell-mode . awscli-capf-add)
          (eshell-mode . awscli-capf-add)))
@@ -102,6 +103,25 @@
                         (setq-local fill-function-arguments-second-argument-same-line nil)
                         (setq-local fill-function-arguments-last-argument-same-line t)
                         (define-key csharp-mode-map [remap c-fill-paragraph] 'fill-function-arguments-dwim))))
+
+(use-package deadgrep
+  :bind
+  (:map hoagie-keymap
+        ("g" . deadgrep))
+  :config
+  (progn
+    (defun deadgrep--format-command-patch (rg-command)
+      "Add --hidden to rg-command."
+      (replace-regexp-in-string "^rg " "rg --hidden " rg-command))
+    (advice-add 'deadgrep--format-command :filter-return #'deadgrep--format-command-patch)))
+;; 2020-04-03 Tested rg for a few days, it's better than deadgrep in some aspects
+;; but not as quick to use.
+;; (use-package rg
+;;   :bind
+;;   (:map hoagie-keymap
+;;         ("g" . rg-menu))
+;;   :init
+;;   (rg-enable-default-bindings))
 
 (use-package dired
   :ensure nil
@@ -135,17 +155,6 @@
   :bind
   (:map dired-mode-map
         (")" . dired-git-info-mode)))
-
-(use-package deadgrep
-  :bind
-  (:map hoagie-keymap
-        ("g" . deadgrep))
-  :config
-  (progn
-    (defun deadgrep--format-command-patch (rg-command)
-      "Add --hidden to rg-command."
-      (replace-regexp-in-string "^rg " "rg --hidden " rg-command))
-    (advice-add 'deadgrep--format-command :filter-return #'deadgrep--format-command-patch)))
 
 (use-package docker
   :bind
@@ -190,9 +199,9 @@
          (csharp-mode . eglot-ensure))
   :bind
   (:map eglot-mode-map
-        (("C-c e r" . eglot-rename)
-         ("C-c e f" . eglot-format)
-         ("C-c e h" . eglot-help-at-point)))
+        (("C-c C-e r" . eglot-rename)
+         ("C-c C-e f" . eglot-format)
+         ("C-c C-e h" . eglot-help-at-point)))
   :config
   (progn
     (add-to-list 'eglot-server-programs
@@ -207,11 +216,6 @@
   ("M-<SPC>" . er/expand-region)
   :config
   (er/enable-mode-expansions 'csharp-mode 'er/add-cc-mode-expansions))
-
-(use-package eww-lnum
-  :config
-  '(progn (define-key eww-mode-map "f" #'eww-lnum-follow)
-          (define-key eww-mode-map "F" #'eww-lnum-universal)))
 
 (use-package fill-function-arguments
   :commands (fill-function-arguments-dwim)
@@ -291,6 +295,48 @@
 
 (use-package idomenu
   :bind ("M-g d" . idomenu))
+
+;; smex + improvements
+(use-package amx
+  :demand t
+  :commands (amx-mode amx)
+  :custom
+  (amx-backend 'ido)
+  (amx-history-length 25)
+  :config
+  (progn
+    (define-key hoagie-keymap (kbd "<menu>") #'amx)
+    (amx-mode)))
+
+;; (use-package icomplete
+;;   :ensure nil
+;;   :custom
+;;   (icomplete-show-matches-on-no-input t)
+;;   (icomplete-hide-common-prefix nil)
+;;   (icomplete-prospects-height 10)
+;;   (icomplete-separator "\n")
+;;   (read-buffer-completion-ignore-case t)
+;;   (icomplete-in-buffer nil)
+;;   :config
+;;   (fido-mode)
+;;   (setq icomplete-in-buffer t)
+;;   (define-key hoagie-keymap (kbd "<menu>") #'execute-extended-command)
+;;   (define-key icomplete-minibuffer-map (kbd "c-p") #'icomplete-backward-completions)
+;;   (define-key icomplete-minibuffer-map (kbd "c-n") #'icomplete-forward-completions )
+;;   (load "c:/Home/github/icomplete-vertical/icomplete-vertical.el")
+;;   (require 'icomplete-vertical)
+;;   (icomplete-vertical-mode))
+
+(use-package csharp-mode ;; manual load since I removed omnisharp
+  :demand
+  :hook
+  (csharp-mode . (lambda ()
+                        (subword-mode)
+                        (setq-local fill-function-arguments-first-argument-same-line t)
+                        (setq-local fill-function-arguments-second-argument-same-line nil)
+                        (setq-local fill-function-arguments-last-argument-same-line t)
+                        (define-key csharp-mode-map [remap c-fill-paragraph] 'fill-function-arguments-dwim))))
+
 
 (use-package json-mode
   :mode "\\.json$")
@@ -374,7 +420,7 @@
 (use-package sly
   :commands sly
   :config
-  (setq inferior-lisp-program "sbcl"))
+  (setq inferior-lisp-program "sbcl --dynamic-space-size 2048"))
 
 (use-package sly-quicklisp
   :after sly)
@@ -386,17 +432,6 @@
   (sql-ms-program "sqlcmdline")
   :config
   (add-hook 'sql-interactive-mode-hook (lambda () (setq truncate-lines t))))
-
-(use-package amx
-  :demand t
-  :commands (amx-mode amx)
-  :custom
-  (amx-backend 'ido)
-  (amx-history-length 25)
-  :config
-  (progn
-    (define-key hoagie-keymap (kbd "<menu>") #'amx)
-    (amx-mode)))
 
 (use-package speed-type
   :commands (speed-type-text speed-type-region speed-type-buffer))
@@ -525,6 +560,8 @@
       proced-filter 'all
       save-interprogram-paste-before-kill t
       visible-bell t)
+(global-so-long-mode 1)
+
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
@@ -685,6 +722,51 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (global-set-key (kbd "C-v") 'hoagie-scroll-up-with-mark)
 (global-set-key (kbd "M-v") 'hoagie-scroll-down-with-mark)
 
+;; Emacs window management
+
+;; Using the code in link below as starting point:
+;; https://protesilaos.com/dotemacs/#h:3d8ebbb1-f749-412e-9c72-5d65f48d5957
+;; My config is a lot simpler for now. Just display most things below, use
+;; 1/3rd of the screen. On the left shell/xref on the left and on the right
+;; compilation/help/messages and a few others
+(setq display-buffer-alist
+      '(;; bottom left side window
+        ("\\*\\(e?shell.*\\|xref.*\\)"
+         (display-buffer-in-side-window)
+         (window-height . 0.33)
+         (side . bottom)
+         (slot . 0))
+        ;; bottom right side window - no reuse
+        ("\\(COMMIT_EDITMSG\\|\\*Occur\\*\\)"
+         (display-buffer-in-side-window)
+         (window-height . 0.33)
+         (side . bottom)
+         (slot . 1))
+        ;; bottom right side window - reuse if in another frame
+        ("\\*\\(Backtrace\\|Warnings\\|Environments .*\\|Builds .*\\|compilation\\|[Hh]elp\\|Messages\\|Flymake.*\\|eglot.*\\)\\*"
+         (display-buffer-reuse-window
+          display-buffer-in-side-window)
+         (window-height . 0.33)
+         (reusable-frames . visible)
+         (side . bottom)
+         (slot . 1))
+        ;; stuff that splits to the right
+        ("\\(magit\\|\\*info\\).*"
+         (display-buffer-in-direction)
+         (window . main)
+         (direction . right))))
+(setq switch-to-buffer-obey-display-actions nil)
+
+
+;; function from https://lunaryorn.com/2015/04/29/the-power-of-display-buffer-alist.html
+;; (via wayback machine)
+(defun hoagie-quit-side-windows ()
+  "Quit side windows of the current frame."
+  (interactive)
+  (dolist (window (window-at-side-list))
+    (quit-window nil window)))
+(define-key hoagie-keymap (kbd "0") #'hoagie-quit-side-windows)
+
 ;; from https://stackoverflow.com/a/33456622/91877, just like ediff's |
 (defun toggle-window-split ()
   "Swap two windows between vertical and horizontal split."
@@ -724,39 +806,79 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (define-key hoagie-keymap (kbd "1") #'hoagie-restore-window-configuration)
 (advice-add 'delete-other-windows :before (lambda () (setq hoagie-window-configuration (current-window-configuration))))
 
+;; (defun hoagie-store-config ()
+;;   (setq hoagie-window-configuration (current-window-configuration)))
+;; (advice-add 'delete-other-windows :before #'hoagie-store-config)
+;; the advice above breaks on the build from 03/20 so:
+(defun hoagie-delete-other-windows ()
+  (interactive)
+  (setq hoagie-window-configuration (current-window-configuration))
+  (delete-other-windows))
+(global-set-key (kbd "C-x 1") #'hoagie-delete-other-windows)
+
 ;; THEMES
 
-(use-package challenger-deep-theme
-  :demand t)
-
-(use-package cloud-theme
+(use-package doom-themes
   :demand t)
 
 (defun hoagie-load-theme (new-theme)
   "Pick a theme to load from a harcoded list. Or load NEW-THEME."
   (interactive (list (completing-read "Theme:"
-                                      '(challenger-deep
-                                        cloud)
+                                      '(doom-acario-dark
+                                        doom-acario-light
+                                        doom-challenger-deep
+                                        doom-nord-light
+                                        doom-tomorrow-day)
                                       nil
                                       t)))
     (mapc 'disable-theme custom-enabled-themes)
     (load-theme (intern new-theme) t))
 
 (global-set-key (kbd "C-<f11>") #'hoagie-load-theme)
-(hoagie-load-theme "cloud")
+;; (hoagie-load-theme "doom-nord-light")
+(hoagie-load-theme "doom-acario-dark")
 
-(use-package mood-line
-  :demand t
-  :init
-  (mood-line-mode)
-  (defun mood-line-segment-position ()
-    "Displays the current cursor position in the mode-line, with region size if applicable."
-    (let ((region-size (when (use-region-p)
-                         (format " (%sl:%sc)"
-                                 (count-lines (region-beginning)
-                                              (region-end))
-                                 (- (region-end) (region-beginning))))))
-    (list "%l:%c" region-size))))
+;; (use-package mood-line
+;;   :demand t
+;;   :init
+;;   (mood-line-mode)
+;;   (defun mood-line-segment-position ()
+;;     "displays the current cursor position in the mode-line, with region size if applicable."
+;;     (let ((region-size (when (use-region-p)
+;;                          (format " (%sl:%sc)"
+;;                                  (count-lines (region-beginning)
+;;                                               (region-end))
+;;                                  (- (region-end) (region-beginning))))))
+;;     (list "%l:%c" region-size))))
+
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1)
+  :custom
+  (doom-modeline-project-detection 'project)
+  (doom-modeline-buffer-file-name-style 'buffer-name)
+  (doom-modeline-icon t)
+  (doom-modeline-major-mode-icon t)
+  (doom-modeline-major-mode-color-icon t)
+  (doom-modeline-buffer-state-icon t)
+  (doom-modeline-buffer-modification-icon t)
+  (doom-modeline-unicode-fallback nil)
+  (doom-modeline-minor-modes t)
+  (doom-modeline-enable-word-count nil)
+  (doom-modeline-buffer-encoding nil)
+  (doom-modeline-indent-info nil)
+  (doom-modeline-checker-simple-format t)
+  (doom-modeline-number-limit 99)
+  (doom-modeline-vcs-max-length 50)
+  (doom-modeline-persp-name nil)
+  (doom-modeline-display-default-persp-name nil)
+  (doom-modeline-lsp t)
+  (doom-modeline-github nil)
+  (doom-modeline-modal-icon nil)
+  (doom-modeline-mu4e nil)
+  (doom-modeline-gnus nil)
+  (doom-modeline-irc nil)
+  (doom-modeline-env-version nil))
 
 ;; Per-OS configuration
 
@@ -797,37 +919,37 @@ If I let Windows handle DPI everything looks blurry."
       (set-frame-font (concat "Consolas " size))))
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
 
-;; (require 'eldoc)
-;; (custom-set-faces '(tooltip ((t (:inherit default :height 1.0)))))
-;; (setq tooltip-reuse-hidden-frame t)
-;; (defun top-left-tooltip (msg)
-;;   "Show MSG in a tooltip at the top-left corner of the frame.
-;; If the message is empty, do nothing."
-;;   (let* ((top-left-alist (frame-position))
-;;          (tooltip-frame-parameters `((name . "tooltip")
-;;                                     (internal-border-width . 2)
-;;                                     (border-width . 1)
-;;                                     (no-special-glyphs . t)
-;;                                     (left . ,(+ 50 (car top-left-alist)))
-;;                                     (top . ,(+ 50 (cdr top-left-alist))))))
-;;     (tooltip-show msg)))
-;; (defun point-tooltip (msg)
-;;   "Show MSG in a tooltip at the top-left corner of the frame.
-;; If the message is empty, do nothing."
-;;   (let* ((point-pos-alist (window-absolute-pixel-position))
-;;          (tooltip-frame-parameters `((name . "tooltip")
-;;                                      (internal-border-width . 2)
-;;                                      (border-width . 1)
-;;                                      (no-special-glyphs . t)
-;;                                      (left . ,(+ 0 (car point-pos-alist)))
-;;                                      (top . ,(+ 25 (cdr point-pos-alist))))))
-;;     (tooltip-show msg)))
-;; ;; (setq eldoc-idle-delay 0.25)
-;; (defun hoagie-eldoc-tooltip (format-string &rest args)
-;;   "Display eldoc message using `top-left-tooltip'."
-;;   ;; all these checks are because eglot + omnisharp send empty newlines and I just
-;;   ;; didn't like the empty tooltip :)
-;;   ;; (when format-string ...) should be enough
-;;   (when (and format-string (car args) (not (string-empty-p (string-trim (car args)))))
-;;     (point-tooltip (apply 'format format-string args))))
-;; (setq eldoc-message-function #'hoagie-eldoc-tooltip)
+;; Experimental: use tooltips to show eldoc
+(require 'eldoc)
+(custom-set-faces '(tooltip ((t (:inherit default :height 1.1)))))
+(setq tooltip-reuse-hidden-frame t)
+
+(defun tooltip-in-position (position msg)
+  "Show MSG in a tooltip at POSITION of the frame.
+Position can be 'point, 'top-left."
+  (let ((point-pos (window-absolute-pixel-position))
+        (frame-pos (frame-position))
+        (tooltip-frame-parameters `((name . "tooltip")
+                                    (internal-border-width . 2)
+                                    (border-width . 1)
+                                    (no-special-glyphs . t))))
+    ;; this is a lot harder than it seems so meh
+    ;; (when (equal position 'top-right)
+    ;;   (let-alist frame-geometry
+    ;;     (push `(left .  ,(- 50 (+ (car .outer-position) (car .outer-size)))) tooltip-frame-parameters)
+    ;;     (push `(top .  ,(+ 50 (cdr .outer-position))) tooltip-frame-parameters)))
+    (when (equal position 'top-left)
+      (push `(left .  ,(+ 50 (car frame-pos))) tooltip-frame-parameters)
+      (push `(top .  ,(+ 50 (cdr frame-pos))) tooltip-frame-parameters))
+    (when (equal position 'point)
+      (push `(left .  ,(+ 0 (car point-pos))) tooltip-frame-parameters)
+      (push `(top .  ,(+ 25 (cdr point-pos))) tooltip-frame-parameters))
+    (tooltip-show msg)))
+
+(defun hoagie-eldoc-tooltip (format-string &rest args)
+  "Display eldoc message using `tooltip-in-position'."
+  ;; all these checks are because eglot + omnisharp send empty newlines and I just
+  ;; didn't like the empty tooltip :)
+  ;; (when format-string ...) should be enough
+  (when (and format-string (car args) (not (string-empty-p (string-trim (car args)))))
+    (tooltip-in-position 'point  (apply 'format format-string args))))
