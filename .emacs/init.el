@@ -953,3 +953,4 @@ Position can be 'point, 'top-left."
   ;; (when format-string ...) should be enough
   (when (and format-string (car args) (not (string-empty-p (string-trim (car args)))))
     (tooltip-in-position 'point  (apply 'format format-string args))))
+(setq eldoc-message-function #'hoagie-eldoc-tooltip)
