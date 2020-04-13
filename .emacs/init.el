@@ -109,11 +109,25 @@
   (:map hoagie-keymap
         ("g" . deadgrep))
   :config
-  (progn
-    (defun deadgrep--format-command-patch (rg-command)
-      "Add --hidden to rg-command."
-      (replace-regexp-in-string "^rg " "rg --hidden " rg-command))
-    (advice-add 'deadgrep--format-command :filter-return #'deadgrep--format-command-patch)))
+  ;; From "Underrated MELPA packages" @ r/emacs
+  ;; pick a subdir from the project to run
+  (defun hoagie-dg (search-term directory)
+    "Start a ripgrep search for SEARCH-TERM from DIRECTORY.
+If called with a prefix argument, create the results buffer but
+don't actually start the search."
+    (interactive
+     (list (deadgrep--read-search-term)
+           (read-directory-name "Directory: "
+                                (funcall deadgrep-project-root-function))))
+    (let ( (deadgrep-project-root-function (list 'lambda '() directory)) )
+      (deadgrep search-term)
+      ))
+  (define-key hoagie-keymap (kbd "G") #'hoagie-dg)
+  (defun deadgrep--format-command-patch (rg-command)
+    "Add --hidden to rg-command."
+    (replace-regexp-in-string "^rg " "rg --hidden " rg-command))
+  (advice-add 'deadgrep--format-command :filter-return #'deadgrep--format-command-patch))
+
 ;; 2020-04-03 Tested rg for a few days, it's better than deadgrep in some aspects
 ;; but not as quick to use.
 ;; (use-package rg
@@ -129,17 +143,16 @@
   (dired-dwim-target t)
   (dired-listing-switches "-laogGhvD")
   :config
-  (progn
-    (global-set-key (kbd "<f1>") (lambda () (interactive) (dired "~/")))
-    (define-key hoagie-keymap (kbd "f") 'project-find-file)
-    (define-key hoagie-keymap (kbd "F") 'find-name-dired)
-    (defun hoagie-dired-jump (&optional arg)
-      "Call dired-jump.  With prefix ARG, open in current window."
-      (interactive "P")
-      (let ((inverted (not arg)))
-        (dired-jump inverted)))
-    (define-key hoagie-keymap (kbd "j") 'hoagie-dired-jump)
-    (define-key hoagie-keymap (kbd "J") (lambda () (interactive) (hoagie-dired-jump 4)))))
+  (global-set-key (kbd "<f1>") (lambda () (interactive) (dired "~/")))
+  (define-key hoagie-keymap (kbd "f") 'project-find-file)
+  (define-key hoagie-keymap (kbd "F") 'find-name-dired)
+  (defun hoagie-dired-jump (&optional arg)
+    "Call dired-jump.  With prefix ARG, open in current window."
+    (interactive "P")
+    (let ((inverted (not arg)))
+      (dired-jump inverted)))
+  (define-key hoagie-keymap (kbd "j") 'hoagie-dired-jump)
+  (define-key hoagie-keymap (kbd "J") (lambda () (interactive) (hoagie-dired-jump 4))))
 
 (use-package dired-narrow
   :after dired
@@ -167,9 +180,9 @@
 (use-package dotnet
   :demand t  ;; needed since the global keybinding has to be ready. I think.
   :config
-  (progn
-    (setq dotnet-mode-keymap-prefix nil)
-    (define-key hoagie-keymap (kbd "n") dotnet-mode-command-map)))
+  (setq dotnet-mode-keymap-prefix nil)
+  (define-key hoagie-keymap (kbd "n") dotnet-mode-command-map))
+
 
 (use-package ediff
   :demand
@@ -179,19 +192,18 @@
   (ediff-keep-variants nil)
   (ediff-window-setup-function 'ediff-setup-windows-plain)
   :config
-  (progn
-    ;; from https://stackoverflow.com/a/29757750
-    (defun ediff-copy-both-to-C ()
-      "In ediff, copy A and then B to C."
-      (interactive)
-      (ediff-copy-diff ediff-current-difference nil 'C nil
-                       (concat
-                        (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
-                        (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
-    (defun add-d-to-ediff-mode-map ()
-      "Add key 'd' for 'copy both to C' functionality in ediff."
-      (define-key ediff-mode-map "d" 'ediff-copy-both-to-C))
-    (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map)))
+  ;; from https://stackoverflow.com/a/29757750
+  (defun ediff-copy-both-to-C ()
+    "In ediff, copy A and then B to C."
+    (interactive)
+    (ediff-copy-diff ediff-current-difference nil 'C nil
+                     (concat
+                      (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
+                      (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
+  (defun add-d-to-ediff-mode-map ()
+    "Add key 'd' for 'copy both to C' functionality in ediff."
+    (define-key ediff-mode-map "d" 'ediff-copy-both-to-C))
+  (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map))
 
 (use-package eglot
   :commands (eglot eglot-ensure)
@@ -203,13 +215,12 @@
          ("C-c C-e f" . eglot-format)
          ("C-c C-e h" . eglot-help-at-point)))
   :config
-  (progn
-    (add-to-list 'eglot-server-programs
-                 `(csharp-mode . ("c:/home/omnisharp_64/omnisharp.exe" "-lsp")))
-    ;; patch the argument. When nil, use "" instead.
-    (defun eglot--format-markup-patch (args)
-      (list (or (car args) "")))
-    (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch)))
+  (add-to-list 'eglot-server-programs
+               `(csharp-mode . ("c:/home/omnisharp_64/omnisharp.exe" "-lsp")))
+  ;; patch the argument. When nil, use "" instead.
+  (defun eglot--format-markup-patch (args)
+    (list (or (car args) "")))
+  (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch))
 
 (use-package expand-region
   :bind
@@ -222,20 +233,19 @@
   :custom
   (fill-function-arguments-indent-after-fill t)
   :config
-  (progn
-    ;; taken literally from the project's readme.
-    ;; reformat for more use-packageness if this sticks
-    (add-hook 'prog-mode-hook (lambda () (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))
-    (add-hook 'sgml-mode-hook (lambda ()
-                                (setq-local fill-function-arguments-first-argument-same-line t)
-                                (setq-local fill-function-arguments-argument-sep " ")
-                                (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))
-    (add-hook 'emacs-lisp-mode-hook (lambda ()
-                                      (setq-local fill-function-arguments-first-argument-same-line t)
-                                      (setq-local fill-function-arguments-second-argument-same-line t)
-                                      (setq-local fill-function-arguments-last-argument-same-line t)
-                                      (setq-local fill-function-arguments-argument-separator " ")
-                                      (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))))
+  ;; taken literally from the project's readme.
+  ;; reformat for more use-packageness if this sticks
+  (add-hook 'prog-mode-hook (lambda () (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))
+  (add-hook 'sgml-mode-hook (lambda ()
+                              (setq-local fill-function-arguments-first-argument-same-line t)
+                              (setq-local fill-function-arguments-argument-sep " ")
+                              (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))
+  (add-hook 'emacs-lisp-mode-hook (lambda ()
+                                    (setq-local fill-function-arguments-first-argument-same-line t)
+                                    (setq-local fill-function-arguments-second-argument-same-line t)
+                                    (setq-local fill-function-arguments-last-argument-same-line t)
+                                    (setq-local fill-function-arguments-argument-separator " ")
+                                    (local-set-key (kbd "M-q") #'fill-function-arguments-dwim))))
 
 (use-package format-all
   :bind ("C-c f" . format-all-buffer))
@@ -275,13 +285,12 @@
 
 (use-package ido
   :init
-  (progn
-    (ido-mode 1)
-    (use-package ido-vertical-mode
-      :config
-      (ido-vertical-mode 1)
-      :custom
-      (ido-vertical-define-keys 'c-n-and-c-p-only)))
+  (ido-mode 1)
+  (use-package ido-vertical-mode
+    :config
+    (ido-vertical-mode 1)
+    :custom
+    (ido-vertical-define-keys 'c-n-and-c-p-only))
   :custom
   (ido-enable-flex-matching t)
   (ido-everywhere t)
@@ -304,9 +313,8 @@
   (amx-backend 'ido)
   (amx-history-length 25)
   :config
-  (progn
-    (define-key hoagie-keymap (kbd "<menu>") #'amx)
-    (amx-mode)))
+  (define-key hoagie-keymap (kbd "<menu>") #'amx)
+  (amx-mode))
 
 ;; (use-package icomplete
 ;;   :ensure nil
@@ -356,11 +364,9 @@
 (use-package magit-gitflow
   :after magit
   :init
-  (progn
-    (setq magit-gitflow-popup-key "C-;"))
+  (setq magit-gitflow-popup-key "C-;")
   :config
-  (progn
-    (add-hook 'magit-mode-hook 'turn-on-magit-gitflow)))
+  (add-hook 'magit-mode-hook 'turn-on-magit-gitflow))
 
 (use-package git-timemachine
   :bind ("C-x M-G" . git-timemachine))
@@ -397,16 +403,15 @@
 (use-package replace
   :ensure nil
   :config
-  (progn
-    ;; I'm surprised this isn't the default behaviour,
-    ;; also couldn't find a way to change it from options
-    (defun hoagie-occur-dwim ()
-      "Run occur, if there's a region selected use that as input."
-      (interactive)
-      (if (use-region-p)
-          (occur (buffer-substring-no-properties (region-beginning) (region-end)))
-        (command-execute 'occur)))
-    (define-key hoagie-keymap (kbd "o") 'hoagie-occur-dwim)))
+  ;; I'm surprised this isn't the default behaviour,
+  ;; also couldn't find a way to change it from options
+  (defun hoagie-occur-dwim ()
+    "Run occur, if there's a region selected use that as input."
+    (interactive)
+    (if (use-region-p)
+        (occur (buffer-substring-no-properties (region-beginning) (region-end)))
+      (command-execute 'occur)))
+  (define-key hoagie-keymap (kbd "o") 'hoagie-occur-dwim))
 
 (use-package shell
   :init
@@ -479,9 +484,8 @@
 
 (use-package which-key
   :config
-  (progn
-    (which-key-mode)
-    (which-key-setup-side-window-bottom))
+  (which-key-mode)
+  (which-key-setup-side-window-right-bottom)
   :custom
   (which-key-side-window-max-width 0.4)
   (which-key-sort-order 'which-key-prefix-then-key-order))
@@ -631,7 +635,9 @@ With ARG, do this that many times."
   (interactive "p")
   (if (use-region-p)
       (delete-region (region-beginning) (region-end))
-    (delete-region (point) (progn (forward-word arg) (point)))))
+    (delete-region (point) (progn
+                             (forward-word arg)
+                             (point)))))
 (defun backward-delete-word (arg)
   "Delete characters backward until encountering the end of a word.
 With ARG, do this that many times."
@@ -804,7 +810,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (when hoagie-window-configuration
     (set-window-configuration hoagie-window-configuration)))
 (define-key hoagie-keymap (kbd "1") #'hoagie-restore-window-configuration)
-(advice-add 'delete-other-windows :before (lambda () (setq hoagie-window-configuration (current-window-configuration))))
+;; (advice-add 'delete-other-windows :before (lambda () (setq hoagie-window-configuration (current-window-configuration))))
 
 ;; (defun hoagie-store-config ()
 ;;   (setq hoagie-window-configuration (current-window-configuration)))
@@ -828,15 +834,15 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
                                         doom-acario-light
                                         doom-challenger-deep
                                         doom-nord-light
-                                        doom-tomorrow-day)
+                                        doom-oceanic-next)
                                       nil
                                       t)))
     (mapc 'disable-theme custom-enabled-themes)
     (load-theme (intern new-theme) t))
 
 (global-set-key (kbd "C-<f11>") #'hoagie-load-theme)
-;; (hoagie-load-theme "doom-nord-light")
-(hoagie-load-theme "doom-acario-dark")
+(hoagie-load-theme "doom-nord-light")
+;; (hoagie-load-theme "doom-acario-dark")
 
 ;; (use-package mood-line
 ;;   :demand t
@@ -921,7 +927,7 @@ If I let Windows handle DPI everything looks blurry."
 
 ;; Experimental: use tooltips to show eldoc
 (require 'eldoc)
-(custom-set-faces '(tooltip ((t (:inherit default :height 1.1)))))
+(custom-set-faces '(tooltip ((t (:inherit default :height 0.9)))))
 (setq tooltip-reuse-hidden-frame t)
 
 (defun tooltip-in-position (position msg)
