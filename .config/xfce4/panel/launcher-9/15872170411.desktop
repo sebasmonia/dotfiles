@@ -1,9 +1,9 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=window
+Name=toggle floating
 Comment=
-Exec=i3-msg -q
+Exec=i3-msg -q floating toggle
 Icon=
 Path=
 Terminal=false

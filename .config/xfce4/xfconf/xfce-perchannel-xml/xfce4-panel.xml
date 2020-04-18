@@ -144,6 +144,7 @@
       <property name="show-label" type="bool" value="true"/>
       <property name="items" type="array">
         <value type="string" value="15872159146.desktop"/>
+        <value type="string" value="15872170411.desktop"/>
         <value type="string" value="15872154511.desktop"/>
         <value type="string" value="15872155352.desktop"/>
         <value type="string" value="15872156493.desktop"/>
