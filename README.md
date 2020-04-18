@@ -5,9 +5,8 @@ A place to store my i3 and Emacs configuration, plus other misc scripts.
 * Manjaro i3 (duh!)
 * Consolas font
 * i3blocks, sysstat (for tablet mode i3status)
-* Deadgrep requires rg
-
-There are other third party dependencies, but those should leave the more important things working
+* xbacklight,  pulseaudio_ctl for brightness and volume controls
+* Probably others I missed but will keep adding here
 
 ## Emacs config notes:
 

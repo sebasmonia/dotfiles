@@ -31,8 +31,12 @@ bindsym $mod+Return exec terminal
 
 # kill focused window
 bindsym $mod+Shift+q kill
-# Also kill with middle click (the stylus lower button)
+# Also kill with middle click...used to be the stylus
+# lower button but now I use it with the mousepad
 bindsym --release button2 kill
+# So now kill with right click ie. the stylus upper button
+# for when I'm using the pen
+bindsym --release button3 kill
 
 # start program launcher
 bindsym $mod+d exec --no-startup-id dmenu_recency
@@ -47,14 +51,21 @@ bindsym $mod+z exec --no-startup-id morc_menu
 #exec --no-startup-id volumeicon
 #bindsym $mod+Ctrl+m exec terminal -e 'alsamixer'
 exec --no-startup-id start-pulseaudio-x11
-exec --no-startup-id pa-applet
+exec --no-startup-id pa-applet --disable-key-grabbing
 bindsym $mod+Ctrl+m exec pavucontrol
 
 ################################################################################################
 
+# Manual setup for sound control, so I can go over 100% unlike pa-applet
+# Seems to be an ALSA bug, and not a problem unique to me. But pa-applet is convenient
+# to change sinks so, letting it be but handling keys manually
+bindsym XF86AudioRaiseVolume exec "/home/hoagie/.i3/volume.py up"
+bindsym XF86AudioLowerVolume exec "/home/hoagie/.i3/volume.py down"
+bindsym XF86AudioMute exec "/home/hoagie/.i3/volume.py mute"
+
 # Screen brightness controls
-# bindsym XF86MonBrightnessUp exec "xbacklight -inc 10; notify-send 'brightness up'"
-# bindsym XF86MonBrightnessDown exec "xbacklight -dec 10; notify-send 'brightness down'"
+bindsym XF86MonBrightnessUp exec "/home/hoagie/.i3/brightness.py inc"
+bindsym XF86MonBrightnessDown exec "/home/hoagie/.i3/brightness.py dec"
 
 # Start Applications
 bindsym $mod++b exec terminal -e 'bmenu'
@@ -67,9 +78,7 @@ bindsym $mod+F5 exec terminal -e 'mocp'
 bindsym $mod+t exec --no-startup-id pkill compton
 bindsym $mod+Ctrl+t exec --no-startup-id compton -b
 bindsym $mod+Shift+d --release exec "killall dunst; exec notify-send 'restart dunst'"
-bindsym Print exec --no-startup-id i3-scrot
-bindsym $mod+Print --release exec --no-startup-id i3-scrot -w
-bindsym $mod+Shift+Print --release exec --no-startup-id i3-scrot -s
+bindsym Print exec --no-startup-id flameshot gui
 bindsym $mod+Shift+h exec xdg-open /usr/share/doc/manjaro/i3_help.pdf
 bindsym $mod+Ctrl+x --release exec --no-startup-id xkill
 # Start a new Emacs frame. Depends on having Emacs daemon running (setup below)
@@ -295,8 +304,16 @@ exec --no-startup-id dunst
 exec --no-startup-id emacs --daemon
 exec --no-startup-id exec /home/hoagie/.i3/autorotate.sh
 exec --no-startup-id exec /home/hoagie/.i3/wacomconfig.sh
-# exec --no-startup-id libinput-gestures-setup start
-exec --no-startup-id onboard 
+exec --no-startup-id onboard
+
+# Make the currently focused window a scratchpad
+bindsym $mod+Shift+minus move scratchpad
+# Show the first scratchpad window
+bindsym $mod+minus scratchpad show
+# Can't do this from Action Center as i3 won't send a focus signal on start up
+# for_window [title="Action Center"] move scratchpad
+# exec --no-startup-id /home/hoagie/common-lisp/actioncenter/actioncenter.exe
+
 
 bindsym $mod+Ctrl+Shift+m exec terminal -e 'alsamixer -D equal'
 bindsym $mod+p exec /home/hoagie/.i3/monitorswitch.sh
