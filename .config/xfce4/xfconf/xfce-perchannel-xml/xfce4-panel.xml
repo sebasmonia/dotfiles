@@ -11,6 +11,8 @@
       <property name="size" type="uint" value="38"/>
       <property name="plugin-ids" type="array">
         <value type="int" value="4"/>
+        <value type="int" value="6"/>
+        <value type="int" value="9"/>
         <value type="int" value="16"/>
         <value type="int" value="39"/>
         <value type="int" value="37"/>
@@ -134,6 +136,21 @@
         <value type="string" value="15860287285.desktop"/>
       </property>
       <property name="show-label" type="bool" value="true"/>
+    </property>
+    <property name="plugin-6" type="string" value="separator">
+      <property name="expand" type="bool" value="true"/>
+    </property>
+    <property name="plugin-9" type="string" value="launcher">
+      <property name="show-label" type="bool" value="true"/>
+      <property name="items" type="array">
+        <value type="string" value="15872159146.desktop"/>
+        <value type="string" value="15872154511.desktop"/>
+        <value type="string" value="15872155352.desktop"/>
+        <value type="string" value="15872156493.desktop"/>
+        <value type="string" value="15872157054.desktop"/>
+      </property>
+      <property name="move-first" type="bool" value="false"/>
+      <property name="arrow-position" type="uint" value="1"/>
     </property>
   </property>
 </channel>

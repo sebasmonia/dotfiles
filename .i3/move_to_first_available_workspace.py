@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """Helper called from xfce4-panel to move the currently focused window
-to a new container. Since when used in table mode I don't expect to have
-more than 4 or maybe 5 containers, no error or limit checking is done
-in the script. There isn't a check for empty workspaces in the middle
-either."""
+to a new container. It will pick the first one available between 1 and
+10, and if none is avaiable will fail...I wouldn't expect that to happen...
+"""
 
 import json
 import subprocess
@@ -18,8 +17,10 @@ def i3_msg_call(params):
 
 
 get_workspaces = i3_msg_call(['-t', 'get_workspaces'])
-workspaces = json.loads(get_workspaces)
-new_workspace = max(w["num"] for w in workspaces) + 1
+in_use = set(w["num"] for w in json.loads(get_workspaces))
+available = set(x for x in range(1, 11))
+new_workspace = min(available - in_use)
+
 
 i3_msg_call(["move", "workspace", new_workspace])
 i3_msg_call(["workspace", new_workspace])

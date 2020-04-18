@@ -6,6 +6,7 @@ import json
 import subprocess
 import sys
 
+
 def i3_msg_call(params):
     p = ["i3-msg"]
     p.extend(str(e) for e in params)
@@ -22,6 +23,7 @@ def get_arg_or_exit():
         sys.exit(1)
     return arg
 
+
 arg = get_arg_or_exit()
 get_workspaces = i3_msg_call(['-t', 'get_workspaces'])
 workspaces = json.loads(get_workspaces)
@@ -29,7 +31,7 @@ visible = [w for w in workspaces if w["visible"]][0]
 
 if arg == "prev":
     select = visible["num"] - 1
-else: # next
+else:  # next
     select = visible["num"] + 1
 
 # bound checking
