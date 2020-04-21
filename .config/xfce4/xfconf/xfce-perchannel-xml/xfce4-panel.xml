@@ -29,15 +29,20 @@
         <value type="int" value="34"/>
         <value type="int" value="32"/>
         <value type="int" value="20"/>
-        <value type="int" value="22"/>
-        <value type="int" value="1"/>
         <value type="int" value="17"/>
+        <value type="int" value="1"/>
         <value type="int" value="3"/>
         <value type="int" value="2"/>
         <value type="int" value="5"/>
       </property>
       <property name="mode" type="uint" value="0"/>
-      <property name="background-style" type="uint" value="1"/>
+      <property name="background-style" type="uint" value="0"/>
+      <property name="background-rgba" type="array">
+        <value type="double" value="0.827451"/>
+        <value type="double" value="0.843137"/>
+        <value type="double" value="0.811765"/>
+        <value type="double" value="1.000000"/>
+      </property>
     </property>
   </property>
   <property name="plugins" type="empty">
@@ -57,11 +62,9 @@
     <property name="plugin-21" type="string" value="separator">
       <property name="expand" type="bool" value="true"/>
     </property>
-    <property name="plugin-22" type="string" value="directorymenu">
-      <property name="base-directory" type="string" value="/home/hoagie"/>
-    </property>
     <property name="plugin-1" type="string" value="applicationsmenu">
       <property name="show-button-title" type="bool" value="false"/>
+      <property name="button-icon" type="string" value="/home/hoagie/.i3/feather_icons/menu.svg"/>
     </property>
     <property name="plugin-3" type="string" value="separator">
       <property name="expand" type="bool" value="true"/>
@@ -120,13 +123,13 @@
       <property name="items" type="array">
         <value type="string" value="15860282531.desktop"/>
       </property>
-      <property name="show-label" type="bool" value="true"/>
+      <property name="show-label" type="bool" value="false"/>
     </property>
     <property name="plugin-40" type="string" value="launcher">
       <property name="items" type="array">
         <value type="string" value="15860285374.desktop"/>
       </property>
-      <property name="show-label" type="bool" value="true"/>
+      <property name="show-label" type="bool" value="false"/>
     </property>
     <property name="plugin-41" type="string" value="separator">
       <property name="expand" type="bool" value="true"/>
@@ -135,13 +138,13 @@
       <property name="items" type="array">
         <value type="string" value="15860287285.desktop"/>
       </property>
-      <property name="show-label" type="bool" value="true"/>
+      <property name="show-label" type="bool" value="false"/>
     </property>
     <property name="plugin-6" type="string" value="separator">
       <property name="expand" type="bool" value="true"/>
     </property>
     <property name="plugin-9" type="string" value="launcher">
-      <property name="show-label" type="bool" value="true"/>
+      <property name="show-label" type="bool" value="false"/>
       <property name="items" type="array">
         <value type="string" value="15872159146.desktop"/>
         <value type="string" value="15872170411.desktop"/>
@@ -151,7 +154,7 @@
         <value type="string" value="15872157054.desktop"/>
       </property>
       <property name="move-first" type="bool" value="false"/>
-      <property name="arrow-position" type="uint" value="1"/>
+      <property name="arrow-position" type="uint" value="0"/>
     </property>
   </property>
 </channel>

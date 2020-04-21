@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=toggle floating
+Name=toggle floating     
 Comment=
 Exec=i3-msg -q floating toggle
 Icon=
