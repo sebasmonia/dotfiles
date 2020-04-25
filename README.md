@@ -68,5 +68,5 @@ Will keep experimenting with the buttons to see what else I need and what I can 
 
 This is how the panel looks:
 
-![Control bar screenshot](https://github.com/sebasmonia/dotfils/raw/master/screenshots/Bar-vertical.png "Control bar screenshot")
+![Control bar screenshot](/screenshots/Bar-vertical.png)
 
