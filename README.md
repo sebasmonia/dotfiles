@@ -35,12 +35,12 @@ private repo @ work, since they only make sense in that environment.
 * Screen rotation via autorotate.sh, autostarted in i3 config
   * Script rotates three screen inputs (touch, pen input, pen eraser)
 * Via i3blocks,there are  buttons in the status bar for some actions:
-  * First one opens xfce4-panel
+  * First one opens xfce4-panel (detailed section below)
   * Next is `onboard`
   * Last button is to close the current application
 * Pen button configuration:
   * Tip is left click
-  * Lower button is ~~middle click~~ CellWriter
+  * Lower button is middle click
   * Top button (eraser) is right click
 * Fingerprint reader doesn't have a driver yet.
 
@@ -56,11 +56,17 @@ Modified from the idea of https://peterme.net/adding-touch-controls-to-the-i3-wi
 
 Buttons:
 * close panel
-* move to previous/next workspace
+* Hold-for-menu button with window controls: toggle floating, move up/down/left/right
+* move to previous/next workspace, from 1~10, wraps around
 * move current app to a new workspace (uses `move_to_first_available_workspace.py`)
-* volume up/down
-* brightness up/down,
-* CellWriter/folders/application menu/Xournal++
+* volume up/down, using a custom script to allow volume > 100%
+* brightness up/down, using a custom script to avoid the screen turning off when going to 0%
+* CellWriter/application menu/Xournal++
 * sleep/shutdown
 
 Will keep experimenting with the buttons to see what else I need and what I can discard. Configuring the panel is a drag, I added to the repository all the xfce4 config stuff (panel + power manager).
+
+This is how the panel looks:
+
+![Control bar screenshot](https://github.com/sebasmonia/dotfils/raw/master/screenshots/Bar-vertical.png "Control bar screenshot")
+
