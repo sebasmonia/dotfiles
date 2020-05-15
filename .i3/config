@@ -8,8 +8,8 @@ set $mod Mod4
 # workspace_layout tabbed <stacking|tabbed>
 
 # Configure border style <normal|1pixel|pixel xx|none|pixel>
-new_window normal
-new_float normal
+new_window none
+new_float none
 
 # Hide borders
 hide_edge_borders none
@@ -21,7 +21,8 @@ bindsym $mod+n border normal
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font xft:URWGothic-Book 11
+# font xft:URWGothic-Book 11
+font xft:consolas 12
 
 # Use Mouse+$mod to drag floating windows
 floating_modifier $mod
@@ -31,12 +32,13 @@ bindsym $mod+Return exec terminal
 
 # kill focused window
 bindsym $mod+Shift+q kill
-# Also kill with middle click...used to be the stylus
-# lower button but now I use it with the mousepad
-bindsym --release button2 kill
-# So now kill with right click ie. the stylus upper button
-# for when I'm using the pen
-bindsym --release button3 kill
+# UPDATE: with no borders, just use the panel button to kill apps
+# # Also kill with middle click or stylus lower button
+# # It's  convenient with the mousepad too
+# bindsym --release button2 kill
+# # Finally, kill with right click ie. the stylus upper button
+# # because, why not
+# bindsym --release button3 kill
 
 # start program launcher
 bindsym $mod+d exec --no-startup-id dmenu_recency
@@ -71,16 +73,13 @@ bindsym XF86MonBrightnessDown exec "/home/hoagie/.i3/brightness.py dec"
 bindsym $mod++b exec terminal -e 'bmenu'
 bindsym $mod+F2 exec firefox
 bindsym $mod+F3 exec pcmanfm
-#from mine: bindsym $mod+Shift+F3 exec gksu pcmanfm
-# new:
 bindsym $mod+Shift+F3 exec pcmanfm_pkexec
 bindsym $mod+F5 exec terminal -e 'mocp'
 bindsym $mod+t exec --no-startup-id pkill compton
 bindsym $mod+Ctrl+t exec --no-startup-id compton -b
 bindsym $mod+Shift+d --release exec "killall dunst; exec notify-send 'restart dunst'"
-bindsym Print exec --no-startup-id flameshot gui
 bindsym $mod+Shift+h exec xdg-open /usr/share/doc/manjaro/i3_help.pdf
-bindsym $mod+Ctrl+x --release exec --no-startup-id xkill
+# bindsym $mod+Ctrl+x --release exec --no-startup-id xkill
 # Start a new Emacs frame. Depends on having Emacs daemon running (setup below)
 bindsym $mod+Shift+Return exec emacsclient -cn
 
@@ -93,23 +92,11 @@ bindsym $mod+k focus down
 bindsym $mod+l focus up
 bindsym $mod+semicolon focus right
 
-# alternatively, you can use the cursor keys:
-bindsym $mod+Left focus left
-bindsym $mod+Down focus down
-bindsym $mod+Up focus up
-bindsym $mod+Right focus right
-
 # move focused window
 bindsym $mod+Shift+j move left
 bindsym $mod+Shift+k move down
 bindsym $mod+Shift+l move up
 bindsym $mod+Shift+semicolon move right
-
-# alternatively, you can use the cursor keys:
-bindsym $mod+Shift+Left move left
-bindsym $mod+Shift+Down move down
-bindsym $mod+Shift+Up move up
-bindsym $mod+Shift+Right move right
 
 # move focused workspace between monitors
 bindsym $mod+Ctrl+semicolon move workspace to output right
@@ -121,13 +108,6 @@ bindsym $mod+v split v;exec notify-send 'tile vertically'
 
 # toggle fullscreen mode for the focused container
 bindsym $mod+f fullscreen toggle
-
-# Note 2019-11-17: I never use these. Feels odd to remove them.
-# maybe next clean up?
-# change container layout (stacked, tabbed, toggle split)
-bindsym $mod+s layout stacking
-bindsym $mod+w layout tabbed
-bindsym $mod+e layout toggle split
 
 # toggle tiling / floating
 bindsym $mod+Shift+space floating toggle
@@ -191,13 +171,6 @@ bindsym $mod+Shift+7 move container to workspace $ws7; workspace $ws7
 bindsym $mod+Shift+8 move container to workspace $ws8; workspace $ws8
 bindsym $mod+Shift+9 move container to workspace $ws9; workspace $ws9
 bindsym $mod+Shift+0 move container to workspace $ws0; workspace $ws0
-
-
-# Open applications on specific workspaces
-# assign [class="Thunderbird"] $ws1
-# assign [class="Pale moon"] $ws2
-# assign [class="Pcmanfm"] $ws3
-# assign [class="Skype"] $ws5
 
 # Open specific applications in floating mode
 for_window [title="alsamixer"] floating enable border pixel 1
@@ -284,36 +257,24 @@ mode "resize" {
 # Autostart applications
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec --no-startup-id nitrogen --restore; sleep 1; compton -b
-#exec --no-startup-id manjaro-hello
 exec --no-startup-id nm-applet
 exec --no-startup-id xfce4-power-manager
 exec --no-startup-id pamac-tray
 exec --no-startup-id clipit
-exec --no-startup-id xbindkeys
 # exec --no-startup-id blueman-applet
-# exec_always --no-startup-id sbxkb
 # exec --no-startup-id start_conky_maia
 exec --no-startup-id start_conky_green
 exec_always --no-startup-id ff-theme-util
 exec_always --no-startup-id fix_xcursor
 
 # Autostart custom
-## exec --no-startup-id xautolock -time 10 -locker blurlock # disabled auto lock
-## exec --no-startup-id /home/hoagie/keynav/keynav
 exec --no-startup-id dunst
 exec --no-startup-id emacs --daemon
+exec --no-startup-id flameshot
+exec --no-startup-id /home/hoagie/.i3/tabletmode.py
 exec --no-startup-id exec /home/hoagie/.i3/autorotate.sh
 exec --no-startup-id exec /home/hoagie/.i3/wacomconfig.sh
 exec --no-startup-id onboard
-
-# Make the currently focused window a scratchpad
-bindsym $mod+Shift+minus move scratchpad
-# Show the first scratchpad window
-bindsym $mod+minus scratchpad show
-# Can't do this from Action Center as i3 won't send a focus signal on start up
-# for_window [title="Action Center"] move scratchpad
-# exec --no-startup-id /home/hoagie/common-lisp/actioncenter/actioncenter.exe
-
 
 bindsym $mod+Ctrl+Shift+m exec terminal -e 'alsamixer -D equal'
 bindsym $mod+p exec /home/hoagie/.i3/monitorswitch.sh
@@ -352,24 +313,19 @@ set_from_resource $term_color15    color15
 # Start i3bar to display a workspace bar (plus the system information i3status if available)
 bar {
 	i3bar_command i3bar
-	# status_command i3status
-        status_command i3blocks
-	position bottom
+	status_command i3status
+	position top
         tray_output primary
-
-## please set your primary output first. Example: 'xrandr --output eDP1 --primary'
-#	tray_output primary
-#	tray_output eDP1
 
 	bindsym button4 nop
 	bindsym button5 nop
-#   font xft:URWGothic-Book 11
+        # font xft:URWGothic-Book 11
 	strip_workspace_numbers yes
 
     colors {
         background #222D31
         statusline #F9FAF9
-        separator  #454947
+        separator  #636966
 
 #                      border  backgr. text
         focused_workspace  #F9FAF9 #16a085 #292F34
@@ -412,42 +368,3 @@ smart_gaps on
 # Smart borders (draw borders around container only if it is not the only container on this workspace) 
 # on|no_gaps (on=always activate and no_gaps=only activate if the gap size to the edge of the screen is 0)
 smart_borders on
-
-# Note 2019-11-17: I think this is useless >_> but
-# it will survive one more iteration
-# Press $mod+Shift+g to enter the gap mode. Choose o or i for modifying outer/inner gaps. Press one of + / - (in-/decrement for current workspace) or 0 (remove gaps for current workspace). If you also press Shift with these keys, the change will be global for all workspaces.
-set $mode_gaps Gaps: (o) outer, (i) inner
-set $mode_gaps_outer Outer Gaps: +|-|0 (local), Shift + +|-|0 (global)
-set $mode_gaps_inner Inner Gaps: +|-|0 (local), Shift + +|-|0 (global)
-bindsym $mod+Shift+g mode "$mode_gaps"
-
-mode "$mode_gaps" {
-        bindsym o      mode "$mode_gaps_outer"
-        bindsym i      mode "$mode_gaps_inner"
-        bindsym Return mode "default"
-        bindsym Escape mode "default"
-}
-mode "$mode_gaps_inner" {
-        bindsym plus  gaps inner current plus 5
-        bindsym minus gaps inner current minus 5
-        bindsym 0     gaps inner current set 0
-
-        bindsym Shift+plus  gaps inner all plus 5
-        bindsym Shift+minus gaps inner all minus 5
-        bindsym Shift+0     gaps inner all set 0
-
-        bindsym Return mode "default"
-        bindsym Escape mode "default"
-}
-mode "$mode_gaps_outer" {
-        bindsym plus  gaps outer current plus 5
-        bindsym minus gaps outer current minus 5
-        bindsym 0     gaps outer current set 0
-
-        bindsym Shift+plus  gaps outer all plus 5
-        bindsym Shift+minus gaps outer all minus 5
-        bindsym Shift+0     gaps outer all set 0
-
-        bindsym Return mode "default"
-        bindsym Escape mode "default"
-}

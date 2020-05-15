@@ -1,10 +1,10 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=Suspend
+Name=close
 Comment=
-Exec=i3exit suspend
-Icon=/home/hoagie/.i3/feather_icons/moon.svg
+Exec=i3-msg -q kill
+Icon=/home/hoagie/.i3/feather_icons/x-square.svg
 Path=
 Terminal=false
 StartupNotify=false

@@ -4,8 +4,8 @@ A place to store my i3 and Emacs configuration, plus other misc scripts.
 
 * Manjaro i3 (duh!)
 * Consolas font
-* i3blocks, sysstat (for tablet mode i3status)
-* xbacklight,  pulseaudio_ctl for brightness and volume controls
+* xbacklight, pulseaudio_ctl for brightness and volume controls
+* acpid to show the touch panel automatically
 * Probably others I missed but will keep adding here
 
 ## Emacs config notes:
@@ -27,42 +27,42 @@ private repo @ work, since they only make sense in that environment.
   https://wiki.archlinux.org/index.php/Bluetooth_keyboard
 ```
 * Probaly should move the conky changes to my home folder. I usually drop the files in this repo to /usr/share/conky, overriding the defaults
-* If brightness keys do nothing, remember to check xfce4-powermanager
 
 ## Thinkpad tablet mode notes
 
 * Firefox touch scroll and zoom via: https://superuser.com/a/1485044
 * Screen rotation via autorotate.sh, autostarted in i3 config
   * Script rotates three screen inputs (touch, pen input, pen eraser)
-* Via i3blocks,there are  buttons in the status bar for some actions:
-  * First one opens xfce4-panel (detailed section below)
-  * Next is `onboard`
-  * Last button is to close the current application
 * Pen button configuration:
   * Tip is left click
   * Lower button is middle click
-  * Top button (eraser) is right click
+  * Top button (eraser) works on hover, used as right click
 * Fingerprint reader doesn't have a driver yet.
+* Touch control panel is activated when the laptop changes to table mode
+  * Handled via tabletmode.py, autostarted in i3 config
+  * Listens to all ACPI events, there's potential to handle more things
+  * Details on panel buttons below
 
 ### Touch keyboard
 
-* Testing CellWriter as an input method. Like it quite a bit
+* Testing CellWriter as an input method. Like it quite a bit.
 * Screen keyboard is `onboard`, added to the lightdm greeter
-* Change `/usr/bin/i3exit` to use `dm-tool lock` instead of `blurlock`
+* Changed `/usr/bin/i3exit` to not lock the screen on suspend, more convenient to keep as tablet
 
 ### xfce4-panel
 
 Modified from the idea of https://peterme.net/adding-touch-controls-to-the-i3-window-manager.html, it has a single panel at the bottom of the screen.
 
 Buttons:
-* close panel
 * Hold-for-menu button with window controls: toggle floating, move up/down/left/right
-* move to previous/next workspace, from 1~10, wraps around
-* move current app to a new workspace (uses `move_to_first_available_workspace.py`)
-* volume up/down, using a custom script to allow volume > 100%
-* brightness up/down, using a custom script to avoid the screen turning off when going to 0%
-* CellWriter/application menu/Xournal++
-* sleep/shutdown
+* Go to to previous/next workspace, from 1~10, wraps around
+* Close focused application
+* Move current app to a new workspace (uses `move_to_first_available_workspace.py`)
+* Volume up/down, using a custom script to allow volume > 100%
+* Brightness up/down, using a custom script to avoid the screen turning off when going to 0%
+* Onboard. Added autocomplete to it.
+* CellWriter/Xournal++/Application menu
+* Sleep/Shutdown
 
 Will keep experimenting with the buttons to see what else I need and what I can discard. Configuring the panel is a drag, I added to the repository all the xfce4 config stuff (panel + power manager).
 

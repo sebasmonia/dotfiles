@@ -1,0 +1,14 @@
+[Desktop Entry]
+Name=Onboard
+GenericName=Onboard onscreen keyboard
+Comment=Flexible onscreen keyboard
+Exec=onboard
+Terminal=false
+Type=Application
+Categories=Utility;Accessibility;
+MimeType=application/x-onboard;
+Icon=/home/hoagie/.i3/feather_icons/type.svg
+X-Ubuntu-Gettext-Domain=onboard
+X-XFCE-Source=file:///usr/share/applications/onboard.desktop
+Path=
+StartupNotify=false
