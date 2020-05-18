@@ -60,6 +60,7 @@
   :init
   (global-anzu-mode 1)
   :custom
+  (anzu-cons-mode-line-p nil)
   (anzu-deactivate-region t)
   (anzu-mode-lighter "")
   (anzu-replace-threshold 50)
@@ -140,7 +141,9 @@ don't actually start the search."
 (use-package dired
   :ensure nil
   :custom
-  (dired-dwim-target t)
+  ;; Can get the same effect manually with M-n. When dwim is _not_
+  ;; what I want, it can be super annoying
+  (dired-dwim-target nil)
   (dired-listing-switches "-laogGhvD")
   :config
   (global-set-key (kbd "<f1>") (lambda () (interactive) (dired "~/")))
@@ -221,6 +224,17 @@ don't actually start the search."
   (defun eglot--format-markup-patch (args)
     (list (or (car args) "")))
   (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch))
+
+(use-package eldoc-box
+  :hook (prog-mode . eldoc-box-hover-mode)
+  :config
+  (setq eldoc-box-max-pixel-width 1024
+        eldoc-box-max-pixel-height 768)
+  (setq eldoc-idle-delay 0.1)
+  ;; set the child frame face as 1.0 relative to the default font
+  ;; at work, the adjustment in "workonlyconfig.el" takes care of
+  ;; adjusting the child frames with the parent frame size
+  (set-face-attribute 'eldoc-box-body nil :inherit 'default :height 1.0))
 
 (use-package expand-region
   :bind
@@ -316,6 +330,8 @@ don't actually start the search."
   (define-key hoagie-keymap (kbd "<menu>") #'amx)
   (amx-mode))
 
+(setq completion-ignore-case t)
+(setq completion-styles '(substring basic emacs22))
 ;; (use-package icomplete
 ;;   :ensure nil
 ;;   :custom
@@ -352,13 +368,22 @@ don't actually start the search."
 (use-package lyrics
   :commands lyrics)
 
+(defun hoagie-try-vc-here-and-there ()
+  (interactive)
+  (vc-dir (car (project-roots (project-current)))))
+(eval-after-load "vc-hooks"
+  '(define-key vc-prefix-map "=" 'vc-ediff))
+(eval-after-load "vc-hooks"
+  '(define-key vc-dir-mode-map "=" 'vc-ediff))
 (use-package magit
   :init
   :bind
-  ("C-x g" . magit-status)
+  (("C-x g" . hoagie-try-vc-here-and-there)
+   ("C-x G" . magit-status))
   :hook
   (magit-mode . turn-on-magit-gitflow)
   :custom
+  (magit-completing-read-function 'magit-ido-completing-read)
   (magit-display-buffer-function 'display-buffer))
 
 (use-package magit-gitflow
@@ -553,6 +578,7 @@ don't actually start the search."
       dabbrev-case-replace nil
       default-frame-alist '((fullscreen . maximized) (vertical-scroll-bars . nil) (horizontal-scroll-bars . nil))
       delete-by-moving-to-trash t
+      disabled-command-function nil
       enable-recursive-minibuffers t
       global-mark-ring-max 32
       grep-command "grep --color=always -nHi -r --include=*.* -e \"pattern\" ."
@@ -566,11 +592,6 @@ don't actually start the search."
       visible-bell t)
 (global-so-long-mode 1)
 
-
-(put 'downcase-region 'disabled nil)
-(put 'upcase-region 'disabled nil)
-(put 'narrow-to-region 'disabled nil)
-
 ;; ;; from https://stackoverflow.com/a/22176971, move auto saves and
 ;; ;; back up files to a different folder so git or dotnet core won't
 ;; ;; pick them up as changes or new files in the project
@@ -582,6 +603,15 @@ don't actually start the search."
 (setq backup-directory-alist
       `(("." . ,(expand-file-name
                  (concat user-emacs-directory "backups/")))))
+
+;; from https://gitlab.com/jessieh/dot-emacs
+(setq-default
+ backup-by-copying t                                    ; Don't delink hardlinks
+ version-control t                                      ; Use version numbers on backups
+ delete-old-versions t                                  ; Do not keep old backups
+ kept-new-versions 5                                    ; Keep 5 new versions
+ kept-old-versions 3                                    ; Keep 3 old versions
+ )
 
 ;; OTHER BINDINGS
 ; adapted for https://stackoverflow.com/questions/6464738/how-can-i-switch-focus-after-buffer-split-in-emacs
@@ -661,6 +691,7 @@ With ARG, do this that many times."
 
 ;; MARK PUSH AND POP - should make a package out of this
 ;; including a macro or common func to "push a mark if first time"
+;; UPDATE: created two advices for this
 
 ;; from: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
 (defun push-mark-no-activate ()
@@ -732,35 +763,26 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 
 ;; Using the code in link below as starting point:
 ;; https://protesilaos.com/dotemacs/#h:3d8ebbb1-f749-412e-9c72-5d65f48d5957
-;; My config is a lot simpler for now. Just display most things below, use
-;; 1/3rd of the screen. On the left shell/xref on the left and on the right
-;; compilation/help/messages and a few others
+;; My config is a lot simpler for now.
 (setq display-buffer-alist
       '(;; bottom left side window
-        ("\\*\\(e?shell.*\\|xref.*\\)"
+        ("\\*\\(e?shell.*\\|COMMIT_EDITMSG\\)"
          (display-buffer-in-side-window)
          (window-height . 0.33)
-         (side . bottom)
-         (slot . 0))
-        ;; bottom right side window - no reuse
-        ("\\(COMMIT_EDITMSG\\|\\*Occur\\*\\)"
-         (display-buffer-in-side-window)
-         (window-height . 0.33)
-         (side . bottom)
-         (slot . 1))
+         (side . bottom))
         ;; bottom right side window - reuse if in another frame
         ("\\*\\(Backtrace\\|Warnings\\|Environments .*\\|Builds .*\\|compilation\\|[Hh]elp\\|Messages\\|Flymake.*\\|eglot.*\\)\\*"
          (display-buffer-reuse-window
           display-buffer-in-side-window)
          (window-height . 0.33)
          (reusable-frames . visible)
-         (side . bottom)
-         (slot . 1))
-        ;; stuff that splits to the right
-        ("\\(magit\\|\\*info\\).*"
+         (side . bottom))
+        ;; stuff that splits to the bottom
+        ("\\(magit\\|\\*vc.\\|\\|\\*info\\|xref.*|\\*Occur\\*\\).*"
+        ;; ("\\(magit\\|\\*info\\).*"
          (display-buffer-in-direction)
-         (window . main)
-         (direction . right))))
+         (direction . bottom)
+         (window-height . 0.5))))
 (setq switch-to-buffer-obey-display-actions nil)
 
 
@@ -926,37 +948,57 @@ If I let Windows handle DPI everything looks blurry."
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
 
 ;; Experimental: use tooltips to show eldoc
-(require 'eldoc)
-(custom-set-faces '(tooltip ((t (:inherit default :height 0.9)))))
-(setq tooltip-reuse-hidden-frame t)
+;; (require 'eldoc)
+;; (custom-set-faces '(tooltip ((t (:inherit default :height 0.9)))))
+;; (setq tooltip-reuse-hidden-frame t)
 
-(defun tooltip-in-position (position msg)
-  "Show MSG in a tooltip at POSITION of the frame.
-Position can be 'point, 'top-left."
-  (let ((point-pos (window-absolute-pixel-position))
-        (frame-pos (frame-position))
-        (tooltip-frame-parameters `((name . "tooltip")
-                                    (internal-border-width . 2)
-                                    (border-width . 1)
-                                    (no-special-glyphs . t))))
-    ;; this is a lot harder than it seems so meh
-    ;; (when (equal position 'top-right)
-    ;;   (let-alist frame-geometry
-    ;;     (push `(left .  ,(- 50 (+ (car .outer-position) (car .outer-size)))) tooltip-frame-parameters)
-    ;;     (push `(top .  ,(+ 50 (cdr .outer-position))) tooltip-frame-parameters)))
-    (when (equal position 'top-left)
-      (push `(left .  ,(+ 50 (car frame-pos))) tooltip-frame-parameters)
-      (push `(top .  ,(+ 50 (cdr frame-pos))) tooltip-frame-parameters))
-    (when (equal position 'point)
-      (push `(left .  ,(+ 0 (car point-pos))) tooltip-frame-parameters)
-      (push `(top .  ,(+ 25 (cdr point-pos))) tooltip-frame-parameters))
-    (tooltip-show msg)))
+;; (defun tooltip-in-position (position msg)
+;;   "Show MSG in a tooltip at POSITION of the frame.
+;; Position can be 'point, 'top-left."
+;;   (let ((point-pos (window-absolute-pixel-position))
+;;         (frame-pos (frame-position))
+;;         (tooltip-frame-parameters `((name . "tooltip")
+;;                                     (internal-border-width . 2)
+;;                                     (border-width . 1)
+;;                                     (no-special-glyphs . t))))
+;;     ;; this is a lot harder than it seems so meh
+;;     ;; (when (equal position 'top-right)
+;;     ;;   (let-alist frame-geometry
+;;     ;;     (push `(left .  ,(- 50 (+ (car .outer-position) (car .outer-size)))) tooltip-frame-parameters)
+;;     ;;     (push `(top .  ,(+ 50 (cdr .outer-position))) tooltip-frame-parameters)))
+;;     (when (equal position 'top-left)
+;;       (push `(left .  ,(+ 50 (car frame-pos))) tooltip-frame-parameters)
+;;       (push `(top .  ,(+ 50 (cdr frame-pos))) tooltip-frame-parameters))
+;;     (when (equal position 'point)
+;;       (push `(left .  ,(+ 0 (car point-pos))) tooltip-frame-parameters)
+;;       (push `(top .  ,(+ 25 (cdr point-pos))) tooltip-frame-parameters))
+;;     (tooltip-show msg)))
 
-(defun hoagie-eldoc-tooltip (format-string &rest args)
-  "Display eldoc message using `tooltip-in-position'."
-  ;; all these checks are because eglot + omnisharp send empty newlines and I just
-  ;; didn't like the empty tooltip :)
-  ;; (when format-string ...) should be enough
-  (when (and format-string (car args) (not (string-empty-p (string-trim (car args)))))
-    (tooltip-in-position 'point  (apply 'format format-string args))))
-(setq eldoc-message-function #'hoagie-eldoc-tooltip)
+;; (defun hoagie-eldoc-tooltip (format-string &rest args)
+;;   "Display eldoc message using `tooltip-in-position'."
+;;   ;; all these checks are because eglot + omnisharp send empty newlines and I just
+;;   ;; didn't like the empty tooltip :)
+;;   ;; (when format-string ...) should be enough
+;;   (when (and format-string (car args) (not (string-empty-p (string-trim (car args)))))
+;;     (tooltip-in-position 'point  (apply 'format format-string args))))
+;; (setq eldoc-message-function #'hoagie-eldoc-tooltip)
+
+;; Experimental: use narrowing
+;; modified from https://endlessparentheses.com/emacs-narrow-or-widen-dwim.html
+(defun narrow-or-widen-dwim (p)
+  "Widen if buffer is narrowed, narrow-dwim otherwise.
+Dwim means: region, or defun, whichever applies first."
+  (interactive "P")
+  (declare (interactive-only)) ;; 2020-04-06: TIL about declare, and interactive-only
+  (cond ((buffer-narrowed-p)
+         (widen)
+         (recenter))
+        (p
+         (narrow-to-page))
+        ((region-active-p)
+         (narrow-to-region (region-beginning)
+                           (region-end)))
+        (t (narrow-to-defun))))
+;; the whole point is, I never use narrowing, so let's replace the default
+;; bindings by this one
+(global-set-key (kbd "C-x n") #'narrow-or-widen-dwim)
