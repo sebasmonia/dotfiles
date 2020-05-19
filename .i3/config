@@ -277,7 +277,23 @@ exec --no-startup-id exec /home/hoagie/.i3/wacomconfig.sh
 exec --no-startup-id onboard
 
 bindsym $mod+Ctrl+Shift+m exec terminal -e 'alsamixer -D equal'
-bindsym $mod+p exec /home/hoagie/.i3/monitorswitch.sh
+
+# use mod+shift+p to get just the laptop screen, in case the external fails
+# gets unplugged etc.
+bindsym $mod+Shift+p exec --no-startup-id /home/hoagie/.i3/monitorswitch.py internal
+# Mode for monitors setup 
+bindsym $mod+p mode "$mode_monitor"
+set $mode_monitor (i)nternal, (e)xternal, both w/ external (r)ight, both w/ external (l)left
+mode "$mode_monitor" {
+    bindsym i exec --no-startup-id /home/hoagie/.i3/monitorswitch.py internal, mode "default"
+    bindsym e exec --no-startup-id /home/hoagie/.i3/monitorswitch.py external, mode "default"
+    bindsym r exec --no-startup-id /home/hoagie/.i3/monitorswitch.py both-right, mode "default"
+    bindsym l exec --no-startup-id /home/hoagie/.i3/monitorswitch.py both-left, mode "default"
+
+    # exit monitor mode: "Enter" or "Escape"
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
 
 # Color palette used for the terminal ( ~/.Xresources file )
 # Colors are gathered based on the documentation:

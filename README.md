@@ -15,7 +15,7 @@ private repo @ work, since they only make sense in that environment.
 
 ## i3 config notes:
 
-* The monitor switch bound to Win+P activates internal monitor + HDMI if something is plugged, else only internal monitor. All screen names and positions are hardcoded to my setup.
+* The monitor switch bound to Win+p has a mode with some common options, backed by `monitorswitch.py`. Win+Shift+p works as a lifesaver by enabling the laptop screen only.
 * .Xmodmap swaps ctrl and caps, and maps Menu to Print Screen because Thinkpad keyboards.
 * From https://bbs.archlinux.org/viewtopic.php?id=223949, to activate BT @ startup:
 
