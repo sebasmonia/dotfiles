@@ -208,22 +208,48 @@ don't actually start the search."
     (define-key ediff-mode-map "d" 'ediff-copy-both-to-C))
   (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map))
 
-(use-package eglot
-  :commands (eglot eglot-ensure)
-  :hook ((python-mode . eglot-ensure)
-         (csharp-mode . eglot-ensure))
-  :bind
-  (:map eglot-mode-map
-        (("C-c C-e r" . eglot-rename)
-         ("C-c C-e f" . eglot-format)
-         ("C-c C-e h" . eglot-help-at-point)))
+;; my own shortcut bindings to LSP, under hoagie-keymap "l", are defined in the :config section
+(setq lsp-keymap-prefix "C-c C-l")
+(use-package lsp-mode
+  :hook ((python-mode . lsp)
+         (csharp-mode . lsp)
+         ;; if you want which-key integration
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands (lsp lsp-signature-active)
   :config
-  (add-to-list 'eglot-server-programs
-               `(csharp-mode . ("c:/home/omnisharp_64/omnisharp.exe" "-lsp")))
-  ;; patch the argument. When nil, use "" instead.
-  (defun eglot--format-markup-patch (args)
-    (list (or (car args) "")))
-  (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch))
+  (defvar hoagie-lsp-keymap (define-prefix-command 'hoagie-lsp-keymap) "Custom bindings for LSP mode.")
+  (define-key hoagie-lsp-keymap (kbd "o") #'lsp-signature-activate) ;; o for "overloads"
+  (define-key hoagie-lsp-keymap (kbd "i") #'lsp-ui-imenu)
+  (define-key hoagie-lsp-keymap (kbd "r") #'lsp-rename)
+  (define-key hoagie-keymap (kbd "l") hoagie-lsp-keymap))
+
+(use-package lsp-ui
+  :commands lsp-ui-mode
+  :custom
+  (lsp-ui-doc-enable t)
+  (lsp-ui-doc-position 'top)
+  (lsp-ui-doc-use-childframe nil))
+
+;; ;; optionally if you want to use debugger
+;; (use-package dap-mode)
+;; ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
+
+;; (use-package eglot
+;;   :commands (eglot eglot-ensure)
+;;   :hook ((python-mode . eglot-ensure)
+;;          (csharp-mode . eglot-ensure))
+;;   :bind
+;;   (:map eglot-mode-map
+;;         (("C-c C-e r" . eglot-rename)
+;;          ("C-c C-e f" . eglot-format)
+;;          ("C-c C-e h" . eglot-help-at-point)))
+;;   :config
+;;   (add-to-list 'eglot-server-programs
+;;                `(csharp-mode . ("c:/home/.emacs.d/.cache/lsp/omnisharp-roslyn/v1.35.1/omnisharp.exe" "-lsp")))
+;;   ;; patch the argument. when nil, use "" instead.
+;;   (defun eglot--format-markup-patch (args)
+;;     (list (or (car args) "")))
+;;   (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch))
 
 (use-package eldoc-box
   :hook (prog-mode . eldoc-box-hover-mode)
@@ -344,12 +370,29 @@ don't actually start the search."
 ;;   :config
 ;;   (fido-mode)
 ;;   (setq icomplete-in-buffer t)
-;;   (define-key hoagie-keymap (kbd "<menu>") #'execute-extended-command)
-;;   (define-key icomplete-minibuffer-map (kbd "c-p") #'icomplete-backward-completions)
-;;   (define-key icomplete-minibuffer-map (kbd "c-n") #'icomplete-forward-completions )
-;;   (load "c:/Home/github/icomplete-vertical/icomplete-vertical.el")
-;;   (require 'icomplete-vertical)
-;;   (icomplete-vertical-mode))
+;;   (define-key hoagie-keymap (kbd "<menu>") #'execute-extended-command))
+
+;;   ;; (setq completion-styles '(substring basic emacs22))
+;; (use-package icomplete-vertical
+;;   :after icomplete
+;;   :ensure t
+;;   :demand t
+;;   :custom
+;;   (completion-styles '(flex partial-completion substring))
+;;   (completion-category-overrides '((file (styles basic substring))))
+;;   (read-file-name-completion-ignore-case t)
+;;   (read-buffer-completion-ignore-case t)
+;;   (completion-ignore-case t)
+;;   :config
+;;   (icomplete-mode)
+;;   (icomplete-vertical-mode)
+;;   :bind (:map icomplete-minibuffer-map
+;;               ("<return>" . icomplete-force-complete-and-exit)
+;;               ("<down>" . icomplete-forward-completions)
+;;               ("C-n" . icomplete-forward-completions)
+;;               ("<up>" . icomplete-backward-completions)
+;;               ("C-p" . icomplete-backward-completions)
+;;               ("C-v" . icomplete-vertical-toggle)))
 
 (use-package csharp-mode ;; manual load since I removed omnisharp
   :demand
@@ -373,7 +416,7 @@ don't actually start the search."
   (vc-dir (car (project-roots (project-current)))))
 (eval-after-load "vc-hooks"
   '(define-key vc-prefix-map "=" 'vc-ediff))
-(eval-after-load "vc-hooks"
+(eval-after-load "vc-dir"
   '(define-key vc-dir-mode-map "=" 'vc-ediff))
 (use-package magit
   :init
@@ -735,7 +778,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 ;; UPDATE: converted hook to advice as per https://github.com/abo-abo/swiper/issues/2128
 ;; UPDATE 2: kept advice but with isearch, as using the hook pushed mark first in search destination, then
 ;; in search start position. Using the advice pushes first at destination then at search start.
-;;the idea with this is similar to the "11 lines away" comment in the post above
+;; the idea with this is similar to the "11 lines away" comment in the post above
 (require 'isearch)
 (advice-add 'isearch-forward :after #'push-mark-no-activate)
 (advice-add 'isearch-backward :after #'push-mark-no-activate)
@@ -758,33 +801,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 
 (global-set-key (kbd "C-v") 'hoagie-scroll-up-with-mark)
 (global-set-key (kbd "M-v") 'hoagie-scroll-down-with-mark)
-
-;; Emacs window management
-
-;; Using the code in link below as starting point:
-;; https://protesilaos.com/dotemacs/#h:3d8ebbb1-f749-412e-9c72-5d65f48d5957
-;; My config is a lot simpler for now.
-(setq display-buffer-alist
-      '(;; bottom left side window
-        ("\\*\\(e?shell.*\\|COMMIT_EDITMSG\\)"
-         (display-buffer-in-side-window)
-         (window-height . 0.33)
-         (side . bottom))
-        ;; bottom right side window - reuse if in another frame
-        ("\\*\\(Backtrace\\|Warnings\\|Environments .*\\|Builds .*\\|compilation\\|[Hh]elp\\|Messages\\|Flymake.*\\|eglot.*\\)\\*"
-         (display-buffer-reuse-window
-          display-buffer-in-side-window)
-         (window-height . 0.33)
-         (reusable-frames . visible)
-         (side . bottom))
-        ;; stuff that splits to the bottom
-        ("\\(magit\\|\\*vc.\\|\\|\\*info\\|xref.*|\\*Occur\\*\\).*"
-        ;; ("\\(magit\\|\\*info\\).*"
-         (display-buffer-in-direction)
-         (direction . bottom)
-         (window-height . 0.5))))
-(setq switch-to-buffer-obey-display-actions nil)
-
 
 ;; function from https://lunaryorn.com/2015/04/29/the-power-of-display-buffer-alist.html
 ;; (via wayback machine)
@@ -832,7 +848,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (when hoagie-window-configuration
     (set-window-configuration hoagie-window-configuration)))
 (define-key hoagie-keymap (kbd "1") #'hoagie-restore-window-configuration)
-;; (advice-add 'delete-other-windows :before (lambda () (setq hoagie-window-configuration (current-window-configuration))))
 
 ;; (defun hoagie-store-config ()
 ;;   (setq hoagie-window-configuration (current-window-configuration)))
@@ -847,7 +862,11 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 ;; THEMES
 
 (use-package doom-themes
-  :demand t)
+  :demand t
+  :config
+  (setq doom-nord-light-brighter-modeline t
+        doom-acario-light-brighter-modeline t
+        doom-challenger-deep-brighter-modeline t))
 
 (defun hoagie-load-theme (new-theme)
   "Pick a theme to load from a harcoded list. Or load NEW-THEME."
@@ -863,7 +882,8 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
     (load-theme (intern new-theme) t))
 
 (global-set-key (kbd "C-<f11>") #'hoagie-load-theme)
-(hoagie-load-theme "doom-nord-light")
+;; (hoagie-load-theme "doom-nord-light")
+(hoagie-load-theme "doom-acario-light")
 ;; (hoagie-load-theme "doom-acario-dark")
 
 ;; (use-package mood-line
