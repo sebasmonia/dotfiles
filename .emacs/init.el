@@ -759,15 +759,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (global-set-key (kbd "C-v") 'hoagie-scroll-up-with-mark)
 (global-set-key (kbd "M-v") 'hoagie-scroll-down-with-mark)
 
-;; function from https://lunaryorn.com/2015/04/29/the-power-of-display-buffer-alist.html
-;; (via wayback machine)
-(defun hoagie-quit-side-windows ()
-  "Quit side windows of the current frame."
-  (interactive)
-  (dolist (window (window-at-side-list))
-    (quit-window nil window)))
-(define-key hoagie-keymap (kbd "0") #'hoagie-quit-side-windows)
-
 ;; from https://stackoverflow.com/a/33456622/91877, just like ediff's |
 (defun toggle-window-split ()
   "Swap two windows between vertical and horizontal split."
