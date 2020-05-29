@@ -208,48 +208,48 @@ don't actually start the search."
     (define-key ediff-mode-map "d" 'ediff-copy-both-to-C))
   (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map))
 
-;; my own shortcut bindings to LSP, under hoagie-keymap "l", are defined in the :config section
-(setq lsp-keymap-prefix "C-c C-l")
-(use-package lsp-mode
-  :hook ((python-mode . lsp)
-         (csharp-mode . lsp)
-         ;; if you want which-key integration
-         (lsp-mode . lsp-enable-which-key-integration))
-  :commands (lsp lsp-signature-active)
-  :config
-  (defvar hoagie-lsp-keymap (define-prefix-command 'hoagie-lsp-keymap) "Custom bindings for LSP mode.")
-  (define-key hoagie-lsp-keymap (kbd "o") #'lsp-signature-activate) ;; o for "overloads"
-  (define-key hoagie-lsp-keymap (kbd "i") #'lsp-ui-imenu)
-  (define-key hoagie-lsp-keymap (kbd "r") #'lsp-rename)
-  (define-key hoagie-keymap (kbd "l") hoagie-lsp-keymap))
+;; ;; my own shortcut bindings to LSP, under hoagie-keymap "l", are defined in the :config section
+;; (setq lsp-keymap-prefix "C-c C-l")
+;; (use-package lsp-mode
+;;   :hook ((python-mode . lsp)
+;;          (csharp-mode . lsp)
+;;          ;; if you want which-key integration
+;;          (lsp-mode . lsp-enable-which-key-integration))
+;;   :commands (lsp lsp-signature-active)
+;;   :config
+;;   (defvar hoagie-lsp-keymap (define-prefix-command 'hoagie-lsp-keymap) "Custom bindings for LSP mode.")
+;;   (define-key hoagie-lsp-keymap (kbd "o") #'lsp-signature-activate) ;; o for "overloads"
+;;   (define-key hoagie-lsp-keymap (kbd "i") #'lsp-ui-imenu)
+;;   (define-key hoagie-lsp-keymap (kbd "r") #'lsp-rename)
+;;   (define-key hoagie-keymap (kbd "l") hoagie-lsp-keymap))
 
-(use-package lsp-ui
-  :commands lsp-ui-mode
-  :custom
-  (lsp-ui-doc-enable t)
-  (lsp-ui-doc-position 'top)
-  (lsp-ui-doc-use-childframe nil))
+;; (use-package lsp-ui
+;;   :commands lsp-ui-mode
+;;   :custom
+;;   (lsp-ui-doc-enable t)
+;;   (lsp-ui-doc-position 'top)
+;;   (lsp-ui-doc-use-childframe nil))
 
 ;; ;; optionally if you want to use debugger
 ;; (use-package dap-mode)
 ;; ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
 
-;; (use-package eglot
-;;   :commands (eglot eglot-ensure)
-;;   :hook ((python-mode . eglot-ensure)
-;;          (csharp-mode . eglot-ensure))
-;;   :bind
-;;   (:map eglot-mode-map
-;;         (("C-c C-e r" . eglot-rename)
-;;          ("C-c C-e f" . eglot-format)
-;;          ("C-c C-e h" . eglot-help-at-point)))
-;;   :config
-;;   (add-to-list 'eglot-server-programs
-;;                `(csharp-mode . ("c:/home/.emacs.d/.cache/lsp/omnisharp-roslyn/v1.35.1/omnisharp.exe" "-lsp")))
-;;   ;; patch the argument. when nil, use "" instead.
-;;   (defun eglot--format-markup-patch (args)
-;;     (list (or (car args) "")))
-;;   (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch))
+(use-package eglot
+  :commands (eglot eglot-ensure)
+  :hook ((python-mode . eglot-ensure)
+         (csharp-mode . eglot-ensure))
+  :bind
+  (:map eglot-mode-map
+        (("C-c C-e r" . eglot-rename)
+         ("C-c C-e f" . eglot-format)
+         ("C-c C-e h" . eglot-help-at-point)))
+  :config
+  (add-to-list 'eglot-server-programs
+               `(csharp-mode . ("c:/home/.emacs.d/.cache/lsp/omnisharp-roslyn/v1.35.1/omnisharp.exe" "-lsp")))
+  ;; patch the argument. when nil, use "" instead.
+  (defun eglot--format-markup-patch (args)
+    (list (or (car args) "")))
+  (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch))
 
 (use-package eldoc-box
   :hook (prog-mode . eldoc-box-hover-mode)
@@ -323,76 +323,32 @@ don't actually start the search."
                                 " "
                                 vc-relative-file))))
 
-(use-package ido
-  :init
-  (ido-mode 1)
-  (use-package ido-vertical-mode
-    :config
-    (ido-vertical-mode 1)
-    :custom
-    (ido-vertical-define-keys 'c-n-and-c-p-only))
-  :custom
-  (ido-enable-flex-matching t)
-  (ido-everywhere t)
-  (ido-create-new-buffer 'always)
-  (ido-default-buffer-method 'selected-window))
-
-(use-package ido-completing-read+
+(use-package icomplete-vertical
+  :ensure t
   :demand t
-  :init
-  (ido-ubiquitous-mode 1))
-
-(use-package idomenu
-  :bind ("M-g d" . idomenu))
-
-;; smex + improvements
-(use-package amx
-  :demand t
-  :commands (amx-mode amx)
   :custom
-  (amx-backend 'ido)
-  (amx-history-length 25)
+  (icomplete-show-matches-on-no-input t)
+  (icomplete-hide-common-prefix nil)
+  (icomplete-prospects-height 10)
+  (icomplete-in-buffer t)
+  ;; (completion-styles '(flex partial-completion substring))
+  (completion-styles '(partial-completion substring))
+  (read-buffer-completion-ignore-case t)
+  (read-file-name-completion-ignore-case t)
+  (completion-ignore-case t)
+  (completion-category-overrides '((file (styles basic substring))))
   :config
-  (define-key hoagie-keymap (kbd "<menu>") #'amx)
-  (amx-mode))
-
-(setq completion-ignore-case t)
-(setq completion-styles '(substring basic emacs22))
-;; (use-package icomplete
-;;   :ensure nil
-;;   :custom
-;;   (icomplete-show-matches-on-no-input t)
-;;   (icomplete-hide-common-prefix nil)
-;;   (icomplete-prospects-height 10)
-;;   (icomplete-separator "\n")
-;;   (read-buffer-completion-ignore-case t)
-;;   (icomplete-in-buffer nil)
-;;   :config
-;;   (fido-mode)
-;;   (setq icomplete-in-buffer t)
-;;   (define-key hoagie-keymap (kbd "<menu>") #'execute-extended-command))
-
-;;   ;; (setq completion-styles '(substring basic emacs22))
-;; (use-package icomplete-vertical
-;;   :after icomplete
-;;   :ensure t
-;;   :demand t
-;;   :custom
-;;   (completion-styles '(flex partial-completion substring))
-;;   (completion-category-overrides '((file (styles basic substring))))
-;;   (read-file-name-completion-ignore-case t)
-;;   (read-buffer-completion-ignore-case t)
-;;   (completion-ignore-case t)
-;;   :config
-;;   (icomplete-mode)
-;;   (icomplete-vertical-mode)
-;;   :bind (:map icomplete-minibuffer-map
-;;               ("<return>" . icomplete-force-complete-and-exit)
-;;               ("<down>" . icomplete-forward-completions)
-;;               ("C-n" . icomplete-forward-completions)
-;;               ("<up>" . icomplete-backward-completions)
-;;               ("C-p" . icomplete-backward-completions)
-;;               ("C-v" . icomplete-vertical-toggle)))
+  (icomplete-mode)
+  (icomplete-vertical-mode)
+  ;; Not the best place for this, but since icomplete displaced amx/smex...
+  (define-key hoagie-keymap (kbd "<menu>") #'execute-extended-command)
+  :bind (:map icomplete-minibuffer-map
+              ("<return>" . icomplete-force-complete-and-exit)
+              ("<down>" . icomplete-forward-completions)
+              ("C-n" . icomplete-forward-completions)
+              ("<up>" . icomplete-backward-completions)
+              ("C-p" . icomplete-backward-completions)
+              ("C-v" . icomplete-vertical-toggle)))
 
 (use-package csharp-mode ;; manual load since I removed omnisharp
   :demand
@@ -418,6 +374,7 @@ don't actually start the search."
   '(define-key vc-prefix-map "=" 'vc-ediff))
 (eval-after-load "vc-dir"
   '(define-key vc-dir-mode-map "=" 'vc-ediff))
+
 (use-package magit
   :init
   :bind
@@ -566,6 +523,10 @@ don't actually start the search."
 
 ;; MISC STUFF THAT IS NOT IN CUSTOMIZE (or easier to customize here)
 ;; and stuff that I moved from Custom to here hehehehe
+
+;; this is new! testing it
+(setq w32-use-native-image-API t)
+
 (defalias 'yes-or-no-p 'y-or-n-p)
 (setq frame-title-format "%b - Emacs")
 (setq inhibit-compacting-font-caches t)
@@ -574,10 +535,6 @@ don't actually start the search."
 ;; behaviour for C-l. I prefer one extra line rather than top & bottom
 ;; and also start with the top position, which I found more useful
 (setq recenter-positions '(1 middle -2))
-;; Substring is matchier than basic but not as much as flex
-(setq completion-styles '(substring basic emacs22))
-;; helps with company and capf all the same
-(setq completion-ignore-case t)
 ;; Useful in Linux
 (setq read-file-name-completion-ignore-case t)
 ;; helps compilation buffer not slowdown
@@ -966,42 +923,6 @@ If I let Windows handle DPI everything looks blurry."
         (setq size "12"))
       (set-frame-font (concat "Consolas " size))))
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
-
-;; Experimental: use tooltips to show eldoc
-;; (require 'eldoc)
-;; (custom-set-faces '(tooltip ((t (:inherit default :height 0.9)))))
-;; (setq tooltip-reuse-hidden-frame t)
-
-;; (defun tooltip-in-position (position msg)
-;;   "Show MSG in a tooltip at POSITION of the frame.
-;; Position can be 'point, 'top-left."
-;;   (let ((point-pos (window-absolute-pixel-position))
-;;         (frame-pos (frame-position))
-;;         (tooltip-frame-parameters `((name . "tooltip")
-;;                                     (internal-border-width . 2)
-;;                                     (border-width . 1)
-;;                                     (no-special-glyphs . t))))
-;;     ;; this is a lot harder than it seems so meh
-;;     ;; (when (equal position 'top-right)
-;;     ;;   (let-alist frame-geometry
-;;     ;;     (push `(left .  ,(- 50 (+ (car .outer-position) (car .outer-size)))) tooltip-frame-parameters)
-;;     ;;     (push `(top .  ,(+ 50 (cdr .outer-position))) tooltip-frame-parameters)))
-;;     (when (equal position 'top-left)
-;;       (push `(left .  ,(+ 50 (car frame-pos))) tooltip-frame-parameters)
-;;       (push `(top .  ,(+ 50 (cdr frame-pos))) tooltip-frame-parameters))
-;;     (when (equal position 'point)
-;;       (push `(left .  ,(+ 0 (car point-pos))) tooltip-frame-parameters)
-;;       (push `(top .  ,(+ 25 (cdr point-pos))) tooltip-frame-parameters))
-;;     (tooltip-show msg)))
-
-;; (defun hoagie-eldoc-tooltip (format-string &rest args)
-;;   "Display eldoc message using `tooltip-in-position'."
-;;   ;; all these checks are because eglot + omnisharp send empty newlines and I just
-;;   ;; didn't like the empty tooltip :)
-;;   ;; (when format-string ...) should be enough
-;;   (when (and format-string (car args) (not (string-empty-p (string-trim (car args)))))
-;;     (tooltip-in-position 'point  (apply 'format format-string args))))
-;; (setq eldoc-message-function #'hoagie-eldoc-tooltip)
 
 ;; Experimental: use narrowing
 ;; modified from https://endlessparentheses.com/emacs-narrow-or-widen-dwim.html
