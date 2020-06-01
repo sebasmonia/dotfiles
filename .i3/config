@@ -274,6 +274,7 @@ exec --no-startup-id flameshot
 exec --no-startup-id /home/hoagie/.i3/tabletmode.py
 exec --no-startup-id exec /home/hoagie/.i3/autorotate.sh
 exec --no-startup-id exec /home/hoagie/.i3/wacomconfig.sh
+exec --no-startup-id exec /home/hoagie/.i3/trackpointconfig.sh
 exec --no-startup-id onboard
 
 bindsym $mod+Ctrl+Shift+m exec terminal -e 'alsamixer -D equal'
