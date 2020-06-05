@@ -934,3 +934,17 @@ Dwim means: region, or defun, whichever applies first."
 ;; the whole point is, I never use narrowing, so let's replace the default
 ;; bindings by this one
 (global-set-key (kbd "C-x n") #'narrow-or-widen-dwim)
+
+;; generalize for work/home
+(defun hoagie-go-to-repo ()
+  "Jump to a repo dir from the common \"roots\"."
+  (interactive)
+  (let ((directories '("/home/hoagie/github"
+                       "/home/hoagie/common-lisp")))
+    (dired (completing-read "Open directory: "
+                            (mapcan (lambda (dir-to-list) (cl-subseq
+                                                           (directory-files dir-to-list t)
+                                                           2))
+                                    directories)))))
+
+(global-set-key [f2] #'hoagie-go-to-repo)
