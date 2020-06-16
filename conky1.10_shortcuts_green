@@ -23,6 +23,7 @@ mod + z: morc menu (system menu)
 mod + b: bmenu (system admin via keyb)
 mod + x: lock/hibernate/shut down menu
 mod + p: enable HDMI monitor if present
+mod + o: change sound output
 
 ${color2}-- Apps --${color}
 mod + Enter: terminal

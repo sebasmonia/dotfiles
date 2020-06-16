@@ -8,8 +8,8 @@ set $mod Mod4
 # workspace_layout tabbed <stacking|tabbed>
 
 # Configure border style <normal|1pixel|pixel xx|none|pixel>
-new_window none
-new_float none
+new_window normal
+new_float normal
 
 # Hide borders
 hide_edge_borders none
@@ -277,8 +277,6 @@ exec --no-startup-id exec /home/hoagie/.i3/wacomconfig.sh
 exec --no-startup-id exec /home/hoagie/.i3/trackpointconfig.sh
 exec --no-startup-id onboard
 
-bindsym $mod+Ctrl+Shift+m exec terminal -e 'alsamixer -D equal'
-
 # use mod+shift+p to get just the laptop screen, in case the external fails
 # gets unplugged etc.
 bindsym $mod+Shift+p exec --no-startup-id /home/hoagie/.i3/monitorswitch.py internal
@@ -295,6 +293,8 @@ mode "$mode_monitor" {
     bindsym Return mode "default"
     bindsym Escape mode "default"
 }
+# change the audio output via keyboard
+bindsym $mod+o exec --no-startup-id /home/hoagie/.i3/audio_output.py
 
 # Color palette used for the terminal ( ~/.Xresources file )
 # Colors are gathered based on the documentation:
