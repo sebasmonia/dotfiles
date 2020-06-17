@@ -910,7 +910,7 @@ If I let Windows handle DPI everything looks blurry."
       (when (equal width-mm 290) ;; laptop screen
         (setq size "14"))
       (when (eq width-mm 530) ;; monitor
-        (setq size "10"))
+        (setq size "11"))
       ;; add more screens here ;;
       (when (eq (length (display-monitor-attributes-list)) 1) ;; override everything if no external monitors!
         (setq size "12"))
