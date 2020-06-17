@@ -130,15 +130,6 @@ don't actually start the search."
     (replace-regexp-in-string "^rg " "rg --hidden " rg-command))
   (advice-add 'deadgrep--format-command :filter-return #'deadgrep--format-command-patch))
 
-;; 2020-04-03 Tested rg for a few days, it's better than deadgrep in some aspects
-;; but not as quick to use.
-;; (use-package rg
-;;   :bind
-;;   (:map hoagie-keymap
-;;         ("g" . rg-menu))
-;;   :init
-;;   (rg-enable-default-bindings))
-
 (use-package dired
   :ensure nil
   :custom
@@ -147,6 +138,16 @@ don't actually start the search."
   (dired-dwim-target nil)
   (dired-listing-switches "-laogGhvD")
   :config
+  (setq dired-compress-file-suffixes
+        '(("\\.tar\\.gz\\'" #1="" "7z x -aoa -o%o %i")
+          ("\\.tgz\\'" #1# "7z x -aoa -o%o %i")
+          ("\\.zip\\'" #1# "7z x -aoa -o%o %i")
+          ("\\.7z\\'" #1# "7z x -aoa -o%o %i")
+          ("\\.tar\\'" ".tgz" nil)
+          (":" ".tar.gz" "tar -cf- %i | gzip -c9 > %o")))
+  (setq dired-compress-files-alist
+        '(("\\.7z\\'" . "7z a -r %o %i")
+          ("\\.zip\\'" . "7z a -r %o  %i")))
   (global-set-key (kbd "<f1>") (lambda () (interactive) (dired "~/")))
   (define-key hoagie-keymap (kbd "f") 'project-find-file)
   (define-key hoagie-keymap (kbd "F") 'find-name-dired)
@@ -155,7 +156,7 @@ don't actually start the search."
     (interactive "P")
     (let ((inverted (not arg)))
       (dired-jump inverted)))
-  (define-key hoagie-keymap (kbd "j") 'hoagie-dired-jump)
+  (define-key hoagie-keymap (kbd "j") #'hoagie-dired-jump)
   (define-key hoagie-keymap (kbd "J") (lambda () (interactive) (hoagie-dired-jump 4))))
 
 (use-package dired-narrow
