@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Select an audio output profile, using only the keyboard.
-Relies on pacmd and dmenu."""
+Relies on pacmd and ~dmenu~ rofi."""
 
 import subprocess
 
@@ -18,6 +18,19 @@ def pacmd(params):
 
 def dmenu(options, prompt=None, lines=None):
     p = ["dmenu", "-i"]
+    if lines:
+        p.extend(("-l", str(lines)))
+    if prompt:
+        p.extend(("-p", prompt))
+    input_text = "\n".join(options).encode()
+    result = subprocess.run(p,
+                            input=input_text,
+                            stdout=subprocess.PIPE)
+    return result.stdout.decode('utf-8').strip()
+
+
+def rofi(options, prompt=None, lines=None):
+    p = ["rofi", "-dmenu", "-i"]
     if lines:
         p.extend(("-l", str(lines)))
     if prompt:
@@ -62,7 +75,8 @@ def filter_profiles(raw_lines):
 
 populate_profiles_data()
 prompt = "Current: " + selected
-profile_name = dmenu(profiles_list.keys(), prompt, 10)
+# profile_name = dmenu(profiles_list.keys(), prompt, 10)
+profile_name = rofi(profiles_list.keys(), prompt, 10)
 
 if profile_name:
     pacmd(("set-card-profile", "0", profiles_list[profile_name]))
