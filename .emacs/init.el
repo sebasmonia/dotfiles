@@ -46,6 +46,7 @@
 (defvar hoagie-keymap (define-prefix-command 'hoagie-keymap) "My custom bindings.")
 (define-key key-translation-map (kbd "<apps>") (kbd "<menu>")) ;; compat Linux-Windows
 (global-set-key (kbd "<menu>") 'hoagie-keymap)
+(global-set-key (kbd "C-'") 'hoagie-keymap) ;; BT keyboard has an uncomfortable menu key, so...
 
 (use-package 2048-game
   :commands 2048-game)
@@ -208,6 +209,10 @@ don't actually start the search."
     (define-key ediff-mode-map "d" 'ediff-copy-both-to-C))
   (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map))
 
+(use-package elec-pair
+  :ensure nil
+  :init (electric-pair-mode))
+
 ;; ;; my own shortcut bindings to LSP, under hoagie-keymap "l", are defined in the :config section
 ;; (setq lsp-keymap-prefix "C-c C-l")
 ;; (use-package lsp-mode
@@ -331,17 +336,16 @@ don't actually start the search."
   (icomplete-hide-common-prefix nil)
   (icomplete-prospects-height 10)
   (icomplete-in-buffer t)
-  ;; (completion-styles '(flex partial-completion substring))
-  (completion-styles '(partial-completion substring))
+  (completion-styles '(flex))
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
-  (completion-category-overrides '((file (styles basic substring))))
   :config
   (icomplete-mode)
   (icomplete-vertical-mode)
   ;; Not the best place for this, but since icomplete displaced amx/smex...
   (define-key hoagie-keymap (kbd "<menu>") #'execute-extended-command)
+  (define-key hoagie-keymap (kbd "C-'") #'execute-extended-command)
   :bind (:map icomplete-minibuffer-map
               ("<return>" . icomplete-force-complete-and-exit)
               ("<down>" . icomplete-forward-completions)
@@ -383,7 +387,6 @@ don't actually start the search."
   :hook
   (magit-mode . turn-on-magit-gitflow)
   :custom
-  (magit-completing-read-function 'magit-ido-completing-read)
   (magit-display-buffer-function 'display-buffer))
 
 (use-package magit-gitflow
@@ -515,6 +518,18 @@ don't actually start the search."
   (which-key-side-window-max-width 0.4)
   (which-key-sort-order 'which-key-prefix-then-key-order))
 
+;; Trying windmove instead
+;; (global-set-key (kbd "M-o") 'other-window)
+;; (global-set-key (kbd "M-O") 'other-frame)
+(global-set-key (kbd "M-o") 'other-frame)
+(use-package windmove
+  :ensure t
+  :config
+  (global-set-key (kbd "C-M-j") 'windmove-left)
+  (global-set-key (kbd "C-M-k") 'windmove-down)
+  (global-set-key (kbd "C-M-l") 'windmove-up)
+  (global-set-key (kbd "C-M-;") 'windmove-right))
+
 (use-package ws-butler
   :hook (prog-mode . ws-butler-mode))
 
@@ -621,14 +636,14 @@ don't actually start the search."
 (global-set-key (kbd "C-M-{") (lambda () (interactive)(enlarge-window-horizontally 5)))
 (global-set-key (kbd "C-M-_") (lambda () (interactive)(shrink-window 5)))
 (global-set-key (kbd "C-M-+") (lambda () (interactive)(shrink-window -5)))
-(global-set-key (kbd "M-o") 'other-window)
-(global-set-key (kbd "M-O") 'other-frame)
 (global-set-key (kbd "M-N") 'next-buffer)
 (global-set-key (kbd "M-P") 'previous-buffer)
 (global-set-key (kbd "C-d") 'delete-forward-char) ;; replace delete-char
 (global-set-key (kbd "M-c") 'capitalize-dwim)
 (global-set-key (kbd "M-u") 'upcase-dwim)
 (global-set-key (kbd "M-l") 'downcase-dwim)
+;; from https://emacsredux.com/blog/2020/06/10/comment-commands-redux/
+(global-set-key [remap comment-dwim] #'comment-line)
 (global-set-key (kbd "C-c r") 'recompile)
 (define-key hoagie-keymap (kbd "b") 'browse-url-at-point)
 (define-key hoagie-keymap (kbd "t") 'toggle-truncate-lines)
@@ -756,8 +771,8 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
     (push-mark-no-activate))
   (scroll-up-command))
 
-(global-set-key (kbd "C-v") 'hoagie-scroll-up-with-mark)
-(global-set-key (kbd "M-v") 'hoagie-scroll-down-with-mark)
+(global-set-key (kbd "C-v") #'hoagie-scroll-up-with-mark)
+(global-set-key (kbd "M-v") #'hoagie-scroll-down-with-mark)
 
 ;; from https://stackoverflow.com/a/33456622/91877, just like ediff's |
 (defun toggle-window-split ()
@@ -830,22 +845,9 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
     (load-theme (intern new-theme) t))
 
 (global-set-key (kbd "C-<f11>") #'hoagie-load-theme)
-;; (hoagie-load-theme "doom-nord-light")
-(hoagie-load-theme "doom-acario-light")
+(hoagie-load-theme "doom-nord-light")
+;; (hoagie-load-theme "doom-acario-light")
 ;; (hoagie-load-theme "doom-acario-dark")
-
-;; (use-package mood-line
-;;   :demand t
-;;   :init
-;;   (mood-line-mode)
-;;   (defun mood-line-segment-position ()
-;;     "displays the current cursor position in the mode-line, with region size if applicable."
-;;     (let ((region-size (when (use-region-p)
-;;                          (format " (%sl:%sc)"
-;;                                  (count-lines (region-beginning)
-;;                                               (region-end))
-;;                                  (- (region-end) (region-beginning))))))
-;;     (list "%l:%c" region-size))))
 
 (use-package doom-modeline
   :ensure t
