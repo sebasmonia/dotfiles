@@ -41,10 +41,10 @@ bindsym $mod+Shift+q kill
 # bindsym --release button3 kill
 
 # start program launcher
-bindsym $mod+d exec --no-startup-id dmenu_recency
+bindsym $mod+d exec --no-startup-id dmenu_recency -l 20
 
 # launch categorized menu
-bindsym $mod+z exec --no-startup-id morc_menu conf=/home/hoagie/.i3/morc_menu_v1.conf
+bindsym $mod+z exec --no-startup-id morc_menu
 
 ################################################################################################
 ## sound-section - DO NOT EDIT if you wish to automatically upgrade Alsa -> Pulseaudio later! ##
@@ -270,12 +270,14 @@ exec_always --no-startup-id fix_xcursor
 # Autostart custom
 exec --no-startup-id dunst
 exec --no-startup-id emacs --daemon
-exec --no-startup-id flameshot
 exec --no-startup-id /home/hoagie/.i3/tabletmode.py
 exec --no-startup-id exec /home/hoagie/.i3/autorotate.sh
 exec --no-startup-id exec /home/hoagie/.i3/wacomconfig.sh
 exec --no-startup-id exec /home/hoagie/.i3/trackpointconfig.sh
 exec --no-startup-id onboard
+
+exec --no-startup-id flameshot
+bindsym $mod+F12 exec --no-startup-id flameshot gui
 
 # use mod+shift+p to get just the laptop screen, in case the external fails
 # gets unplugged etc.

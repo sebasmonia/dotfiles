@@ -520,16 +520,16 @@ don't actually start the search."
   (which-key-sort-order 'which-key-prefix-then-key-order))
 
 ;; Trying windmove instead
-;; (global-set-key (kbd "M-o") 'other-window)
-;; (global-set-key (kbd "M-O") 'other-frame)
-(global-set-key (kbd "M-o") 'other-frame)
-(use-package windmove
-  :ensure t
-  :config
-  (global-set-key (kbd "C-M-j") 'windmove-left)
-  (global-set-key (kbd "C-M-k") 'windmove-down)
-  (global-set-key (kbd "C-M-l") 'windmove-up)
-  (global-set-key (kbd "C-M-;") 'windmove-right))
+(global-set-key (kbd "M-o") 'other-window)
+(global-set-key (kbd "M-O") 'other-frame)
+;; (global-set-key (kbd "M-o") 'other-frame)
+;; (use-package windmove
+;;   :ensure t
+;;   :config
+;;   (global-set-key (kbd "C-M-j") 'windmove-left)
+;;   (global-set-key (kbd "C-M-k") 'windmove-down)
+;;   (global-set-key (kbd "C-M-l") 'windmove-up)
+;;   (global-set-key (kbd "C-M-;") 'windmove-right))
 
 (use-package ws-butler
   :hook (prog-mode . ws-butler-mode))
