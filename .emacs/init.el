@@ -214,48 +214,74 @@ don't actually start the search."
   :ensure nil
   :init (electric-pair-mode))
 
-;; ;; my own shortcut bindings to LSP, under hoagie-keymap "l", are defined in the :config section
-;; (setq lsp-keymap-prefix "C-c C-l")
-;; (use-package lsp-mode
-;;   :hook ((python-mode . lsp)
-;;          (csharp-mode . lsp)
-;;          ;; if you want which-key integration
-;;          (lsp-mode . lsp-enable-which-key-integration))
-;;   :commands (lsp lsp-signature-active)
-;;   :config
-;;   (defvar hoagie-lsp-keymap (define-prefix-command 'hoagie-lsp-keymap) "Custom bindings for LSP mode.")
-;;   (define-key hoagie-lsp-keymap (kbd "o") #'lsp-signature-activate) ;; o for "overloads"
-;;   (define-key hoagie-lsp-keymap (kbd "i") #'lsp-ui-imenu)
-;;   (define-key hoagie-lsp-keymap (kbd "r") #'lsp-rename)
-;;   (define-key hoagie-keymap (kbd "l") hoagie-lsp-keymap))
+;; my own shortcut bindings to LSP, under hoagie-keymap "l", are defined in the :config section
+(setq lsp-keymap-prefix "C-c C-l")
+(use-package lsp-mode
+  :hook ((python-mode . lsp)
+         (csharp-mode . lsp)
+         ;; if you want which-key integration
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands (lsp lsp-signature-active)
+  :config
+  (defvar hoagie-lsp-keymap (define-prefix-command 'hoagie-lsp-keymap) "Custom bindings for LSP mode.")
+  (define-key hoagie-lsp-keymap (kbd "o") #'lsp-signature-activate) ;; o for "overloads"
+  (define-key hoagie-lsp-keymap (kbd "i") #'lsp-ui-imenu)
+  (define-key hoagie-lsp-keymap (kbd "r") #'lsp-rename)
+  (define-key hoagie-keymap (kbd "l") hoagie-lsp-keymap)
+  ;; These are general settings but I'm only messing with them because
+  ;; https://emacs-lsp.github.io/lsp-mode/page/performance/ so, leaving them here
+  (setq gc-cons-threshold (* gc-cons-threshold 2))
+  (setq read-process-output-max (* 1024 1024))
+  :custom
+  (lsp-csharp-server-path "c:/home/omnisharp_64/OmniSharp.exe")
+  (lsp-enable-snippet nil)
+  (lsp-enable-folding nil)
+  (lsp-prefer-capf t)
+  (lsp-signature-auto-activate nil)
+  (lsp-enable-symbol-highlighting nil)
+  (lsp-modeline-code-actions-enable nil))
 
-;; (use-package lsp-ui
-;;   :commands lsp-ui-mode
-;;   :custom
-;;   (lsp-ui-doc-enable t)
-;;   (lsp-ui-doc-position 'top)
-;;   (lsp-ui-doc-use-childframe nil))
+(use-package lsp-ui
+  :commands lsp-ui-mode
+  :custom
+  (lsp-ui-doc-enable t)
+  (lsp-ui-doc-position 'top)
+  (lsp-ui-doc-use-childframe nil)
+  (lsp-ui-peek-enable nil)
+  (lsp-ui-sideline-enable nil))
 
 ;; ;; optionally if you want to use debugger
-;; (use-package dap-mode)
-;; ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
+(use-package dap-mode
+  :commands (dap-debug dap-breakpoints-add)
+  :init
+  (dap-mode 1)
+  (dap-ui-mode 1)
+  (dap-auto-configure-mode)
+  (require 'dap-python)
+  (require 'dap-pwsh)
+  (define-key hoagie-lsp-keymap (kbd "d") #'dap-debug)
+  )
+;; (use-package dap-netcore :load-path "~/.emacs.d/lisp/"
+;;   :custom
+;;   (dap-netcore-install-dir "c:/")
+;;   )
 
-(use-package eglot
-  :commands (eglot eglot-ensure)
-  :hook ((python-mode . eglot-ensure)
-         (csharp-mode . eglot-ensure))
-  :bind
-  (:map eglot-mode-map
-        (("C-c C-e r" . eglot-rename)
-         ("C-c C-e f" . eglot-format)
-         ("C-c C-e h" . eglot-help-at-point)))
-  :config
-  (add-to-list 'eglot-server-programs
-               `(csharp-mode . ("c:/home/.emacs.d/.cache/lsp/omnisharp-roslyn/v1.35.1/omnisharp.exe" "-lsp")))
-  ;; patch the argument. when nil, use "" instead.
-  (defun eglot--format-markup-patch (args)
-    (list (or (car args) "")))
-  (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch))
+;; (use-package eglot
+;;   :commands (eglot eglot-ensure)
+;;   :hook ((python-mode . eglot-ensure)
+;;          (csharp-mode . eglot-ensure))
+;;   :bind
+;;   (:map eglot-mode-map
+;;         (("C-c C-e r" . eglot-rename)
+;;          ("C-c C-e f" . eglot-format)
+;;          ("C-c C-e h" . eglot-help-at-point)))
+;;   :config
+;;   (add-to-list 'eglot-server-programs
+;;                `(csharp-mode . ("c:/home/omnisharp_64/OmniSharp.exe" "-lsp")))
+;;   ;; patch the argument. when nil, use "" instead.
+;;   (defun eglot--format-markup-patch (args)
+;;     (list (or (car args) "")))
+;;   (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch))
 
 (use-package eldoc-box
   :hook (prog-mode . eldoc-box-hover-mode)
@@ -342,7 +368,7 @@ don't actually start the search."
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
   :config
-  (icomplete-mode)
+  (fido-mode)
   (icomplete-vertical-mode)
   ;; Not the best place for this, but since icomplete displaced amx/smex...
   (define-key hoagie-keymap (kbd "<menu>") #'execute-extended-command)
@@ -379,12 +405,11 @@ don't actually start the search."
   '(define-key vc-prefix-map "=" 'vc-ediff))
 (eval-after-load "vc-dir"
   '(define-key vc-dir-mode-map "=" 'vc-ediff))
-
+(global-set-key (kbd "C-x t") #'hoagie-try-vc-here-and-there)
 (use-package magit
   :init
   :bind
-  (("C-x g" . hoagie-try-vc-here-and-there)
-   ("C-x G" . magit-status))
+  ("C-x g" . magit-status)
   :hook
   (magit-mode . turn-on-magit-gitflow)
   :custom
@@ -938,16 +963,19 @@ Dwim means: region, or defun, whichever applies first."
 ;; bindings by this one
 (global-set-key (kbd "C-x n") #'narrow-or-widen-dwim)
 
-;; generalize for work/home
 (defun hoagie-go-to-repo ()
-  "Jump to a repo dir from the common \"roots\"."
+  "Jump to a repo dir from the common \"roots\".
+Works for home/work"
   (interactive)
-  (let ((directories '("/home/hoagie/github"
-                       "/home/hoagie/common-lisp")))
+  (let ((directories '("~/github"
+                       "~/common-lisp")))
+    (when (file-directory-p "c:/repos")
+      (push "c:/repos" directories))
     (dired (completing-read "Open directory: "
                             (mapcan (lambda (dir-to-list) (cl-subseq
                                                            (directory-files dir-to-list t)
                                                            2))
                                     directories)))))
-
 (global-set-key [f2] #'hoagie-go-to-repo)
+
+(global-set-key [f3] (lambda () (interactive) (ido-find-file-in-dir "~/org")))
