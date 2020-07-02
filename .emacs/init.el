@@ -68,6 +68,48 @@
   (anzu-replace-to-string-separator " => ")
   (anzu-search-threshold 1000))
 
+;; via https://ladicle.com/post/config/#backward-forward
+;; This aims to replace:
+;; 1 - My older PUSH AND MARK code
+;; 2 - A package idea I had, to  replicate the VS "11 lines away - drop marker" feature from Visual Studio
+;; See: https://blogs.msdn.microsoft.com/zainnab/2010/03/01/navigate-backward-and-navigate-forward/
+(use-package backward-forward
+  :bind
+  ("M-`" . backward-forward-previous-location)
+  ("M-~" . backward-forward-next-location)
+  ;; ("C-~" . backward-forward-next-location)
+  ("C-`" . hoagie-push-mark)
+  :custom
+  (mark-ring-max 60)
+  (set-mark-command-repeat-pop t)
+  :config
+  ;; (global-set-key (kbd "C-`") #'hoagie-push-mark)
+  (defun hoagie-push-mark ()
+    "Pushes `point` to `mark-ring' and does not activate the region.
+Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
+    (interactive)
+    ;; from: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
+    ;; And don't show the message "Mark set"
+    (push-mark (point) t nil))
+  (defun hoagie-push-mark-if-not-repeat (command &rest args)
+    "Push a mark if this is not a repeat invocation of `command'."
+    (unless (equal last-command this-command)
+      (hoagie-push-mark)))
+
+  ;; (require 'isearch)
+  (let ((commands-to-advice-push '(isearch-forward
+                                   isearch-backward)))
+    (mapc (lambda (f) (advice-add f :after #'hoagie-push-mark))
+          commands-to-advice-push))
+
+  (let ((commands-to-advice-push-no-repeat '(scroll-up-command
+                                             scroll-down-command
+                                             beginning-of-buffer
+                                             end-of-buffer)))
+    (mapc (lambda (f) (advice-add f :before #'hoagie-push-mark-if-not-repeat))
+          commands-to-advice-push-no-repeat))
+  (backward-forward-mode t))
+
 (use-package browse-kill-ring
   :config
   (browse-kill-ring-default-keybindings))
@@ -106,29 +148,31 @@
                         (setq-local fill-function-arguments-last-argument-same-line t)
                         (define-key csharp-mode-map [remap c-fill-paragraph] 'fill-function-arguments-dwim))))
 
-(use-package deadgrep
-  :bind
-  (:map hoagie-keymap
-        ("g" . deadgrep))
-  :config
-  ;; From "Underrated MELPA packages" @ r/emacs
-  ;; pick a subdir from the project to run
-  (defun hoagie-dg (search-term directory)
-    "Start a ripgrep search for SEARCH-TERM from DIRECTORY.
-If called with a prefix argument, create the results buffer but
-don't actually start the search."
-    (interactive
-     (list (deadgrep--read-search-term)
-           (read-directory-name "Directory: "
-                                (funcall deadgrep-project-root-function))))
-    (let ( (deadgrep-project-root-function (list 'lambda '() directory)) )
-      (deadgrep search-term)
-      ))
-  (define-key hoagie-keymap (kbd "G") #'hoagie-dg)
-  (defun deadgrep--format-command-patch (rg-command)
-    "Add --hidden to rg-command."
-    (replace-regexp-in-string "^rg " "rg --hidden " rg-command))
-  (advice-add 'deadgrep--format-command :filter-return #'deadgrep--format-command-patch))
+
+(define-key hoagie-keymap (kbd "g") #'project-find-regexp)
+;; (use-package deadgrep
+;;   :bind
+;;   (:map hoagie-keymap
+;;         ("g" . deadgrep))
+;;   :config
+;;   ;; From "Underrated MELPA packages" @ r/emacs
+;;   ;; pick a subdir from the project to run
+;;   (defun hoagie-dg (search-term directory)
+;;     "Start a ripgrep search for SEARCH-TERM from DIRECTORY.
+;; If called with a prefix argument, create the results buffer but
+;; don't actually start the search."
+;;     (interactive
+;;      (list (deadgrep--read-search-term)
+;;            (read-directory-name "Directory: "
+;;                                 (funcall deadgrep-project-root-function))))
+;;     (let ( (deadgrep-project-root-function (list 'lambda '() directory)) )
+;;       (deadgrep search-term)
+;;       ))
+;;   (define-key hoagie-keymap (kbd "G") #'hoagie-dg)
+;;   (defun deadgrep--format-command-patch (rg-command)
+;;     "Add --hidden to rg-command."
+;;     (replace-regexp-in-string "^rg " "rg --hidden " rg-command))
+;;   (advice-add 'deadgrep--format-command :filter-return #'deadgrep--format-command-patch))
 
 (use-package dired
   :ensure nil
@@ -230,12 +274,13 @@ don't actually start the search."
   (define-key hoagie-keymap (kbd "l") hoagie-lsp-keymap)
   ;; These are general settings but I'm only messing with them because
   ;; https://emacs-lsp.github.io/lsp-mode/page/performance/ so, leaving them here
-  (setq gc-cons-threshold (* gc-cons-threshold 2))
-  (setq read-process-output-max (* 1024 1024))
+  ;; (setq gc-cons-threshold (* gc-cons-threshold 4))
+  ;; (setq read-process-output-max (* 1024 1024))
   :custom
   (lsp-csharp-server-path "c:/home/omnisharp_64/OmniSharp.exe")
   (lsp-enable-snippet nil)
   (lsp-enable-folding nil)
+  (lsp-auto-guess-root t)
   (lsp-prefer-capf t)
   (lsp-signature-auto-activate nil)
   (lsp-enable-symbol-highlighting nil)
@@ -266,22 +311,10 @@ don't actually start the search."
 ;;   (dap-netcore-install-dir "c:/")
 ;;   )
 
-;; (use-package eglot
-;;   :commands (eglot eglot-ensure)
-;;   :hook ((python-mode . eglot-ensure)
-;;          (csharp-mode . eglot-ensure))
-;;   :bind
-;;   (:map eglot-mode-map
-;;         (("C-c C-e r" . eglot-rename)
-;;          ("C-c C-e f" . eglot-format)
-;;          ("C-c C-e h" . eglot-help-at-point)))
-;;   :config
-;;   (add-to-list 'eglot-server-programs
-;;                `(csharp-mode . ("c:/home/omnisharp_64/OmniSharp.exe" "-lsp")))
-;;   ;; patch the argument. when nil, use "" instead.
-;;   (defun eglot--format-markup-patch (args)
-;;     (list (or (car args) "")))
-;;   (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch))
+(use-package dap-netcore :load-path "~/.emacs.d/lisp/"
+  :custom
+  (dap-netcore-install-dir "c:/")
+  )
 
 (use-package eldoc-box
   :hook (prog-mode . eldoc-box-hover-mode)
@@ -326,8 +359,9 @@ don't actually start the search."
 ;;   :commands (cdb))
 
 (use-package hl-line
-  :init
-  (global-hl-line-mode t))
+  :ensure nil
+  :hook
+  (after-init . global-hl-line-mode))
 
 (use-package ibuffer
   :bind ("C-x C-b" . ibuffer-other-window)
@@ -536,6 +570,13 @@ don't actually start the search."
   (web-mode-enable-current-element-highlight t)
   (web-mode-markup-indent-offset 2))
 
+;; (use-package wgrep
+;;   :demand t
+;;   :custom
+;;   (wgrep-enable-key "e")
+;;   (wgrep-auto-save-buffer t)
+;;   (wgrep-change-readonly-file t))
+
 (use-package which-key
   :config
   (which-key-mode)
@@ -621,13 +662,13 @@ don't actually start the search."
       delete-by-moving-to-trash t
       disabled-command-function nil
       enable-recursive-minibuffers t
-      global-mark-ring-max 32
+      global-mark-ring-max 60
       grep-command "grep --color=always -nHi -r --include=*.* -e \"pattern\" ."
       inhibit-startup-screen t
       initial-buffer-choice t
       initial-scratch-message
       ";; Il semble que la perfection soit atteinte non quand il n'y a plus rien à ajouter, mais quand il n'y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n"
-      mark-ring-max 32
+      mark-ring-max 60
       proced-filter 'all
       save-interprogram-paste-before-kill t
       visible-bell t)
@@ -730,76 +771,6 @@ With ARG, do this that many times."
              millis)))
 (define-key hoagie-keymap (kbd "t") 'hoagie-convert-timestamp)
 
-;; MARK PUSH AND POP - should make a package out of this
-;; including a macro or common func to "push a mark if first time"
-;; UPDATE: created two advices for this
-
-;; from: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
-(defun push-mark-no-activate ()
-  "Pushes `point` to `mark-ring' and does not activate the region.
-Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
-  (interactive)
-  (push-mark (point) t nil)) ; removed the message, visible-mark takes care of this
-
-;; from https://www.emacswiki.org/emacs/MarkCommands#toc4
-(defun unpop-to-mark-command ()
-  "Unpop off mark ring.  Does nothing if mark ring is empty."
-  (interactive)
-  (when mark-ring
-    (let ((pos (marker-position (car (last mark-ring)))))
-      (if (not (= (point) pos))
-          (goto-char pos)
-        (setq mark-ring (cons (copy-marker (mark-marker)) mark-ring))
-        (set-marker (mark-marker) pos)
-        (setq mark-ring (nbutlast mark-ring))
-        (goto-char (marker-position (car (last mark-ring))))))))
-
-;; Author: me XD
-(defun pop-to-mark-push-if-first ()
-  "Pop the mark ring, but push a mark if this is a first invocation."
-  ;; The idea is these commands bring me closer to C-- C-_ in Visual Studio
-  ;; But per-buffer :)
-  (interactive)
-  (unless (equal last-command 'pop-to-mark-push-if-first)
-    (push-mark-no-activate)
-    (pop-to-mark-command))
-  (pop-to-mark-command))
-
-;; manually setting the mark bindings
-(global-set-key (kbd "C-`") 'push-mark-no-activate)
-(global-set-key (kbd "M-`") 'pop-to-mark-push-if-first)
-(global-set-key (kbd "M-~") 'unpop-to-mark-command)
-
-;; from https://blogs.msdn.microsoft.com/zainnab/2010/03/01/navigate-backward-and-navigate-forward/
-;; I finally know the conditions that trigger adding a marker in Visual Studio. I used those a lot.
-;; The hook below pushes the mark when exiting isearch to match #1 in that post
-;; UPDATE: converted hook to advice as per https://github.com/abo-abo/swiper/issues/2128
-;; UPDATE 2: kept advice but with isearch, as using the hook pushed mark first in search destination, then
-;; in search start position. Using the advice pushes first at destination then at search start.
-;; the idea with this is similar to the "11 lines away" comment in the post above
-(require 'isearch)
-(advice-add 'isearch-forward :after #'push-mark-no-activate)
-(advice-add 'isearch-backward :after #'push-mark-no-activate)
-;; (setq isearch-lazy-count t) ;; new in Emacs 27! But Anzu still offers a few extras
-
-;; the idea with the next two functions is similar to the "11 lines away" comment in the post above
-(defun hoagie-scroll-down-with-mark ()
-  "Like `scroll-down-command`, but push a mark if this is not a repeat invocation."
-  (interactive)
-  (unless (equal last-command 'hoagie-scroll-down-with-mark)
-    (push-mark-no-activate))
-  (scroll-down-command))
-
-(defun hoagie-scroll-up-with-mark ()
-  "Like `scroll-up-command`, but push a mark if this is not a repeat invocation."
-  (interactive)
-  (unless (equal last-command 'hoagie-scroll-up-with-mark)
-    (push-mark-no-activate))
-  (scroll-up-command))
-
-(global-set-key (kbd "C-v") #'hoagie-scroll-up-with-mark)
-(global-set-key (kbd "M-v") #'hoagie-scroll-down-with-mark)
-
 ;; from https://stackoverflow.com/a/33456622/91877, just like ediff's |
 (defun toggle-window-split ()
   "Swap two windows between vertical and horizontal split."
@@ -837,16 +808,9 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (when hoagie-window-configuration
     (set-window-configuration hoagie-window-configuration)))
 (define-key hoagie-keymap (kbd "1") #'hoagie-restore-window-configuration)
-
-;; (defun hoagie-store-config ()
-;;   (setq hoagie-window-configuration (current-window-configuration)))
-;; (advice-add 'delete-other-windows :before #'hoagie-store-config)
-;; the advice above breaks on the build from 03/20 so:
-(defun hoagie-delete-other-windows ()
-  (interactive)
-  (setq hoagie-window-configuration (current-window-configuration))
-  (delete-other-windows))
-(global-set-key (kbd "C-x 1") #'hoagie-delete-other-windows)
+(defun hoagie-store-config (&rest ignored)
+  (setq hoagie-window-configuration (current-window-configuration)))
+(advice-add 'delete-other-windows :before #'hoagie-store-config)
 
 ;; THEMES
 
