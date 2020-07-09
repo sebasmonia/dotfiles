@@ -68,47 +68,52 @@
   (anzu-replace-to-string-separator " => ")
   (anzu-search-threshold 1000))
 
-;; via https://ladicle.com/post/config/#backward-forward
 ;; This aims to replace:
 ;; 1 - My older PUSH AND MARK code
 ;; 2 - A package idea I had, to  replicate the VS "11 lines away - drop marker" feature from Visual Studio
 ;; See: https://blogs.msdn.microsoft.com/zainnab/2010/03/01/navigate-backward-and-navigate-forward/
-(use-package backward-forward
+(use-package back-button
   :bind
-  ("M-`" . backward-forward-previous-location)
-  ("M-~" . backward-forward-next-location)
-  ;; ("C-~" . backward-forward-next-location)
+  ("M-`" . back-button-global-backward)
+  ("M-~" . back-button-global-forward)
   ("C-`" . hoagie-push-mark)
   :custom
   (mark-ring-max 60)
+  (global-mark-ring-max 60)
   (set-mark-command-repeat-pop t)
+  (back-button-global-backward-keystrokes nil)
+  (back-button-global-forward-keystrokes nil)
+  (back-button-global-keystrokes nil)
+  (back-button-local-backward-keystrokes nil)
+  (back-button-local-forward-keystrokes nil)
+  (back-button-local-keystrokes nil)
+  (back-button-smartrep-prefix "")
   :config
-  ;; (global-set-key (kbd "C-`") #'hoagie-push-mark)
+  (advice-add 'push-mark :override #'back-button-push-mark-local-and-global)
   (defun hoagie-push-mark ()
     "Pushes `point` to `mark-ring' and does not activate the region.
 Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
     (interactive)
     ;; from: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
     ;; And don't show the message "Mark set"
-    (push-mark (point) t nil))
+    (back-button-push-mark-local-and-global (point) t nil))
   (defun hoagie-push-mark-if-not-repeat (command &rest args)
     "Push a mark if this is not a repeat invocation of `command'."
     (unless (equal last-command this-command)
       (hoagie-push-mark)))
-
-  ;; (require 'isearch)
   (let ((commands-to-advice-push '(isearch-forward
                                    isearch-backward)))
     (mapc (lambda (f) (advice-add f :after #'hoagie-push-mark))
           commands-to-advice-push))
-
   (let ((commands-to-advice-push-no-repeat '(scroll-up-command
                                              scroll-down-command
-                                             beginning-of-buffer
-                                             end-of-buffer)))
+         ;; this one is cheating, as I'm not counting "11 lines". But since
+         ;; I rarely use the mouse, this is good enough
+                                             mouse-set-point
+                                             )))
     (mapc (lambda (f) (advice-add f :before #'hoagie-push-mark-if-not-repeat))
           commands-to-advice-push-no-repeat))
-  (backward-forward-mode t))
+  (back-button-mode))
 
 (use-package browse-kill-ring
   :config
@@ -149,30 +154,30 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
                         (define-key csharp-mode-map [remap c-fill-paragraph] 'fill-function-arguments-dwim))))
 
 
-(define-key hoagie-keymap (kbd "g") #'project-find-regexp)
-;; (use-package deadgrep
-;;   :bind
-;;   (:map hoagie-keymap
-;;         ("g" . deadgrep))
-;;   :config
-;;   ;; From "Underrated MELPA packages" @ r/emacs
-;;   ;; pick a subdir from the project to run
-;;   (defun hoagie-dg (search-term directory)
-;;     "Start a ripgrep search for SEARCH-TERM from DIRECTORY.
-;; If called with a prefix argument, create the results buffer but
-;; don't actually start the search."
-;;     (interactive
-;;      (list (deadgrep--read-search-term)
-;;            (read-directory-name "Directory: "
-;;                                 (funcall deadgrep-project-root-function))))
-;;     (let ( (deadgrep-project-root-function (list 'lambda '() directory)) )
-;;       (deadgrep search-term)
-;;       ))
-;;   (define-key hoagie-keymap (kbd "G") #'hoagie-dg)
-;;   (defun deadgrep--format-command-patch (rg-command)
-;;     "Add --hidden to rg-command."
-;;     (replace-regexp-in-string "^rg " "rg --hidden " rg-command))
-;;   (advice-add 'deadgrep--format-command :filter-return #'deadgrep--format-command-patch))
+;; (define-key hoagie-keymap (kbd "g") #'project-find-regexp)
+(use-package deadgrep
+  :bind
+  (:map hoagie-keymap
+        ("g" . deadgrep))
+  :config
+  ;; From "Underrated MELPA packages" @ r/emacs
+  ;; pick a subdir from the project to run
+  (defun hoagie-dg (search-term directory)
+    "Start a ripgrep search for SEARCH-TERM from DIRECTORY.
+If called with a prefix argument, create the results buffer but
+don't actually start the search."
+    (interactive
+     (list (deadgrep--read-search-term)
+           (read-directory-name "Directory: "
+                                (funcall deadgrep-project-root-function))))
+    (let ( (deadgrep-project-root-function (list 'lambda '() directory)) )
+      (deadgrep search-term)
+      ))
+  (define-key hoagie-keymap (kbd "G") #'hoagie-dg)
+  (defun deadgrep--format-command-patch (rg-command)
+    "Add --hidden to rg-command."
+    (replace-regexp-in-string "^rg " "rg --hidden " rg-command))
+  (advice-add 'deadgrep--format-command :filter-return #'deadgrep--format-command-patch))
 
 (use-package dired
   :ensure nil
@@ -304,12 +309,14 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (dap-auto-configure-mode)
   (require 'dap-python)
   (require 'dap-pwsh)
-  (define-key hoagie-lsp-keymap (kbd "d") #'dap-debug)
+  (defvar hoagie-dap-keymap (define-prefix-command 'hoagie-dap-keymap))
+  (define-key hoagie-dap-keymap (kbd "d") #'dap-debug)
+  (define-key hoagie-dap-keymap (kbd "b") #'dap-breakpoint-toggle)
+  (define-key hoagie-dap-keymap (kbd "n") #'dap-next)
+  (define-key hoagie-dap-keymap (kbd "c") #'dap-continue)
+  (define-key hoagie-dap-keymap (kbd "s") #'dap-disconnect) ;; "Stop"
+  (define-key hoagie-keymap (kbd "d") hoagie-dap-keymap)
   )
-;; (use-package dap-netcore :load-path "~/.emacs.d/lisp/"
-;;   :custom
-;;   (dap-netcore-install-dir "c:/")
-;;   )
 
 (use-package dap-netcore :load-path "~/.emacs.d/lisp/"
   :custom
@@ -544,9 +551,9 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (visible-mark-forward-face1 ((t (:box (:line-width 2 :color "chartreuse")))))
   (visible-mark-forward-face2 ((t (:box (:line-width 1 :color "purple1")))))
   :custom
-  (visible-mark-max 2)
+  (visible-mark-max 8)
   (visible-mark-faces '(visible-mark-face1 visible-mark-face2))
-  (visible-mark-forward-max 2)
+  (visible-mark-forward-max 8)
   (visible-mark-forward-faces '(visible-mark-forward-face1 visible-mark-forward-face2)))
 
 (use-package web-mode
