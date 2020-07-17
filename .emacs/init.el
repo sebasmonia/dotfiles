@@ -90,7 +90,7 @@
   (back-button-smartrep-prefix "")
   :config
   (advice-add 'push-mark :override #'back-button-push-mark-local-and-global)
-  (defun hoagie-push-mark ()
+  (defun hoagie-push-mark (&rest ignore)
     "Pushes `point` to `mark-ring' and does not activate the region.
 Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
     (interactive)
@@ -101,18 +101,24 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
     "Push a mark if this is not a repeat invocation of `command'."
     (unless (equal last-command this-command)
       (hoagie-push-mark)))
-  (let ((commands-to-advice-push '(isearch-forward
-                                   isearch-backward)))
+  (advice-add #'xref-goto-xref :before #'hoagie-push-mark)
+
+  (let ((advice-push-after '(isearch-forward
+                             isearch-backward
+                             )))
     (mapc (lambda (f) (advice-add f :after #'hoagie-push-mark))
-          commands-to-advice-push))
-  (let ((commands-to-advice-push-no-repeat '(scroll-up-command
-                                             scroll-down-command
+          advice-push-after))
+  (let ((advice-push-before '(xref-goto-xref)))
+    (mapc (lambda (f) (advice-add f :after #'hoagie-push-mark))
+          advice-push-before))
+
+  (let ((advice-pushnr-before '(scroll-up-command
+                                scroll-down-command
          ;; this one is cheating, as I'm not counting "11 lines". But since
          ;; I rarely use the mouse, this is good enough
-                                             mouse-set-point
-                                             )))
+                                mouse-set-point)))
     (mapc (lambda (f) (advice-add f :before #'hoagie-push-mark-if-not-repeat))
-          commands-to-advice-push-no-repeat))
+          advice-pushnr-before))
   (back-button-mode))
 
 (use-package browse-kill-ring
@@ -154,7 +160,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
                         (define-key csharp-mode-map [remap c-fill-paragraph] 'fill-function-arguments-dwim))))
 
 
-;; (define-key hoagie-keymap (kbd "g") #'project-find-regexp)
+(define-key hoagie-keymap (kbd "G") #'project-find-regexp)
 (use-package deadgrep
   :bind
   (:map hoagie-keymap
@@ -162,18 +168,18 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   :config
   ;; From "Underrated MELPA packages" @ r/emacs
   ;; pick a subdir from the project to run
-  (defun hoagie-dg (search-term directory)
-    "Start a ripgrep search for SEARCH-TERM from DIRECTORY.
-If called with a prefix argument, create the results buffer but
-don't actually start the search."
-    (interactive
-     (list (deadgrep--read-search-term)
-           (read-directory-name "Directory: "
-                                (funcall deadgrep-project-root-function))))
-    (let ( (deadgrep-project-root-function (list 'lambda '() directory)) )
-      (deadgrep search-term)
-      ))
-  (define-key hoagie-keymap (kbd "G") #'hoagie-dg)
+  ;;   (defun hoagie-dg (search-term directory)
+  ;;     "Start a ripgrep search for SEARCH-TERM from DIRECTORY.
+  ;; If called with a prefix argument, create the results buffer but
+  ;; don't actually start the search."
+  ;;     (interactive
+  ;;      (list (deadgrep--read-search-term)
+  ;;            (read-directory-name "Directory: "
+  ;;                                 (funcall deadgrep-project-root-function))))
+  ;;     (let ( (deadgrep-project-root-function (list 'lambda '() directory)) )
+  ;;       (deadgrep search-term)
+  ;;       ))
+  ;;   (define-key hoagie-keymap (kbd "G") #'hoagie-dg)
   (defun deadgrep--format-command-patch (rg-command)
     "Add --hidden to rg-command."
     (replace-regexp-in-string "^rg " "rg --hidden " rg-command))
@@ -257,14 +263,27 @@ don't actually start the search."
   (defun add-d-to-ediff-mode-map ()
     "Add key 'd' for 'copy both to C' functionality in ediff."
     (define-key ediff-mode-map "d" 'ediff-copy-both-to-C))
-  (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map))
+  (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map)
+  ;; One minor annoyance of using ediff with built-in vc was the window config being altered, so:
+  (defvar hoagie-pre-ediff-windows nil "Window configuration before starting ediff.")
+  (defun hoagie-ediff-store-windows ()
+    "Store the pre-ediff window setup"
+    (setq hoagie-pre-ediff-windows (current-window-configuration)))
+  (defun hoagie-ediff-restore-windows ()
+    "Use `hoagie-pre-ediff-windows' to restore the window setup."
+    (set-window-configuration hoagie-pre-ediff-windows))
+  (add-hook 'ediff-before-setup-hook #'hoagie-ediff-store-windows)
+  ;; Welp, don't like using internals but, the regular hook doesn't quite work
+  ;; the window config is restore but them _stuff happens_, so:
+  (add-hook 'ediff-after-quit-hook-internal #'hoagie-ediff-restore-windows))
 
 (use-package elec-pair
   :ensure nil
   :init (electric-pair-mode))
 
-;; my own shortcut bindings to LSP, under hoagie-keymap "l", are defined in the :config section
+;; My own shortcut bindings to LSP, under hoagie-keymap "l", are defined in the :config section
 (setq lsp-keymap-prefix "C-c C-l")
+(defvar hoagie-lsp-keymap (define-prefix-command 'hoagie-lsp-keymap) "Custom bindings for LSP mode.")
 (use-package lsp-mode
   :hook ((python-mode . lsp)
          (csharp-mode . lsp)
@@ -274,7 +293,6 @@ don't actually start the search."
   :config
   (defvar hoagie-lsp-keymap (define-prefix-command 'hoagie-lsp-keymap) "Custom bindings for LSP mode.")
   (define-key hoagie-lsp-keymap (kbd "o") #'lsp-signature-activate) ;; o for "overloads"
-  (define-key hoagie-lsp-keymap (kbd "i") #'lsp-ui-imenu)
   (define-key hoagie-lsp-keymap (kbd "r") #'lsp-rename)
   (define-key hoagie-keymap (kbd "l") hoagie-lsp-keymap)
   ;; These are general settings but I'm only messing with them because
@@ -287,12 +305,15 @@ don't actually start the search."
   (lsp-enable-folding nil)
   (lsp-auto-guess-root t)
   (lsp-prefer-capf t)
+  (lsp-eldoc-render-all nil)
   (lsp-signature-auto-activate nil)
   (lsp-enable-symbol-highlighting nil)
   (lsp-modeline-code-actions-enable nil))
 
 (use-package lsp-ui
   :commands lsp-ui-mode
+  :config
+  (define-key hoagie-lsp-keymap (kbd "i") #'lsp-ui-imenu)
   :custom
   (lsp-ui-doc-enable t)
   (lsp-ui-doc-position 'top)
@@ -300,7 +321,6 @@ don't actually start the search."
   (lsp-ui-peek-enable nil)
   (lsp-ui-sideline-enable nil))
 
-;; ;; optionally if you want to use debugger
 (use-package dap-mode
   :commands (dap-debug dap-breakpoints-add)
   :init
@@ -323,16 +343,33 @@ don't actually start the search."
   (dap-netcore-install-dir "c:/")
   )
 
-(use-package eldoc-box
-  :hook (prog-mode . eldoc-box-hover-mode)
-  :config
-  (setq eldoc-box-max-pixel-width 1024
-        eldoc-box-max-pixel-height 768)
-  (setq eldoc-idle-delay 0.1)
-  ;; set the child frame face as 1.0 relative to the default font
-  ;; at work, the adjustment in "workonlyconfig.el" takes care of
-  ;; adjusting the child frames with the parent frame size
-  (set-face-attribute 'eldoc-box-body nil :inherit 'default :height 1.0))
+;; (use-package eglot
+;;   :commands (eglot eglot-ensure)
+;;   :hook ((python-mode . eglot-ensure)
+;;          (csharp-mode . eglot-ensure))
+;;   :bind
+;;   (:map eglot-mode-map
+;;         (("C-c C-e r" . eglot-rename)
+;;          ("C-c C-e f" . eglot-format)
+;;          ("C-c C-e h" . eglot-help-at-point)))
+;;   :config
+;;   (add-to-list 'eglot-server-programs
+;;                `(csharp-mode . ("c:/home/omnisharp_64/OmniSharp.exe" "-lsp")))
+;;   ;; patch the argument. when nil, use "" instead.
+;;   (defun eglot--format-markup-patch (args)
+;;     (list (or (car args) "")))
+;;   (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch))
+
+;; (use-package eldoc-box
+;;   :hook (prog-mode . eldoc-box-hover-mode)
+;;   :config
+;;   (setq eldoc-box-max-pixel-width 1024
+;;         eldoc-box-max-pixel-height 768)
+;;   (setq eldoc-idle-delay 0.1)
+;;   ;; set the child frame face as 1.0 relative to the default font
+;;   ;; at work, the adjustment in "workonlyconfig.el" takes care of
+;;   ;; adjusting the child frames with the parent frame size
+;;   (set-face-attribute 'eldoc-box-body nil :inherit 'default :height 1.0))
 
 (use-package expand-region
   :bind
@@ -540,21 +577,6 @@ don't actually start the search."
   :mode "\\.tf$"
   :config
   (add-hook 'terraform-mode-hook #'terraform-format-on-save-mode))
-
-(use-package visible-mark
-  :demand t ;; has to be loaded, no command
-  :config
-  (global-visible-mark-mode t)
-  :custom-face
-  (visible-mark-face1 ((t (:box (:line-width 2 :color "red")))))
-  (visible-mark-face2 ((t (:box (:line-width 1 :color "orange")))))
-  (visible-mark-forward-face1 ((t (:box (:line-width 2 :color "chartreuse")))))
-  (visible-mark-forward-face2 ((t (:box (:line-width 1 :color "purple1")))))
-  :custom
-  (visible-mark-max 8)
-  (visible-mark-faces '(visible-mark-face1 visible-mark-face2))
-  (visible-mark-forward-max 8)
-  (visible-mark-forward-faces '(visible-mark-forward-face1 visible-mark-forward-face2)))
 
 (use-package web-mode
   :mode
@@ -825,8 +847,8 @@ With ARG, do this that many times."
   :demand t
   :config
   (setq doom-nord-light-brighter-modeline t
-        doom-acario-light-brighter-modeline t
-        doom-challenger-deep-brighter-modeline t))
+        doom-acario-light-brighter-modeline nil
+        doom-challenger-deep-brighter-modeline nil))
 
 (defun hoagie-load-theme (new-theme)
   "Pick a theme to load from a harcoded list. Or load NEW-THEME."
@@ -842,8 +864,8 @@ With ARG, do this that many times."
     (load-theme (intern new-theme) t))
 
 (global-set-key (kbd "C-<f11>") #'hoagie-load-theme)
-(hoagie-load-theme "doom-nord-light")
-;; (hoagie-load-theme "doom-acario-light")
+;; (hoagie-load-theme "doom-nord-light")
+(hoagie-load-theme "doom-acario-light")
 ;; (hoagie-load-theme "doom-acario-dark")
 
 (use-package doom-modeline
