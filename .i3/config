@@ -87,20 +87,22 @@ bindsym $mod+Shift+Return exec emacsclient -cn
 focus_follows_mouse no
 
 # change focus
-bindsym $mod+j focus left
-bindsym $mod+k focus down
-bindsym $mod+l focus up
-bindsym $mod+semicolon focus right
+bindsym $mod+Shift+j focus left
+bindsym $mod+Shift+k focus down
+bindsym $mod+Shift+l focus up
+bindsym $mod+Shift+semicolon focus right
 
 # move focused window
-bindsym $mod+Shift+j move left
-bindsym $mod+Shift+k move down
-bindsym $mod+Shift+l move up
-bindsym $mod+Shift+semicolon move right
+bindsym $mod+Shift+Ctrl+j move left
+bindsym $mod+Shift+Ctrl+k move down
+bindsym $mod+Shift+Ctrl+l move up
+bindsym $mod+Shift+Ctrl+semicolon move right
 
-# move focused workspace between monitors
-bindsym $mod+Ctrl+semicolon move workspace to output right
-bindsym $mod+Ctrl+j move workspace to output left
+# move between workspaces & send to monitors
+bindsym $mod+j workspace prev
+bindsym $mod+k move workspace to output left
+bindsym $mod+l move workspace to output right
+bindsym $mod+semicolon workspace next
 
 # split orientation
 bindsym $mod+h split h;exec notify-send 'tile horizontally'
@@ -297,6 +299,8 @@ mode "$mode_monitor" {
 }
 # change the audio output via keyboard
 bindsym $mod+o exec --no-startup-id /home/hoagie/.i3/audio_output.py
+# I can configure a udev rule, or change to xkb, or...just this:
+bindsym $mod+i exec --no-startup-id xmodmap /home/hoagie/.Xmodmap
 
 # Color palette used for the terminal ( ~/.Xresources file )
 # Colors are gathered based on the documentation:
