@@ -101,13 +101,13 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
     "Push a mark if this is not a repeat invocation of `command'."
     (unless (equal last-command this-command)
       (hoagie-push-mark)))
-  (advice-add #'xref-goto-xref :before #'hoagie-push-mark)
 
   (let ((advice-push-after '(isearch-forward
                              isearch-backward
                              )))
     (mapc (lambda (f) (advice-add f :after #'hoagie-push-mark))
           advice-push-after))
+
   (let ((advice-push-before '(xref-goto-xref)))
     (mapc (lambda (f) (advice-add f :after #'hoagie-push-mark))
           advice-push-before))
@@ -441,7 +441,8 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (icomplete-hide-common-prefix nil)
   (icomplete-prospects-height 10)
   (icomplete-in-buffer t)
-  (completion-styles '(flex))
+  ;; (completion-styles '(flex))
+  (completion-styles '(substring partial-completion flex))
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
@@ -476,13 +477,14 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (use-package lyrics
   :commands lyrics)
 
+(with-eval-after-load "vc-hooks"
+  (define-key vc-prefix-map "=" 'vc-ediff))
+(with-eval-after-load "vc-dir"
+  (define-key vc-dir-mode-map "=" 'vc-ediff)
+  (define-key vc-dir-mode-map "k" 'vc-revert))
 (defun hoagie-try-vc-here-and-there ()
   (interactive)
-  (vc-dir (car (project-roots (project-current)))))
-(eval-after-load "vc-hooks"
-  '(define-key vc-prefix-map "=" 'vc-ediff))
-(eval-after-load "vc-dir"
-  '(define-key vc-dir-mode-map "=" 'vc-ediff))
+  (vc-dir (project-root (project-current))))
 (global-set-key (kbd "C-x t") #'hoagie-try-vc-here-and-there)
 (use-package magit
   :init
@@ -857,16 +859,16 @@ With ARG, do this that many times."
                                         doom-acario-light
                                         doom-challenger-deep
                                         doom-nord-light
-                                        doom-oceanic-next)
+                                        doom-oceanic-next
+                                        doom-one-light)
                                       nil
                                       t)))
     (mapc 'disable-theme custom-enabled-themes)
     (load-theme (intern new-theme) t))
 
 (global-set-key (kbd "C-<f11>") #'hoagie-load-theme)
-;; (hoagie-load-theme "doom-nord-light")
-(hoagie-load-theme "doom-acario-light")
-;; (hoagie-load-theme "doom-acario-dark")
+(hoagie-load-theme "doom-one-light")
+;; (hoagie-load-theme "doom-acario-light")
 
 (use-package doom-modeline
   :ensure t
