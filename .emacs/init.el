@@ -237,13 +237,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   :demand t ;; not sure if really needed
   )
 
-(use-package dotnet
-  :demand t  ;; needed since the global keybinding has to be ready. I think.
-  :config
-  (setq dotnet-mode-keymap-prefix nil)
-  (define-key hoagie-keymap (kbd "n") dotnet-mode-command-map))
-
-
 (use-package ediff
   :demand
   :custom
@@ -291,7 +284,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
          (lsp-mode . lsp-enable-which-key-integration))
   :commands (lsp lsp-signature-active)
   :config
-  (defvar hoagie-lsp-keymap (define-prefix-command 'hoagie-lsp-keymap) "Custom bindings for LSP mode.")
   (define-key hoagie-lsp-keymap (kbd "o") #'lsp-signature-activate) ;; o for "overloads"
   (define-key hoagie-lsp-keymap (kbd "r") #'lsp-rename)
   (define-key hoagie-keymap (kbd "l") hoagie-lsp-keymap)
@@ -453,7 +445,9 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (define-key hoagie-keymap (kbd "<menu>") #'execute-extended-command)
   (define-key hoagie-keymap (kbd "C-'") #'execute-extended-command)
   :bind (:map icomplete-minibuffer-map
-              ("<return>" . icomplete-force-complete-and-exit)
+              ;; fido-mode's default of icomplete-fido-exit
+              ;; is a better choice here.
+              ;; ("<return>" . icomplete-force-complete-and-exit)
               ("<down>" . icomplete-forward-completions)
               ("C-n" . icomplete-forward-completions)
               ("<up>" . icomplete-backward-completions)
@@ -546,6 +540,12 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
         (occur (buffer-substring-no-properties (region-beginning) (region-end)))
       (command-execute 'occur)))
   (define-key hoagie-keymap (kbd "o") 'hoagie-occur-dwim))
+
+(use-package sharper :load-path "~/github/sharper"
+  :demand t
+  :bind
+  (:map hoagie-keymap
+        ("n" . sharper-main-transient)))
 
 (use-package shell
   :init
