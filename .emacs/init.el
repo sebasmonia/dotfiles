@@ -73,6 +73,7 @@
 ;; 2 - A package idea I had, to  replicate the VS "11 lines away - drop marker" feature from Visual Studio
 ;; See: https://blogs.msdn.microsoft.com/zainnab/2010/03/01/navigate-backward-and-navigate-forward/
 (use-package back-button
+  :demand t
   :bind
   ("M-`" . back-button-global-backward)
   ("M-~" . back-button-global-forward)
@@ -274,6 +275,24 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   :ensure nil
   :init (electric-pair-mode))
 
+
+(use-package eww
+  :defer t
+  :ensure nil
+  :init
+  (add-hook 'eww-mode-hook #'toggle-word-wrap)
+  (add-hook 'eww-mode-hook #'visual-line-mode)
+  :config
+  (setq browse-url-browser-function 'eww-browse-url)
+  (define-key eww-mode-map "o" 'eww)
+  (define-key eww-mode-map "O" 'eww-browse-with-external-browser)
+
+  (use-package eww-lnum
+    :ensure t
+    :bind
+    (:map eww-mode-map
+          ("C-SPC" . eww-lnum-follow))))
+
 ;; My own shortcut bindings to LSP, under hoagie-keymap "l", are defined in the :config section
 (setq lsp-keymap-prefix "C-c C-l")
 (defvar hoagie-lsp-keymap (define-prefix-command 'hoagie-lsp-keymap) "Custom bindings for LSP mode.")
@@ -445,9 +464,8 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (define-key hoagie-keymap (kbd "<menu>") #'execute-extended-command)
   (define-key hoagie-keymap (kbd "C-'") #'execute-extended-command)
   :bind (:map icomplete-minibuffer-map
-              ;; fido-mode's default of icomplete-fido-exit
-              ;; is a better choice here.
-              ;; ("<return>" . icomplete-force-complete-and-exit)
+              ("C-<return>" . icomplete-fido-exit) ;; when there's no exact match
+              ("C-j" . icomplete-fido-exit) ;; from the IDO days...
               ("<down>" . icomplete-forward-completions)
               ("C-n" . icomplete-forward-completions)
               ("<up>" . icomplete-backward-completions)
