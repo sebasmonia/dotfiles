@@ -70,19 +70,17 @@ bindsym XF86MonBrightnessUp exec "/home/hoagie/.i3/brightness.py inc"
 bindsym XF86MonBrightnessDown exec "/home/hoagie/.i3/brightness.py dec"
 
 # Start Applications
-bindsym $mod++b exec terminal -e 'bmenu'
+bindsym $mod+b exec terminal -e 'bmenu'
 bindsym $mod+F2 exec firefox
 bindsym $mod+F3 exec pcmanfm
 bindsym $mod+Shift+F3 exec pcmanfm_pkexec
-bindsym $mod+F5 exec terminal -e 'mocp'
+
 bindsym $mod+t exec --no-startup-id pkill compton
 bindsym $mod+Ctrl+t exec --no-startup-id compton -b
 bindsym $mod+Shift+d --release exec "killall dunst; exec notify-send 'restart dunst'"
-bindsym $mod+Shift+h exec xdg-open /usr/share/doc/manjaro/i3_help.pdf
-# bindsym $mod+Ctrl+x --release exec --no-startup-id xkill
+
 # Start a new Emacs frame. Depends on having Emacs daemon running (setup below)
 bindsym $mod+Shift+Return exec emacsclient -cn
-
 
 focus_follows_mouse no
 
@@ -110,16 +108,12 @@ bindsym $mod+v split v;exec notify-send 'tile vertically'
 
 # toggle fullscreen mode for the focused container
 bindsym $mod+f fullscreen toggle
-
-# toggle tiling / floating
-bindsym $mod+Shift+space floating toggle
-
 # change focus between tiling / floating windows
 bindsym $mod+space focus mode_toggle
-
+# toggle tiling / floating
+bindsym $mod+Shift+space floating toggle
 # toggle sticky
-bindsym $mod+Shift+s sticky toggle
-
+# bindsym $mod+Shift+s sticky toggle
 # focus the parent container
 bindsym $mod+a focus parent
 
@@ -213,7 +207,7 @@ bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 
 # exit i3 (logs you out of your X session)
-bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
+# bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 
 # Set shut down, restart and locking features
 bindsym $mod+x mode "$mode_system"
@@ -279,7 +273,7 @@ exec --no-startup-id exec /home/hoagie/.i3/trackpointconfig.sh
 exec --no-startup-id onboard
 
 exec --no-startup-id flameshot
-bindsym $mod+F12 exec --no-startup-id flameshot gui
+bindsym $mod+Shift+s exec --no-startup-id flameshot gui
 
 # use mod+shift+p to get just the laptop screen, in case the external fails
 # gets unplugged etc.
