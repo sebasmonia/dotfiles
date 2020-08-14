@@ -72,7 +72,8 @@ bindsym XF86MonBrightnessDown exec "/home/hoagie/.i3/brightness.py dec"
 # Start Applications
 bindsym $mod+b exec terminal -e 'bmenu'
 bindsym $mod+F2 exec firefox
-bindsym $mod+F3 exec pcmanfm
+# bindsym $mod+F3 exec pcmanfm
+bindsym $mod+F3 exec io.elementary.files
 bindsym $mod+Shift+F3 exec pcmanfm_pkexec
 
 bindsym $mod+t exec --no-startup-id pkill compton
@@ -85,22 +86,22 @@ bindsym $mod+Shift+Return exec emacsclient -cn
 focus_follows_mouse no
 
 # change focus
-bindsym $mod+Shift+j focus left
-bindsym $mod+Shift+k focus down
-bindsym $mod+Shift+l focus up
-bindsym $mod+Shift+semicolon focus right
+bindsym $mod+j focus left
+bindsym $mod+k focus down
+bindsym $mod+l focus up
+bindsym $mod+semicolon focus right
 
-# move focused window
+# move focused window - I almost never use these
 bindsym $mod+Shift+Ctrl+j move left
 bindsym $mod+Shift+Ctrl+k move down
 bindsym $mod+Shift+Ctrl+l move up
 bindsym $mod+Shift+Ctrl+semicolon move right
 
 # move between workspaces & send to monitors
-bindsym $mod+j workspace prev
-bindsym $mod+k move workspace to output left
-bindsym $mod+l move workspace to output right
-bindsym $mod+semicolon workspace next
+bindsym $mod+Ctrl+j workspace prev
+bindsym $mod+Shift+j move workspace to output left
+bindsym $mod+Shift+semicolon move workspace to output right
+bindsym $mod+Ctrl+semicolon workspace next
 
 # split orientation
 bindsym $mod+h split h;exec notify-send 'tile horizontally'
