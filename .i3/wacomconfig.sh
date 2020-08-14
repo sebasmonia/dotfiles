@@ -8,8 +8,15 @@ xsetwacom set "Wacom Pen and multitouch sensor Pen stylus" Button 2 "3"
 # Default value: button +1 (same as regular click)
 xsetwacom set "Wacom Pen and multitouch sensor Pen eraser" Button 1 "2"
 
-# Experimental: Bottom button, pressed when touching the screen brings up CellWriter
-# Uses xbindkeys to run a script on mouse button 11
-# xsetwacom set "Wacom Pen and multitouch sensor Pen eraser" Button 1 "11"
-# UPDATE: It's comfortable BUT I prefer the flexibility of having 3 buttons for
-# xjournal & game configuration
+
+# ???
+xsetwacom set "Wacom Pen and multitouch sensor Pen eraser" Touch on
+xsetwacom set "Wacom Pen and multitouch sensor Pen stylus" Touch on
+
+
+# In theory I should use touchegg instead of these two, something to look at in the future:
+
+# Get zoom gestures working
+xsetwacom set "Wacom Pen and multitouch sensor Finger touch" Gesture on
+# Enable "long tap for right click" via evdev-rce
+evdev-rce &

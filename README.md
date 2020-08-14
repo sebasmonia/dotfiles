@@ -6,6 +6,7 @@ A place to store my i3 and Emacs configuration, plus other misc scripts.
 * Consolas font
 * xbacklight, pulseaudio_ctl for brightness and volume controls
 * acpid to show the touch panel automatically
+* evdev-right-click-emulation for right click w/long touch tap
 * Probably others I missed but will keep adding here
 
 ## Emacs config notes:
@@ -42,6 +43,7 @@ private repo @ work, since they only make sense in that environment.
   * Handled via tabletmode.py, autostarted in i3 config
   * Listens to all ACPI events, there's potential to handle more things
   * Details on panel buttons below
+* Gestures and right click support via https://github.com/PeterCxy/evdev-right-click-emulation and the Gesture option in the Wacom drivers. In theory should use touchegg for those, since I don't have a DE.
 
 ### Touch keyboard
 
