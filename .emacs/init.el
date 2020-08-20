@@ -20,7 +20,8 @@
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 
-(package-initialize)
+(when (< emacs-major-version 27)
+  (package-initialize))
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -239,6 +240,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   )
 
 (use-package ediff
+  :ensure nil
   :demand
   :custom
   (ediff-forward-word-function 'forward-char) ;; from https://emacs.stackexchange.com/a/9411/17066
@@ -315,8 +317,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (lsp-enable-snippet nil)
   (lsp-enable-folding nil)
   (lsp-auto-guess-root t)
-  (lsp-prefer-capf t)
-  (lsp-eldoc-render-all nil)
+  (lsp-eldoc-render-all t)
   (lsp-signature-auto-activate nil)
   (lsp-enable-symbol-highlighting nil)
   (lsp-modeline-code-actions-enable nil))
@@ -326,7 +327,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   :config
   (define-key hoagie-lsp-keymap (kbd "i") #'lsp-ui-imenu)
   :custom
-  (lsp-ui-doc-enable t)
+  (lsp-ui-doc-enable nil)
   (lsp-ui-doc-position 'top)
   (lsp-ui-doc-use-childframe nil)
   (lsp-ui-peek-enable nil)
@@ -371,16 +372,14 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 ;;     (list (or (car args) "")))
 ;;   (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch))
 
-;; (use-package eldoc-box
-;;   :hook (prog-mode . eldoc-box-hover-mode)
-;;   :config
-;;   (setq eldoc-box-max-pixel-width 1024
-;;         eldoc-box-max-pixel-height 768)
-;;   (setq eldoc-idle-delay 0.1)
-;;   ;; set the child frame face as 1.0 relative to the default font
-;;   ;; at work, the adjustment in "workonlyconfig.el" takes care of
-;;   ;; adjusting the child frames with the parent frame size
-;;   (set-face-attribute 'eldoc-box-body nil :inherit 'default :height 1.0))
+(use-package eldoc-box
+  :hook (prog-mode . eldoc-box-hover-mode)
+  :config
+  (setq eldoc-box-max-pixel-width 1024
+        eldoc-box-max-pixel-height 768)
+  (setq eldoc-idle-delay 0.1)
+  ;; set the child frame face as 1.0 relative to the default font
+  (set-face-attribute 'eldoc-box-body nil :inherit 'default :height 1.0))
 
 (use-package expand-region
   :bind
@@ -419,6 +418,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (after-init . global-hl-line-mode))
 
 (use-package ibuffer
+  :ensure nil
   :bind ("C-x C-b" . ibuffer-other-window)
   :custom
   (ibuffer-default-sorting-mode 'major-mode)
@@ -544,7 +544,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   :ensure nil
   :custom
   (python-shell-interpreter "ipython")
-  (python-shell-interpreter-args "--pprint --simple-prompt --no-color-info"))
+  (python-shell-interpreter-args "--pprint --simple-prompt"))
 
 (use-package replace
   :ensure nil
@@ -566,6 +566,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
         ("n" . sharper-main-transient)))
 
 (use-package shell
+  :ensure nil
   :init
   (use-package better-shell
     :bind (:map hoagie-keymap
@@ -953,7 +954,9 @@ If I let Windows handle DPI everything looks blurry."
       ;; add more screens here ;;
       (when (eq (length (display-monitor-attributes-list)) 1) ;; override everything if no external monitors!
         (setq size "12"))
-      (set-frame-font (concat "Consolas " size))))
+      (set-frame-font (concat "Consolas " size))
+      (set-face-font 'eldoc-box-body
+                     (frame-parameter nil 'font))))
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
 
 ;; Experimental: use narrowing
