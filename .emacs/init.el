@@ -987,6 +987,8 @@ Works for home/work"
                        "~/common-lisp")))
     (when (file-directory-p "c:/repos")
       (push "c:/repos" directories))
+    (when (file-directory-p "~/repos")
+      (push "~/repos" directories))
     (dired (completing-read "Open directory: "
                             (mapcan (lambda (dir-to-list) (cl-subseq
                                                            (directory-files dir-to-list t)
