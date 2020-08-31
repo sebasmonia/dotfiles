@@ -14,8 +14,8 @@ def xbacklight(params):
     return result.stdout.decode('utf-8')
 
 
-def notify_send(msg, timeout=1000):
-    p = ["notify-send", "-t", str(timeout), msg]
+def show_notification(msg):
+    p = ["dunstify", "-t", "1000", "-r", "25252525", msg]
     subprocess.run(p)
 
 
@@ -28,12 +28,14 @@ def get_arg_or_exit():
     return arg
 
 
+brightness_step = 5
 arg = get_arg_or_exit()
 current_value = int(xbacklight(["-get"]))
-if arg == "dec" and (current_value - 5) < 1:
-    # fail safe so we don't go too low
-    notify_send("If brightness goes lower the screen"
-                " will turn off...", 2000)
+if current_value <= brightness_step and arg == "dec":
+    xbacklight(["-set", 1])
+elif current_value < brightness_step and arg == "inc":
+    xbacklight(["-set", brightness_step])
 else:
-    xbacklight(["-" + arg, 5])
-    notify_send("Brightness: " + xbacklight(["-get"]).strip() + "%")
+    xbacklight(["-" + arg, brightness_step])
+
+show_notification("Brightness: " + xbacklight(["-get"]).strip() + "%")

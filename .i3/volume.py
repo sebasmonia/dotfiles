@@ -5,7 +5,6 @@ it and other solutions seem more complicated than writing this :)"""
 import subprocess
 import sys
 
-
 def pulseaudio_ctl(params):
     p = ["pulseaudio-ctl"]
     p.extend(str(e) for e in params)
@@ -14,8 +13,8 @@ def pulseaudio_ctl(params):
     return result.stdout.decode('utf-8')
 
 
-def notify_send(msg):
-    p = ["notify-send", "-t", "1000", msg]
+def show_notification(msg):
+    p = ["dunstify", "-t", "1000", "-r", "252525", msg]
     subprocess.run(p)
 
 
@@ -32,6 +31,6 @@ arg = get_arg_or_exit()
 pulseaudio_ctl(list(arg))
 volume, mute, _ = pulseaudio_ctl(["full-status"]).split()
 if mute == "yes":
-    notify_send(f"Audio muted")
+    show_notification(f"Audio muted")
 else:
-    notify_send(f"Volume: {volume}%")
+    show_notification(f"Volume: {volume}%")

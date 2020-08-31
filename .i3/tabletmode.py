@@ -22,10 +22,12 @@ def handle_tabletmode(event_data):
     if (event_data[0] != "video/tabletmode"):
         return
     going_tablet = (event_data[3][-1] == "1")
-    panel_call = ["xfce4-panel", "-d"]
+    panel_call = ["xfce4-panel"]
     # If changing to tablet, runs the panel, else
     # make the panel close
-    if not going_tablet:
+    if going_tablet:
+        panel_call.append("-d") # "dont wait for wm"
+    else:
         panel_call.append("-q")
     subprocess.Popen(panel_call)
 
