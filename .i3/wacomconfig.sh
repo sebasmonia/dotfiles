@@ -16,7 +16,7 @@ xsetwacom set "Wacom Pen and multitouch sensor Pen stylus" Touch on
 
 # In theory I should use touchegg instead of these two, something to look at in the future:
 
-# Get zoom gestures working
-xsetwacom set "Wacom Pen and multitouch sensor Finger touch" Gesture on
-# Enable "long tap for right click" via evdev-rce
-evdev-rce &
+# Get zoom gestures working - UPDATE: has a bug in current version
+# xsetwacom set "Wacom Pen and multitouch sensor Finger touch" Gesture on
+# Enable "long tap for right click" via evdev-rce, only for touch screen
+TOUCH_DEVICE_BLACKLIST="Wacom Pen and multitouch sensor Pen|Elan Touchpad" evdev-rce &
