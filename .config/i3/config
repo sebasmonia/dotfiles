@@ -56,13 +56,13 @@ bindsym $mod+Ctrl+m exec pavucontrol
 # Manual setup for sound control, so I can go over 100% unlike pa-applet
 # Seems to be an ALSA bug, and not a problem unique to me. But pa-applet is convenient
 # to change sinks so, letting it be but handling keys manually
-bindsym XF86AudioRaiseVolume exec "/home/hoagie/.i3/volume.py up"
-bindsym XF86AudioLowerVolume exec "/home/hoagie/.i3/volume.py down"
-bindsym XF86AudioMute exec "/home/hoagie/.i3/volume.py mute"
+bindsym XF86AudioRaiseVolume exec "/home/hoagie/.config/i3/volume.py up"
+bindsym XF86AudioLowerVolume exec "/home/hoagie/.config/i3/volume.py down"
+bindsym XF86AudioMute exec "/home/hoagie/.config/i3/volume.py mute"
 
 # Screen brightness controls
-bindsym XF86MonBrightnessUp exec "/home/hoagie/.i3/brightness.py inc"
-bindsym XF86MonBrightnessDown exec "/home/hoagie/.i3/brightness.py dec"
+bindsym XF86MonBrightnessUp exec "/home/hoagie/.config/i3/brightness.py inc"
+bindsym XF86MonBrightnessDown exec "/home/hoagie/.config/i3/brightness.py dec"
 
 # Start Applications
 bindsym $mod+b exec terminal -e 'bmenu'
@@ -254,17 +254,17 @@ exec --no-startup-id xfce4-power-manager
 exec --no-startup-id pamac-tray
 exec --no-startup-id clipit
 # exec --no-startup-id blueman-applet
-exec --no-startup-id /home/hoagie/.i3/start_conky.sh
+exec --no-startup-id /home/hoagie/.config/i3/start_conky.sh
 exec_always --no-startup-id ff-theme-util
 exec_always --no-startup-id fix_xcursor
 
 # Autostart custom
 exec --no-startup-id dunst
 exec --no-startup-id emacs --daemon
-exec --no-startup-id /home/hoagie/.i3/tabletmode.py
-exec --no-startup-id exec /home/hoagie/.i3/autorotate.sh
-exec --no-startup-id exec /home/hoagie/.i3/wacomconfig.sh
-exec --no-startup-id exec /home/hoagie/.i3/trackpointconfig.sh
+exec --no-startup-id /home/hoagie/.config/i3/tabletmode.py
+exec --no-startup-id exec /home/hoagie/.config/i3/autorotate.sh
+exec --no-startup-id exec /home/hoagie/.config/i3/wacomconfig.sh
+exec --no-startup-id exec /home/hoagie/.config/i3/trackpointconfig.sh
 exec --no-startup-id onboard
 
 exec --no-startup-id flameshot
@@ -272,22 +272,22 @@ bindsym $mod+Shift+s exec --no-startup-id flameshot gui
 
 # use mod+shift+p to get just the laptop screen, in case the external fails
 # gets unplugged etc.
-bindsym $mod+Shift+p exec --no-startup-id /home/hoagie/.i3/monitorswitch.py internal
+bindsym $mod+Shift+p exec --no-startup-id /home/hoagie/.config/i3/monitorswitch.py internal
 # Mode for monitors setup 
 bindsym $mod+p mode "$mode_monitor"
 set $mode_monitor (i)nternal, (e)xternal, both w/ external (r)ight, both w/ external (l)left
 mode "$mode_monitor" {
-    bindsym i exec --no-startup-id /home/hoagie/.i3/monitorswitch.py internal, mode "default"
-    bindsym e exec --no-startup-id /home/hoagie/.i3/monitorswitch.py external, mode "default"
-    bindsym r exec --no-startup-id /home/hoagie/.i3/monitorswitch.py both-right, mode "default"
-    bindsym l exec --no-startup-id /home/hoagie/.i3/monitorswitch.py both-left, mode "default"
+    bindsym i exec --no-startup-id /home/hoagie/.config/i3/monitorswitch.py internal, mode "default"
+    bindsym e exec --no-startup-id /home/hoagie/.config/i3/monitorswitch.py external, mode "default"
+    bindsym r exec --no-startup-id /home/hoagie/.config/i3/monitorswitch.py both-right, mode "default"
+    bindsym l exec --no-startup-id /home/hoagie/.config/i3/monitorswitch.py both-left, mode "default"
 
     # exit monitor mode: "Enter" or "Escape"
     bindsym Return mode "default"
     bindsym Escape mode "default"
 }
 # change the audio output via keyboard
-bindsym $mod+o exec --no-startup-id /home/hoagie/.i3/audio_output.py
+bindsym $mod+o exec --no-startup-id /home/hoagie/.config/i3/audio_output.py
 # I can configure a udev rule, or change to xkb, or...just this:
 bindsym $mod+i exec --no-startup-id xmodmap /home/hoagie/.Xmodmap
 

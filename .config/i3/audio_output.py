@@ -75,8 +75,8 @@ def filter_profiles(raw_lines):
 
 populate_profiles_data()
 prompt = "Current: " + selected
-# profile_name = dmenu(profiles_list.keys(), prompt, 10)
-profile_name = rofi(profiles_list.keys(), prompt, 10)
+profile_name = dmenu(profiles_list.keys(), prompt, 10)
+# profile_name = rofi(profiles_list.keys(), prompt, 10)
 
 if profile_name:
     pacmd(("set-card-profile", "0", profiles_list[profile_name]))

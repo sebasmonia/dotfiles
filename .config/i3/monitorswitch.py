@@ -5,7 +5,6 @@ primary, unless turned off."""
 import subprocess
 import sys
 
-
 def xrandr(params=None):
     p = ["xrandr"]
     if params:
@@ -13,7 +12,6 @@ def xrandr(params=None):
     result = subprocess.run(p,
                             stdout=subprocess.PIPE)
     return result.stdout.decode('utf-8')
-
 
 def get_outputs():
     data = xrandr().splitlines()
@@ -29,7 +27,6 @@ def get_arg_or_exit():
     if arg not in xrandr_configs:
         sys.exit(1)
     return arg
-
 
 xrandr_configs = {"internal": ["--output", "HDMI2", "--off",
                                "--output", "DP2", "--off",
@@ -52,6 +49,7 @@ external_output = "DP2" if "DP2" in connected else "HDMI2"
 # If the config selected has a marker for {external}, replace it
 params = [external_output if x == "{external}" else x
           for x in xrandr_configs[arg]]
+print("\n\n!!!", params, "!!!\n\n")
 xrandr(params)
 
 subprocess.run(["killall", "conky"])

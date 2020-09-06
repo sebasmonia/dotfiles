@@ -33,5 +33,6 @@ monitor-sensor \
                 xsetwacom set "Wacom Pen and multitouch sensor Finger touch" rotate $wacomrotate
                 xsetwacom set "Wacom Pen and multitouch sensor Pen stylus" rotate $wacomrotate
                 xsetwacom set "Wacom Pen and multitouch sensor Pen eraser" rotate $wacomrotate
+                sleep 1s
                 nitrogen --restore
 	done
