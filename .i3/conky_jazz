@@ -3,7 +3,7 @@ conky.config = {
 	background = true,
 	color2 = '3b2685',
 	cpu_avg_samples = 2,
-	default_color = '3b2685',
+	default_color = '009c9f',
 	double_buffer = true,
         draw_shades = false,
 	font = 'Consolas:size=11',
@@ -19,6 +19,7 @@ conky.config = {
 }
 conky.text = [[
 ${color}${font Consolas:bold:size=11}$alignc${time %Y-%m-%d %H:%M}
+
 
 ${color}CPU${font Consolas:bold:size=11}$alignr$cpu%
 $font$color2${top name 1}$alignr$color${top cpu 1}%
@@ -36,12 +37,12 @@ $color2${top_mem name 4}$alignr$color${top_mem mem_res 4}
 $color2${top_mem name 5}$alignr$color${top_mem mem_res 5}
 
 
-${color}Swap${font Consolas:bold:size=11}$alignr${swap}/ ${swapfree}
+${color}${font Consolas:bold:size=11}Swap$alignr${swap}/ ${swapfree}
 
 
-$font$alignr${execi 10000 awk -F= '/TION/ {print $2}' /etc/lsb-release |sed 's/"//g'} \
+$font${execi 10000 awk -F= '/TION/ {print $2}' /etc/lsb-release |sed 's/"//g'} \
 ${execi 10000 awk -F= '/EASE=/ {printf $2" "} /NAME/ {print $2}' /etc/lsb-release}
-${color2}${alignr}${execi 1200 whoami}@${nodename}
-${alignr}${color2}${font Consolas:size=11}uptime: ${color}${uptime_short}
-${color2}${font Consolas:size=11}${alignr}kernel: ${color}${kernel}
+${color2}${execi 1200 whoami}@${nodename}
+${color2}${font Consolas:size=11}uptime: ${color}${uptime_short}
+${color2}${font Consolas:size=11}kernel: ${color}${kernel}
 ]]

@@ -28,7 +28,6 @@ mod + o: change sound output
 mod + n: notification action
 
 
-
 ${color2}-- Shortcuts --${color}
 mod + Enter: terminal
 mod + shift + Enter: new Emacs frame
