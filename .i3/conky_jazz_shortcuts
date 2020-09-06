@@ -1,13 +1,14 @@
 conky.config = {
 	alignment = 'top_left',
 	background = true,
-	color2 = '2ECC71',
+	color2 = '009c9f',
 	cpu_avg_samples = 2,
-	default_color = 'FFFFFF',
+	default_color = '3b2685',
 	double_buffer = true,
-	font = 'Bitstream Vera Sans:size=8',
-	gap_x = 25,
-	gap_y = 25,
+        draw_shades = false,
+	font = 'Consolas:size=11',
+	gap_x = 20,
+	gap_y = 50,
 	minimum_width = 200,
 	no_buffers = true,
 	own_window = true,
@@ -17,32 +18,38 @@ conky.config = {
 	use_xft = true,
 }
 conky.text = [[
-${color2}-- Menus --${color}
+${color2}-- System --${color}
 mod + d: dmenu (launch app)
 mod + z: morc menu (system menu)
 mod + b: bmenu (system admin via keyb)
 mod + x: lock/hibernate/shut down menu
 mod + p: enable HDMI monitor if present
 mod + o: change sound output
+mod + n: notification action
 
-${color2}-- Apps --${color}
+
+
+${color2}-- Shortcuts --${color}
 mod + Enter: terminal
 mod + shift + Enter: new Emacs frame
 mod + F2: firefox
-mod + F3: pcmanfm (file manager).
+mod + F3: file manager
     Add shift for sudo
-mod + shift + r: restart i3
+mod + ctrl + m: pavucontrol
+mod + shift + s: screenshot
+
 
 ${color2}-- Window Management --${color}
 mod + shift + q: kill app
-mod + j k l ;: move focus, alt. use arrows
-mod + shift + j k l ;: move window
-mod + r: resize window with jkl;/arrows
-mod + h: split horizontally
-mod + v: split vertically
+mod + (j k l ;): move focus
+    Add ctrl to move next/prev container
+    Add shift to move to another monitor
+    Add ctrl + shift to move windows in container
+mod + r: resize window with (j k l ;)
+mod + (h v): split horizontally or vertically
 mod + f: toggle fullscreen
 mod + space: toggle focus floating
-    (add shift to toggle app)
+    Add shift to toggle app
 mod + a: focus parent
-mod + m: toggle status bar
+mod + m: toggle i3status
 ]]

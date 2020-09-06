@@ -37,7 +37,6 @@ Some high level notes:
   Also:
   https://wiki.archlinux.org/index.php/Bluetooth_keyboard
 ```
-* Probaly should move the conky changes to my home folder. I usually drop the files in this repo to /usr/share/conky, overriding the defaults
 
 ## Thinkpad tablet mode notes
 

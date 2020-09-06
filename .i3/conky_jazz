@@ -1,0 +1,47 @@
+conky.config = {
+	alignment = 'top_right',
+	background = true,
+	color2 = '3b2685',
+	cpu_avg_samples = 2,
+	default_color = '3b2685',
+	double_buffer = true,
+        draw_shades = false,
+	font = 'Consolas:size=11',
+	gap_x = 20,
+	gap_y = 50,
+	minimum_width = 200,
+	no_buffers = true,
+	own_window = true,
+	own_window_type = 'override',
+	own_window_transparent = true,
+	update_interval = 1.0,
+	use_xft = true,
+}
+conky.text = [[
+${color}${font Consolas:bold:size=11}$alignc${time %Y-%m-%d %H:%M}
+
+${color}CPU${font Consolas:bold:size=11}$alignr$cpu%
+$font$color2${top name 1}$alignr$color${top cpu 1}%
+$color2${top name 2}$alignr$color${top cpu 2}%
+$color2${top name 3}$alignr$color${top cpu 3}%
+$color2${top name 4}$alignr$color${top cpu 4}%
+$color2${top name 5}$alignr$color${top cpu 5}%
+
+
+${color}${font Consolas:bold:size=11}RAM$alignr$mem$font
+$color2${top_mem name 1}$alignr$color${top_mem mem_res 1}
+$color2${top_mem name 2}$alignr$color${top_mem mem_res 2}
+$color2${top_mem name 3}$alignr$color${top_mem mem_res 3}
+$color2${top_mem name 4}$alignr$color${top_mem mem_res 4}
+$color2${top_mem name 5}$alignr$color${top_mem mem_res 5}
+
+
+${color}Swap${font Consolas:bold:size=11}$alignr${swap}/ ${swapfree}
+
+
+$font$alignr${execi 10000 awk -F= '/TION/ {print $2}' /etc/lsb-release |sed 's/"//g'} \
+${execi 10000 awk -F= '/EASE=/ {printf $2" "} /NAME/ {print $2}' /etc/lsb-release}
+${color2}${alignr}${execi 1200 whoami}@${nodename}
+${alignr}${color2}${font Consolas:size=11}uptime: ${color}${uptime_short}
+${color2}${font Consolas:size=11}${alignr}kernel: ${color}${kernel}
+]]
