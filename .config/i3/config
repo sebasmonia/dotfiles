@@ -288,8 +288,9 @@ mode "$mode_monitor" {
 }
 # change the audio output via keyboard
 bindsym $mod+o exec --no-startup-id /home/hoagie/.config/i3/audio_output.py
-# I can configure a udev rule, or change to xkb, or...just this:
-bindsym $mod+i exec --no-startup-id xmodmap /home/hoagie/.Xmodmap
+# I used this binding to re-apply xmodmap, but changing keyb layouts
+# has a similar effect, so why not recycle the shortcut:
+bindsym $mod+i exec --no-startup-id /home/hoagie/.config/i3/keyboardlayout.py
 
 bindsym $mod+n exec --no-startup-id dunstctl context
 
