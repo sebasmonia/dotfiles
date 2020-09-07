@@ -293,6 +293,8 @@ bindsym $mod+o exec --no-startup-id /home/hoagie/.config/i3/audio_output.py
 bindsym $mod+i exec --no-startup-id /home/hoagie/.config/i3/keyboardlayout.py
 
 bindsym $mod+n exec --no-startup-id dunstctl context
+bindsym $mod+Shift+n exec --no-startup-id dunstctl history-pop
+bindsym $mod+Ctrl+n exec --no-startup-id dunstctl close-all
 
 # Color palette used for the terminal ( ~/.Xresources file )
 # Colors are gathered based on the documentation:

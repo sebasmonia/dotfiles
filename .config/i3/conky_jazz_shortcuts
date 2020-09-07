@@ -25,7 +25,12 @@ mod + b: bmenu (system admin via keyb)
 mod + x: lock/hibernate/shut down menu
 mod + p: enable HDMI monitor if present
 mod + o: change sound output
-mod + n: notification action
+
+
+${color2}-- Notifications --${color}
+mod + n: notification actio
+    Add shift for history
+    Add ctrl to close all
 
 
 ${color2}-- Shortcuts --${color}
