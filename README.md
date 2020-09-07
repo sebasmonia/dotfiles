@@ -70,7 +70,7 @@ Buttons:
 * Go to to previous/next workspace, from 1~10, wraps around
 * Close focused application
 * Move current app to a new workspace (uses `move_to_first_available_workspace.py`)
-* Volume up/down, using a custom script to allow volume > 100%
+* Volume up/down, using a custom script to allow volume > 100% (remember to update pulseaudio-ctl's `UPPER_THRESHOLD`)
 * Brightness up/down, using a custom script to avoid the screen turning off when going to 0%
 * Onboard. Added autocomplete to it.
 * CellWriter/Xournal++/Application menu
