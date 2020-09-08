@@ -67,8 +67,7 @@ bindsym XF86MonBrightnessDown exec "/home/hoagie/.config/i3/brightness.py dec"
 # Start Applications
 bindsym $mod+b exec terminal -e 'bmenu'
 bindsym $mod+F2 exec firefox
-# bindsym $mod+F3 exec pcmanfm
-bindsym $mod+F3 exec nautilus
+bindsym $mod+F3 exec pcmanfm
 bindsym $mod+Shift+F3 exec pcmanfm_pkexec
 
 bindsym $mod+t exec --no-startup-id pkill compton
