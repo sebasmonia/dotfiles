@@ -359,10 +359,10 @@ bindsym $mod+m bar mode toggle
 # Theme colors
 # class                   border  backgr. text    indic.   child_border
   client.focused          #0F1019 #E9E9F2 #D83441 #FDF6E3 #0F1019
-  client.focused_inactive #0F1019 #F5F5F9 #767676 #454948
-  client.unfocused        #0F1019 #F5F5F9 #767676 #454948 
-  client.urgent           #0F1019 #E9E9F2 #1ABC9C #268BD2
-  client.placeholder      #0F1019 #E9E9F2 #ffffff #000000 
+  client.focused_inactive #D0D0D0 #F5F5F9 #767676 #454948
+  client.unfocused        #D0D0D0 #F5F5F9 #767676 #454948 
+  client.urgent           #D0D0D0 #E9E9F2 #1ABC9C #268BD2
+  client.placeholder      #4E4E4E #E9E9F2 #ffffff #000000 
 
   client.background       #2B2C2B
 
