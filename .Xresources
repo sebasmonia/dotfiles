@@ -129,19 +129,19 @@ URxvt.keysym.Shift-Control-Down:  \033[1;6B
 ! PaperColour Theme
 
 URxvt.foreground: #0F1019
-URxvt.background: #E9E9F2
+URxvt.background: #F5F5F9
 
 ! black
 URxvt.color0: #EDEDED
 URxvt.color8: #969694
 
 ! red
-URxvt.color1: #D83441
-URxvt.color9: #D83441
+URxvt.color1: #e4747e
+URxvt.color9: #e4747e
 
 ! green
-URxvt.color2: #79D836
-URxvt.color10: #79D836
+URxvt.color2: #3b6f16
+URxvt.color10: #4c901c
 
 ! yellow / orange
 URxvt.color3: #D85F00
@@ -157,9 +157,9 @@ URxvt.color5: #8700AF
 URxvt.color13: #8700AF
 
 ! cyan
-URxvt.color6: #D5FAFF
-URxvt.color14: #D5FAFF
+URxvt.color6: #00bcd5
+URxvt.color14: #00bcd5
 
 ! white
-URxvt.color7: #eaeafa
-URxvt.color15: #F5F5F9
+URxvt.color7: #595997
+URxvt.color15: #597897
