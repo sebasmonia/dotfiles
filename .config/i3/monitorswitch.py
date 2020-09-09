@@ -57,4 +57,4 @@ xrandr(params)
 
 subprocess.run(["killall", "conky"])
 subprocess.run(["nitrogen", "--restore"])
-subprocess.run(["start_conky_green"])
+subprocess.run(["/home/hoagie/.config/i3/start_conky.sh"])
