@@ -5,6 +5,7 @@ primary, unless turned off."""
 import subprocess
 import sys
 
+
 def xrandr(params=None):
     p = ["xrandr"]
     if params:
@@ -12,6 +13,7 @@ def xrandr(params=None):
     result = subprocess.run(p,
                             stdout=subprocess.PIPE)
     return result.stdout.decode('utf-8')
+
 
 def get_outputs():
     data = xrandr().splitlines()
@@ -28,17 +30,18 @@ def get_arg_or_exit():
         sys.exit(1)
     return arg
 
+
 xrandr_configs = {"internal": ["--output", "HDMI2", "--off",
                                "--output", "DP2", "--off",
                                "--output", "eDP1", "--auto", "--primary"],
                   "external": ["--output", "{external}", "--auto", "--primary",
                                "--output", "eDP1", "--off"],
                   "both-right": ["--output", "eDP1", "--auto", "--primary",
-                                 "--output", "{external}", "--auto", "--right-of",
-                                 "eDP1"],
+                                 "--output", "{external}", "--auto",
+                                 "--right-of", "eDP1"],
                   "both-left": ["--output", "eDP1", "--auto", "--primary",
-                                "--output", "{external}", "--auto", "--left-of",
-                                "eDP1"]}
+                                "--output", "{external}", "--auto",
+                                "--left-of", "eDP1"]}
 
 arg = get_arg_or_exit()
 
