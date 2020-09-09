@@ -205,7 +205,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (setq dired-compress-files-alist
         '(("\\.7z\\'" . "7z a -r %o %i")
           ("\\.zip\\'" . "7z a -r %o  %i")))
-  (global-set-key (kbd "<f1>") (lambda () (interactive) (dired "~/")))
   (define-key hoagie-keymap (kbd "f") 'project-find-file)
   (define-key hoagie-keymap (kbd "F") 'find-name-dired)
   (defun hoagie-dired-jump (&optional arg)
@@ -979,21 +978,39 @@ Dwim means: region, or defun, whichever applies first."
 ;; bindings by this one
 (global-set-key (kbd "C-x n") #'narrow-or-widen-dwim)
 
-(defun hoagie-go-to-repo ()
+(defun hoagie-go-home (arg)
+  (interactive "P")
+  (if arg
+      (dired-other-window "~/")
+    (dired "~/")))
+(global-set-key (kbd "<f1>") #'hoagie-go-home)
+
+(defun hoagie-go-to-repo (arg)
   "Jump to a repo dir from the common \"roots\".
 Works for home/work"
-  (interactive)
+  (interactive "P")
   (let ((directories '("~/github"
-                       "~/common-lisp")))
+                       "~/common-lisp"))
+        (opener (if arg
+                    #'dired-other-window
+                  #'dired)))
     (when (file-directory-p "c:/repos")
       (push "c:/repos" directories))
     (when (file-directory-p "~/repos")
       (push "~/repos" directories))
-    (dired (completing-read "Open directory: "
-                            (mapcan (lambda (dir-to-list) (cl-subseq
-                                                           (directory-files dir-to-list t)
-                                                           2))
-                                    directories)))))
+    (funcall opener (completing-read "Open directory: "
+                                     (mapcan (lambda (dir-to-list) (cl-subseq
+                                                                    (directory-files dir-to-list t)
+                                                                    2))
+                                             directories)))))
 (global-set-key [f2] #'hoagie-go-to-repo)
 
-(global-set-key [f3] (lambda () (interactive) (ido-find-file-in-dir "~/org")))
+(defun hoagie-open-org (arg)
+  (interactive "P")
+  (let ((opener (if arg
+                    #'ido-find-file-other-window
+                  #'ido-find-file))
+        (default-directory "~/org"))
+    (funcall opener)))
+
+(global-set-key [f3] #'hoagie-open-org)
