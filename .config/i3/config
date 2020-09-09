@@ -346,8 +346,8 @@ bar {
 
 #                      border  backgr. text
         focused_workspace  #D83441 #E9E9F2 #D83441
-        active_workspace   #F5F5F9 #F5F5F9 #0F1019
-        inactive_workspace #F5F5F9 #F5F5F9 #0F1019
+        active_workspace   #D0D0D0 #F5F5F9 #0F1019
+        inactive_workspace #D0D0D0 #F5F5F9 #0F1019
         binding_mode       #D83441 #E9E9F2 #D83441
         urgent_workspace   #D83441 #E9E9F2 #D83441
     }
