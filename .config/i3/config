@@ -340,16 +340,16 @@ bar {
 
      colors {
 
-        background #F5F5F9
+        background #E9E9F2
         statusline #0F1019
         separator  #0D0E16
 
 #                      border  backgr. text
-        focused_workspace  #D83441 #E9E9F2 #D83441
-        active_workspace   #D0D0D0 #F5F5F9 #0F1019
-        inactive_workspace #D0D0D0 #F5F5F9 #0F1019
-        binding_mode       #D83441 #E9E9F2 #D83441
-        urgent_workspace   #D83441 #E9E9F2 #D83441
+        focused_workspace  #D83441 #F5F5F9 #D83441
+        active_workspace   #D0D0D0 #E9E9F2 #0F1019
+        inactive_workspace #D0D0D0 #E9E9F2 #0F1019
+        binding_mode       #D83441 #F5F5F9 #D83441
+        urgent_workspace   #D83441 #F5F5F9 #D83441
     }
 }
 
@@ -358,9 +358,9 @@ bindsym $mod+m bar mode toggle
 
 # Theme colors
 # class                   border  backgr. text    indic.   child_border
-  client.focused          #0F1019 #E9E9F2 #D83441 #FDF6E3 #0F1019
-  client.focused_inactive #D0D0D0 #F5F5F9 #767676 #454948
-  client.unfocused        #D0D0D0 #F5F5F9 #767676 #454948 
+  client.focused          #0F1019 #F5F5F9 #D83441 #FDF6E3 #0F1019
+  client.focused_inactive #D0D0D0 #E9E9F2 #767676 #454948
+  client.unfocused        #D0D0D0 #E9E9F2 #767676 #454948 
   client.urgent           #D0D0D0 #E9E9F2 #1ABC9C #268BD2
   client.placeholder      #4E4E4E #E9E9F2 #ffffff #000000 
 
