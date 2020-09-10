@@ -28,7 +28,7 @@ mod + o: change sound output
 
 
 ${color2}-- Notifications --${color}
-mod + n: notification actio
+mod + n: notification action
     Add shift for history
     Add ctrl to close all
 
