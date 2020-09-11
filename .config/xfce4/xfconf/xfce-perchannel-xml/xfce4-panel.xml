@@ -40,9 +40,9 @@
       <property name="mode" type="uint" value="0"/>
       <property name="background-style" type="uint" value="1"/>
       <property name="background-rgba" type="array">
-        <value type="double" value="0.917647"/>
-        <value type="double" value="0.917647"/>
-        <value type="double" value="0.980392"/>
+        <value type="double" value="0.913725"/>
+        <value type="double" value="0.913725"/>
+        <value type="double" value="0.949020"/>
         <value type="double" value="1.000000"/>
       </property>
       <property name="nrows" type="uint" value="1"/>
@@ -60,11 +60,13 @@
       <property name="items" type="array">
         <value type="string" value="157846256413.desktop"/>
       </property>
+      <property name="disable-tooltips" type="bool" value="true"/>
     </property>
     <property name="plugin-19" type="string" value="launcher">
       <property name="items" type="array">
         <value type="string" value="157846273816.desktop"/>
       </property>
+      <property name="disable-tooltips" type="bool" value="true"/>
     </property>
     <property name="plugin-21" type="string" value="separator">
       <property name="expand" type="bool" value="true"/>
@@ -83,26 +85,31 @@
       <property name="items" type="array">
         <value type="string" value="15784631701.desktop"/>
       </property>
+      <property name="disable-tooltips" type="bool" value="true"/>
     </property>
     <property name="plugin-34" type="string" value="launcher">
       <property name="items" type="array">
         <value type="string" value="15784633282.desktop"/>
       </property>
+      <property name="disable-tooltips" type="bool" value="true"/>
     </property>
     <property name="plugin-2" type="string" value="launcher">
       <property name="items" type="array">
         <value type="string" value="15785403391.desktop"/>
       </property>
+      <property name="disable-tooltips" type="bool" value="true"/>
     </property>
     <property name="plugin-5" type="string" value="launcher">
       <property name="items" type="array">
         <value type="string" value="15785405153.desktop"/>
       </property>
+      <property name="disable-tooltips" type="bool" value="true"/>
     </property>
     <property name="plugin-17" type="string" value="launcher">
       <property name="items" type="array">
         <value type="string" value="15792378742.desktop"/>
       </property>
+      <property name="disable-tooltips" type="bool" value="true"/>
     </property>
     <property name="plugin-35" type="string" value="separator">
       <property name="expand" type="bool" value="true"/>
@@ -117,6 +124,7 @@
       <property name="items" type="array">
         <value type="string" value="15795831951.desktop"/>
       </property>
+      <property name="disable-tooltips" type="bool" value="true"/>
     </property>
     <property name="plugin-38" type="string" value="separator">
       <property name="expand" type="bool" value="true"/>
@@ -126,12 +134,14 @@
         <value type="string" value="15860282531.desktop"/>
       </property>
       <property name="show-label" type="bool" value="false"/>
+      <property name="disable-tooltips" type="bool" value="true"/>
     </property>
     <property name="plugin-40" type="string" value="launcher">
       <property name="items" type="array">
         <value type="string" value="15860285374.desktop"/>
       </property>
       <property name="show-label" type="bool" value="false"/>
+      <property name="disable-tooltips" type="bool" value="true"/>
     </property>
     <property name="plugin-41" type="string" value="separator">
       <property name="expand" type="bool" value="true"/>
@@ -141,6 +151,7 @@
         <value type="string" value="15860287285.desktop"/>
       </property>
       <property name="show-label" type="bool" value="false"/>
+      <property name="disable-tooltips" type="bool" value="true"/>
     </property>
     <property name="plugin-9" type="string" value="launcher">
       <property name="show-label" type="bool" value="false"/>
@@ -154,11 +165,13 @@
       </property>
       <property name="move-first" type="bool" value="false"/>
       <property name="arrow-position" type="uint" value="0"/>
+      <property name="disable-tooltips" type="bool" value="true"/>
     </property>
     <property name="plugin-7" type="string" value="launcher">
       <property name="items" type="array">
         <value type="string" value="15890468041.desktop"/>
       </property>
+      <property name="disable-tooltips" type="bool" value="true"/>
     </property>
     <property name="plugin-8" type="string" value="separator">
       <property name="expand" type="bool" value="true"/>
@@ -167,6 +180,7 @@
       <property name="items" type="array">
         <value type="string" value="15890478321.desktop"/>
       </property>
+      <property name="disable-tooltips" type="bool" value="true"/>
     </property>
     <property name="plugin-11" type="string" value="separator">
       <property name="expand" type="bool" value="true"/>
