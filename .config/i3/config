@@ -49,7 +49,7 @@ bindsym $mod+z exec --no-startup-id morc_menu
 ##bindsym $mod+Ctrl+m exec terminal -e 'alsamixer'
 exec --no-startup-id start-pulseaudio-x11
 exec --no-startup-id pa-applet --disable-key-grabbing
-bindsym $mod+Ctrl+m exec pavucontrol
+bindsym $mod+m exec pavucontrol
 
 ################################################################################################
 
@@ -66,9 +66,12 @@ bindsym XF86MonBrightnessDown exec "/home/hoagie/.config/i3/brightness.py dec"
 
 # Start Applications
 bindsym $mod+b exec terminal -e 'bmenu'
+bindsym $mod+F1 exec emacsclient -cn
 bindsym $mod+F2 exec firefox
 bindsym $mod+F3 exec pcmanfm
 bindsym $mod+Shift+F3 exec pcmanfm_pkexec
+bindsym $mod+F4 exec mailspring
+
 
 bindsym $mod+t exec --no-startup-id pkill compton
 bindsym $mod+Ctrl+t exec --no-startup-id compton -b
@@ -354,7 +357,7 @@ bar {
 }
 
 # hide/unhide i3status bar
-bindsym $mod+m bar mode toggle
+# bindsym $mod+m bar mode toggle
 
 # Theme colors
 # class                   border  backgr. text    indic.   child_border
