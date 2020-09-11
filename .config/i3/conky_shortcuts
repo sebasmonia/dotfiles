@@ -25,7 +25,7 @@ mod + b: bmenu (system admin via keyb)
 mod + x: lock/hibernate/shut down menu
 mod + p: enable HDMI monitor if present
 mod + o: change PulseAudio output
-mod + i: change PulseAudio output
+mod + i: toggle keyboard us/us(intl)
 mod + m: pavucontrol
 mod + shift + s: screenshot
 
