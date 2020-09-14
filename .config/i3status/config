@@ -35,14 +35,14 @@ wireless _first_ {
 }
 
 battery all {
-        format = " bat %percentage (%remaining)%status "
+        format = " bat %percentage (%remaining %status)"
         format_down = "No battery"
         last_full_capacity = true
         integer_battery_capacity = true
         status_chr = ""
-        status_bat = ""
-        status_unk = "?"
-        status_full = ""
+        status_bat = ""
+        status_unk = "-"
+        status_full = ""
         low_threshold = 21
         threshold_type = percentage
 }
