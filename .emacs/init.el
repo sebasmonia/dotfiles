@@ -347,9 +347,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (define-key hoagie-dap-keymap (kbd "c") #'dap-continue)
   (define-key hoagie-dap-keymap (kbd "s") #'dap-disconnect) ;; "Stop"
   (define-key hoagie-keymap (kbd "d") hoagie-dap-keymap)
-  )
-
-(use-package dap-netcore :load-path "~/.emacs.d/lisp/"
   :custom
   (dap-netcore-install-dir "c:/")
   )
@@ -564,16 +561,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (:map hoagie-keymap
         ("n" . sharper-main-transient)))
 
-(use-package shell
-  :ensure nil
-  :init
-  (use-package better-shell
-    :bind (:map hoagie-keymap
-                ("`" . better-shell-for-current-dir)))
-  :hook
-  (shell-mode . (lambda ()
-                  (toggle-truncate-lines t))))
-
 (use-package sly
   :commands sly
   :config
@@ -585,8 +572,8 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (use-package sql
   :ensure nil
   :custom
-  (sql-ms-options nil)
-  (sql-ms-program "sqlcmdline")
+  (sql-ms-options '("--driver" "ODBC Driver 17 for SQL Server"))
+  (sql-ms-program "/home/hoagie/github/sqlcmdline/sqlcmdline.py")
   :config
   (add-hook 'sql-interactive-mode-hook (lambda () (setq truncate-lines t))))
 
@@ -597,6 +584,29 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   :mode "\\.tf$"
   :config
   (add-hook 'terraform-mode-hook #'terraform-format-on-save-mode))
+
+
+;; (use-package shell
+;;   :ensure nil
+;;   :init
+;;   (use-package better-shell
+;;     :bind (:map hoagie-keymap
+;;                 ("`" . better-shell-for-current-dir)))
+;;   :hook
+;;   (shell-mode . (lambda ()
+;;                   (toggle-truncate-lines t))))
+(use-package vterm
+  :demand t ;; ?
+  :custom
+  (vterm-max-scrollback 100000)
+  (vterm-kill-buffer-on-exit nil))
+
+(use-package vterm-toggle
+  :demand t
+  :after vterm
+  :bind
+  (:map hoagie-keymap
+        ("`" . vterm-toggle-cd)))
 
 (use-package web-mode
   :mode
@@ -863,6 +873,11 @@ With ARG, do this that many times."
 
 ;; THEMES
 
+(use-package modus-operandi-theme
+  :demand t
+  :custom
+  (modus-operandi-theme-completions 'moderate))
+
 (use-package doom-themes
   :demand t
   :config
@@ -878,15 +893,16 @@ With ARG, do this that many times."
                                         doom-challenger-deep
                                         doom-nord-light
                                         doom-oceanic-next
-                                        doom-one-light)
+                                        doom-one-light
+                                        modus-operandi
+                                        solo-jazz)
                                       nil
                                       t)))
     (mapc 'disable-theme custom-enabled-themes)
     (load-theme (intern new-theme) t))
 
 (global-set-key (kbd "C-<f11>") #'hoagie-load-theme)
-(hoagie-load-theme "doom-one-light")
-;; (hoagie-load-theme "doom-acario-light")
+(hoagie-load-theme "modus-operandi")
 
 (use-package doom-modeline
   :ensure t
