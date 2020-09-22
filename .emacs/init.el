@@ -49,9 +49,6 @@
 (global-set-key (kbd "<menu>") 'hoagie-keymap)
 (global-set-key (kbd "C-'") 'hoagie-keymap) ;; BT keyboard has an uncomfortable menu key, so...
 
-(use-package 2048-game
-  :commands 2048-game)
-
 ;; could be replaced by isearch-lazy-count...
 (use-package anzu
   :bind
@@ -168,20 +165,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (:map hoagie-keymap
         ("g" . deadgrep))
   :config
-  ;; From "Underrated MELPA packages" @ r/emacs
-  ;; pick a subdir from the project to run
-  ;;   (defun hoagie-dg (search-term directory)
-  ;;     "Start a ripgrep search for SEARCH-TERM from DIRECTORY.
-  ;; If called with a prefix argument, create the results buffer but
-  ;; don't actually start the search."
-  ;;     (interactive
-  ;;      (list (deadgrep--read-search-term)
-  ;;            (read-directory-name "Directory: "
-  ;;                                 (funcall deadgrep-project-root-function))))
-  ;;     (let ( (deadgrep-project-root-function (list 'lambda '() directory)) )
-  ;;       (deadgrep search-term)
-  ;;       ))
-  ;;   (define-key hoagie-keymap (kbd "G") #'hoagie-dg)
   (defun deadgrep--format-command-patch (rg-command)
     "Add --hidden to rg-command."
     (replace-regexp-in-string "^rg " "rg --hidden " rg-command))
@@ -240,7 +223,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 
 (use-package ediff
   :ensure nil
-  :demand
   :custom
   (ediff-forward-word-function 'forward-char) ;; from https://emacs.stackexchange.com/a/9411/17066
   (ediff-highlight-all-diffs t)
@@ -286,13 +268,13 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   :config
   (setq browse-url-browser-function 'eww-browse-url)
   (define-key eww-mode-map "o" 'eww)
-  (define-key eww-mode-map "O" 'eww-browse-with-external-browser)
+  (define-key eww-mode-map "O" 'eww-browse-with-external-browser))
 
-  (use-package eww-lnum
-    :ensure t
-    :bind
-    (:map eww-mode-map
-          ("C-SPC" . eww-lnum-follow))))
+(use-package eww-lnum
+  :after eww
+  :bind
+  (:map eww-mode-map
+        ("C-SPC" . eww-lnum-follow)))
 
 ;; My own shortcut bindings to LSP, under hoagie-keymap "l", are defined in the :config section
 (setq lsp-keymap-prefix "C-c C-l")
@@ -348,8 +330,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (define-key hoagie-dap-keymap (kbd "s") #'dap-disconnect) ;; "Stop"
   (define-key hoagie-keymap (kbd "d") hoagie-dap-keymap)
   :custom
-  (dap-netcore-install-dir "c:/")
-  )
+  (dap-netcore-install-dir "/home/hoagie/.emacs.d/.cache/"))
 
 ;; (use-package eglot
 ;;   :commands (eglot eglot-ensure)
@@ -384,6 +365,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (er/enable-mode-expansions 'csharp-mode 'er/add-cc-mode-expansions))
 
 (use-package fill-function-arguments
+  :demand t
   :commands (fill-function-arguments-dwim)
   :custom
   (fill-function-arguments-indent-after-fill t)
@@ -468,17 +450,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
               ("C-p" . icomplete-backward-completions)
               ("C-v" . icomplete-vertical-toggle)))
 
-(use-package csharp-mode ;; manual load since I removed omnisharp
-  :demand
-  :hook
-  (csharp-mode . (lambda ()
-                        (subword-mode)
-                        (setq-local fill-function-arguments-first-argument-same-line t)
-                        (setq-local fill-function-arguments-second-argument-same-line nil)
-                        (setq-local fill-function-arguments-last-argument-same-line t)
-                        (define-key csharp-mode-map [remap c-fill-paragraph] 'fill-function-arguments-dwim))))
-
-
 (use-package json-mode
   :mode "\\.json$")
 
@@ -522,6 +493,11 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (use-package package-lint
   :commands package-lint-current-buffer)
 
+(use-package project
+  :init
+  (add-to-list 'project-switch-commands '(?m "Magit status" magit-status))
+  (add-to-list 'project-switch-commands '(?s "Shell" project-shell)))
+
 (use-package plantuml-mode
   :commands plantuml-mode
   :mode (("\\.puml$" . plantuml-mode)
@@ -561,6 +537,18 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (:map hoagie-keymap
         ("n" . sharper-main-transient)))
 
+(use-package shell
+  :ensure nil
+  :hook
+  (shell-mode . (lambda ()
+                  (toggle-truncate-lines t))))
+
+
+(use-package better-shell
+  :after shell
+  :bind (:map hoagie-keymap
+              ("`" . better-shell-for-current-dir)))
+
 (use-package sly
   :commands sly
   :config
@@ -585,29 +573,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   :config
   (add-hook 'terraform-mode-hook #'terraform-format-on-save-mode))
 
-
-;; (use-package shell
-;;   :ensure nil
-;;   :init
-;;   (use-package better-shell
-;;     :bind (:map hoagie-keymap
-;;                 ("`" . better-shell-for-current-dir)))
-;;   :hook
-;;   (shell-mode . (lambda ()
-;;                   (toggle-truncate-lines t))))
-(use-package vterm
-  :demand t ;; ?
-  :custom
-  (vterm-max-scrollback 100000)
-  (vterm-kill-buffer-on-exit nil))
-
-(use-package vterm-toggle
-  :demand t
-  :after vterm
-  :bind
-  (:map hoagie-keymap
-        ("`" . vterm-toggle-cd)))
-
 (use-package web-mode
   :mode
   (("\\.html$" . web-mode)
@@ -629,13 +594,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (web-mode-enable-current-element-highlight t)
   (web-mode-markup-indent-offset 2))
 
-;; (use-package wgrep
-;;   :demand t
-;;   :custom
-;;   (wgrep-enable-key "e")
-;;   (wgrep-auto-save-buffer t)
-;;   (wgrep-change-readonly-file t))
-
 (use-package which-key
   :config
   (which-key-mode)
@@ -643,18 +601,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   :custom
   (which-key-side-window-max-width 0.4)
   (which-key-sort-order 'which-key-prefix-then-key-order))
-
-;; Trying windmove instead
-(global-set-key (kbd "M-o") 'other-window)
-(global-set-key (kbd "M-O") 'other-frame)
-;; (global-set-key (kbd "M-o") 'other-frame)
-;; (use-package windmove
-;;   :ensure t
-;;   :config
-;;   (global-set-key (kbd "C-M-j") 'windmove-left)
-;;   (global-set-key (kbd "C-M-k") 'windmove-down)
-;;   (global-set-key (kbd "C-M-l") 'windmove-up)
-;;   (global-set-key (kbd "C-M-;") 'windmove-right))
 
 (use-package ws-butler
   :hook (prog-mode . ws-butler-mode))
@@ -762,6 +708,8 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (global-set-key (kbd "C-M-{") (lambda () (interactive)(enlarge-window-horizontally 5)))
 (global-set-key (kbd "C-M-_") (lambda () (interactive)(shrink-window 5)))
 (global-set-key (kbd "C-M-+") (lambda () (interactive)(shrink-window -5)))
+(global-set-key (kbd "M-o") 'other-window)
+(global-set-key (kbd "M-O") 'other-frame)
 (global-set-key (kbd "M-N") 'next-buffer)
 (global-set-key (kbd "M-P") 'previous-buffer)
 (global-set-key (kbd "C-d") 'delete-forward-char) ;; replace delete-char
