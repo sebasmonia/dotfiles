@@ -5,9 +5,7 @@ A place to store my i3 and Emacs configuration, plus other misc scripts.
 * Manjaro i3 (duh!)
 * Consolas font (ttf-vista-fonts in AUR)
 * acpilight (xbacklight replacement), pulseaudio_ctl for brightness and volume controls
-* acpid to show the touch panel automatically
 * evdev-right-click-emulation for right click w/long touch tap
-* iio-sensor-proxy for autorotation
 * flameshot for screenshots
 * Probably others I missed but will keep adding here
 
@@ -41,19 +39,16 @@ Some high level notes:
 ## Thinkpad tablet mode notes
 
 * Firefox touch scroll and zoom via: https://superuser.com/a/1485044
-* Screen rotation via autorotate.sh, autostarted in i3 config
-  * Script rotates three screen inputs (touch, pen input, pen eraser)
-* Pen button configuration:
+* Touch screen gestures via Gester https://github.com/witty91/gester/, customizations in this repo
+  * Screen rotation with 4-finger rotate gesture, flip screen with 4 finger swipe from top/bottom edge
+  * 3 finger swipe sideways to move between workspaces
+  * 3 finger swipe up/down to show xfce4-panel (more details on the panel below)
+* `rotate.py` handles rotation of the screen via xrandr and the inputs for pen/touchscreen (invoked by gester)
+* Pen button default configuration:
   * Tip is left click
   * Lower button is middle click
   * Top button (eraser) works on hover, used as right click
 * Fingerprint reader doesn't have a driver yet.
-* Touch control panel is activated when the laptop changes to table mode
-  * Handled via tabletmode.py, autostarted in i3 config
-  * Listens to all ACPI events, there's potential to handle more things
-      * Don't forget to `systemctl start acpid.service` and `enable` :)
-  * Details on panel buttons below
-* Gestures and right click support via https://github.com/PeterCxy/evdev-right-click-emulation and the Gesture option in the Wacom drivers. In theory should use touchegg for those, since I don't have a DE.
 
 ### Touch keyboard
 
