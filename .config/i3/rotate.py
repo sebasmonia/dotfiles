@@ -6,8 +6,8 @@ import sys
 import time
 
 wacom_to_xrandr = {"none": "normal",
-                   "ccw": "right",
-                   "cw": "left",
+                   "ccw": "left",
+                   "cw": "right",
                    "half": "inverted"}
 
 wacom_devices = ["Wacom Pen and multitouch sensor Finger touch",
@@ -25,9 +25,9 @@ what should be the next orientation."""
     # There are fancier ways of doing this but I don't want to get lost
     # on the logic:
     if gesture_direction == "left":
-        direction = +1
-    elif gesture_direction == "right":
         direction = -1
+    elif gesture_direction == "right":
+        direction = +1
     elif gesture_direction == "flip":
         direction = +2
 
