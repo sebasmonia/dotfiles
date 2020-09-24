@@ -42,8 +42,8 @@
             "", /*3 finger swipe from top*/
             "", /*3 finger swipe from right*/
             "", /*3 finger swipe from left*/
-            "xfce4-panel -q", /*3 finger swipe down*/
-            "xfce4-panel -d &", /*3 finger swipe up*/
+            "", /*3 finger swipe down*/
+            "/home/hoagie/.config/i3/toggle_xfce4-panel.py", /*3 finger swipe up*/
             "/home/hoagie/.config/i3/go_to_workspace.py prev", /*3 finger swipe right*/
             "/home/hoagie/.config/i3/go_to_workspace.py next", /*3 finger swipe left*/
             "", /*3 finger rotation left*/
@@ -56,8 +56,8 @@
             "", /*4 finger swipe up*/
             "", /*4 finger swipe right*/
             "", /*4 finger swipe left*/
-            "/home/hoagie/.config/i3/rotate.py left", /*4 finger rotation left*/
-            "/home/hoagie/.config/i3/rotate.py right", /*4 finger rotation right*/
+            "/home/hoagie/.config/i3/rotate.py left ", /*4 finger rotation left*/
+            "/home/hoagie/.config/i3/rotate.py right ", /*4 finger rotation right*/
             "", /*5 finger swipe from bottom*/
             "", /*5 finger swipe from top*/
             "", /*5 finger swipe from right*/
