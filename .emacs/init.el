@@ -494,7 +494,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   :commands package-lint-current-buffer)
 
 (use-package project
-  :init
+  :config
   (add-to-list 'project-switch-commands '(?m "Magit status" magit-status))
   (add-to-list 'project-switch-commands '(?s "Shell" project-shell)))
 
@@ -949,25 +949,25 @@ Dwim means: region, or defun, whichever applies first."
     (dired "~/")))
 (global-set-key (kbd "<f1>") #'hoagie-go-home)
 
-(defun hoagie-go-to-repo (arg)
-  "Jump to a repo dir from the common \"roots\".
-Works for home/work"
-  (interactive "P")
-  (let ((directories '("~/github"
-                       "~/common-lisp"))
-        (opener (if arg
-                    #'dired-other-window
-                  #'dired)))
-    (when (file-directory-p "c:/repos")
-      (push "c:/repos" directories))
-    (when (file-directory-p "~/repos")
-      (push "~/repos" directories))
-    (funcall opener (completing-read "Open directory: "
-                                     (mapcan (lambda (dir-to-list) (cl-subseq
-                                                                    (directory-files dir-to-list t)
-                                                                    2))
-                                             directories)))))
-(global-set-key [f2] #'hoagie-go-to-repo)
+;; (defun hoagie-go-to-repo (arg)
+;;   "Jump to a repo dir from the common \"roots\".
+;; Works for home/work"
+;;   (interactive "P")
+;;   (let ((directories '("~/github"
+;;                        "~/common-lisp"))
+;;         (opener (if arg
+;;                     #'dired-other-window
+;;                   #'dired)))
+;;     (when (file-directory-p "c:/repos")
+;;       (push "c:/repos" directories))
+;;     (when (file-directory-p "~/repos")
+;;       (push "~/repos" directories))
+;;     (funcall opener (completing-read "Open directory: "
+;;                                      (mapcan (lambda (dir-to-list) (cl-subseq
+;;                                                                     (directory-files dir-to-list t)
+;;                                                                     2))
+;;                                              directories)))))
+;; (global-set-key [f2] #'hoagie-go-to-repo)
 
 (defun hoagie-open-org (arg)
   (interactive "P")
@@ -978,3 +978,45 @@ Works for home/work"
     (funcall opener)))
 
 (global-set-key [f3] #'hoagie-open-org)
+
+
+;; Emacs window management
+
+;; Using the code in link below as starting point:
+;; https://protesilaos.com/dotemacs/#h:3d8ebbb1-f749-412e-9c72-5d65f48d5957
+;; My config is a lot simpler for now. Just display most things below, use
+;; 1/3rd or 40% of the screen. On the left shell/xref on the left and on the right
+;; compilation/help/messages and a few others
+(setq display-buffer-alist
+      '(;; right side window
+        ("\\(*shell.*\\|*xref.*\\|\\*Occur\\*\\|\\*deadgrep.*\\)"
+         (display-buffer-in-side-window)
+         (window-height . 0.40)
+         (side . bottom)
+         (slot . 0))
+        ;; bottom side window - no reuse
+        ("\\(COMMIT_EDITMSG\\)"
+         (display-buffer-in-side-window)
+         (window-height . 0.33)
+         (side . bottom))
+        ;; bottom side window - reuse if in another frame
+        ("\\*\\(Backtrace\\|Warnings\\|Environments .*\\|Builds .*\\|compilation\\|[Hh]elp\\|Messages\\|Flymake.*\\|eglot.*\\)\\*"
+         (display-buffer-reuse-window
+          display-buffer-in-side-window)
+         (window-height . 0.33)
+         (reusable-frames . visible)
+         (side . bottom)
+         (slot . 1))
+        ;; stuff that splits to the right - non-side window
+        ("\\(magit\\|\\*info\\).*"
+         (display-buffer-in-direction)
+         (window . main)
+         (direction . right))))
+(setq switch-to-buffer-obey-display-actions nil)
+
+(defun hoagie-quit-side-windows ()
+  "Quit side windows of the current frame."
+  (interactive)
+  (dolist (window (window-at-side-list))
+    (quit-window nil window)))
+(define-key hoagie-keymap (kbd "0") #'hoagie-quit-side-windows)
