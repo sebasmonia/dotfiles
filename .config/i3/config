@@ -274,6 +274,10 @@ exec --no-startup-id exec gester &
 exec --no-startup-id flameshot
 bindsym $mod+Shift+s exec --no-startup-id flameshot gui
 
+exec --no-startup-id /home/hoagie/.config/i3/keyboard/keyboard_setup.sh
+# binding to re-apply keyboard configuration, when a new one is plugged in
+bindsym $mod+i exec --no-startup-id /home/hoagie/.config/i3/keyboard/keyboard_setup.sh
+
 # use mod+shift+p to get just the laptop screen, in case the external fails
 # gets unplugged etc.
 bindsym $mod+Shift+p exec --no-startup-id /home/hoagie/.config/i3/monitorswitch.py internal
@@ -343,33 +347,31 @@ bar {
         # font xft:URWGothic-Book 11
 	strip_workspace_numbers yes
 
-     colors {
+  colors {
+    background #F8F8F8
+    statusline #282828
+    separator  #282828
 
-        background #E9E9F2
-        statusline #0F1019
-        separator  #0D0E16
-
-#                      border  backgr. text
-        focused_workspace  #D83441 #F5F5F9 #D83441
-        active_workspace   #D0D0D0 #E9E9F2 #0F1019
-        inactive_workspace #D0D0D0 #E9E9F2 #0F1019
-        binding_mode       #D83441 #F5F5F9 #D83441
-        urgent_workspace   #D83441 #D83441 #F5F5F9
-    }
+    focused_workspace  #093060 #DDE3F4 #093060
+    active_workspace   #767676 #EFEFEF #767676
+    inactive_workspace #767676 #EFEFEF #767676
+    urgent_workspace   #A60000 #FFFFFF #A60000
+    binding_mode       #093060 #DDE3F4 #093060
+  }
 }
 
 # hide/unhide i3status bar
 # bindsym $mod+m bar mode toggle
 
 # Theme colors
-# class                   border  backgr. text    indic.   child_border
-  client.focused          #0F1019 #F5F5F9 #D83441 #FDF6E3 #0F1019
-  client.focused_inactive #D0D0D0 #E9E9F2 #767676 #454948
-  client.unfocused        #D0D0D0 #E9E9F2 #767676 #454948 
-  client.urgent           #D0D0D0 #E9E9F2 #1ABC9C #268BD2
-  client.placeholder      #4E4E4E #E9E9F2 #ffffff #000000 
+# class                 border  bground text    indicator child_border
+client.focused          #0F1019 #F8F8F8 #093060 #0F1019   #0F1019
+client.focused_inactive #D0D0D0 #EFEFEF #767676 #767676   #767676
+client.unfocused        #D0D0D0 #EFEFEF #767676 #767676   #767676
+client.urgent           #D0D0D0 #FFFFFF #A60000 #A60000   #A60000
+client.placeholder      #D0D0D0 #EFEFEF #093060 #0F1019   #0F1019
 
-  client.background       #2B2C2B
+client.background       #2B2C2B
 
 #############################
 ### settings for i3-gaps: ###

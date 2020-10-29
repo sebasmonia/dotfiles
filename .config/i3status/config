@@ -7,11 +7,11 @@
 # If the above line is not correctly displayed, fix your editor first!
 
 general {
-        colors = true
         interval = 10
-        color_good = "#2AA198"
-        color_bad = "#586E75"
-        color_degraded = "#DC322F"
+        colors = true
+        color_good = "#005E00"
+        color_degraded = "#813E00"
+        color_bad = "#A60000"
 }
 
 order += "cpu_usage"

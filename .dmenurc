@@ -6,16 +6,16 @@
 DMENU_FN="Consolas-12"
 
 ## background colour for unselected menu-items
-DMENU_NB="#F5F5F9"
+DMENU_NB="#EFEFEF"
 
 ## textcolour for unselected menu-items
-DMENU_NF="#0F1019"
+DMENU_NF="#767676"
 
 ## background colour for selected menu-items
-DMENU_SB="#E9E9F2"
+DMENU_SB="#DDE3F4"
 
 ## textcolour for selected menu-items
-DMENU_SF="#D83441"
+DMENU_SF="#093060"
 
 ## command for the terminal application to be used:
 TERMINAL_CMD="terminal -e"
