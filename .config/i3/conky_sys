@@ -3,7 +3,7 @@ conky.config = {
 	background = true,
 	color2 = '0F1019',
 	cpu_avg_samples = 2,
-	default_color = 'D83441',
+	default_color = '093060',
 	double_buffer = true,
         draw_shades = false,
 	font = 'Consolas:size=11',

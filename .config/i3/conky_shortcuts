@@ -1,7 +1,7 @@
 conky.config = {
 	alignment = 'top_left',
 	background = true,
-	color2 = 'D83441',
+	color2 = '093060',
 	cpu_avg_samples = 2,
 	default_color = '0F1019',
 	double_buffer = true,
