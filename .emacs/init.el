@@ -512,6 +512,14 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (:map powershell-mode-map
         ("M-`" . nil)))
 
+;; from https://karthinks.com/software/batteries-included-with-emacs/
+(use-package pulse
+  :ensure nil
+  :custom
+  (pulse-iterations 20)
+  :custom-face
+  (pulse-highlight-start-face ((t (:inherit region)))))
+
 (use-package python
   :ensure nil
   :custom
