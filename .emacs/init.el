@@ -131,7 +131,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
         ("<SPC>" . company-complete-common))
   :hook (after-init . global-company-mode)
   :custom
-  (company-idle-delay 0)
+  (company-idle-delay 0.2)  ;; Makes the Python REPL more responsive
   (company-minimum-prefix-length 3)
   (company-selection-wrap-around t)
   :config
@@ -190,6 +190,12 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
           ("\\.zip\\'" . "7z a -r %o  %i")))
   (define-key hoagie-keymap (kbd "f") 'project-find-file)
   (define-key hoagie-keymap (kbd "F") 'find-name-dired)
+  ;; from Emacs Wiki
+  (defun dired-open-file ()
+    "Call xdg-open on the file at point."
+    (interactive)
+    (call-process "xdg-open" nil 0 nil (dired-get-filename nil t)))
+  (define-key dired-mode-map (kbd "C-<return>") #'dired-open-file)
   (defun hoagie-dired-jump (&optional arg)
     "Call dired-jump.  With prefix ARG, open in current window."
     (interactive "P")
@@ -254,10 +260,9 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   ;; the window config is restore but them _stuff happens_, so:
   (add-hook 'ediff-after-quit-hook-internal #'hoagie-ediff-restore-windows))
 
-(use-package elec-pair
-  :ensure nil
-  :init (electric-pair-mode))
-
+;; (use-package elec-pair
+;;   :ensure nil
+;;   :init (electric-pair-mode))
 
 (use-package eww
   :defer t
@@ -298,6 +303,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (lsp-enable-snippet nil)
   (lsp-enable-folding nil)
   (lsp-auto-guess-root t)
+  (lsp-file-watch-threshold nil)
   (lsp-eldoc-render-all t)
   (lsp-signature-auto-activate nil)
   (lsp-enable-symbol-highlighting nil)
@@ -314,6 +320,12 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (lsp-ui-peek-enable nil)
   (lsp-ui-sideline-enable nil))
 
+(use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp))))
+
 (use-package dap-mode
   :commands (dap-debug dap-breakpoints-add)
   :init
@@ -322,6 +334,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (dap-auto-configure-mode)
   (require 'dap-python)
   (require 'dap-pwsh)
+  (require 'dap-netcore)
   (defvar hoagie-dap-keymap (define-prefix-command 'hoagie-dap-keymap))
   (define-key hoagie-dap-keymap (kbd "d") #'dap-debug)
   (define-key hoagie-dap-keymap (kbd "b") #'dap-breakpoint-toggle)
@@ -427,7 +440,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   :demand t
   :custom
   (icomplete-show-matches-on-no-input t)
-  (icomplete-hide-common-prefix nil)
+  ;; (icomplete-hide-common-prefix nil)
   (icomplete-prospects-height 10)
   (icomplete-in-buffer t)
   ;; (completion-styles '(flex))
@@ -454,7 +467,9 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   :mode "\\.json$")
 
 (use-package lyrics
-  :commands lyrics)
+  :commands lyrics
+  :custom
+  (lyrics-backend 'lyrics-azlyrics))
 
 (with-eval-after-load "vc-hooks"
   (define-key vc-prefix-map "=" 'vc-ediff))
@@ -518,11 +533,20 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   :custom
   (pulse-iterations 20)
   :custom-face
-  (pulse-highlight-start-face ((t (:inherit region)))))
+  (pulse-highlight-start-face ((t (:inherit region))))
+  :config
+  (defun pulse-line (&rest _)
+    "Pulse the current line."
+    (pulse-momentary-highlight-one-line (point)))
+
+  (dolist (command '(scroll-up-command scroll-down-command
+                                       recenter-top-bottom other-window))
+    (advice-add command :after #'pulse-line)))
 
 (use-package python
   :ensure nil
   :custom
+  (python-shell-font-lock-enable nil)
   (python-shell-interpreter "ipython")
   (python-shell-interpreter-args "--pprint --simple-prompt"))
 
@@ -543,7 +567,9 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   :demand t
   :bind
   (:map hoagie-keymap
-        ("n" . sharper-main-transient)))
+        ("n" . sharper-main-transient))
+  :custom
+  (sharper-run-only-one t))
 
 (use-package shell
   :ensure nil
@@ -623,7 +649,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (setq w32-use-native-image-API t)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
-(setq frame-title-format "%b - Emacs")
 (setq inhibit-compacting-font-caches t)
 ; see https://emacs.stackexchange.com/a/28746/17066
 (setq auto-window-vscroll nil)
@@ -645,8 +670,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
                                (set-auto-mode)))))
 ;; Better defaults from https://github.com/jacmoe/emacs.d/blob/master/jacmoe.org
 (setq help-window-select t)
-;; Removed the one below, I think it impacts child frames and tooltips negatively
-;; (add-hook 'focus-out-hook 'garbage-collect)
 ;; From https://github.com/wasamasa/dotemacs/blob/master/init.org
 (setq line-number-display-limit-width 10000)
 (setq comint-prompt-read-only t)
@@ -658,9 +681,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 ;; Separate from the "~" shortcut
 (global-set-key (kbd "<S-f1>") (lambda () (interactive) (find-file user-init-file)))
 ;; What was in custom that didn't get use-package'd:
-(tool-bar-mode 0)
-(scroll-bar-mode 0)
-(menu-bar-mode 0)
 (delete-selection-mode)
 (blink-cursor-mode -1)
 (column-number-mode 1)
@@ -727,16 +747,9 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 ;; from https://emacsredux.com/blog/2020/06/10/comment-commands-redux/
 (global-set-key [remap comment-dwim] #'comment-line)
 (global-set-key (kbd "C-c r") 'recompile)
-(define-key hoagie-keymap (kbd "b") 'browse-url-at-point)
-(define-key hoagie-keymap (kbd "t") 'toggle-truncate-lines)
-;; used to be C-x K. Honestly I never used C-x C-k (macros) commands that much so :shrug:
-;; without the function it would simply show the menu like C-x k
-(defun hoagie-kill-this-buffer ()
-  "Kill the current buffer.
-If defined as a lambda then it shows a ? in the bindings list."
-  (interactive)
-  (kill-buffer))
-(define-key hoagie-keymap (kbd "k") 'hoagie-kill-this-buffer)
+(define-key hoagie-keymap (kbd "b") #'browse-url-at-point)
+(define-key hoagie-keymap (kbd "t") #'toggle-truncate-lines)
+(define-key hoagie-keymap (kbd "k") #'kill-this-buffer)
 (global-set-key (kbd "C-c !") 'flymake-show-diagnostics-buffer) ;; like flycheck's C-c ! l
 (global-set-key (kbd "C-;") 'dabbrev-expand)
 (global-set-key (kbd "<f6>") 'kmacro-start-macro)
@@ -999,7 +1012,7 @@ Dwim means: region, or defun, whichever applies first."
       '(;; right side window
         ("\\(*shell.*\\|*xref.*\\|\\*Occur\\*\\|\\*deadgrep.*\\)"
          (display-buffer-in-side-window)
-         (window-height . 0.40)
+         (window-height . 0.33)
          (side . bottom)
          (slot . 0))
         ;; bottom side window - no reuse
