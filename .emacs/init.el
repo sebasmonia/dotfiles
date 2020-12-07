@@ -533,7 +533,10 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   :custom
   (pulse-iterations 20)
   :custom-face
-  (pulse-highlight-start-face ((t (:inherit region))))
+  ;; the docs say not to customize this font, yet it is the only way
+  ;; to pulse an empty line...
+  (pulse-highlight-face ((t (:extend t))))
+  (pulse-highlight-start-face ((t (:inherit region :extend t))))
   :config
   (defun pulse-line (&rest _)
     "Pulse the current line."
