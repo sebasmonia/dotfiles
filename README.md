@@ -1,4 +1,12 @@
-A place to store my i3 and Emacs configuration, plus other misc scripts.
+A place to store my ~~i3 and~~ Emacs configuration, plus other misc scripts.
+
+## Update December 2020
+
+Early December I moved my personal laptop to Fedora 33 using the default Gnome setup. It works great for tablet mode,
+and I liked Fedora enough that I moved my work laptop too.  
+I might go back to the i3 setup someday, maybe after learning what I like and works from Gnome to replicate it.  
+There's pleasure in running your own "custom DE", and I learned a lot about the inner workings of many things in Linux.
+However the experience I get from Gnome is really polished, it's hard to compete with that :)
 
 ## Dependencies for a fresh install:
 
