@@ -41,11 +41,12 @@
 (setq custom-file (concat user-emacs-directory "custom.el"))
 
 (custom-set-faces
- '(default ((t (:family "Consolas" :foundry "outline" :slant normal :weight normal :height 78 :width normal)))))
+ '(default ((t (:family "Consolas" :foundry "MS  " :slant normal :weight normal :height 113 :width normal)))))
 
 ;; based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html
 (defvar hoagie-keymap (define-prefix-command 'hoagie-keymap) "My custom bindings.")
 (define-key key-translation-map (kbd "<apps>") (kbd "<menu>")) ;; compat Linux-Windows
+(define-key key-translation-map (kbd "<print>") (kbd "<menu>")) ;; curse you, thinkpad keyboard!!!
 (global-set-key (kbd "<menu>") 'hoagie-keymap)
 (global-set-key (kbd "C-'") 'hoagie-keymap) ;; BT keyboard has an uncomfortable menu key, so...
 
@@ -75,10 +76,10 @@
   :bind
   ("M-`" . back-button-global-backward)
   ("M-~" . back-button-global-forward)
-  ("C-`" . hoagie-push-mark)
+  ("C-`" . back-button-push-mark-local-and-global)
   :custom
-  (mark-ring-max 60)
-  (global-mark-ring-max 60)
+  (mark-ring-max 80)
+  (global-mark-ring-max 80)
   (set-mark-command-repeat-pop t)
   (back-button-global-backward-keystrokes nil)
   (back-button-global-forward-keystrokes nil)
@@ -89,27 +90,20 @@
   (back-button-smartrep-prefix "")
   :config
   (advice-add 'push-mark :override #'back-button-push-mark-local-and-global)
-  (defun hoagie-push-mark (&rest ignore)
-    "Pushes `point` to `mark-ring' and does not activate the region.
-Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
-    (interactive)
-    ;; from: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode
-    ;; And don't show the message "Mark set"
-    (back-button-push-mark-local-and-global (point) t nil))
   (defun hoagie-push-mark-if-not-repeat (command &rest args)
     "Push a mark if this is not a repeat invocation of `command'."
     (unless (equal last-command this-command)
-      (hoagie-push-mark)))
+      (back-button-push-mark-local-and-global)))
 
   (let ((advice-push-after '(isearch-forward
                              isearch-backward
                              )))
-    (mapc (lambda (f) (advice-add f :after #'hoagie-push-mark))
+    (mapc (lambda (f) (advice-add f :after #'back-button-push-mark-local-and-global))
           advice-push-after))
 
-  (let ((advice-push-before '(xref-goto-xref)))
-    (mapc (lambda (f) (advice-add f :after #'hoagie-push-mark))
-          advice-push-before))
+  ;; (let ((advice-push-before '(xref-goto-xref)))
+  ;;   (mapc (lambda (f) (advice-add f :before #'hoagie-push-mark))
+  ;;         advice-push-before))
 
   (let ((advice-pushnr-before '(scroll-up-command
                                 scroll-down-command
@@ -161,14 +155,16 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 
 (define-key hoagie-keymap (kbd "G") #'project-find-regexp)
 (use-package deadgrep
-  :bind
-  (:map hoagie-keymap
-        ("g" . deadgrep))
   :config
   (defun deadgrep--format-command-patch (rg-command)
     "Add --hidden to rg-command."
     (replace-regexp-in-string "^rg " "rg --hidden " rg-command))
-  (advice-add 'deadgrep--format-command :filter-return #'deadgrep--format-command-patch))
+  (advice-add 'deadgrep--format-command :filter-return #'deadgrep--format-command-patch)
+  (defun hoagie-deadgrep-push-before ()
+    (interactive)
+    (back-button-push-mark)
+    (call-interactively #'deadgrep))
+  (define-key hoagie-keymap (kbd "g") #'hoagie-deadgrep-push-before))
 
 (use-package dired
   :ensure nil
@@ -285,8 +281,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (setq lsp-keymap-prefix "C-c C-l")
 (defvar hoagie-lsp-keymap (define-prefix-command 'hoagie-lsp-keymap) "Custom bindings for LSP mode.")
 (use-package lsp-mode
-  :hook ((python-mode . lsp)
-         (csharp-mode . lsp)
+  :hook ((csharp-mode . lsp)
          ;; if you want which-key integration
          (lsp-mode . lsp-enable-which-key-integration))
   :commands (lsp lsp-signature-active)
@@ -344,23 +339,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (define-key hoagie-keymap (kbd "d") hoagie-dap-keymap)
   :custom
   (dap-netcore-install-dir "/home/hoagie/.emacs.d/.cache/"))
-
-;; (use-package eglot
-;;   :commands (eglot eglot-ensure)
-;;   :hook ((python-mode . eglot-ensure)
-;;          (csharp-mode . eglot-ensure))
-;;   :bind
-;;   (:map eglot-mode-map
-;;         (("C-c C-e r" . eglot-rename)
-;;          ("C-c C-e f" . eglot-format)
-;;          ("C-c C-e h" . eglot-help-at-point)))
-;;   :config
-;;   (add-to-list 'eglot-server-programs
-;;                `(csharp-mode . ("c:/home/omnisharp_64/OmniSharp.exe" "-lsp")))
-;;   ;; patch the argument. when nil, use "" instead.
-;;   (defun eglot--format-markup-patch (args)
-;;     (list (or (car args) "")))
-;;   (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch))
 
 (use-package eldoc-box
   :hook (prog-mode . eldoc-box-hover-mode)
@@ -448,6 +426,8 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
+  ;; use TAB to cycle candidates
+  (completion-cycle-threshold t)
   :config
   (fido-mode)
   (icomplete-vertical-mode)
@@ -484,17 +464,8 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   :init
   :bind
   ("C-x g" . magit-status)
-  :hook
-  (magit-mode . turn-on-magit-gitflow)
   :custom
   (magit-display-buffer-function 'display-buffer))
-
-(use-package magit-gitflow
-  :after magit
-  :init
-  (setq magit-gitflow-popup-key "C-;")
-  :config
-  (add-hook 'magit-mode-hook 'turn-on-magit-gitflow))
 
 (use-package git-timemachine
   :bind ("C-x M-G" . git-timemachine))
@@ -531,7 +502,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (use-package pulse
   :ensure nil
   :custom
-  (pulse-iterations 20)
+  (pulse-iterations 25)
   :custom-face
   ;; the docs say not to customize this font, yet it is the only way
   ;; to pulse an empty line...
@@ -561,6 +532,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (defun hoagie-occur-dwim ()
     "Run occur, if there's a region selected use that as input."
     (interactive)
+    (back-button-push-mark-local-and-global)
     (if (use-region-p)
         (occur (buffer-substring-no-properties (region-beginning) (region-end)))
       (command-execute 'occur)))
@@ -752,7 +724,7 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
 (global-set-key (kbd "C-c r") 'recompile)
 (define-key hoagie-keymap (kbd "b") #'browse-url-at-point)
 (define-key hoagie-keymap (kbd "t") #'toggle-truncate-lines)
-(define-key hoagie-keymap (kbd "k") #'kill-this-buffer)
+(define-key hoagie-keymap (kbd "k") (lambda () (interactive) (kill-buffer)))
 (global-set-key (kbd "C-c !") 'flymake-show-diagnostics-buffer) ;; like flycheck's C-c ! l
 (global-set-key (kbd "C-;") 'dabbrev-expand)
 (global-set-key (kbd "<f6>") 'kmacro-start-macro)
@@ -927,24 +899,23 @@ With ARG, do this that many times."
   ;; Dynamic font size adjustment per monitor
   (require 'cl-lib)
   (defun hoagie-adjust-font-size (frame)
-    "Inspired by https://emacs.stackexchange.com/a/44930/17066. FRAME is ignored.
-If I let Windows handle DPI everything looks blurry."
+    "Inspired by https://emacs.stackexchange.com/a/44930/17066. FRAME is ignored."
     (let* ((attrs (frame-monitor-attributes)) ;; gets attribs for current frame
            (monitor-name (alist-get 'name attrs))
            (width-mm (cl-first (alist-get 'mm-size attrs)))
            (width-px (cl-third (alist-get 'workarea attrs)))
            (size "14")) ;; default size, go big just in case
-      (when (equal width-mm 290) ;; laptop screen
-        (setq size "14"))
-      (when (eq width-mm 530) ;; monitor
+      ;; override the overrides
+      (when (string= monitor-name "0x057d")
+        (setq size "13"))
+      (when (string= monitor-name "S240HL")
         (setq size "11"))
-      ;; add more screens here ;;
       (when (eq (length (display-monitor-attributes-list)) 1) ;; override everything if no external monitors!
-        (setq size "12"))
+        (setq size "11"))
       (set-frame-font (concat "Consolas " size))
       (set-face-font 'eldoc-box-body
                      (frame-parameter nil 'font))))
-  (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
+    (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
 
 ;; Experimental: use narrowing
 ;; modified from https://endlessparentheses.com/emacs-narrow-or-widen-dwim.html
