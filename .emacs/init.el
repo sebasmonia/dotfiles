@@ -502,7 +502,7 @@
 (use-package pulse
   :ensure nil
   :custom
-  (pulse-iterations 25)
+  (pulse-iterations 30)
   :custom-face
   ;; the docs say not to customize this font, yet it is the only way
   ;; to pulse an empty line...
@@ -905,10 +905,9 @@ With ARG, do this that many times."
            (width-mm (cl-first (alist-get 'mm-size attrs)))
            (width-px (cl-third (alist-get 'workarea attrs)))
            (size "14")) ;; default size, go big just in case
-      ;; override the overrides
-      (when (string= monitor-name "0x057d")
+      (when (string= monitor-name "0x057d") ;; laptop screen
         (setq size "13"))
-      (when (string= monitor-name "S240HL")
+      (when (string= monitor-name "S240HL") ;; external monitor at home
         (setq size "11"))
       (when (eq (length (display-monitor-attributes-list)) 1) ;; override everything if no external monitors!
         (setq size "11"))
@@ -943,26 +942,6 @@ Dwim means: region, or defun, whichever applies first."
       (dired-other-window "~/")
     (dired "~/")))
 (global-set-key (kbd "<f1>") #'hoagie-go-home)
-
-;; (defun hoagie-go-to-repo (arg)
-;;   "Jump to a repo dir from the common \"roots\".
-;; Works for home/work"
-;;   (interactive "P")
-;;   (let ((directories '("~/github"
-;;                        "~/common-lisp"))
-;;         (opener (if arg
-;;                     #'dired-other-window
-;;                   #'dired)))
-;;     (when (file-directory-p "c:/repos")
-;;       (push "c:/repos" directories))
-;;     (when (file-directory-p "~/repos")
-;;       (push "~/repos" directories))
-;;     (funcall opener (completing-read "Open directory: "
-;;                                      (mapcan (lambda (dir-to-list) (cl-subseq
-;;                                                                     (directory-files dir-to-list t)
-;;                                                                     2))
-;;                                              directories)))))
-;; (global-set-key [f2] #'hoagie-go-to-repo)
 
 (defun hoagie-open-org (arg)
   (interactive "P")
