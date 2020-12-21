@@ -67,53 +67,6 @@
   (anzu-replace-to-string-separator " => ")
   (anzu-search-threshold 1000))
 
-;; This aims to replace:
-;; 1 - My older PUSH AND MARK code
-;; 2 - A package idea I had, to  replicate the VS "11 lines away - drop marker" feature from Visual Studio
-;; See: https://blogs.msdn.microsoft.com/zainnab/2010/03/01/navigate-backward-and-navigate-forward/
-(use-package back-button
-  :demand t
-  :bind
-  ("M-`" . back-button-global-backward)
-  ("M-~" . back-button-global-forward)
-  ("C-`" . back-button-push-mark-local-and-global)
-  :custom
-  (mark-ring-max 80)
-  (global-mark-ring-max 80)
-  (set-mark-command-repeat-pop t)
-  (back-button-global-backward-keystrokes nil)
-  (back-button-global-forward-keystrokes nil)
-  (back-button-global-keystrokes nil)
-  (back-button-local-backward-keystrokes nil)
-  (back-button-local-forward-keystrokes nil)
-  (back-button-local-keystrokes nil)
-  (back-button-smartrep-prefix "")
-  :config
-  (advice-add 'push-mark :override #'back-button-push-mark-local-and-global)
-  (defun hoagie-push-mark-if-not-repeat (command &rest args)
-    "Push a mark if this is not a repeat invocation of `command'."
-    (unless (equal last-command this-command)
-      (back-button-push-mark-local-and-global)))
-
-  (let ((advice-push-after '(isearch-forward
-                             isearch-backward
-                             )))
-    (mapc (lambda (f) (advice-add f :after #'back-button-push-mark-local-and-global))
-          advice-push-after))
-
-  ;; (let ((advice-push-before '(xref-goto-xref)))
-  ;;   (mapc (lambda (f) (advice-add f :before #'hoagie-push-mark))
-  ;;         advice-push-before))
-
-  (let ((advice-pushnr-before '(scroll-up-command
-                                scroll-down-command
-         ;; this one is cheating, as I'm not counting "11 lines". But since
-         ;; I rarely use the mouse, this is good enough
-                                mouse-set-point)))
-    (mapc (lambda (f) (advice-add f :before #'hoagie-push-mark-if-not-repeat))
-          advice-pushnr-before))
-  (back-button-mode))
-
 (use-package browse-kill-ring
   :config
   (browse-kill-ring-default-keybindings))
@@ -162,7 +115,8 @@
   (advice-add 'deadgrep--format-command :filter-return #'deadgrep--format-command-patch)
   (defun hoagie-deadgrep-push-before ()
     (interactive)
-    (back-button-push-mark)
+    ;; TODO: advice/centralize
+    (push-mark-no-activate)
     (call-interactively #'deadgrep))
   (define-key hoagie-keymap (kbd "g") #'hoagie-deadgrep-push-before))
 
@@ -297,6 +251,7 @@
   (lsp-csharp-server-path "c:/home/omnisharp_64/OmniSharp.exe")
   (lsp-enable-snippet nil)
   (lsp-enable-folding nil)
+  (lsp-headerline-breadcrumb-enable nil)
   (lsp-auto-guess-root t)
   (lsp-file-watch-threshold nil)
   (lsp-eldoc-render-all t)
@@ -377,9 +332,6 @@
 
 (use-package format-all
   :bind ("C-c f" . format-all-buffer))
-
-;; (use-package gud-cdb :load-path "~/.emacs.d/lisp/"
-;;   :commands (cdb))
 
 (use-package hl-line
   :ensure nil
@@ -532,7 +484,8 @@
   (defun hoagie-occur-dwim ()
     "Run occur, if there's a region selected use that as input."
     (interactive)
-    (back-button-push-mark-local-and-global)
+    ;; TODO: advice/centralize
+    (push-mark-no-activate)
     (if (use-region-p)
         (occur (buffer-substring-no-properties (region-beginning) (region-end)))
       (command-execute 'occur)))
@@ -815,68 +768,6 @@ With ARG, do this that many times."
   (setq hoagie-window-configuration (current-window-configuration)))
 (advice-add 'delete-other-windows :before #'hoagie-store-config)
 
-;; THEMES
-
-(use-package modus-operandi-theme
-  :demand t
-  :custom
-  (modus-operandi-theme-completions 'moderate))
-
-(use-package doom-themes
-  :demand t
-  :config
-  (setq doom-nord-light-brighter-modeline t
-        doom-acario-light-brighter-modeline nil
-        doom-challenger-deep-brighter-modeline nil))
-
-(defun hoagie-load-theme (new-theme)
-  "Pick a theme to load from a harcoded list. Or load NEW-THEME."
-  (interactive (list (completing-read "Theme:"
-                                      '(doom-acario-dark
-                                        doom-acario-light
-                                        doom-challenger-deep
-                                        doom-nord-light
-                                        doom-oceanic-next
-                                        doom-one-light
-                                        modus-operandi
-                                        solo-jazz)
-                                      nil
-                                      t)))
-    (mapc 'disable-theme custom-enabled-themes)
-    (load-theme (intern new-theme) t))
-
-(global-set-key (kbd "C-<f11>") #'hoagie-load-theme)
-(hoagie-load-theme "modus-operandi")
-
-(use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1)
-  :custom
-  (doom-modeline-project-detection 'project)
-  (doom-modeline-buffer-file-name-style 'buffer-name)
-  (doom-modeline-icon t)
-  (doom-modeline-major-mode-icon t)
-  (doom-modeline-major-mode-color-icon t)
-  (doom-modeline-buffer-state-icon t)
-  (doom-modeline-buffer-modification-icon t)
-  (doom-modeline-unicode-fallback nil)
-  (doom-modeline-minor-modes t)
-  (doom-modeline-enable-word-count nil)
-  (doom-modeline-buffer-encoding nil)
-  (doom-modeline-indent-info nil)
-  (doom-modeline-checker-simple-format t)
-  (doom-modeline-number-limit 99)
-  (doom-modeline-vcs-max-length 50)
-  (doom-modeline-persp-name nil)
-  (doom-modeline-display-default-persp-name nil)
-  (doom-modeline-lsp t)
-  (doom-modeline-github nil)
-  (doom-modeline-modal-icon nil)
-  (doom-modeline-mu4e nil)
-  (doom-modeline-gnus nil)
-  (doom-modeline-irc nil)
-  (doom-modeline-env-version nil))
-
 ;; Per-OS configuration
 
 (when (string= system-type "windows-nt")
@@ -994,3 +885,169 @@ Dwim means: region, or defun, whichever applies first."
   (dolist (window (window-at-side-list))
     (quit-window nil window)))
 (define-key hoagie-keymap (kbd "0") #'hoagie-quit-side-windows)
+
+
+;; MARK PUSH AND POP - maybe I should make a package out of this
+;; For a long time I longed for the VS navigation commands as described in
+;; https://blogs.msdn.microsoft.com/zainnab/2010/03/01/navigate-backward-and-navigate-forward/
+;; By the time I finally found a way to implement them using the package back-button,
+;; I started running into problems integrating with existing commands, and also I was too
+;; used to navigating locations within the same buffer rather than globally.
+;; So, rolling back :)
+
+(defun push-mark-no-activate ()
+  "Pushes `point` to `mark-ring' and does not activate the region.
+Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled.
+Source: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode"
+  (interactive)
+  (push-mark (point) t nil)) ; removed the message, visible-mark takes care of this
+
+(defun unpop-to-mark-command ()
+  "Unpop off mark ring.  Does nothing if mark ring is empty.
+Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
+  (interactive)
+  (when mark-ring
+    (let ((pos (marker-position (car (last mark-ring)))))
+      (if (not (= (point) pos))
+          (goto-char pos)
+        (setq mark-ring (cons (copy-marker (mark-marker)) mark-ring))
+        (set-marker (mark-marker) pos)
+        (setq mark-ring (nbutlast mark-ring))
+        (goto-char (marker-position (car (last mark-ring))))))))
+
+;; TODO: try re-implementing using `push-mark-if-not-repeat'
+(defun pop-to-mark-push-if-first ()
+  "Pop the mark ring, but push a mark if this is a first invocation."
+  (interactive)
+  (unless (equal last-command 'pop-to-mark-push-if-first)
+    (push-mark-no-activate)
+    (pop-to-mark-command))
+  (pop-to-mark-command))
+
+(defun push-mark-if-not-repeat (command &rest args)
+  "Push a mark if this is not a repeat invocatpion of `command'."
+  (unless (equal last-command this-command)
+    (push-mark-no-activate)))
+
+;; manually setting the mark bindings
+(global-set-key (kbd "C-<return>") #'push-mark-no-activate)
+(global-set-key (kbd "M-<return>") #'pop-to-mark-push-if-first)
+(global-set-key (kbd "M-S-<return>") #'unpop-to-mark-command)
+
+;; Using advice instead of isearch-mode-end-hook, as the latter pushes mark first in search
+;; destination, then in search start position.
+;; Using the advice pushes first at start position, and then destination.
+(require 'isearch)
+(advice-add 'isearch-forward :after #'push-mark-no-activate)
+(advice-add 'isearch-backward :after #'push-mark-no-activate)
+
+;; (use-package isearch
+;;   :ensure nil
+;;   :config
+;;   (defun hoagie-isearch-end-push-mark ()
+;;   "Push the mark -without activating- when exiting isearch."
+;;   (unless isearch-mode-end-hook-quit
+;;     (push-mark-no-activate)))
+;;   (add-hook 'isearch-mode-end-hook 'hoagie-isearch-end-push-mark))
+
+;; (defun hoagie-scroll-down-with-mark ()
+;;   "Like `scroll-down-command`, but push a mark if this is not a repeat invocation."
+;;   (interactive)
+;;   (unless (equal last-command 'hoagie-scroll-down-with-mark)
+;;     (push-mark-no-activate))
+;;   (scroll-down-command))
+
+;; (defun hoagie-scroll-up-with-mark ()
+;;   "Like `scroll-up-command`, but push a mark if this is not a repeat invocation."
+;;   (interactive)
+;;   (unless (equal last-command 'hoagie-scroll-up-with-mark)
+;;     (push-mark-no-activate))
+;;   (scrpoll-up-command))
+;; (global-set-key (kbd "C-v") #'hoagie-scroll-up-with-mark)
+;; (global-set-key (kbd "M-v") #'hoagie-scroll-down-with-mark)
+(advice-add 'scroll-up-command :before #'push-mark-if-not-repeat)
+(advice-add 'scroll-down-command :before #'push-mark-if-not-repeat)
+
+(use-package visible-mark
+  :demand t ;; has to be loaded, no command
+  :config
+  (global-visible-mark-mode t)
+  :custom-face
+  (visible-mark-face1 ((t (:background nil :box (:line-width 1 :color "red")))))
+  (visible-mark-face2 ((t (:background nil :box (:line-width 1 :color "orange")))))
+  (visible-mark-forward-face1 ((t (:background nil :box (:line-width 1 :color "purple1")))))
+  (visible-mark-forward-face2 ((t (:background nil :box (:line-width 1 :color "chartreuse")))))
+  :custom
+  (visible-mark-max 2)
+  (visible-mark-faces '(visible-mark-face1 visible-mark-face2))
+  (visible-mark-forward-max 2)
+  (visible-mark-forward-faces '(visible-mark-forward-face1 visible-mark-forward-face2)))
+
+;; Last but not least, load doom-modeline and then theme
+;; Doing these last so they are aware of all packages loaded
+
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1)
+  :custom
+  (doom-modeline-project-detection 'project)
+  (doom-modeline-buffer-file-name-style 'buffer-name)
+  (doom-modeline-icon t)
+  (doom-modeline-major-mode-icon t)
+  (doom-modeline-major-mode-color-icon t)
+  (doom-modeline-buffer-state-icon t)
+  (doom-modeline-buffer-modification-icon t)
+  (doom-modeline-unicode-fallback nil)
+  (doom-modeline-minor-modes t)
+  (doom-modeline-enable-word-count nil)
+  (doom-modeline-buffer-encoding nil)
+  (doom-modeline-indent-info nil)
+  (doom-modeline-checker-simple-format t)
+  (doom-modeline-number-limit 99)
+  (doom-modeline-vcs-max-length 50)
+  (doom-modeline-persp-name nil)
+  (doom-modeline-display-default-persp-name nil)
+  (doom-modeline-lsp t)
+  (doom-modeline-github nil)
+  (doom-modeline-modal-icon nil)
+  (doom-modeline-mu4e nil)
+  (doom-modeline-gnus nil)
+  (doom-modeline-irc nil)
+  (doom-modeline-env-version nil))
+
+(use-package solo-jazz-theme :load-path "~/.emacs.d/lisp"
+  :demand t)
+
+(use-package modus-operandi-theme
+  :demand t
+  :custom
+  (modus-operandi-theme-completions 'moderate))
+
+(use-package doom-themes
+  :demand t
+  :config
+  (setq doom-nord-light-brighter-modeline t
+        doom-acario-light-brighter-modeline nil
+        doom-challenger-deep-brighter-modeline nil))
+
+(defun hoagie-load-theme (new-theme)
+  "Pick a theme to load from a harcoded list. Or load NEW-THEME."
+  (interactive (list (completing-read "Theme:"
+                                      '(doom-acario-dark
+                                        doom-acario-light
+                                        doom-challenger-deep
+                                        doom-nord-light
+                                        doom-oceanic-next
+                                        doom-one-light
+                                        modus-operandi
+                                        solo-jazz)
+                                      nil
+                                      t)))
+    (mapc 'disable-theme custom-enabled-themes)
+    (load-theme (intern new-theme) t))
+
+(global-set-key (kbd "C-<f11>") #'hoagie-load-theme)
+;;(hoagie-load-theme "doom-one-light")
+;; (hoagie-load-theme "doom-acario-light")
+;; (hoagie-load-theme "solo-jazz")
+(hoagie-load-theme "modus-operandi")
