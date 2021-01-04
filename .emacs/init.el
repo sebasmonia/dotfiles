@@ -255,6 +255,7 @@
   (lsp-csharp-server-path "c:/home/omnisharp_64/OmniSharp.exe")
   (lsp-enable-snippet nil)
   (lsp-enable-folding nil)
+  (lsp-lens-enable t)
   (lsp-headerline-breadcrumb-enable nil)
   (lsp-auto-guess-root t)
   (lsp-file-watch-threshold nil)
@@ -860,7 +861,8 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
         (setq mark-ring (cons (copy-marker (mark-marker)) mark-ring))
         (set-marker (mark-marker) pos)
         (setq mark-ring (nbutlast mark-ring))
-        (goto-char (marker-position (car (last mark-ring))))))))
+        (goto-char (marker-position (car (last mark-ring)))))
+      (message "Mark unpopped"))))
 
 ;; TODO: try re-implementing using `push-mark-if-not-repeat'
 (defun pop-to-mark-push-if-first ()
