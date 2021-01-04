@@ -19,10 +19,6 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
-
-(when (< emacs-major-version 27)
-  (package-initialize))
-
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
@@ -91,8 +87,8 @@
   :hook ((shell-mode-hook . awscli-capf-add)
          (eshell-mode-hook . awscli-capf-add)))
 
-(use-package csharp-mode ;; manual load since I removed omnisharp
-  :demand
+(use-package csharp-mode
+  :mode "\\.cs$"
   :hook
   (csharp-mode-hook . (lambda ()
                         (subword-mode)
@@ -277,7 +273,7 @@
   (lsp-ui-sideline-enable nil))
 
 (use-package lsp-pyright
-  :ensure t
+  :after lsp
   :hook (python-mode-hook . (lambda ()
                               (require 'lsp-pyright)
                               (lsp))))
@@ -404,6 +400,11 @@
               ("C-p" . icomplete-backward-completions)
               ("C-v" . icomplete-vertical-toggle)))
 
+(use-package marginalia
+  :init
+  (marginalia-mode)
+  (setq marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil)))
+
 (use-package json-mode
   :mode "\\.json$")
 
@@ -446,6 +447,7 @@
   (proced-filter 'all))
 
 (use-package project
+  :ensure nil
   :config
   (add-to-list 'project-switch-commands '(?m "Magit status" magit-status))
   (add-to-list 'project-switch-commands '(?s "Shell" project-shell)))
@@ -476,6 +478,7 @@
 
 (use-package python
   :ensure nil
+  :mode ("\\.py\\'" . python-mode)
   :custom
   (python-shell-font-lock-enable nil)
   (python-shell-interpreter "ipython")
@@ -494,7 +497,6 @@ By default, occur _limits the search to the region_ if it is active."
   (define-key hoagie-keymap (kbd "o") 'hoagie-occur-dwim))
 
 (use-package sharper
-  :demand t
   :bind
   (:map hoagie-keymap
         ("n" . sharper-main-transient))
@@ -583,6 +585,23 @@ By default, occur _limits the search to the region_ if it is active."
                     #'ido-find-file))
           (default-directory "~/org"))
       (funcall opener)))
+  ;; from https://www.emacswiki.org/emacs/BackwardDeleteWord
+  ;; because I agree C-backspace shouldn't kill the word!
+  ;; it litters my kill ring
+  (defun delete-word (arg)
+    "Delete characters forward until encountering the end of a word.
+With ARG, do this that many times."
+    (interactive "p")
+    (if (use-region-p)
+        (delete-region (region-beginning) (region-end))
+      (delete-region (point) (progn
+                               (forward-word arg)
+                               (point)))))
+  (defun backward-delete-word (arg)
+    "Delete characters backward until encountering the end of a word.
+With ARG, do this that many times."
+    (interactive "p")
+    (delete-word (- arg)))
   :bind
   ("<S-f1>" . (lambda () (interactive) (find-file user-init-file)))
   ("<f1>" . hoagie-go-home)
@@ -612,6 +631,7 @@ By default, occur _limits the search to the region_ if it is active."
   ("<f8>" . kmacro-end-and-call-macro)
   ;; like flycheck's C-c ! l
   ("C-c !" . flymake-show-diagnostics-buffer)
+  ("C-<backspace>" . backward-delete-word)
   :custom
   (recenter-positions '(1 middle -2)) ;; behaviour for C-l
   (comint-prompt-read-only t)
@@ -641,12 +661,12 @@ By default, occur _limits the search to the region_ if it is active."
   (kept-new-versions 5)   ; Keep 5 new versions
   (kept-old-versions 5)   ; Keep 3 old versions
   :config
-  (setq disabled-command-function nil)
-  (setq w32-use-native-image-API t)
   (defalias 'yes-or-no-p 'y-or-n-p)
-  (setq inhibit-compacting-font-caches t)
-  ;; see https://emacs.stackexchange.com/a/28746/17066
-  (setq auto-window-vscroll nil)
+  (setq disabled-command-function nil
+        w32-use-native-image-API t
+        inhibit-compacting-font-caches t
+        ;; see https://emacs.stackexchange.com/a/28746/17066
+        auto-window-vscroll nil)
   ;; helps compilation buffer not slowdown
   ;; see https://blog.danielgempesaw.com/post/129841682030/fixing-a-laggy-compilation-buffer
   (setq compilation-error-regexp-alist
@@ -678,28 +698,7 @@ By default, occur _limits the search to the region_ if it is active."
           `((".*" ,auto-save-dir)))
     (make-directory backup-dir t)
     (setq backup-directory-alist
-          `(("." . ,backup-dir))))
-  ;; from https://www.emacswiki.org/emacs/BackwardDeleteWord
-  ;; because I agree C-backspace shouldn't kill the word!
-  ;; it litters my kill ring
-  (defun delete-word (arg)
-    "Delete characters forward until encountering the end of a word.
-With ARG, do this that many times."
-    (interactive "p")
-    (if (use-region-p)
-        (delete-region (region-beginning) (region-end))
-      (delete-region (point) (progn
-                               (forward-word arg)
-                               (point)))))
-  (defun backward-delete-word (arg)
-    "Delete characters backward until encountering the end of a word.
-With ARG, do this that many times."
-    (interactive "p")
-    (delete-word (- arg)))
-  (global-set-key (kbd "C-<backspace>") 'backward-delete-word)
-
-  )
-
+          `(("." . ,backup-dir)))))
 
 ;; Convenient to work with AWS timestamps
 (defun hoagie-convert-timestamp (&optional timestamp)
@@ -785,7 +784,7 @@ With ARG, do this that many times."
            (width-px (cl-third (alist-get 'workarea attrs)))
            (size "14")) ;; default size, go big just in case
       (when (string= monitor-name "0x057d") ;; laptop screen
-        (setq size "13"))
+        (setq size "14"))
       (when (string= monitor-name "S240HL") ;; external monitor at home
         (setq size "11"))
       (when (eq (length (display-monitor-attributes-list)) 1) ;; override everything if no external monitors!
