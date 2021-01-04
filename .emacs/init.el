@@ -27,16 +27,10 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
-;; Try to refresh package contents,  handle error and
-;; print message if it fails (no internet connection?)
-;;(condition-case err
-;;  (package-refresh-contents)
-;;  (error
-;;   (message "%s" (error-message-string err))))
-
 (require 'use-package)
 (setq use-package-verbose t)
 (setq use-package-always-ensure t)
+(setq use-package-hook-name-suffix nil)
 
 (setq custom-file (concat user-emacs-directory "custom.el"))
 
@@ -49,15 +43,17 @@
 (define-key key-translation-map (kbd "<print>") (kbd "<menu>")) ;; curse you, thinkpad keyboard!!!
 (global-set-key (kbd "<menu>") 'hoagie-keymap)
 (global-set-key (kbd "C-'") 'hoagie-keymap) ;; BT keyboard has an uncomfortable menu key, so...
+(define-key hoagie-keymap (kbd "k") (lambda () (interactive) (kill-buffer)))
 
-;; could be replaced by isearch-lazy-count...
+
+;; could be replaced by isearch-lazy-count, but I don't get live preview in that case
 (use-package anzu
   :bind
   (("<remap> <isearch-query-replace>" . anzu-isearch-query-replace)
    ("<remap> <isearch-query-replace-regexp>" . anzu-isearch-query-replace-regexp)
    ("<remap> <query-replace>" . anzu-query-replace)
    ("<remap> <query-replace-regexp>" . anzu-query-replace-regexp))
-  :init
+  :config
   (global-anzu-mode 1)
   :custom
   (anzu-cons-mode-line-p nil)
@@ -76,7 +72,7 @@
   ("M-S-<SPC>" . company-complete-common)
   (:map hoagie-keymap
         ("<SPC>" . company-complete-common))
-  :hook (after-init . global-company-mode)
+  :hook (after-init-hook . global-company-mode)
   :custom
   (company-idle-delay 0.2)  ;; Makes the Python REPL more responsive
   (company-minimum-prefix-length 3)
@@ -92,19 +88,27 @@
 (use-package awscli-capf
   :ensure t
   :commands (awscli-add-to-capf)
-  :hook ((shell-mode . awscli-capf-add)
-         (eshell-mode . awscli-capf-add)))
+  :hook ((shell-mode-hook . awscli-capf-add)
+         (eshell-mode-hook . awscli-capf-add)))
 
 (use-package csharp-mode ;; manual load since I removed omnisharp
   :demand
   :hook
-  (csharp-mode . (lambda ()
+  (csharp-mode-hook . (lambda ()
                         (subword-mode)
                         (setq-local fill-function-arguments-first-argument-same-line t)
                         (setq-local fill-function-arguments-second-argument-same-line nil)
                         (setq-local fill-function-arguments-last-argument-same-line t)
-                        (define-key csharp-mode-map [remap c-fill-paragraph] 'fill-function-arguments-dwim))))
+                        (define-key csharp-mode-map [remap c-fill-paragraph] #'fill-function-arguments-dwim))))
 
+(use-package dabbrev
+  :ensure nil
+  :custom
+  (dabbrev-case-distinction nil)
+  (dabbrev-case-fold-search t)
+  (dabbrev-case-replace nil)
+  :bind
+  ("C-;" . dabbrev-expand))
 
 (define-key hoagie-keymap (kbd "G") #'project-find-regexp)
 (use-package deadgrep
@@ -113,12 +117,7 @@
     "Add --hidden to rg-command."
     (replace-regexp-in-string "^rg " "rg --hidden " rg-command))
   (advice-add 'deadgrep--format-command :filter-return #'deadgrep--format-command-patch)
-  (defun hoagie-deadgrep-push-before ()
-    (interactive)
-    ;; TODO: advice/centralize
-    (push-mark-no-activate)
-    (call-interactively #'deadgrep))
-  (define-key hoagie-keymap (kbd "g") #'hoagie-deadgrep-push-before))
+  (define-key hoagie-keymap (kbd "g") #'deadgrep))
 
 (use-package dired
   :ensure nil
@@ -127,32 +126,39 @@
   ;; what I want, it can be super annoying
   (dired-dwim-target nil)
   (dired-listing-switches "-laogGhvD")
-  :config
-  (setq dired-compress-file-suffixes
+  (dired-compress-file-suffixes
         '(("\\.tar\\.gz\\'" #1="" "7z x -aoa -o%o %i")
           ("\\.tgz\\'" #1# "7z x -aoa -o%o %i")
           ("\\.zip\\'" #1# "7z x -aoa -o%o %i")
           ("\\.7z\\'" #1# "7z x -aoa -o%o %i")
           ("\\.tar\\'" ".tgz" nil)
           (":" ".tar.gz" "tar -cf- %i | gzip -c9 > %o")))
-  (setq dired-compress-files-alist
+  (dired-compress-files-alist
         '(("\\.7z\\'" . "7z a -r %o %i")
           ("\\.zip\\'" . "7z a -r %o  %i")))
-  (define-key hoagie-keymap (kbd "f") 'project-find-file)
-  (define-key hoagie-keymap (kbd "F") 'find-name-dired)
+  :config
+  (define-key hoagie-keymap (kbd "f") #'project-find-file)
+  (define-key hoagie-keymap (kbd "F") #'find-name-dired)
   ;; from Emacs Wiki
   (defun dired-open-file ()
     "Call xdg-open on the file at point."
     (interactive)
     (call-process "xdg-open" nil 0 nil (dired-get-filename nil t)))
   (define-key dired-mode-map (kbd "C-<return>") #'dired-open-file)
-  (defun hoagie-dired-jump (&optional arg)
-    "Call dired-jump.  With prefix ARG, open in current window."
-    (interactive "P")
-    (let ((inverted (not arg)))
-      (dired-jump inverted)))
-  (define-key hoagie-keymap (kbd "j") #'hoagie-dired-jump)
-  (define-key hoagie-keymap (kbd "J") (lambda () (interactive) (hoagie-dired-jump 4))))
+  (defun hoagie-dired-jump-other-window ()
+    (interactive)
+    (dired-jump t))
+  (define-key hoagie-keymap (kbd "j") #'hoagie-dired-jump-other-window)
+  (define-key hoagie-keymap (kbd "J") #'dired-jump)
+  (defun hoagie-kill-buffer-filename ()
+    "Sends the current buffer's filename to the kill ring."
+    (interactive)
+    (let ((name (buffer-file-name)))
+      (when name
+        (kill-new name))
+      (message (format "Filename: %s" (or name "-No file for this buffer-")))))
+  (global-set-key (kbd "<C-f1>") 'hoagie-kill-buffer-filename)
+  (define-key dired-mode-map (kbd "<C-f1>") (lambda () (interactive) (dired-copy-filename-as-kill 0))))
 
 (use-package dired-narrow
   :after dired
@@ -174,8 +180,7 @@
   ("C-c d" . docker))
 
 (use-package dockerfile-mode
-  :demand t ;; not sure if really needed
-  )
+  :demand t) ;; not sure if really needed
 
 (use-package ediff
   :ensure nil
@@ -184,6 +189,8 @@
   (ediff-highlight-all-diffs t)
   (ediff-keep-variants nil)
   (ediff-window-setup-function 'ediff-setup-windows-plain)
+  :hook
+  (ediff-keymap-setup-hook . add-d-to-ediff-mode-map)
   :config
   ;; from https://stackoverflow.com/a/29757750
   (defun ediff-copy-both-to-C ()
@@ -196,7 +203,8 @@
   (defun add-d-to-ediff-mode-map ()
     "Add key 'd' for 'copy both to C' functionality in ediff."
     (define-key ediff-mode-map "d" 'ediff-copy-both-to-C))
-  (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map)
+  ;; TODO: after moving 100% to Linux, the will/need to use VC is gone. The code below is candidate
+  ;; for deletion
   ;; One minor annoyance of using ediff with built-in vc was the window config being altered, so:
   (defvar hoagie-pre-ediff-windows nil "Window configuration before starting ediff.")
   (defun hoagie-ediff-store-windows ()
@@ -210,20 +218,17 @@
   ;; the window config is restore but them _stuff happens_, so:
   (add-hook 'ediff-after-quit-hook-internal #'hoagie-ediff-restore-windows))
 
-;; (use-package elec-pair
-;;   :ensure nil
-;;   :init (electric-pair-mode))
-
 (use-package eww
-  :defer t
   :ensure nil
-  :init
-  (add-hook 'eww-mode-hook #'toggle-word-wrap)
-  (add-hook 'eww-mode-hook #'visual-line-mode)
-  :config
-  (setq browse-url-browser-function 'eww-browse-url)
-  (define-key eww-mode-map "o" 'eww)
-  (define-key eww-mode-map "O" 'eww-browse-with-external-browser))
+  :hook
+  (eww-mode-hook . toggle-word-wrap)
+  (eww-mode-hook . visual-line-mode)
+  :custom
+  (browse-url-browser-function #'eww-browse-url)
+  :bind
+  (:map eww-mode-map
+        ("o" . eww)
+        ("O" . eww-browse-with-external-browser)))
 
 (use-package eww-lnum
   :after eww
@@ -235,18 +240,17 @@
 (setq lsp-keymap-prefix "C-c C-l")
 (defvar hoagie-lsp-keymap (define-prefix-command 'hoagie-lsp-keymap) "Custom bindings for LSP mode.")
 (use-package lsp-mode
-  :hook ((csharp-mode . lsp)
-         ;; if you want which-key integration
-         (lsp-mode . lsp-enable-which-key-integration))
-  :commands (lsp lsp-signature-active)
-  :config
-  (define-key hoagie-lsp-keymap (kbd "o") #'lsp-signature-activate) ;; o for "overloads"
-  (define-key hoagie-lsp-keymap (kbd "r") #'lsp-rename)
-  (define-key hoagie-keymap (kbd "l") hoagie-lsp-keymap)
-  ;; These are general settings but I'm only messing with them because
-  ;; https://emacs-lsp.github.io/lsp-mode/page/performance/ so, leaving them here
-  ;; (setq gc-cons-threshold (* gc-cons-threshold 4))
-  ;; (setq read-process-output-max (* 1024 1024))
+  :hook
+  ((csharp-mode-hook . lsp)
+   (lsp-mode-hook . lsp-enable-which-key-integration))
+  :commands
+  (lsp lsp-signature-active)
+  :bind
+  (:map hoagie-lsp-keymap
+        ("o" . lsp-signature-activate) ;; o for "overloads"
+        ("r" . lsp-rename))
+  (:map hoagie-keymap
+        ("l" . hoagie-lsp-keymap))
   :custom
   (lsp-csharp-server-path "c:/home/omnisharp_64/OmniSharp.exe")
   (lsp-enable-snippet nil)
@@ -261,8 +265,9 @@
 
 (use-package lsp-ui
   :commands lsp-ui-mode
-  :config
-  (define-key hoagie-lsp-keymap (kbd "i") #'lsp-ui-imenu)
+  :bind
+  (:map hoagie-lsp-keymap
+        ("i" . lsp-ui-imenu))
   :custom
   (lsp-ui-doc-enable nil)
   (lsp-ui-doc-position 'top)
@@ -272,9 +277,9 @@
 
 (use-package lsp-pyright
   :ensure t
-  :hook (python-mode . (lambda ()
-                          (require 'lsp-pyright)
-                          (lsp))))
+  :hook (python-mode-hook . (lambda ()
+                              (require 'lsp-pyright)
+                              (lsp))))
 
 (use-package dap-mode
   :commands (dap-debug dap-breakpoints-add)
@@ -286,21 +291,25 @@
   (require 'dap-pwsh)
   (require 'dap-netcore)
   (defvar hoagie-dap-keymap (define-prefix-command 'hoagie-dap-keymap))
-  (define-key hoagie-dap-keymap (kbd "d") #'dap-debug)
-  (define-key hoagie-dap-keymap (kbd "b") #'dap-breakpoint-toggle)
-  (define-key hoagie-dap-keymap (kbd "n") #'dap-next)
-  (define-key hoagie-dap-keymap (kbd "c") #'dap-continue)
-  (define-key hoagie-dap-keymap (kbd "s") #'dap-disconnect) ;; "Stop"
-  (define-key hoagie-keymap (kbd "d") hoagie-dap-keymap)
+  :bind
+  (:map hoagie-dap-keymap
+        ("d" . dap-debug)
+        ("b" . dap-breakpoint-toggle)
+        ("n" . dap-next)
+        ("c" . dap-continue)
+        ("s" . dap-disconnect)) ;; "Stop"
+  (:map hoagie-keymap
+        ("d" . hoagie-dap-keymap))
   :custom
   (dap-netcore-install-dir "/home/hoagie/.emacs.d/.cache/"))
 
 (use-package eldoc-box
-  :hook (prog-mode . eldoc-box-hover-mode)
+  :hook (prog-mode-hook . eldoc-box-hover-mode)
+  :custom
+  (eldoc-box-max-pixel-width 1024)
+  (eldoc-box-max-pixel-height 768)
+  (eldoc-idle-delay 0.1)
   :config
-  (setq eldoc-box-max-pixel-width 1024
-        eldoc-box-max-pixel-height 768)
-  (setq eldoc-idle-delay 0.1)
   ;; set the child frame face as 1.0 relative to the default font
   (set-face-attribute 'eldoc-box-body nil :inherit 'default :height 1.0))
 
@@ -315,20 +324,18 @@
   :commands (fill-function-arguments-dwim)
   :custom
   (fill-function-arguments-indent-after-fill t)
-  :config
-  ;; taken literally from the project's readme.
-  ;; reformat for more use-packageness if this sticks
-  (add-hook 'prog-mode-hook (lambda () (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))
-  (add-hook 'sgml-mode-hook (lambda ()
-                              (setq-local fill-function-arguments-first-argument-same-line t)
-                              (setq-local fill-function-arguments-argument-sep " ")
-                              (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))
-  (add-hook 'emacs-lisp-mode-hook (lambda ()
-                                    (setq-local fill-function-arguments-first-argument-same-line t)
-                                    (setq-local fill-function-arguments-second-argument-same-line t)
-                                    (setq-local fill-function-arguments-last-argument-same-line t)
-                                    (setq-local fill-function-arguments-argument-separator " ")
-                                    (local-set-key (kbd "M-q") #'fill-function-arguments-dwim))))
+  :hook
+  (prog-mode-hook . (lambda () (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))
+  (sgml-mode-hook . (lambda ()
+                      (setq-local fill-function-arguments-first-argument-same-line t)
+                      (setq-local fill-function-arguments-argument-sep " ")
+                      (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))
+  (emacs-lisp-mode-hook . (lambda ()
+                            (setq-local fill-function-arguments-first-argument-same-line t)
+                            (setq-local fill-function-arguments-second-argument-same-line t)
+                            (setq-local fill-function-arguments-last-argument-same-line t)
+                            (setq-local fill-function-arguments-argument-separator " ")
+                            (local-set-key (kbd "M-q") #'fill-function-arguments-dwim))))
 
 (use-package format-all
   :bind ("C-c f" . format-all-buffer))
@@ -336,11 +343,12 @@
 (use-package hl-line
   :ensure nil
   :hook
-  (after-init . global-hl-line-mode))
+  (after-init-hook . global-hl-line-mode))
 
 (use-package ibuffer
   :ensure nil
-  :bind ("C-x C-b" . ibuffer-other-window)
+  :bind
+  ("C-x C-b" . ibuffer-other-window)
   :custom
   (ibuffer-default-sorting-mode 'major-mode)
   (ibuffer-expert t)
@@ -349,21 +357,21 @@
 (use-package ibuffer-vc
   :demand t
   :after ibuffer
-  :hook (ibuffer-mode . (lambda ()
+  :hook (ibuffer-mode-hook . (lambda ()
                           (ibuffer-vc-set-filter-groups-by-vc-root)
                           (unless (eq ibuffer-sorting-mode 'alphabetic)
                             (ibuffer-do-sort-by-alphabetic))))
-  :init
-  (setq ibuffer-formats '((mark modified read-only vc-status-mini " "
-                                (name 18 18 :left :elide)
-                                " "
-                                (size 9 -1 :right)
-                                " "
-                                (mode 16 16 :left :elide)
-                                " "
-                                (vc-status 16 16 :left)
-                                " "
-                                vc-relative-file))))
+  :custom
+  (ibuffer-formats '((mark modified read-only vc-status-mini " "
+                           (name 18 18 :left :elide)
+                           " "
+                           (size 9 -1 :right)
+                           " "
+                           (mode 16 16 :left :elide)
+                           " "
+                           (vc-status 16 16 :left)
+                           " "
+                           vc-relative-file))))
 
 (use-package icomplete-vertical
   :ensure t
@@ -431,6 +439,11 @@
 (use-package package-lint
   :commands package-lint-current-buffer)
 
+(use-package proced
+  :ensure nil
+  :custom
+  (proced-filter 'all))
+
 (use-package project
   :config
   (add-to-list 'project-switch-commands '(?m "Magit status" magit-status))
@@ -440,15 +453,10 @@
   :commands plantuml-mode
   :mode (("\\.puml$" . plantuml-mode)
 	 ("\\.plantuml$" . plantuml-mode))
-  :config
-  (setq plantuml-jar-path "~/plantuml.jar"))
+  :custom
+  (plantuml-jar-path "~/plantuml.jar"))
 
-(use-package powershell
-  :bind
-  ;; this one shadows the command to go back in
-  ;; the mark ring
-  (:map powershell-mode-map
-        ("M-`" . nil)))
+(use-package powershell)
 
 ;; from https://karthinks.com/software/batteries-included-with-emacs/
 (use-package pulse
@@ -456,15 +464,11 @@
   :custom
   (pulse-iterations 30)
   :custom-face
-  ;; the docs say not to customize this font, yet it is the only way
-  ;; to pulse an empty line...
-  (pulse-highlight-face ((t (:extend t))))
   (pulse-highlight-start-face ((t (:inherit region :extend t))))
   :config
   (defun pulse-line (&rest _)
     "Pulse the current line."
     (pulse-momentary-highlight-one-line (point)))
-
   (dolist (command '(scroll-up-command scroll-down-command
                                        recenter-top-bottom other-window))
     (advice-add command :after #'pulse-line)))
@@ -479,19 +483,16 @@
 (use-package replace
   :ensure nil
   :config
-  ;; I'm surprised this isn't the default behaviour,
-  ;; also couldn't find a way to change it from options
   (defun hoagie-occur-dwim ()
-    "Run occur, if there's a region selected use that as input."
+    "Run occur, if there's a region selected use that as input.
+By default, occur _limits the search to the region_ if it is active."
     (interactive)
-    ;; TODO: advice/centralize
-    (push-mark-no-activate)
     (if (use-region-p)
         (occur (buffer-substring-no-properties (region-beginning) (region-end)))
       (command-execute 'occur)))
   (define-key hoagie-keymap (kbd "o") 'hoagie-occur-dwim))
 
-(use-package sharper :load-path "~/github/sharper"
+(use-package sharper
   :demand t
   :bind
   (:map hoagie-keymap
@@ -502,9 +503,9 @@
 (use-package shell
   :ensure nil
   :hook
-  (shell-mode . (lambda ()
-                  (toggle-truncate-lines t))))
-
+  (shell-mode-hook . (lambda ()
+                       (toggle-truncate-lines t)
+                       (setq comint-process-echoes t))))
 
 (use-package better-shell
   :after shell
@@ -513,8 +514,8 @@
 
 (use-package sly
   :commands sly
-  :config
-  (setq inferior-lisp-program "sbcl --dynamic-space-size 2048"))
+  :custom
+  (inferior-lisp-program "sbcl --dynamic-space-size 2048"))
 
 (use-package sly-quicklisp
   :after sly)
@@ -524,16 +525,11 @@
   :custom
   (sql-ms-options '("--driver" "ODBC Driver 17 for SQL Server"))
   (sql-ms-program "/home/hoagie/github/sqlcmdline/sqlcmdline.py")
-  :config
-  (add-hook 'sql-interactive-mode-hook (lambda () (setq truncate-lines t))))
-
-(use-package speed-type
-  :commands (speed-type-text speed-type-region speed-type-buffer))
+  :hook
+  (sql-interactive-mode-hook . (lambda () (setq truncate-lines t))))
 
 (use-package terraform-mode
-  :mode "\\.tf$"
-  :config
-  (add-hook 'terraform-mode-hook #'terraform-format-on-save-mode))
+  :mode "\\.tf$")
 
 (use-package web-mode
   :mode
@@ -549,7 +545,6 @@
    ("\\.html?\\'" . web-mode)
    ("\\.css\\'" . web-mode)
    ("\\.xml?\\'" . web-mode))
-  :init
   :custom
   (web-mode-enable-css-colorization t)
   (web-mode-enable-sql-detection t)
@@ -565,153 +560,145 @@
   (which-key-sort-order 'which-key-prefix-then-key-order))
 
 (use-package ws-butler
-  :hook (prog-mode . ws-butler-mode))
+  :hook (prog-mode-hook . ws-butler-mode))
 
 (use-package yaml-mode
   :mode "\\.yml$")
 
-;; MISC STUFF THAT IS NOT IN CUSTOMIZE (or easier to customize here)
-;; and stuff that I moved from Custom to here hehehehe
 
-;; this is new! testing it
-(setq w32-use-native-image-API t)
-
-(defalias 'yes-or-no-p 'y-or-n-p)
-(setq inhibit-compacting-font-caches t)
-; see https://emacs.stackexchange.com/a/28746/17066
-(setq auto-window-vscroll nil)
-;; behaviour for C-l. I prefer one extra line rather than top & bottom
-;; and also start with the top position, which I found more useful
-(setq recenter-positions '(1 middle -2))
-;; Useful in Linux
-(setq read-file-name-completion-ignore-case t)
-;; helps compilation buffer not slowdown
-;; see https://blog.danielgempesaw.com/post/129841682030/fixing-a-laggy-compilation-buffer
-(setq compilation-error-regexp-alist
-      (delete 'maven compilation-error-regexp-alist))
-;; from http://www.jurta.org/en/emacs/dotemacs, set the major mode
-;; of buffers that are not visiting a file
-(setq-default major-mode (lambda ()
-                           (if buffer-file-name
-                               (fundamental-mode)
-                             (let ((buffer-file-name (buffer-name)))
-                               (set-auto-mode)))))
-;; Better defaults from https://github.com/jacmoe/emacs.d/blob/master/jacmoe.org
-(setq help-window-select t)
-;; From https://github.com/wasamasa/dotemacs/blob/master/init.org
-(setq line-number-display-limit-width 10000)
-(setq comint-prompt-read-only t)
-(defun my-shell-turn-echo-off ()
-  (setq comint-process-echoes t))
-(add-hook 'shell-mode-hook 'my-shell-turn-echo-off)
-;; tired of this question. Sorry not sorry:
-(setq custom-safe-themes t)
-;; Separate from the "~" shortcut
-(global-set-key (kbd "<S-f1>") (lambda () (interactive) (find-file user-init-file)))
-;; What was in custom that didn't get use-package'd:
-(delete-selection-mode)
-(blink-cursor-mode -1)
-(column-number-mode 1)
-(horizontal-scroll-bar-mode -1)
-(savehist-mode)
-(setq-default indent-tabs-mode nil)
-(setq
-      dabbrev-case-distinction nil
-      dabbrev-case-fold-search t
-      dabbrev-case-replace nil
-      default-frame-alist '((fullscreen . maximized) (vertical-scroll-bars . nil) (horizontal-scroll-bars . nil))
-      delete-by-moving-to-trash t
-      disabled-command-function nil
-      enable-recursive-minibuffers t
-      global-mark-ring-max 60
-      grep-command "grep --color=always -nHi -r --include=*.* -e \"pattern\" ."
-      inhibit-startup-screen t
-      initial-buffer-choice t
-      initial-scratch-message
-      ";; Il semble que la perfection soit atteinte non quand il n'y a plus rien à ajouter, mais quand il n'y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n"
-      mark-ring-max 60
-      proced-filter 'all
-      save-interprogram-paste-before-kill t
-      visible-bell t)
-(global-so-long-mode 1)
-
-;; ;; from https://stackoverflow.com/a/22176971, move auto saves and
-;; ;; back up files to a different folder so git or dotnet core won't
-;; ;; pick them up as changes or new files in the project
-(make-directory (concat user-emacs-directory "auto-save") t)
-(setq auto-save-file-name-transforms
-      `((".*" ,(concat user-emacs-directory "auto-save/") t)))
-
-(make-directory (concat user-emacs-directory "backups") t)
-(setq backup-directory-alist
-      `(("." . ,(expand-file-name
-                 (concat user-emacs-directory "backups/")))))
-
-;; from https://gitlab.com/jessieh/dot-emacs
-(setq-default
- backup-by-copying t                                    ; Don't delink hardlinks
- version-control t                                      ; Use version numbers on backups
- delete-old-versions t                                  ; Do not keep old backups
- kept-new-versions 5                                    ; Keep 5 new versions
- kept-old-versions 3                                    ; Keep 3 old versions
- )
-
-;; OTHER BINDINGS
-; adapted for https://stackoverflow.com/questions/6464738/how-can-i-switch-focus-after-buffer-split-in-emacs
-(global-set-key (kbd "C-x 3") (lambda () (interactive)(split-window-right) (other-window 1)))
-(global-set-key (kbd "C-x 2") (lambda () (interactive)(split-window-below) (other-window 1)))
-(global-set-key (kbd "C-M-}") (lambda () (interactive)(shrink-window-horizontally 5)))
-(global-set-key (kbd "C-M-{") (lambda () (interactive)(enlarge-window-horizontally 5)))
-(global-set-key (kbd "C-M-_") (lambda () (interactive)(shrink-window 5)))
-(global-set-key (kbd "C-M-+") (lambda () (interactive)(shrink-window -5)))
-(global-set-key (kbd "M-o") 'other-window)
-(global-set-key (kbd "M-O") 'other-frame)
-(global-set-key (kbd "M-N") 'next-buffer)
-(global-set-key (kbd "M-P") 'previous-buffer)
-(global-set-key (kbd "C-d") 'delete-forward-char) ;; replace delete-char
-(global-set-key (kbd "M-c") 'capitalize-dwim)
-(global-set-key (kbd "M-u") 'upcase-dwim)
-(global-set-key (kbd "M-l") 'downcase-dwim)
-;; from https://emacsredux.com/blog/2020/06/10/comment-commands-redux/
-(global-set-key [remap comment-dwim] #'comment-line)
-(global-set-key (kbd "C-c r") 'recompile)
-(define-key hoagie-keymap (kbd "b") #'browse-url-at-point)
-(define-key hoagie-keymap (kbd "t") #'toggle-truncate-lines)
-(define-key hoagie-keymap (kbd "k") (lambda () (interactive) (kill-buffer)))
-(global-set-key (kbd "C-c !") 'flymake-show-diagnostics-buffer) ;; like flycheck's C-c ! l
-(global-set-key (kbd "C-;") 'dabbrev-expand)
-(global-set-key (kbd "<f6>") 'kmacro-start-macro)
-(global-set-key (kbd "<f7>") 'kmacro-end-macro)
-(global-set-key (kbd "<f8>") 'kmacro-end-and-call-macro)
-
-(defun hoagie-kill-buffer-filename ()
-  "Sends the current buffer's filename to the kill ring."
-  (interactive)
-  (let ((name (buffer-file-name)))
-    (when name
-      (kill-new name))
-    (message (format "Filename: %s" (or name "-No file for this buffer-")))))
-(global-set-key (kbd "<C-f1>") 'hoagie-kill-buffer-filename)
-(define-key dired-mode-map (kbd "<C-f1>") (lambda () (interactive) (dired-copy-filename-as-kill 0)))
-
-;; from https://www.emacswiki.org/emacs/BackwardDeleteWord
-;; because I agree C-backspace shouldn't kill the word!
-;; it litters my kill ring
-(defun delete-word (arg)
-  "Delete characters forward until encountering the end of a word.
+;; Everything that is not part of a particular feature to require
+(use-package emacs
+  :ensure nil
+  :init
+  (defun hoagie-go-home (arg)
+    (interactive "P")
+    (if arg
+        (dired-other-window "~/")
+      (dired "~/")))
+  (defun hoagie-open-org (arg)
+    (interactive "P")
+    (let ((opener (if arg
+                      #'ido-find-file-other-window
+                    #'ido-find-file))
+          (default-directory "~/org"))
+      (funcall opener)))
+  :bind
+  ("<S-f1>" . (lambda () (interactive) (find-file user-init-file)))
+  ("<f1>" . hoagie-go-home)
+  ("<f2>" . project-switch-project)
+  ("<f3>" . hoagie-open-org)
+  ;; from https://stackoverflow.com/a/6465415
+  ("C-x 3" . (lambda () (interactive)(split-window-right) (other-window 1)))
+  ("C-x 2" . (lambda () (interactive)(split-window-below) (other-window 1)))
+  ;; Window management
+  ("C-M-}" . (lambda () (interactive)(shrink-window-horizontally 5)))
+  ("C-M-{" . (lambda () (interactive)(enlarge-window-horizontally 5)))
+  ("C-M-_" . (lambda () (interactive)(shrink-window 5)))
+  ("C-M-+" . (lambda () (interactive)(shrink-window -5)))
+  ("M-o" . other-window)
+  ("M-O" . other-frame)
+  ("M-N" . next-buffer)
+  ("M-P" . previous-buffer)
+  ;; from https://emacsredux.com/blog/2020/06/10/comment-commands-redux/
+  ("<remap> <comment-dwim>" . comment-line)
+  ;; replace delete-char
+  ("C-d" . delete-forward-char)
+  ("M-c" . capitalize-dwim)
+  ("M-u" . upcase-dwim)
+  ("M-l" . downcase-dwim)
+  ("<f6>" . kmacro-start-macro)
+  ("<f7>" . kmacro-end-macro)
+  ("<f8>" . kmacro-end-and-call-macro)
+  ;; like flycheck's C-c ! l
+  ("C-c !" . flymake-show-diagnostics-buffer)
+  :custom
+  (recenter-positions '(1 middle -2)) ;; behaviour for C-l
+  (comint-prompt-read-only t)
+  (read-file-name-completion-ignore-case t) ;; useful in Linux
+  ;; via https://github.com/jacmoe/emacs.d/blob/master/jacmoe.org
+  (help-window-select t)
+  ;; From https://github.com/wasamasa/dotemacs/blob/master/init.org
+  (line-number-display-limit-width 10000)
+  ;; tired of this question. Sorry not sorry
+  (custom-safe-themes t)
+  (indent-tabs-mode nil)
+  (delete-by-moving-to-trash t)
+  (enable-recursive-minibuffers t)
+  (global-mark-ring-max 64)
+  (mark-ring-max 64)
+  (grep-command "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
+  (inhibit-startup-screen t)
+  (initial-buffer-choice t)
+  (initial-scratch-message
+   ";; Il semble que la perfection soit atteinte non quand il n'y a plus rien à ajouter, mais quand il n'y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n")
+  (save-interprogram-paste-before-kill t)
+  (visible-bell t)
+  ;; from https://gitlab.com/jessieh/dot-emacs
+  (backup-by-copying t)   ; Don't delink hardlinks
+  (version-control t)     ; Use version numbers on backups
+  (delete-old-versions t) ; Do not keep old backups
+  (kept-new-versions 5)   ; Keep 5 new versions
+  (kept-old-versions 5)   ; Keep 3 old versions
+  :config
+  (setq disabled-command-function nil)
+  (setq w32-use-native-image-API t)
+  (defalias 'yes-or-no-p 'y-or-n-p)
+  (setq inhibit-compacting-font-caches t)
+  ;; see https://emacs.stackexchange.com/a/28746/17066
+  (setq auto-window-vscroll nil)
+  ;; helps compilation buffer not slowdown
+  ;; see https://blog.danielgempesaw.com/post/129841682030/fixing-a-laggy-compilation-buffer
+  (setq compilation-error-regexp-alist
+        (delete 'maven compilation-error-regexp-alist))
+  ;; from http://www.jurta.org/en/emacs/dotemacs, set the major mode
+  ;; of buffers that are not visiting a file
+  (setq-default major-mode (lambda ()
+                             (if buffer-file-name
+                                 (fundamental-mode)
+                               (let ((buffer-file-name (buffer-name)))
+                                 (set-auto-mode)))))
+  (delete-selection-mode)
+  (blink-cursor-mode -1)
+  (column-number-mode 1)
+  (horizontal-scroll-bar-mode -1)
+  (savehist-mode)
+  (global-so-long-mode 1)
+  ;; from https://stackoverflow.com/a/22176971, move auto saves and
+  ;; back up files to a different folder so git or dotnet core won't
+  ;; pick them up as changes or new files in the project
+  (let ((auto-save-dir (expand-file-name (concat
+                                          user-emacs-directory
+                                          "auto-save")))
+        (backup-dir(expand-file-name (concat
+                                      user-emacs-directory
+                                      "backups"))))
+    (make-directory auto-save-dir t)
+    (setq auto-save-file-name-transforms
+          `((".*" ,auto-save-dir)))
+    (make-directory backup-dir t)
+    (setq backup-directory-alist
+          `(("." . ,backup-dir))))
+  ;; from https://www.emacswiki.org/emacs/BackwardDeleteWord
+  ;; because I agree C-backspace shouldn't kill the word!
+  ;; it litters my kill ring
+  (defun delete-word (arg)
+    "Delete characters forward until encountering the end of a word.
 With ARG, do this that many times."
-  (interactive "p")
-  (if (use-region-p)
-      (delete-region (region-beginning) (region-end))
-    (delete-region (point) (progn
-                             (forward-word arg)
-                             (point)))))
-(defun backward-delete-word (arg)
-  "Delete characters backward until encountering the end of a word.
+    (interactive "p")
+    (if (use-region-p)
+        (delete-region (region-beginning) (region-end))
+      (delete-region (point) (progn
+                               (forward-word arg)
+                               (point)))))
+  (defun backward-delete-word (arg)
+    "Delete characters backward until encountering the end of a word.
 With ARG, do this that many times."
-  (interactive "p")
-  (delete-word (- arg)))
-(global-set-key (kbd "C-<backspace>") 'backward-delete-word)
+    (interactive "p")
+    (delete-word (- arg)))
+  (global-set-key (kbd "C-<backspace>") 'backward-delete-word)
+
+  )
+
 
 ;; Convenient to work with AWS timestamps
 (defun hoagie-convert-timestamp (&optional timestamp)
@@ -807,46 +794,7 @@ With ARG, do this that many times."
                      (frame-parameter nil 'font))))
     (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
 
-;; Experimental: use narrowing
-;; modified from https://endlessparentheses.com/emacs-narrow-or-widen-dwim.html
-(defun narrow-or-widen-dwim (p)
-  "Widen if buffer is narrowed, narrow-dwim otherwise.
-Dwim means: region, or defun, whichever applies first."
-  (interactive "P")
-  (declare (interactive-only)) ;; 2020-04-06: TIL about declare, and interactive-only
-  (cond ((buffer-narrowed-p)
-         (widen)
-         (recenter))
-        (p
-         (narrow-to-page))
-        ((region-active-p)
-         (narrow-to-region (region-beginning)
-                           (region-end)))
-        (t (narrow-to-defun))))
-;; the whole point is, I never use narrowing, so let's replace the default
-;; bindings by this one
-(global-set-key (kbd "C-x n") #'narrow-or-widen-dwim)
-
-(defun hoagie-go-home (arg)
-  (interactive "P")
-  (if arg
-      (dired-other-window "~/")
-    (dired "~/")))
-(global-set-key (kbd "<f1>") #'hoagie-go-home)
-
-(defun hoagie-open-org (arg)
-  (interactive "P")
-  (let ((opener (if arg
-                    #'ido-find-file-other-window
-                  #'ido-find-file))
-        (default-directory "~/org"))
-    (funcall opener)))
-
-(global-set-key [f3] #'hoagie-open-org)
-
-
 ;; Emacs window management
-
 ;; Using the code in link below as starting point:
 ;; https://protesilaos.com/dotemacs/#h:3d8ebbb1-f749-412e-9c72-5d65f48d5957
 ;; My config is a lot simpler for now. Just display most things below, use
@@ -885,7 +833,6 @@ Dwim means: region, or defun, whichever applies first."
   (dolist (window (window-at-side-list))
     (quit-window nil window)))
 (define-key hoagie-keymap (kbd "0") #'hoagie-quit-side-windows)
-
 
 ;; MARK PUSH AND POP - maybe I should make a package out of this
 ;; For a long time I longed for the VS navigation commands as described in
@@ -940,31 +887,7 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
 (require 'isearch)
 (advice-add 'isearch-forward :after #'push-mark-no-activate)
 (advice-add 'isearch-backward :after #'push-mark-no-activate)
-
-;; (use-package isearch
-;;   :ensure nil
-;;   :config
-;;   (defun hoagie-isearch-end-push-mark ()
-;;   "Push the mark -without activating- when exiting isearch."
-;;   (unless isearch-mode-end-hook-quit
-;;     (push-mark-no-activate)))
-;;   (add-hook 'isearch-mode-end-hook 'hoagie-isearch-end-push-mark))
-
-;; (defun hoagie-scroll-down-with-mark ()
-;;   "Like `scroll-down-command`, but push a mark if this is not a repeat invocation."
-;;   (interactive)
-;;   (unless (equal last-command 'hoagie-scroll-down-with-mark)
-;;     (push-mark-no-activate))
-;;   (scroll-down-command))
-
-;; (defun hoagie-scroll-up-with-mark ()
-;;   "Like `scroll-up-command`, but push a mark if this is not a repeat invocation."
-;;   (interactive)
-;;   (unless (equal last-command 'hoagie-scroll-up-with-mark)
-;;     (push-mark-no-activate))
-;;   (scrpoll-up-command))
-;; (global-set-key (kbd "C-v") #'hoagie-scroll-up-with-mark)
-;; (global-set-key (kbd "M-v") #'hoagie-scroll-down-with-mark)
+(require 'window)
 (advice-add 'scroll-up-command :before #'push-mark-if-not-repeat)
 (advice-add 'scroll-down-command :before #'push-mark-if-not-repeat)
 
@@ -1015,7 +938,7 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
   (doom-modeline-irc nil)
   (doom-modeline-env-version nil))
 
-(use-package solo-jazz-theme :load-path "~/.emacs.d/lisp"
+(use-package solo-jazz-theme
   :demand t)
 
 (use-package modus-operandi-theme
@@ -1047,7 +970,4 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
     (load-theme (intern new-theme) t))
 
 (global-set-key (kbd "C-<f11>") #'hoagie-load-theme)
-;;(hoagie-load-theme "doom-one-light")
-;; (hoagie-load-theme "doom-acario-light")
-;; (hoagie-load-theme "solo-jazz")
 (hoagie-load-theme "modus-operandi")
