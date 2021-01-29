@@ -23,6 +23,11 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
+(setq custom-file (concat user-emacs-directory "custom.el"))
+
+(when (eq window-system 'pgtk)
+  (pgtk-use-im-context t))
+
 (require 'use-package)
 (setq use-package-verbose t)
 (setq use-package-always-ensure t)
@@ -41,9 +46,9 @@
 (global-set-key (kbd "C-'") 'hoagie-keymap) ;; BT keyboard has an uncomfortable menu key, so...
 (define-key hoagie-keymap (kbd "k") (lambda () (interactive) (kill-buffer)))
 
-
 ;; could be replaced by isearch-lazy-count, but I don't get live preview in that case
 (use-package anzu
+  :demand t
   :bind
   (("<remap> <isearch-query-replace>" . anzu-isearch-query-replace)
    ("<remap> <isearch-query-replace-regexp>" . anzu-isearch-query-replace-regexp)
@@ -68,24 +73,16 @@
   ("M-S-<SPC>" . company-complete-common)
   (:map hoagie-keymap
         ("<SPC>" . company-complete-common))
+  (:map company-active-map
+        ("C-<RET>" . company-abort)
+        ("[?\t]" . company-complete-selection)
+        ("C-n" . company-select-next)
+        ("C-p" . company-select-previous))
   :hook (after-init-hook . global-company-mode)
   :custom
   (company-idle-delay 0.2)  ;; Makes the Python REPL more responsive
   (company-minimum-prefix-length 3)
-  (company-selection-wrap-around t)
-  :config
-  (define-key company-active-map (kbd "C-<return>") #'company-abort)
-  (define-key company-active-map [tab] #'company-complete-selection)
-  (define-key company-active-map [tab] #'company-complete-selection)
-  (define-key company-active-map (kbd "TAB") #'company-complete-selection)
-  (define-key company-active-map (kbd "C-n") #'company-select-next)
-  (define-key company-active-map (kbd "C-p") #'company-select-previous))
-
-(use-package awscli-capf
-  :ensure t
-  :commands (awscli-add-to-capf)
-  :hook ((shell-mode-hook . awscli-capf-add)
-         (eshell-mode-hook . awscli-capf-add)))
+  (company-selection-wrap-around t))
 
 (use-package csharp-mode
   :mode "\\.cs$"
@@ -108,6 +105,12 @@
 
 (define-key hoagie-keymap (kbd "G") #'project-find-regexp)
 (use-package deadgrep
+  :bind
+  (:map deadgrep-mode-map
+        ("t" . (lambda () (interactive) (deadgrep--search-term nil)))
+        ("r" . (lambda () (interactive) (setq deadgrep--search-type 'regexp) (deadgrep-restart)))
+        ("s" . (lambda () (interactive) (setq deadgrep--search-type 'string) (deadgrep-restart)))
+        ("d" . (lambda () (interactive) (deadgrep--directory nil))))
   :config
   (defun deadgrep--format-command-patch (rg-command)
     "Add --hidden to rg-command."
@@ -251,7 +254,7 @@
   (lsp-csharp-server-path "c:/home/omnisharp_64/OmniSharp.exe")
   (lsp-enable-snippet nil)
   (lsp-enable-folding nil)
-  (lsp-lens-enable t)
+  (lsp-lens-enable nil)
   (lsp-headerline-breadcrumb-enable nil)
   (lsp-auto-guess-root t)
   (lsp-file-watch-threshold nil)
@@ -287,16 +290,29 @@
   (require 'dap-python)
   (require 'dap-pwsh)
   (require 'dap-netcore)
-  (defvar hoagie-dap-keymap (define-prefix-command 'hoagie-dap-keymap))
+  (defvar hoagie-dap-run-keymap (define-prefix-command 'hoagie-dap-run-keymap))
+  (defvar hoagie-dap-bpoints-keymap (define-prefix-command 'hoagie-dap-bpoints-keymap))
+  (global-set-key (kbd "<f7>") hoagie-dap-run-keymap)
+  (global-set-key (kbd "<f8>") hoagie-dap-bpoints-keymap)
   :bind
-  (:map hoagie-dap-keymap
-        ("d" . dap-debug)
-        ("b" . dap-breakpoint-toggle)
-        ("n" . dap-next)
-        ("c" . dap-continue)
-        ("s" . dap-disconnect)) ;; "Stop"
-  (:map hoagie-keymap
-        ("d" . hoagie-dap-keymap))
+  (:map hoagie-dap-run-keymap
+        ("<f7>" . dap-debug)
+        ("<f8>" . dap-next)
+        ("<f9>" . dap-step-in)
+        ("<f10>" . dap-step-out)
+        ("<f6>" . dap-continue)
+        ("<f1>" . dap-eval-thing-at-point)
+        ("C-<f1>" . dap-eval)
+        ("<f2>" . dap-ui-expressions)
+        ("C-<f2>" . dap-ui-expressions-add)
+        ("M-<f2>" . dap-ui-expressions-remove)
+        ("<f3>" . dap-ui-repl)
+        ("C-c" . dap-disconnect)) ;; "Stop"
+  (:map hoagie-dap-bpoints-keymap
+        ("<f6>" . dap-ui-breakpoints-list)
+        ("<f8>" . dap-breakpoint-toggle) ;; f8 twice -> toggle
+        ("<f7>" . dap-breakpoint-log-message)
+        ("<f9>" . dap-breakpoint-condition))
   :custom
   (dap-netcore-install-dir "/home/hoagie/.emacs.d/.cache/"))
 
@@ -370,15 +386,23 @@
                            " "
                            vc-relative-file))))
 
+(require 'icomplete)
 (use-package icomplete-vertical
-  :ensure t
   :demand t
+  :ensure t
+  :bind
+  (:map icomplete-minibuffer-map
+        ("C-<return>" . icomplete-fido-exit) ;; when there's no exact match
+        ("C-j" . icomplete-fido-exit) ;; from the IDO days...
+        ("<down>" . icomplete-forward-completions)
+        ("C-n" . icomplete-forward-completions)
+        ("<up>" . icomplete-backward-completions)
+        ("C-p" . icomplete-backward-completions)
+        ("C-v" . icomplete-vertical-toggle))
   :custom
   (icomplete-show-matches-on-no-input t)
-  ;; (icomplete-hide-common-prefix nil)
   (icomplete-prospects-height 10)
   (icomplete-in-buffer t)
-  ;; (completion-styles '(flex))
   (completion-styles '(substring partial-completion flex))
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
@@ -390,20 +414,7 @@
   (icomplete-vertical-mode)
   ;; Not the best place for this, but since icomplete displaced amx/smex...
   (define-key hoagie-keymap (kbd "<menu>") #'execute-extended-command)
-  (define-key hoagie-keymap (kbd "C-'") #'execute-extended-command)
-  :bind (:map icomplete-minibuffer-map
-              ("C-<return>" . icomplete-fido-exit) ;; when there's no exact match
-              ("C-j" . icomplete-fido-exit) ;; from the IDO days...
-              ("<down>" . icomplete-forward-completions)
-              ("C-n" . icomplete-forward-completions)
-              ("<up>" . icomplete-backward-completions)
-              ("C-p" . icomplete-backward-completions)
-              ("C-v" . icomplete-vertical-toggle)))
-
-(use-package marginalia
-  :init
-  (marginalia-mode)
-  (setq marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil)))
+  (define-key hoagie-keymap (kbd "C-'") #'execute-extended-command))
 
 (use-package json-mode
   :mode "\\.json$")
@@ -554,6 +565,43 @@ By default, occur _limits the search to the region_ if it is active."
   (web-mode-enable-current-element-highlight t)
   (web-mode-markup-indent-offset 2))
 
+(use-package window
+  :ensure nil
+  :init
+  ;; Using the code in https://protesilaos.com/dotemacs as starting point:
+  (setq display-buffer-alist
+        '(;; right side window
+          ("\\(*shell.*\\|*xref.*\\|\\*Occur\\*\\|\\*deadgrep.*\\)"
+           (display-buffer-in-side-window)
+           (window-height . 0.33)
+           (side . bottom)
+           (slot . 0))
+          ;; bottom side window - reuse if in another frame
+          ("\\*\\(Backtrace\\|Warnings\\|Environments .*\\|Builds .*\\|compilation\\|[Hh]elp\\|Messages\\|Flymake.*\\|eglot.*\\)\\*"
+           (display-buffer-reuse-window
+            display-buffer-in-side-window)
+           (window-height . 0.33)
+           (reusable-frames . visible)
+           (side . bottom)
+           (slot . 1))
+          ;; stuff that splits to the right
+          ("\\(magit\\COMMIT_EDITMSG\\*info\\).*"
+           (display-buffer-reuse-window
+            display-buffer-in-side-window)
+           (window-width . 0.5)
+           (side . right))))
+  ;; ignore the config above if I'm explicitly moving to a buffer
+  (setq switch-to-buffer-obey-display-actions nil
+        ;; Allow sidewindows to become the only window if want them to to
+        ignore-window-parameters t)
+  :config
+  (defun hoagie-quit-side-windows ()
+    "Quit side windows of the current frame."
+    (interactive)
+    (dolist (window (window-at-side-list))
+      (quit-window nil window)))
+  (define-key hoagie-keymap (kbd "0") #'hoagie-quit-side-windows))
+
 (use-package which-key
   :config
   (which-key-mode)
@@ -568,137 +616,141 @@ By default, occur _limits the search to the region_ if it is active."
 (use-package yaml-mode
   :mode "\\.yml$")
 
-
 ;; Everything that is not part of a particular feature to require
-(use-package emacs
-  :ensure nil
-  :init
-  (defun hoagie-go-home (arg)
-    (interactive "P")
-    (if arg
-        (dired-other-window "~/")
-      (dired "~/")))
-  (defun hoagie-open-org (arg)
-    (interactive "P")
-    (let ((opener (if arg
-                      #'ido-find-file-other-window
-                    #'ido-find-file))
-          (default-directory "~/org"))
-      (funcall opener)))
-  ;; from https://www.emacswiki.org/emacs/BackwardDeleteWord
-  ;; because I agree C-backspace shouldn't kill the word!
-  ;; it litters my kill ring
-  (defun delete-word (arg)
-    "Delete characters forward until encountering the end of a word.
+;; ---------- Funtions ----------
+(defun hoagie-go-home (arg)
+  (interactive "P")
+  (if arg
+      (dired-other-window "~/")
+    (dired "~/")))
+(defun hoagie-open-org (arg)
+  (interactive "P")
+  (let ((opener (if arg
+                    #'ido-find-file-other-window
+                  #'ido-find-file))
+        (default-directory "~/org"))
+    (funcall opener)))
+;; from https://www.emacswiki.org/emacs/BackwardDeleteWord
+;; because I agree C-backspace shouldn't kill the word!
+;; it litters my kill ring
+(defun delete-word (arg)
+  "Delete characters forward until encountering the end of a word.
 With ARG, do this that many times."
-    (interactive "p")
-    (if (use-region-p)
-        (delete-region (region-beginning) (region-end))
-      (delete-region (point) (progn
-                               (forward-word arg)
-                               (point)))))
-  (defun backward-delete-word (arg)
-    "Delete characters backward until encountering the end of a word.
+  (interactive "p")
+  (if (use-region-p)
+      (delete-region (region-beginning) (region-end))
+    (delete-region (point) (progn
+                             (forward-word arg)
+                             (point)))))
+(defun backward-delete-word (arg)
+  "Delete characters backward until encountering the end of a word.
 With ARG, do this that many times."
-    (interactive "p")
-    (delete-word (- arg)))
-  :bind
-  ("<S-f1>" . (lambda () (interactive) (find-file user-init-file)))
-  ("<f1>" . hoagie-go-home)
-  ("<f2>" . project-switch-project)
-  ("<f3>" . hoagie-open-org)
-  ;; from https://stackoverflow.com/a/6465415
-  ("C-x 3" . (lambda () (interactive)(split-window-right) (other-window 1)))
-  ("C-x 2" . (lambda () (interactive)(split-window-below) (other-window 1)))
-  ;; Window management
-  ("C-M-}" . (lambda () (interactive)(shrink-window-horizontally 5)))
-  ("C-M-{" . (lambda () (interactive)(enlarge-window-horizontally 5)))
-  ("C-M-_" . (lambda () (interactive)(shrink-window 5)))
-  ("C-M-+" . (lambda () (interactive)(shrink-window -5)))
-  ("M-o" . other-window)
-  ("M-O" . other-frame)
-  ("M-N" . next-buffer)
-  ("M-P" . previous-buffer)
-  ;; from https://emacsredux.com/blog/2020/06/10/comment-commands-redux/
-  ("<remap> <comment-dwim>" . comment-line)
-  ;; replace delete-char
-  ("C-d" . delete-forward-char)
-  ("M-c" . capitalize-dwim)
-  ("M-u" . upcase-dwim)
-  ("M-l" . downcase-dwim)
-  ("<f6>" . kmacro-start-macro)
-  ("<f7>" . kmacro-end-macro)
-  ("<f8>" . kmacro-end-and-call-macro)
-  ;; like flycheck's C-c ! l
-  ("C-c !" . flymake-show-diagnostics-buffer)
-  ("C-<backspace>" . backward-delete-word)
-  :custom
-  (recenter-positions '(1 middle -2)) ;; behaviour for C-l
-  (comint-prompt-read-only t)
-  (read-file-name-completion-ignore-case t) ;; useful in Linux
-  ;; via https://github.com/jacmoe/emacs.d/blob/master/jacmoe.org
-  (help-window-select t)
-  ;; From https://github.com/wasamasa/dotemacs/blob/master/init.org
-  (line-number-display-limit-width 10000)
-  ;; tired of this question. Sorry not sorry
-  (custom-safe-themes t)
-  (indent-tabs-mode nil)
-  (delete-by-moving-to-trash t)
-  (enable-recursive-minibuffers t)
-  (global-mark-ring-max 64)
-  (mark-ring-max 64)
-  (grep-command "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
-  (inhibit-startup-screen t)
-  (initial-buffer-choice t)
-  (initial-scratch-message
-   ";; Il semble que la perfection soit atteinte non quand il n'y a plus rien à ajouter, mais quand il n'y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n")
-  (save-interprogram-paste-before-kill t)
-  (visible-bell t)
-  ;; from https://gitlab.com/jessieh/dot-emacs
-  (backup-by-copying t)   ; Don't delink hardlinks
-  (version-control t)     ; Use version numbers on backups
-  (delete-old-versions t) ; Do not keep old backups
-  (kept-new-versions 5)   ; Keep 5 new versions
-  (kept-old-versions 5)   ; Keep 3 old versions
-  :config
-  (defalias 'yes-or-no-p 'y-or-n-p)
-  (setq disabled-command-function nil
-        w32-use-native-image-API t
-        inhibit-compacting-font-caches t
-        ;; see https://emacs.stackexchange.com/a/28746/17066
-        auto-window-vscroll nil)
-  ;; helps compilation buffer not slowdown
-  ;; see https://blog.danielgempesaw.com/post/129841682030/fixing-a-laggy-compilation-buffer
-  (setq compilation-error-regexp-alist
-        (delete 'maven compilation-error-regexp-alist))
-  ;; from http://www.jurta.org/en/emacs/dotemacs, set the major mode
-  ;; of buffers that are not visiting a file
-  (setq-default major-mode (lambda ()
-                             (if buffer-file-name
-                                 (fundamental-mode)
-                               (let ((buffer-file-name (buffer-name)))
-                                 (set-auto-mode)))))
-  (delete-selection-mode)
-  (blink-cursor-mode -1)
-  (column-number-mode 1)
-  (horizontal-scroll-bar-mode -1)
-  (savehist-mode)
-  (global-so-long-mode 1)
-  ;; from https://stackoverflow.com/a/22176971, move auto saves and
-  ;; back up files to a different folder so git or dotnet core won't
-  ;; pick them up as changes or new files in the project
-  (let ((auto-save-dir (expand-file-name (concat
-                                          user-emacs-directory
-                                          "auto-save")))
-        (backup-dir(expand-file-name (concat
-                                      user-emacs-directory
-                                      "backups"))))
-    (make-directory auto-save-dir t)
-    (setq auto-save-file-name-transforms
-          `((".*" ,auto-save-dir)))
-    (make-directory backup-dir t)
-    (setq backup-directory-alist
-          `(("." . ,backup-dir)))))
+  (interactive "p")
+  (delete-word (- arg)))
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+;; ---------- Variables ----------
+(setq-default indent-tabs-mode nil
+              ;; From Prot's config:
+              ;; https://200ok.ch/posts/2020-09-29_comprehensive_guide_on_handling_long_lines_in_emacs.html
+              bidi-paragraph-direction 'left-to-right)
+(setq inhibit-startup-screen t
+      initial-buffer-choice t
+      initial-scratch-message ";; Il semble que la perfection soit atteinte non quand il n'y a plus rien à ajouter, mais quand il n'y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n"
+      disabled-command-function nil
+      w32-use-native-image-API t
+      inhibit-compacting-font-caches t
+      ;; see https://emacs.stackexchange.com/a/28746/17066
+      auto-window-vscroll nil
+      recenter-positions '(1 middle -2) ;; behaviour for C-l
+      comint-prompt-read-only t
+      read-file-name-completion-ignore-case t ;; useful in Linux
+      ;; via https://github.com/jacmoe/emacs.d/blob/master/jacmoe.org
+      help-window-select t
+      ;; From https://github.com/wasamasa/dotemacs/blob/master/init.org
+      line-number-display-limit-width 10000
+      ;; tired of this question. Sorry not sorry
+      custom-safe-themes t
+      delete-by-moving-to-trash t
+      enable-recursive-minibuffers t
+      global-mark-ring-max 64
+      mark-ring-max 64
+      grep-command "grep --color=always -nHi -r --include=*.* -e \"pattern\" ."
+      save-interprogram-paste-before-kill t
+      visible-bell t
+      bidi-inhibit-bpa t
+      ;; from https://gitlab.com/jessieh/dot-emacs
+      backup-by-copying t
+      version-control t
+      delete-old-versions t
+      kept-new-versions 5
+      kept-old-versions 5)
+;; helps compilation buffer not slowdown
+;; see https://blog.danielgempesaw.com/post/129841682030/fixing-a-laggy-compilation-buffer
+(setq compilation-error-regexp-alist
+      (delete 'maven compilation-error-regexp-alist))
+;; from https://stackoverflow.com/a/22176971, move auto saves and
+;; back up files to a different folder so git or dotnet core won't
+;; pick them up as changes or new files in the project
+(let ((auto-save-dir (expand-file-name (concat
+                                        user-emacs-directory
+                                        "auto-save")))
+      (backup-dir(expand-file-name (concat
+                                    user-emacs-directory
+                                    "backups"))))
+  (make-directory auto-save-dir t)
+  (setq auto-save-file-name-transforms
+        `((".*" ,auto-save-dir)))
+  (make-directory backup-dir t)
+  (setq backup-directory-alist
+        `(("." . ,backup-dir))))
+
+;; ;; ---------- Enabled/disabled modes ----------
+(delete-selection-mode)
+(blink-cursor-mode -1)
+(column-number-mode 1)
+(horizontal-scroll-bar-mode -1)
+(savehist-mode)
+(global-so-long-mode 1)
+;; from http://www.jurta.org/en/emacs/dotemacs, set the major mode
+;; of buffers that are not visiting a file
+(setq-default major-mode (lambda ()
+                           (if buffer-file-name
+                               (fundamental-mode)
+                             (let ((buffer-file-name (buffer-name)))
+                               (set-auto-mode)))))
+
+;; ---------- Global bindings ----------
+(global-set-key (kbd "<S-f1>") (lambda () (interactive) (find-file user-init-file)))
+(global-set-key (kbd "<f1>") #'hoagie-go-home)
+(global-set-key (kbd "<f2>") #'project-switch-project)
+(global-set-key (kbd "<f3>") #'hoagie-open-org)
+;; from https://stackoverflow.com/a/6465415
+(global-set-key (kbd "C-x 3") (lambda () (interactive)(split-window-right) (other-window 1)))
+(global-set-key (kbd "C-x 2") (lambda () (interactive)(split-window-below) (other-window 1)))
+;; Window management
+(global-set-key (kbd "C-M-}") (lambda () (interactive)(shrink-window-horizontally 5)))
+(global-set-key (kbd "C-M-{") (lambda () (interactive)(enlarge-window-horizontally 5)))
+(global-set-key (kbd "C-M-_") (lambda () (interactive)(shrink-window 5)))
+(global-set-key (kbd "C-M-+") (lambda () (interactive)(shrink-window -5)))
+(global-set-key (kbd "M-o") #'other-window)
+(global-set-key (kbd "M-O") #'other-frame)
+(global-set-key (kbd "M-N") #'next-buffer)
+(global-set-key (kbd "M-P") #'previous-buffer)
+;; from https://emacsredux.com/blog/2020/06/10/comment-commands-redux/
+(global-set-key [remap comment-dwim] #'comment-line)
+;; replace delete-char
+(global-set-key (kbd "C-d") #'delete-forward-char)
+(global-set-key (kbd "M-c") #'capitalize-dwim)
+(global-set-key (kbd "M-u") #'upcase-dwim)
+(global-set-key (kbd "M-l") #'downcase-dwim)
+(global-set-key (kbd "S-<f6>") #'kmacro-start-macro)
+(global-set-key (kbd "S-<f7>") #'kmacro-end-macro)
+(global-set-key (kbd "S-<f8>") #'kmacro-end-and-call-macro)
+;; like flycheck's C-c ! l
+(global-set-key (kbd "C-c !") #'flymake-show-diagnostics-buffer)
+(global-set-key (kbd "C-<backspace>") #'backward-delete-word)
+
 
 ;; Convenient to work with AWS timestamps
 (defun hoagie-convert-timestamp (&optional timestamp)
@@ -794,46 +846,6 @@ With ARG, do this that many times."
                      (frame-parameter nil 'font))))
     (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
 
-;; Emacs window management
-;; Using the code in link below as starting point:
-;; https://protesilaos.com/dotemacs/#h:3d8ebbb1-f749-412e-9c72-5d65f48d5957
-;; My config is a lot simpler for now. Just display most things below, use
-;; 1/3rd or 40% of the screen. On the left shell/xref on the left and on the right
-;; compilation/help/messages and a few others
-(setq display-buffer-alist
-      '(;; right side window
-        ("\\(*shell.*\\|*xref.*\\|\\*Occur\\*\\|\\*deadgrep.*\\)"
-         (display-buffer-in-side-window)
-         (window-height . 0.33)
-         (side . bottom)
-         (slot . 0))
-        ;; bottom side window - no reuse
-        ("\\(COMMIT_EDITMSG\\)"
-         (display-buffer-in-side-window)
-         (window-height . 0.33)
-         (side . bottom))
-        ;; bottom side window - reuse if in another frame
-        ("\\*\\(Backtrace\\|Warnings\\|Environments .*\\|Builds .*\\|compilation\\|[Hh]elp\\|Messages\\|Flymake.*\\|eglot.*\\)\\*"
-         (display-buffer-reuse-window
-          display-buffer-in-side-window)
-         (window-height . 0.33)
-         (reusable-frames . visible)
-         (side . bottom)
-         (slot . 1))
-        ;; stuff that splits to the right - non-side window
-        ("\\(magit\\|\\*info\\).*"
-         (display-buffer-in-direction)
-         (window . main)
-         (direction . right))))
-(setq switch-to-buffer-obey-display-actions nil)
-
-(defun hoagie-quit-side-windows ()
-  "Quit side windows of the current frame."
-  (interactive)
-  (dolist (window (window-at-side-list))
-    (quit-window nil window)))
-(define-key hoagie-keymap (kbd "0") #'hoagie-quit-side-windows)
-
 ;; MARK PUSH AND POP - maybe I should make a package out of this
 ;; For a long time I longed for the VS navigation commands as described in
 ;; https://blogs.msdn.microsoft.com/zainnab/2010/03/01/navigate-backward-and-navigate-forward/
@@ -897,10 +909,10 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
   :config
   (global-visible-mark-mode t)
   :custom-face
-  (visible-mark-face1 ((t (:background nil :box (:line-width 1 :color "red")))))
-  (visible-mark-face2 ((t (:background nil :box (:line-width 1 :color "orange")))))
-  (visible-mark-forward-face1 ((t (:background nil :box (:line-width 1 :color "purple1")))))
-  (visible-mark-forward-face2 ((t (:background nil :box (:line-width 1 :color "chartreuse")))))
+  (visible-mark-face1 ((t (:background "tomato"))))
+  (visible-mark-face2 ((t (:background "gold"))))
+  (visible-mark-forward-face1 ((t (:background "sea green"))))
+  (visible-mark-forward-face2 ((t (:background "pale green"))))
   :custom
   (visible-mark-max 2)
   (visible-mark-faces '(visible-mark-face1 visible-mark-face2))
@@ -939,9 +951,6 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
   (doom-modeline-irc nil)
   (doom-modeline-env-version nil))
 
-(use-package solo-jazz-theme
-  :demand t)
-
 (use-package modus-operandi-theme
   :demand t
   :custom
@@ -963,8 +972,7 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
                                         doom-nord-light
                                         doom-oceanic-next
                                         doom-one-light
-                                        modus-operandi
-                                        solo-jazz)
+                                        modus-operandi)
                                       nil
                                       t)))
     (mapc 'disable-theme custom-enabled-themes)
