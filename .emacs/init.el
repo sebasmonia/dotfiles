@@ -33,8 +33,6 @@
 (setq use-package-always-ensure t)
 (setq use-package-hook-name-suffix nil)
 
-(setq custom-file (concat user-emacs-directory "custom.el"))
-
 (custom-set-faces
  '(default ((t (:family "Consolas" :foundry "MS  " :slant normal :weight normal :height 113 :width normal)))))
 
@@ -179,7 +177,7 @@
   ("C-c d" . docker))
 
 (use-package dockerfile-mode
-  :demand t) ;; not sure if really needed
+  :mode "Dockerfile\\'")
 
 (use-package ediff
   :ensure nil
