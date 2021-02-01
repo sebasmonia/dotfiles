@@ -85,7 +85,7 @@
 (use-package csharp-mode
   :mode "\\.cs$"
   :hook
-  (csharp-mode-hook . #'subword-mode))
+  (csharp-mode-hook . (lambda () (subword-mode))))
 
 (use-package dabbrev
   :ensure nil
@@ -564,9 +564,9 @@ By default, occur _limits the search to the region_ if it is active."
             display-buffer-in-side-window)
            (window-width . 0.5)
            (side . right))))
-  ;; ignore the config above if I'm explicitly moving to a buffer
+  ;; ignore the config above if I'm explicitly moving to a buffer and
+  ;; allow sidewindows to become the only window if want them to
   (setq switch-to-buffer-obey-display-actions nil
-        ;; Allow sidewindows to become the only window if want them to to
         ignore-window-parameters t)
   :config
   (defun hoagie-quit-side-windows ()
@@ -624,9 +624,9 @@ With ARG, do this that many times."
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 ;; ---------- Variables ----------
+;; From Prot's config:
+;; https://200ok.ch/posts/2020-09-29_comprehensive_guide_on_handling_long_lines_in_emacs.html
 (setq-default indent-tabs-mode nil
-              ;; From Prot's config:
-              ;; https://200ok.ch/posts/2020-09-29_comprehensive_guide_on_handling_long_lines_in_emacs.html
               bidi-paragraph-direction 'left-to-right)
 (setq inhibit-startup-screen t
       initial-buffer-choice t
@@ -634,16 +634,12 @@ With ARG, do this that many times."
       disabled-command-function nil
       w32-use-native-image-API t
       inhibit-compacting-font-caches t
-      ;; see https://emacs.stackexchange.com/a/28746/17066
-      auto-window-vscroll nil
+      auto-window-vscroll nil ;; see https://emacs.stackexchange.com/a/28746/17066
       recenter-positions '(1 middle -2) ;; behaviour for C-l
       comint-prompt-read-only t
       read-file-name-completion-ignore-case t ;; useful in Linux
-      ;; via https://github.com/jacmoe/emacs.d/blob/master/jacmoe.org
-      help-window-select t
-      ;; From https://github.com/wasamasa/dotemacs/blob/master/init.org
-      line-number-display-limit-width 10000
-      ;; tired of this question. Sorry not sorry
+      help-window-select t ;; via https://github.com/jacmoe/emacs.d/blob/master/jacmoe.org
+      line-number-display-limit-width 10000 ;; From https://github.com/wasamasa/dotemacs/blob/master/init.org
       custom-safe-themes t
       delete-by-moving-to-trash t
       enable-recursive-minibuffers t
@@ -653,7 +649,6 @@ With ARG, do this that many times."
       save-interprogram-paste-before-kill t
       visible-bell t
       bidi-inhibit-bpa t
-      ;; from https://gitlab.com/jessieh/dot-emacs
       backup-by-copying t
       version-control t
       delete-old-versions t
