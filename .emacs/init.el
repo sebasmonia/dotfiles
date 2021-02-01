@@ -85,12 +85,7 @@
 (use-package csharp-mode
   :mode "\\.cs$"
   :hook
-  (csharp-mode-hook . (lambda ()
-                        (subword-mode)
-                        (setq-local fill-function-arguments-first-argument-same-line t)
-                        (setq-local fill-function-arguments-second-argument-same-line nil)
-                        (setq-local fill-function-arguments-last-argument-same-line t)
-                        (define-key csharp-mode-map [remap c-fill-paragraph] #'fill-function-arguments-dwim))))
+  (csharp-mode-hook . #'subword-mode))
 
 (use-package dabbrev
   :ensure nil
@@ -330,24 +325,6 @@
   :config
   (er/enable-mode-expansions 'csharp-mode 'er/add-cc-mode-expansions))
 
-(use-package fill-function-arguments
-  :demand t
-  :commands (fill-function-arguments-dwim)
-  :custom
-  (fill-function-arguments-indent-after-fill t)
-  :hook
-  (prog-mode-hook . (lambda () (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))
-  (sgml-mode-hook . (lambda ()
-                      (setq-local fill-function-arguments-first-argument-same-line t)
-                      (setq-local fill-function-arguments-argument-sep " ")
-                      (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))
-  (emacs-lisp-mode-hook . (lambda ()
-                            (setq-local fill-function-arguments-first-argument-same-line t)
-                            (setq-local fill-function-arguments-second-argument-same-line t)
-                            (setq-local fill-function-arguments-last-argument-same-line t)
-                            (setq-local fill-function-arguments-argument-separator " ")
-                            (local-set-key (kbd "M-q") #'fill-function-arguments-dwim))))
-
 (use-package format-all
   :bind ("C-c f" . format-all-buffer))
 
@@ -417,11 +394,6 @@
 (use-package json-mode
   :mode "\\.json$")
 
-(use-package lyrics
-  :commands lyrics
-  :custom
-  (lyrics-backend 'lyrics-azlyrics))
-
 (with-eval-after-load "vc-hooks"
   (define-key vc-prefix-map "=" 'vc-ediff))
 (with-eval-after-load "vc-dir"
@@ -469,21 +441,6 @@
   (plantuml-jar-path "~/plantuml.jar"))
 
 (use-package powershell)
-
-;; from https://karthinks.com/software/batteries-included-with-emacs/
-(use-package pulse
-  :ensure nil
-  :custom
-  (pulse-iterations 30)
-  :custom-face
-  (pulse-highlight-start-face ((t (:inherit region :extend t))))
-  :config
-  (defun pulse-line (&rest _)
-    "Pulse the current line."
-    (pulse-momentary-highlight-one-line (point)))
-  (dolist (command '(scroll-up-command scroll-down-command
-                                       recenter-top-bottom other-window))
-    (advice-add command :after #'pulse-line)))
 
 (use-package python
   :ensure nil
@@ -546,6 +503,21 @@ By default, occur _limits the search to the region_ if it is active."
 
 (use-package terraform-mode
   :mode "\\.tf$")
+
+(use-package visible-mark
+  :demand t ;; has to be loaded, no command
+  :config
+  (global-visible-mark-mode t)
+  :custom-face
+  (visible-mark-face1 ((t (:background "tomato"))))
+  (visible-mark-face2 ((t (:background "gold"))))
+  (visible-mark-forward-face1 ((t (:background "sea green"))))
+  (visible-mark-forward-face2 ((t (:background "pale green"))))
+  :custom
+  (visible-mark-max 2)
+  (visible-mark-faces '(visible-mark-face1 visible-mark-face2))
+  (visible-mark-forward-max 2)
+  (visible-mark-forward-faces '(visible-mark-forward-face1 visible-mark-forward-face2)))
 
 (use-package web-mode
   :mode
@@ -905,21 +877,6 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
 (require 'window)
 (advice-add 'scroll-up-command :before #'push-mark-if-not-repeat)
 (advice-add 'scroll-down-command :before #'push-mark-if-not-repeat)
-
-(use-package visible-mark
-  :demand t ;; has to be loaded, no command
-  :config
-  (global-visible-mark-mode t)
-  :custom-face
-  (visible-mark-face1 ((t (:background "tomato"))))
-  (visible-mark-face2 ((t (:background "gold"))))
-  (visible-mark-forward-face1 ((t (:background "sea green"))))
-  (visible-mark-forward-face2 ((t (:background "pale green"))))
-  :custom
-  (visible-mark-max 2)
-  (visible-mark-faces '(visible-mark-face1 visible-mark-face2))
-  (visible-mark-forward-max 2)
-  (visible-mark-forward-faces '(visible-mark-forward-face1 visible-mark-forward-face2)))
 
 ;; Last but not least, load doom-modeline and then theme
 ;; Doing these last so they are aware of all packages loaded
