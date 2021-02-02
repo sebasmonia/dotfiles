@@ -462,8 +462,10 @@ By default, occur _limits the search to the region_ if it is active."
       (command-execute 'occur)))
   (define-key hoagie-keymap (kbd "o") 'hoagie-occur-dwim)
   (defun hoagie-rename-occur-buffer ()
-    "Renames the current buffer to *Occur: [term]*. Meant to be added to `occur-hook'."
-    (rename-buffer (format "*Occur: %s*" (car regexp-history))))
+    "Renames the current buffer to *Occur: [term] [buffer]*.
+Meant to be added to `occur-hook'."
+    (cl-destructuring-bind (search-term _ (buffer-name &rest _)) occur-revert-arguments
+      (rename-buffer (format "*Occur: %s %s*" search-term buffer-name) t)))
   (add-hook 'occur-hook #'hoagie-rename-occur-buffer))
 
 (use-package sharper
