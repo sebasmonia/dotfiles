@@ -361,7 +361,6 @@
                            " "
                            vc-relative-file))))
 
-(require 'icomplete)
 (use-package icomplete-vertical
   :demand t
   :ensure t
@@ -593,135 +592,133 @@ Meant to be added to `occur-hook'."
   :mode "\\.yml$")
 
 ;; Everything that is not part of a particular feature to require
-;; ---------- Funtions ----------
-(defun hoagie-go-home (arg)
-  (interactive "P")
-  (if arg
-      (dired-other-window "~/")
-    (dired "~/")))
-(defun hoagie-open-org (arg)
-  (interactive "P")
-  (let ((opener (if arg
-                    #'ido-find-file-other-window
-                  #'ido-find-file))
-        (default-directory "~/org"))
-    (funcall opener)))
-;; from https://www.emacswiki.org/emacs/BackwardDeleteWord
-;; because I agree C-backspace shouldn't kill the word!
-;; it litters my kill ring
-(defun delete-word (arg)
-  "Delete characters forward until encountering the end of a word.
+(use-package emacs
+  :ensure nil
+  :init
+  (defun hoagie-go-home (arg)
+    (interactive "P")
+    (if arg
+        (dired-other-window "~/")
+      (dired "~/")))
+  (defun hoagie-open-org (arg)
+    (interactive "P")
+    (let ((opener (if arg
+                      #'ido-find-file-other-window
+                    #'ido-find-file))
+          (default-directory "~/org"))
+      (funcall opener)))
+  ;; from https://www.emacswiki.org/emacs/BackwardDeleteWord
+  ;; because I agree C-backspace shouldn't kill the word!
+  ;; it litters my kill ring
+  (defun delete-word (arg)
+    "Delete characters forward until encountering the end of a word.
 With ARG, do this that many times."
-  (interactive "p")
-  (if (use-region-p)
-      (delete-region (region-beginning) (region-end))
-    (delete-region (point) (progn
-                             (forward-word arg)
-                             (point)))))
-(defun backward-delete-word (arg)
-  "Delete characters backward until encountering the end of a word.
+    (interactive "p")
+    (if (use-region-p)
+        (delete-region (region-beginning) (region-end))
+      (delete-region (point) (progn
+                               (forward-word arg)
+                               (point)))))
+  (defun backward-delete-word (arg)
+    "Delete characters backward until encountering the end of a word.
 With ARG, do this that many times."
-  (interactive "p")
-  (delete-word (- arg)))
-(defalias 'yes-or-no-p 'y-or-n-p)
-
-;; ---------- Variables ----------
-;; From Prot's config:
-;; https://200ok.ch/posts/2020-09-29_comprehensive_guide_on_handling_long_lines_in_emacs.html
-(setq-default indent-tabs-mode nil
-              bidi-paragraph-direction 'left-to-right)
-(setq inhibit-startup-screen t
-      initial-buffer-choice t
-      initial-scratch-message ";; Il semble que la perfection soit atteinte non quand il n'y a plus rien à ajouter, mais quand il n'y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n"
-      disabled-command-function nil
-      w32-use-native-image-API t
-      inhibit-compacting-font-caches t
-      auto-window-vscroll nil ;; see https://emacs.stackexchange.com/a/28746/17066
-      recenter-positions '(1 middle -2) ;; behaviour for C-l
-      comint-prompt-read-only t
-      read-file-name-completion-ignore-case t ;; useful in Linux
-      help-window-select t ;; via https://github.com/jacmoe/emacs.d/blob/master/jacmoe.org
-      line-number-display-limit-width 10000 ;; From https://github.com/wasamasa/dotemacs/blob/master/init.org
-      custom-safe-themes t
-      delete-by-moving-to-trash t
-      enable-recursive-minibuffers t
-      global-mark-ring-max 64
-      mark-ring-max 64
-      grep-command "grep --color=always -nHi -r --include=*.* -e \"pattern\" ."
-      save-interprogram-paste-before-kill t
-      visible-bell t
-      bidi-inhibit-bpa t
-      backup-by-copying t
-      version-control t
-      delete-old-versions t
-      kept-new-versions 5
-      kept-old-versions 5)
-;; helps compilation buffer not slowdown
-;; see https://blog.danielgempesaw.com/post/129841682030/fixing-a-laggy-compilation-buffer
-(setq compilation-error-regexp-alist
-      (delete 'maven compilation-error-regexp-alist))
-;; from https://stackoverflow.com/a/22176971, move auto saves and
-;; back up files to a different folder so git or dotnet core won't
-;; pick them up as changes or new files in the project
-(let ((auto-save-dir (expand-file-name (concat
-                                        user-emacs-directory
-                                        "auto-save")))
-      (backup-dir(expand-file-name (concat
-                                    user-emacs-directory
-                                    "backups"))))
-  (make-directory auto-save-dir t)
-  (setq auto-save-file-name-transforms
-        `((".*" ,auto-save-dir)))
-  (make-directory backup-dir t)
-  (setq backup-directory-alist
-        `(("." . ,backup-dir))))
-
-;; ;; ---------- Enabled/disabled modes ----------
-(delete-selection-mode)
-(blink-cursor-mode -1)
-(column-number-mode 1)
-(horizontal-scroll-bar-mode -1)
-(savehist-mode)
-(global-so-long-mode 1)
-;; from http://www.jurta.org/en/emacs/dotemacs, set the major mode
-;; of buffers that are not visiting a file
-(setq-default major-mode (lambda ()
-                           (if buffer-file-name
-                               (fundamental-mode)
-                             (let ((buffer-file-name (buffer-name)))
-                               (set-auto-mode)))))
-
-;; ---------- Global bindings ----------
-(global-set-key (kbd "<S-f1>") (lambda () (interactive) (find-file user-init-file)))
-(global-set-key (kbd "<f1>") #'hoagie-go-home)
-(global-set-key (kbd "<f2>") #'project-switch-project)
-(global-set-key (kbd "<f3>") #'hoagie-open-org)
-;; from https://stackoverflow.com/a/6465415
-(global-set-key (kbd "C-x 3") (lambda () (interactive)(split-window-right) (other-window 1)))
-(global-set-key (kbd "C-x 2") (lambda () (interactive)(split-window-below) (other-window 1)))
-;; Window management
-(global-set-key (kbd "C-M-}") (lambda () (interactive)(shrink-window-horizontally 5)))
-(global-set-key (kbd "C-M-{") (lambda () (interactive)(enlarge-window-horizontally 5)))
-(global-set-key (kbd "C-M-_") (lambda () (interactive)(shrink-window 5)))
-(global-set-key (kbd "C-M-+") (lambda () (interactive)(shrink-window -5)))
-(global-set-key (kbd "M-o") #'other-window)
-(global-set-key (kbd "M-O") #'other-frame)
-(global-set-key (kbd "M-N") #'next-buffer)
-(global-set-key (kbd "M-P") #'previous-buffer)
-;; from https://emacsredux.com/blog/2020/06/10/comment-commands-redux/
-(global-set-key [remap comment-dwim] #'comment-line)
-;; replace delete-char
-(global-set-key (kbd "C-d") #'delete-forward-char)
-(global-set-key (kbd "M-c") #'capitalize-dwim)
-(global-set-key (kbd "M-u") #'upcase-dwim)
-(global-set-key (kbd "M-l") #'downcase-dwim)
-(global-set-key (kbd "S-<f6>") #'kmacro-start-macro)
-(global-set-key (kbd "S-<f7>") #'kmacro-end-macro)
-(global-set-key (kbd "S-<f8>") #'kmacro-end-and-call-macro)
-;; like flycheck's C-c ! l
-(global-set-key (kbd "C-c !") #'flymake-show-diagnostics-buffer)
-(global-set-key (kbd "C-<backspace>") #'backward-delete-word)
-
+    (interactive "p")
+    (delete-word (- arg)))
+  :bind
+  ("<S-f1>" . (lambda () (interactive) (find-file user-init-file)))
+  ("<f1>" . hoagie-go-home)
+  ("<f2>" . project-switch-project)
+  ("<f3>" . hoagie-open-org)
+  ;; from https://stackoverflow.com/a/6465415
+  ("C-x 3" . (lambda () (interactive)(split-window-right) (other-window 1)))
+  ("C-x 2" . (lambda () (interactive)(split-window-below) (other-window 1)))
+  ;; Window management
+  ("C-M-}" . (lambda () (interactive)(shrink-window-horizontally 5)))
+  ("C-M-{" . (lambda () (interactive)(enlarge-window-horizontally 5)))
+  ("C-M-_" . (lambda () (interactive)(shrink-window 5)))
+  ("C-M-+" . (lambda () (interactive)(shrink-window -5)))
+  ("M-o" . other-window)
+  ("M-O" . other-frame)
+  ("M-N" . next-buffer)
+  ("M-P" . previous-buffer)
+  ;; from https://emacsredux.com/blog/2020/06/10/comment-commands-redux/
+  ("<remap> <comment-dwim>" . comment-line)
+  ;; replace delete-char
+  ("C-d" . delete-forward-char)
+  ("M-c" . capitalize-dwim)
+  ("M-u" . upcase-dwim)
+  ("M-l" . downcase-dwim)
+  ("C-<backspace>" . backward-delete-word)
+  ;; like flycheck's C-c ! l
+  ("C-c !" . flymake-show-diagnostics-buffer)
+  :custom
+  (recenter-positions '(1 middle -2)) ;; behaviour for C-l
+  (comint-prompt-read-only t)
+  (read-file-name-completion-ignore-case t) ;; useful in Linux
+  ;; via https://github.com/jacmoe/emacs.d/blob/master/jacmoe.org
+  (help-window-select t)
+  ;; From https://github.com/wasamasa/dotemacs/blob/master/init.org
+  (line-number-display-limit-width 10000)
+  ;; tired of this question. Sorry not sorry
+  (custom-safe-themes t)
+  (indent-tabs-mode nil)
+  (delete-by-moving-to-trash t)
+  (enable-recursive-minibuffers t)
+  (global-mark-ring-max 64)
+  (mark-ring-max 64)
+  (grep-command "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
+  (inhibit-startup-screen t)
+  (initial-buffer-choice t)
+  (initial-scratch-message
+   ";; Il semble que la perfection soit atteinte non quand il n'y a plus rien à ajouter, mais quand il n'y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n")
+  (save-interprogram-paste-before-kill t)
+  (visible-bell t)
+  ;; from https://gitlab.com/jessieh/dot-emacs
+  (backup-by-copying t)   ; Don't delink hardlinks
+  (version-control t)     ; Use version numbers on backups
+  (delete-old-versions t) ; Do not keep old backups
+  (kept-new-versions 5)   ; Keep 5 new versions
+  (kept-old-versions 5)   ; Keep 3 old versions
+  :config
+  ;; see https://emacs.stackexchange.com/a/28746/17066
+  ;; https://blog.danielgempesaw.com/post/129841682030/fixing-a-laggy-compilation-buffer
+  ;;
+  (setq disabled-command-function nil
+        w32-use-native-image-API t
+        inhibit-compacting-font-caches t
+        auto-window-vscroll nil
+        compilation-error-regexp-alist (delete 'maven compilation-error-regexp-alist))
+  (defalias 'yes-or-no-p 'y-or-n-p)
+  ;; from http://www.jurta.org/en/emacs/dotemacs, set the major mode
+  ;; of buffers that are not visiting a file
+  (setq-default major-mode (lambda ()
+                             (if buffer-file-name
+                                 (fundamental-mode)
+                               (let ((buffer-file-name (buffer-name)))
+                                 (set-auto-mode)))))
+  ;; https://200ok.ch/posts/2020-09-29_comprehensive_guide_on_handling_long_lines_in_emacs.html
+  (setq-default bidi-paragraph-direction 'left-to-right)
+  (delete-selection-mode)
+  (blink-cursor-mode -1)
+  (column-number-mode 1)
+  (horizontal-scroll-bar-mode -1)
+  (savehist-mode)
+  (global-so-long-mode 1)
+  ;; from https://stackoverflow.com/a/22176971, move auto saves and
+  ;; back up files to a different folder so git or dotnet core won't
+  ;; pick them up as changes or new files in the project
+  (let ((auto-save-dir (expand-file-name (concat
+                                          user-emacs-directory
+                                          "auto-save/")))
+        (backup-dir(expand-file-name (concat
+                                      user-emacs-directory
+                                      "backups/"))))
+    (make-directory auto-save-dir t)
+    (setq auto-save-file-name-transforms
+          `((".*" ,auto-save-dir)))
+    (make-directory backup-dir t)
+    (setq backup-directory-alist
+          `(("." . ,backup-dir)))))
 
 ;; Convenient to work with AWS timestamps
 (defun hoagie-convert-timestamp (&optional timestamp)
@@ -811,7 +808,7 @@ With ARG, do this that many times."
       (when (string= monitor-name "S240HL") ;; external monitor at home
         (setq size "11"))
       (when (eq (length (display-monitor-attributes-list)) 1) ;; override everything if no external monitors!
-        (setq size "11"))
+        (setq size "13"))
       (set-frame-font (concat "Consolas " size))
       (set-face-font 'eldoc-box-body
                      (frame-parameter nil 'font))))
