@@ -325,6 +325,32 @@
   :config
   (er/enable-mode-expansions 'csharp-mode 'er/add-cc-mode-expansions))
 
+(use-package fill-function-arguments
+  :commands (fill-function-arguments-dwim)
+  :custom
+  (fill-function-arguments-indent-after-fill t)
+  :hook
+  (prog-mode-hook . (lambda () (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))
+  (sgml-mode-hook . (lambda ()
+                      (setq-local fill-function-arguments-first-argument-same-line t)
+                      (setq-local fill-function-arguments-argument-sep " ")
+                      (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))
+  (emacs-lisp-mode-hook . (lambda ()
+                            (setq-local fill-function-arguments-first-argument-same-line t)
+                            (setq-local fill-function-arguments-second-argument-same-line t)
+                            (setq-local fill-function-arguments-last-argument-same-line t)
+                            (setq-local fill-function-arguments-argument-separator " ")
+                            (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))
+  (csharp-mode-hook . (lambda ()
+                        (setq-local fill-function-arguments-first-argument-same-line t)
+                        (setq-local fill-function-arguments-second-argument-same-line nil)
+                        (setq-local fill-function-arguments-last-argument-same-line t)
+                        ;; override LSP indentation for this particular command
+                        (setq-local fill-function-arguments-indent-after-fill
+                                    (lambda (start end)
+                                      (let ((indent-region-function #'c-indent-region))
+                                        (indent-region start end))))))
+
 (use-package format-all
   :bind ("C-c f" . format-all-buffer))
 
