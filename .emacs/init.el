@@ -349,7 +349,7 @@
                         (setq-local fill-function-arguments-indent-after-fill
                                     (lambda (start end)
                                       (let ((indent-region-function #'c-indent-region))
-                                        (indent-region start end))))))
+                                        (indent-region start end)))))))
 
 (use-package format-all
   :bind ("C-c f" . format-all-buffer))
