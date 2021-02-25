@@ -933,29 +933,7 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
 (use-package modus-operandi-theme
   :demand t
   :custom
-  (modus-operandi-theme-completions 'moderate))
-
-(use-package doom-themes
-  :demand t
+  (modus-operandi-theme-completions 'moderate)
   :config
-  (setq doom-nord-light-brighter-modeline t
-        doom-acario-light-brighter-modeline nil
-        doom-challenger-deep-brighter-modeline nil))
-
-(defun hoagie-load-theme (new-theme)
-  "Pick a theme to load from a harcoded list. Or load NEW-THEME."
-  (interactive (list (completing-read "Theme:"
-                                      '(doom-acario-dark
-                                        doom-acario-light
-                                        doom-challenger-deep
-                                        doom-nord-light
-                                        doom-oceanic-next
-                                        doom-one-light
-                                        modus-operandi)
-                                      nil
-                                      t)))
-    (mapc 'disable-theme custom-enabled-themes)
-    (load-theme (intern new-theme) t))
-
-(global-set-key (kbd "C-<f11>") #'hoagie-load-theme)
-(hoagie-load-theme "modus-operandi")
+  (load-theme 'modus-operandi t)
+  (enable-theme 'modus-operandi))
