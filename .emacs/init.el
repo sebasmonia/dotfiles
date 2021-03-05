@@ -34,7 +34,7 @@
 (setq use-package-hook-name-suffix nil)
 
 (custom-set-faces
- '(default ((t (:family "Consolas" :foundry "MS  " :slant normal :weight normal :height 113 :width normal)))))
+ '(default ((t (:family "JetBrains Mono" :foundry "JB  " :slant normal :weight normal :height 128 :width normal)))))
 
 ;; based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html
 (defvar hoagie-keymap (define-prefix-command 'hoagie-keymap) "My custom bindings.")
@@ -438,6 +438,11 @@
 (use-package git-timemachine
   :bind ("C-x M-G" . git-timemachine))
 
+;; TODO: do I really need this?
+(use-package generic-x
+  :demand t
+  :ensure nil)
+
 (use-package minions
   :config
   (minions-mode 1)
@@ -828,17 +833,15 @@ With ARG, do this that many times."
            (monitor-name (alist-get 'name attrs))
            (width-mm (cl-first (alist-get 'mm-size attrs)))
            (width-px (cl-third (alist-get 'workarea attrs)))
-           (size "14")) ;; default size, go big just in case
-      (when (string= monitor-name "0x057d") ;; laptop screen
-        (setq size "14"))
+           (size 125)) ;; default size. Steps: 110 small - 125 medium - 132 large
       (when (string= monitor-name "S240HL") ;; external monitor at home
-        (setq size "11"))
-      (when (eq (length (display-monitor-attributes-list)) 1) ;; override everything if no external monitors!
-        (setq size "13"))
-      (set-frame-font (concat "Consolas " size))
+        (setq size 105)) ;; Steps: 100 small - 105 medium - 110 big
+      (when (eq (length (display-monitor-attributes-list)) 1) ;; override if no external monitors!
+        (setq size 105))
+      (set-face-attribute 'default frame :height size)
       (set-face-font 'eldoc-box-body
                      (frame-parameter nil 'font))))
-    (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
+  (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
 
 ;; MARK PUSH AND POP - maybe I should make a package out of this
 ;; For a long time I longed for the VS navigation commands as described in
