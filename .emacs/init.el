@@ -28,6 +28,10 @@
 (when (eq window-system 'pgtk)
   (pgtk-use-im-context t))
 
+(when (fboundp 'native-compile-async)
+  (setq comp-deferred-compilation t
+        warning-minimum-level :error))
+
 (require 'use-package)
 (setq use-package-verbose t)
 (setq use-package-always-ensure t)
@@ -78,9 +82,25 @@
         ("C-p" . company-select-previous))
   :hook (after-init-hook . global-company-mode)
   :custom
-  (company-idle-delay 0.2)  ;; Makes the Python REPL more responsive
-  (company-minimum-prefix-length 3)
+  (company-idle-delay 0)
+  (company-minimum-prefix-length 0)
   (company-selection-wrap-around t))
+
+(use-package company-dabbrev
+  :after company
+  :ensure nil
+  :init
+  (setq company-dabbrev-ignore-case nil
+        ;; don't downcase dabbrev suggestions
+        company-dabbrev-downcase nil
+        company-dabbrev-downcase nil))
+
+(use-package company-dabbrev-code
+  :after company
+  :ensure nil
+  :init
+  (setq company-dabbrev-code-modes t
+        company-dabbrev-code-ignore-case nil))
 
 (use-package csharp-mode
   :mode "\\.cs$"
@@ -156,9 +176,6 @@
   :after dired
   :bind
   (:map dired-mode-map
-        ;; more standard binding for filtering,
-        ;; but I'm so used to \, leaving both
-        ("\\" . dired-narrow)
         ("/" . dired-narrow)))
 
 (use-package dired-git-info
@@ -226,7 +243,7 @@
   :after eww
   :bind
   (:map eww-mode-map
-        ("C-SPC" . eww-lnum-follow)))
+        ("C-c SPC" . eww-lnum-follow)))
 
 ;; My own shortcut bindings to LSP, under hoagie-keymap "l", are defined in the :config section
 (setq lsp-keymap-prefix "C-c C-l")
@@ -498,24 +515,43 @@ Meant to be added to `occur-hook'."
       (rename-buffer (format "*Occur: %s %s*" search-term buffer-name) t)))
   (add-hook 'occur-hook #'hoagie-rename-occur-buffer))
 
-(use-package sharper
+(use-package savehist
+  :ensure nil
+  :demand t
+  :custom
+  (savehist-additional-variables '(kill-ring
+                                   search-ring
+                                   regexp-search-ring))
+  :config
+  (savehist-mode))
+
+(use-package sharper :load-path "~/github/sharper"
   :bind
   (:map hoagie-keymap
         ("n" . sharper-main-transient))
   :custom
   (sharper-run-only-one t))
 
-(use-package shell
-  :ensure nil
-  :hook
-  (shell-mode-hook . (lambda ()
-                       (toggle-truncate-lines t)
-                       (setq comint-process-echoes t))))
+;; (use-package shell
+;;   :ensure nil
+;;   :hook
+;;   (shell-mode-hook . (lambda ()
+;;                        (toggle-truncate-lines t)
+;;                        (setq comint-process-echoes t))))
 
-(use-package better-shell
-  :after shell
+;; (use-package better-shell
+;;   :after shell
+;;   :bind (:map hoagie-keymap
+;;               ("`" . better-shell-for-current-dir)))
+
+(use-package vterm
+  :custom
+  (vterm-max-scrollback 5000))
+
+(use-package vterm-toggle
+  :after vterm
   :bind (:map hoagie-keymap
-              ("`" . better-shell-for-current-dir)))
+              ("`" . vterm-toggle-cd)))
 
 (use-package sly
   :commands sly
@@ -577,7 +613,7 @@ Meant to be added to `occur-hook'."
   ;; Using the code in https://protesilaos.com/dotemacs as starting point:
   (setq display-buffer-alist
         '(;; right side window
-          ("\\(*shell.*\\|*xref.*\\|\\*Occur\\*\\|\\*deadgrep.*\\)"
+          ("\\(*vterm.*\\|*shell.*\\|*xref.*\\|\\*Occur\\*\\|\\*deadgrep.*\\)"
            (display-buffer-in-side-window)
            (window-height . 0.33)
            (side . bottom)
@@ -700,6 +736,7 @@ With ARG, do this that many times."
   (grep-command "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
   (inhibit-startup-screen t)
   (initial-buffer-choice t)
+  (reb-re-syntax 'string)
   (initial-scratch-message
    ";; Il semble que la perfection soit atteinte non quand il n'y a plus rien à ajouter, mais quand il n'y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n")
   (save-interprogram-paste-before-kill t)
@@ -733,7 +770,6 @@ With ARG, do this that many times."
   (blink-cursor-mode -1)
   (column-number-mode 1)
   (horizontal-scroll-bar-mode -1)
-  (savehist-mode)
   (global-so-long-mode 1)
   ;; from https://stackoverflow.com/a/22176971, move auto saves and
   ;; back up files to a different folder so git or dotnet core won't
@@ -809,6 +845,7 @@ With ARG, do this that many times."
 ;; Per-OS configuration
 
 (when (string= system-type "windows-nt")
+  (global-set-key (kbd "M-`") #'other-frame) ;; Gnome-like frame switching in Windows
   (load "c:/repos/miscscripts/workonlyconfig.el"))
 
 (when (string= system-type "gnu/linux")
@@ -837,7 +874,7 @@ With ARG, do this that many times."
       (when (string= monitor-name "S240HL") ;; external monitor at home
         (setq size 105)) ;; Steps: 100 small - 105 medium - 110 big
       (when (eq (length (display-monitor-attributes-list)) 1) ;; override if no external monitors!
-        (setq size 105))
+        (setq size 110))
       (set-face-attribute 'default frame :height size)
       (set-face-font 'eldoc-box-body
                      (frame-parameter nil 'font))))
