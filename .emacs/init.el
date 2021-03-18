@@ -82,8 +82,8 @@
         ("C-p" . company-select-previous))
   :hook (after-init-hook . global-company-mode)
   :custom
-  (company-idle-delay 0)
-  (company-minimum-prefix-length 0)
+  (company-idle-delay 0.01)
+  (company-minimum-prefix-length 2)
   (company-selection-wrap-around t))
 
 (use-package company-dabbrev
@@ -91,8 +91,6 @@
   :ensure nil
   :init
   (setq company-dabbrev-ignore-case nil
-        ;; don't downcase dabbrev suggestions
-        company-dabbrev-downcase nil
         company-dabbrev-downcase nil))
 
 (use-package company-dabbrev-code
@@ -256,6 +254,9 @@
   (lsp lsp-signature-active)
   :bind
   (:map hoagie-lsp-keymap
+        ("d" . lsp-find-declaration)
+        ("." . lsp-find-definition)
+        ("?" . lsp-find-references)
         ("o" . lsp-signature-activate) ;; o for "overloads"
         ("r" . lsp-rename))
   (:map hoagie-keymap
@@ -335,6 +336,12 @@
   :config
   ;; set the child frame face as 1.0 relative to the default font
   (set-face-attribute 'eldoc-box-body nil :inherit 'default :height 1.0))
+
+(use-package elec-pair
+  :ensure nil
+  :demand t
+  :config
+  (electric-pair-mode))
 
 (use-package expand-region
   :bind
@@ -531,6 +538,14 @@ Meant to be added to `occur-hook'."
         ("n" . sharper-main-transient))
   :custom
   (sharper-run-only-one t))
+
+(use-package paren
+  :ensure nil
+  :demand t
+  :config
+  (show-paren-mode)
+  :custom
+  (show-paren-style 'mixed))
 
 ;; (use-package shell
 ;;   :ensure nil
@@ -747,6 +762,11 @@ With ARG, do this that many times."
   (delete-old-versions t) ; Do not keep old backups
   (kept-new-versions 5)   ; Keep 5 new versions
   (kept-old-versions 5)   ; Keep 3 old versions
+  ;; Experimental - from LSP perf suggestions
+  (gc-cons-threshold 100000000)
+  (read-process-output-max (* 1024 1024))
+  ;; from https://depp.brause.cc/dotemacs/
+  (echo-keystrokes 0.25)
   :config
   ;; see https://emacs.stackexchange.com/a/28746/17066
   ;; https://blog.danielgempesaw.com/post/129841682030/fixing-a-laggy-compilation-buffer
@@ -777,15 +797,17 @@ With ARG, do this that many times."
   (let ((auto-save-dir (expand-file-name (concat
                                           user-emacs-directory
                                           "auto-save/")))
-        (backup-dir(expand-file-name (concat
-                                      user-emacs-directory
-                                      "backups/"))))
+        (backup-dir (expand-file-name (concat
+                                       user-emacs-directory
+                                       "backups/"))))
     (make-directory auto-save-dir t)
-    (setq auto-save-file-name-transforms
-          `((".*" ,auto-save-dir)))
+    (make-directory backup-dir t)
+    (setq auto-save-list-file-prefix auto-save-dir
+          auto-save-file-name-transforms
+          `((".*" ,auto-save-dir t)))
     (make-directory backup-dir t)
     (setq backup-directory-alist
-          `(("." . ,backup-dir)))))
+          `((".*" . ,backup-dir)))))
 
 ;; Convenient to work with AWS timestamps
 (defun hoagie-convert-timestamp (&optional timestamp)
@@ -844,9 +866,13 @@ With ARG, do this that many times."
 
 ;; Per-OS configuration
 
+(setq user-full-name "Sebastián Monía"
+      user-mail-address "seb.hoagie@outlook.com")
+
 (when (string= system-type "windows-nt")
   (global-set-key (kbd "M-`") #'other-frame) ;; Gnome-like frame switching in Windows
   (load "c:/repos/miscscripts/workonlyconfig.el"))
+;; (load "/home/hoagie/repos/miscscripts/workonlyconfig.el")
 
 (when (string= system-type "gnu/linux")
   (defun find-alternative-file-with-sudo ()
@@ -874,8 +900,8 @@ With ARG, do this that many times."
       (when (string= monitor-name "S240HL") ;; external monitor at home
         (setq size 105)) ;; Steps: 100 small - 105 medium - 110 big
       (when (eq (length (display-monitor-attributes-list)) 1) ;; override if no external monitors!
-        (setq size 110))
-      (set-face-attribute 'default frame :height size)
+        (setq size 120))
+      (set-face-attribute 'default (selected-frame) :height size)
       (set-face-font 'eldoc-box-body
                      (frame-parameter nil 'font))))
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
