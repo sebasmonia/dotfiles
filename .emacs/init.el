@@ -1003,3 +1003,28 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
   :config
   (load-theme 'modus-operandi t)
   (enable-theme 'modus-operandi))
+
+;; Use keyboard oled screen, depends on https://github.com/FrankGrimm/apex7tkl_linux
+;; setup using the udev rule mentioned in the repo + files in a "standard" directory
+(defvar hoagie-apex-cli-path (expand-file-name
+                              "~/github/apex7tkl_linux/cli.py"))
+(when (file-exists-p hoagie-apex-cli-path)
+  (defun hoagie-string-size-pieces (text size)
+    "Break TEXT into a list of SIZE pieces."
+    (if (> size (length text))
+        (cons text nil)
+      (cons (substring text 0 size)
+            (hoagie-string-size-pieces (substring text size) size))))
+
+  (defun hoagie-keyboard-message (text)
+    "Print TEXT in the keyboard's oled screen.
+The text is split in lines of 20 chars."
+    (apply #'call-process
+             (append `(,hoagie-apex-cli-path
+                       nil
+                       nil
+                       nil
+                       "oledtext")
+                     (hoagie-string-size-pieces
+                      text
+                      20)))))
