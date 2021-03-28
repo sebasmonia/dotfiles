@@ -38,7 +38,7 @@
 (setq use-package-hook-name-suffix nil)
 
 (custom-set-faces
- '(default ((t (:family "JetBrains Mono" :foundry "JB  " :slant normal :weight normal :height 128 :width normal)))))
+ '(default ((t (:family "IBM Plex Mono" :foundry "IBM " :slant normal :weight normal :height 113 :width normal)))))
 
 ;; based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html
 (defvar hoagie-keymap (define-prefix-command 'hoagie-keymap) "My custom bindings.")
@@ -539,6 +539,11 @@ Meant to be added to `occur-hook'."
   :custom
   (sharper-run-only-one t))
 
+(use-package shr
+  :custom
+  (shr-use-fonts nil)
+  (shr-discard-aria-hidden t))
+
 (use-package paren
   :ensure nil
   :demand t
@@ -896,9 +901,9 @@ With ARG, do this that many times."
            (monitor-name (alist-get 'name attrs))
            (width-mm (cl-first (alist-get 'mm-size attrs)))
            (width-px (cl-third (alist-get 'workarea attrs)))
-           (size 125)) ;; default size. Steps: 110 small - 125 medium - 132 large
+           (size 143)) ;; default size
       (when (string= monitor-name "S240HL") ;; external monitor at home
-        (setq size 105)) ;; Steps: 100 small - 105 medium - 110 big
+        (setq size 105)) ;; 98 - 105 - 113
       (when (eq (length (display-monitor-attributes-list)) 1) ;; override if no external monitors!
         (setq size 120))
       (set-face-attribute 'default (selected-frame) :height size)
