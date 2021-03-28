@@ -81,7 +81,4 @@ Buttons:
 
 Will keep experimenting with the buttons to see what else I need and what I can discard. Configuring the panel is a drag, I added to the repository all the xfce4 config stuff (panel + power manager).
 
-This is how the panel looks:
-
-![Control bar screenshot](/screenshots/Bar-vertical.png)
 
