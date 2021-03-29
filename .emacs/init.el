@@ -1028,15 +1028,16 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
   (defun hoagie-keyboard-message (text)
     "Print TEXT in the keyboard's oled screen.
 The text is split in lines of 20 chars."
-    (apply #'call-process
+    (let ((with-time (concat (format-time-string "[%I:%M] ") text)))
+      (apply #'call-process
              (append `(,hoagie-apex-cli-path
                        nil
                        nil
                        nil
                        "oledtext")
                      (hoagie-string-size-pieces
-                      text
-                      20))))
+                      with-time
+                      20)))))
 
   (defun hoagie-keyboard-change-color (color &optional keys)
     "Set KEYS to COLOR. If KEYS is not specified, change all of them."
@@ -1054,4 +1055,9 @@ The text is split in lines of 20 chars."
 
   ;; Set the default color
   (hoagie-keyboard-change-color hoagie-apex-color)
+  (defun hoagie-compilation-finish (_ message)
+    "Code to run in `compilation-finish-functions' for keyboard notification."
+    (hoagie-keyboard-flash-keys)
+    (hoagie-keyboard-message (concat "Compilation message: " message)))
+  (add-to-list 'compilation-finish-functions #'hoagie-compilation-finish)
   (hoagie-keyboard-message "Keyboard initialized"))
