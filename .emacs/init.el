@@ -1014,6 +1014,7 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
 (defvar hoagie-apex-cli-path (expand-file-name
                               "~/github/apex7tkl_linux/cli.py"))
 (when (file-exists-p hoagie-apex-cli-path)
+  (defvar hoagie-apex-config 1 "Default configuration." )
   (defvar hoagie-apex-color "green" "The regular color of the keyboard.")
   (defvar hoagie-apex-notify-color  "red" "The color to set in the keyboard as \"notification\".")
   (defvar hoagie-apex-notify-seconds  5 "How long to change the color for a \"notification\".")
@@ -1039,6 +1040,16 @@ The text is split in lines of 20 chars."
                       with-time
                       20)))))
 
+  (defun hoagie-keyboard-set-config (&optional config)
+    "Set the keyboard's configuration to CONFIG number."
+    (call-process hoagie-apex-cli-path
+                  nil
+                  nil
+                  nil
+                  "config"
+                  (number-to-string
+                   (or config hoagie-apex-config))))
+
   (defun hoagie-keyboard-change-color (color &optional keys)
     "Set KEYS to COLOR. If KEYS is not specified, change all of them."
     (call-process hoagie-apex-cli-path
@@ -1046,12 +1057,12 @@ The text is split in lines of 20 chars."
                   nil
                   nil
                   "color"
-                  (if keys keys "ALL")
+                  (or keys "ALL")
                   color))
 
   (defun hoagie-keyboard-flash-keys ()
     (hoagie-keyboard-change-color hoagie-apex-notify-color)
-    (run-with-timer hoagie-apex-notify-seconds nil #'hoagie-keyboard-change-color hoagie-apex-color))
+    (run-with-timer hoagie-apex-notify-seconds nil #'hoagie-keyboard-set-config))
 
   ;; Set the default color
   (hoagie-keyboard-change-color hoagie-apex-color)
