@@ -1009,11 +1009,15 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
   (load-theme 'modus-operandi t)
   (enable-theme 'modus-operandi))
 
-;; Use keyboard oled screen, depends on https://github.com/FrankGrimm/apex7tkl_linux
+;; Use keyboard oled screen & RGB colors, depends on https://github.com/FrankGrimm/apex7tkl_linux
 ;; setup using the udev rule mentioned in the repo + files in a "standard" directory
 (defvar hoagie-apex-cli-path (expand-file-name
                               "~/github/apex7tkl_linux/cli.py"))
 (when (file-exists-p hoagie-apex-cli-path)
+  (defvar hoagie-apex-color "green" "The regular color of the keyboard.")
+  (defvar hoagie-apex-notify-color  "red" "The color to set in the keyboard as \"notification\".")
+  (defvar hoagie-apex-notify-seconds  5 "How long to change the color for a \"notification\".")
+
   (defun hoagie-string-size-pieces (text size)
     "Break TEXT into a list of SIZE pieces."
     (if (> size (length text))
@@ -1032,4 +1036,22 @@ The text is split in lines of 20 chars."
                        "oledtext")
                      (hoagie-string-size-pieces
                       text
-                      20)))))
+                      20))))
+
+  (defun hoagie-keyboard-change-color (color &optional keys)
+    "Set KEYS to COLOR. If KEYS is not specified, change all of them."
+    (call-process hoagie-apex-cli-path
+                  nil
+                  nil
+                  nil
+                  "color"
+                  (if keys keys "ALL")
+                  color))
+
+  (defun hoagie-keyboard-flash-keys ()
+    (hoagie-keyboard-change-color hoagie-apex-notify-color)
+    (run-with-timer hoagie-apex-notify-seconds nil #'hoagie-keyboard-change-color hoagie-apex-color))
+
+  ;; Set the default color
+  (hoagie-keyboard-change-color hoagie-apex-color)
+  (hoagie-keyboard-message "Keyboard initialized"))
