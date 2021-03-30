@@ -1064,8 +1064,6 @@ The text is split in lines of 20 chars."
     (hoagie-keyboard-change-color hoagie-apex-notify-color)
     (run-with-timer hoagie-apex-notify-seconds nil #'hoagie-keyboard-set-config))
 
-  ;; Set the default color
-  (hoagie-keyboard-change-color hoagie-apex-color)
   (defun hoagie-compilation-finish (_ message)
     "Code to run in `compilation-finish-functions' for keyboard notification."
     (hoagie-keyboard-flash-keys)
