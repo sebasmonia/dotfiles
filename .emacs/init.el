@@ -1015,9 +1015,6 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
                               "~/github/apex7tkl_linux/cli.py"))
 (when (file-exists-p hoagie-apex-cli-path)
   (defvar hoagie-apex-config 1 "Default configuration." )
-  (defvar hoagie-apex-color "green" "The regular color of the keyboard.")
-  (defvar hoagie-apex-notify-color  "red" "The color to set in the keyboard as \"notification\".")
-  (defvar hoagie-apex-notify-seconds  5 "How long to change the color for a \"notification\".")
 
   (defun hoagie-string-size-pieces (text size)
     "Break TEXT into a list of SIZE pieces."
@@ -1061,8 +1058,13 @@ The text is split in lines of 20 chars."
                   color))
 
   (defun hoagie-keyboard-flash-keys ()
-    (hoagie-keyboard-change-color hoagie-apex-notify-color)
-    (run-with-timer hoagie-apex-notify-seconds nil #'hoagie-keyboard-set-config))
+    (hoagie-keyboard-change-color "white")
+    (run-with-timer 5 nil #'hoagie-keyboard-set-config))
+
+  (defun hoagie-keyboard-bell ()
+    (hoagie-keyboard-change-color "red")
+    (run-with-timer 0.25 nil #'hoagie-keyboard-set-config))
+  (setq ring-bell-function #'hoagie-keyboard-bell)
 
   (defun hoagie-compilation-finish (_ message)
     "Code to run in `compilation-finish-functions' for keyboard notification."
