@@ -449,6 +449,7 @@
   (define-key vc-dir-mode-map "=" 'vc-ediff)
   (define-key vc-dir-mode-map "k" 'vc-revert))
 (defun hoagie-try-vc-here-and-there ()
+  "Open `vc-dir' for the root of the current project."
   (interactive)
   (vc-dir (project-root (project-current))))
 (global-set-key (kbd "C-x t") #'hoagie-try-vc-here-and-there)
@@ -865,7 +866,8 @@ With ARG, do this that many times."
   (when hoagie-window-configuration
     (set-window-configuration hoagie-window-configuration)))
 (define-key hoagie-keymap (kbd "1") #'hoagie-restore-window-configuration)
-(defun hoagie-store-config (&rest ignored)
+(defun hoagie-store-config (&rest _)
+  "Store the current window configuration in `hoagie-window-configuration'."
   (setq hoagie-window-configuration (current-window-configuration)))
 (advice-add 'delete-other-windows :before #'hoagie-store-config)
 
@@ -949,8 +951,8 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
     (pop-to-mark-command))
   (pop-to-mark-command))
 
-(defun push-mark-if-not-repeat (command &rest args)
-  "Push a mark if this is not a repeat invocatpion of `command'."
+(defun push-mark-if-not-repeat (command &rest _)
+  "Push a mark if this is not a repeat invocation of COMMAND."
   (unless (equal last-command this-command)
     (push-mark-no-activate)))
 
@@ -1023,52 +1025,53 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
       (cons (substring text 0 size)
             (hoagie-string-size-pieces (substring text size) size))))
 
-  (defun hoagie-keyboard-message (text)
-    "Print TEXT in the keyboard's oled screen.
+  (defun hoagie-keyboard-message (text &optional no-time)
+    "Print TEXT in the keyboard's oled screen.  If NO-TIME is t, don't add a timestamp.
 The text is split in lines of 20 chars."
-    (let ((with-time (concat (format-time-string "[%I:%M] ") text)))
-      (apply #'call-process
-             (append `(,hoagie-apex-cli-path
-                       nil
-                       nil
-                       nil
+    (let ((formatted (if no-time
+                         text
+                       (concat (format-time-string "[%I:%M] ") text))))
+      (apply #'start-process
+             (append `("keybaord-message"
+                       "*keyboard-message*"
+                       ,hoagie-apex-cli-path
                        "oledtext")
                      (hoagie-string-size-pieces
-                      with-time
+                      formatted
                       20)))))
 
   (defun hoagie-keyboard-set-config (&optional config)
     "Set the keyboard's configuration to CONFIG number."
-    (call-process hoagie-apex-cli-path
-                  nil
-                  nil
-                  nil
-                  "config"
-                  (number-to-string
+    (start-process "keyboard-config"
+                   "*keyboard-config*"
+                   hoagie-apex-cli-path
+                   "config"
+                   (number-to-string
                    (or config hoagie-apex-config))))
 
   (defun hoagie-keyboard-change-color (color &optional keys)
     "Set KEYS to COLOR. If KEYS is not specified, change all of them."
-    (call-process hoagie-apex-cli-path
-                  nil
-                  nil
-                  nil
-                  "color"
-                  (or keys "ALL")
-                  color))
+    (start-process "keyboard-color"
+                   "*keyboard-color*"
+                   hoagie-apex-cli-path
+                   "color"
+                   (or keys "ALL")
+                   color))
 
   (defun hoagie-keyboard-flash-keys ()
     (hoagie-keyboard-change-color "white")
     (run-with-timer 5 nil #'hoagie-keyboard-set-config))
-
-  (defun hoagie-keyboard-bell ()
-    (hoagie-keyboard-change-color "red")
-    (run-with-timer 0.25 nil #'hoagie-keyboard-set-config))
-  (setq ring-bell-function #'hoagie-keyboard-bell)
 
   (defun hoagie-compilation-finish (_ message)
     "Code to run in `compilation-finish-functions' for keyboard notification."
     (hoagie-keyboard-flash-keys)
     (hoagie-keyboard-message (concat "Compilation message: " message)))
   (add-to-list 'compilation-finish-functions #'hoagie-compilation-finish)
+
+  (defun hoagie-keyboard-message-handler (message)
+    "Show the text from \"messages\" in the OLED screen, then handle as usual."
+    (hoagie-keyboard-message message t)
+    (set-minibuffer-message message))
+  (setq set-message-function #'hoagie-keyboard-message-handler)
+
   (hoagie-keyboard-message "Keyboard initialized"))
