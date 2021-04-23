@@ -1032,7 +1032,7 @@ The text is split in lines of 20 chars."
                          text
                        (concat (format-time-string "[%I:%M] ") text))))
       (apply #'start-process
-             (append `("keybaord-message"
+             (append `("keyboard-message"
                        "*keyboard-message*"
                        ,hoagie-apex-cli-path
                        "oledtext")
@@ -1073,5 +1073,14 @@ The text is split in lines of 20 chars."
     (hoagie-keyboard-message message t)
     (set-minibuffer-message message))
   (setq set-message-function #'hoagie-keyboard-message-handler)
+  ;; (setq set-message-function #'set-minibuffer-message)
+
+  ;; Symon will show the info in the keyboard, with the above set-message-function
+  (use-package symon
+    :custom
+    (symon-monitors '(symon-linux-network-rx-monitor symon-linux-network-tx-monitor symon-linux-cpu-monitor symon-linux-memory-monitor symon-linux-battery-monitor))
+    (symon-delay 5)
+    (symon-refresh-rate 5)
+    :config (symon-mode 1))
 
   (hoagie-keyboard-message "Keyboard initialized"))
