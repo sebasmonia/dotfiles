@@ -973,42 +973,28 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
 (advice-add 'scroll-up-command :before #'push-mark-if-not-repeat)
 (advice-add 'scroll-down-command :before #'push-mark-if-not-repeat)
 
-;; Last but not least, load doom-modeline and then theme
-;; Doing these last so they are aware of all packages loaded
-
-(use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1)
-  :custom
-  (doom-modeline-project-detection 'project)
-  (doom-modeline-buffer-file-name-style 'buffer-name)
-  (doom-modeline-icon t)
-  (doom-modeline-major-mode-icon t)
-  (doom-modeline-major-mode-color-icon t)
-  (doom-modeline-buffer-state-icon t)
-  (doom-modeline-buffer-modification-icon t)
-  (doom-modeline-unicode-fallback nil)
-  (doom-modeline-minor-modes t)
-  (doom-modeline-enable-word-count nil)
-  (doom-modeline-buffer-encoding nil)
-  (doom-modeline-indent-info nil)
-  (doom-modeline-checker-simple-format t)
-  (doom-modeline-number-limit 99)
-  (doom-modeline-vcs-max-length 50)
-  (doom-modeline-persp-name nil)
-  (doom-modeline-display-default-persp-name nil)
-  (doom-modeline-lsp t)
-  (doom-modeline-github nil)
-  (doom-modeline-modal-icon nil)
-  (doom-modeline-mu4e nil)
-  (doom-modeline-gnus nil)
-  (doom-modeline-irc nil)
-  (doom-modeline-env-version nil))
-
-(use-package modus-operandi-theme
+(use-package cloud-theme
   :demand t
-  :custom
-  (modus-operandi-theme-completions 'moderate)
   :config
-  (load-theme 'modus-operandi t)
-  (enable-theme 'modus-operandi))
+  (load-theme 'cloud t)
+  (enable-theme 'cloud))
+
+;; (use-package dracula-theme
+;;   :demand t
+;;   :config
+;;   (setq dracula-enlarge-headings nil)
+;;   (load-theme 'dracula t)
+;;   (enable-theme 'dracula))
+
+(use-package mood-line
+  :demand t
+  :init
+  (mood-line-mode)
+  (defun mood-line-segment-position ()
+    "Displays the current cursor position in the mode-line, with region size if applicable."
+    (let ((region-size (when (use-region-p)
+                         (format " (%sL:%sC)"
+                                 (count-lines (region-beginning)
+                                              (region-end))
+                                 (- (region-end) (region-beginning))))))
+    (list "%l:%c" region-size))))
