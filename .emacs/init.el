@@ -895,18 +895,20 @@ With ARG, do this that many times."
         (find-alternate-file fname))))
   (global-set-key (kbd "C-x F") 'find-alternative-file-with-sudo)
 
-  ;; Dynamic font size adjustment per monitor
   (require 'cl-lib)
   (defun hoagie-adjust-font-size (frame)
     "Inspired by https://emacs.stackexchange.com/a/44930/17066. FRAME is ignored."
-    (let* ((attrs (frame-monitor-attributes)) ;; gets attribs for current frame
-           (monitor-name (alist-get 'name attrs))
-           (width-mm (cl-first (alist-get 'mm-size attrs)))
-           (width-px (cl-third (alist-get 'workarea attrs)))
-           (size 143)) ;; default size
-      (when (string= monitor-name "S240HL") ;; external monitor at home
-        (setq size 105)) ;; 98 - 105 - 113
-      (when (eq (length (display-monitor-attributes-list)) 1) ;; override if no external monitors!
+    ;; 2021-05-22: now I use the pgtk branch everywhere, and the monitor name has
+    ;; a meaningul value in all cases, so:
+    (let* ((monitor-name (alist-get 'name (frame-monitor-attributes)))
+           (monitor-font '(("S240HL" . 113) ;; 24"
+                           ("2757" . 105))) ;; 27"
+           (size (alist-get monitor-name monitor-font
+                            143 ;; default size, "big just in case"
+                            nil
+                            'equal)))
+      ;; override for "laptop screen only"
+      (when (eq (length (display-monitor-attributes-list)) 1)
         (setq size 120))
       (set-face-attribute 'default (selected-frame) :height size)
       (set-face-font 'eldoc-box-body
