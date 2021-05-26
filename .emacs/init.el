@@ -671,6 +671,9 @@ Meant to be added to `occur-hook'."
   (which-key-setup-side-window-right-bottom)
   :custom
   (which-key-side-window-max-width 0.4)
+  (which-key-idle-delay 10000)
+  (which-key-idle-secondary-delay 0.05)
+  (which-key-show-early-on-C-h t)
   (which-key-sort-order 'which-key-prefix-then-key-order))
 
 (use-package ws-butler
