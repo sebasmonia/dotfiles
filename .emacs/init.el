@@ -413,6 +413,7 @@
 
 (use-package icomplete
   :ensure nil
+  :demand t
   :custom
   (icomplete-show-matches-on-no-input t)
   (icomplete-prospects-height 10)
@@ -459,11 +460,6 @@
 
 (use-package git-timemachine
   :bind ("C-x M-G" . git-timemachine))
-
-;; TODO: do I really need this?
-(use-package generic-x
-  :demand t
-  :ensure nil)
 
 (use-package minions
   :config
