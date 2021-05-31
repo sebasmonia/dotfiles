@@ -411,18 +411,8 @@
                            " "
                            vc-relative-file))))
 
-(use-package icomplete-vertical
-  :demand t
-  :ensure t
-  :bind
-  (:map icomplete-minibuffer-map
-        ("C-<return>" . icomplete-fido-exit) ;; when there's no exact match
-        ("C-j" . icomplete-fido-exit) ;; from the IDO days...
-        ("<down>" . icomplete-forward-completions)
-        ("C-n" . icomplete-forward-completions)
-        ("<up>" . icomplete-backward-completions)
-        ("C-p" . icomplete-backward-completions)
-        ("C-v" . icomplete-vertical-toggle))
+(use-package icomplete
+  :ensure nil
   :custom
   (icomplete-show-matches-on-no-input t)
   (icomplete-prospects-height 10)
@@ -431,14 +421,21 @@
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
-  ;; use TAB to cycle candidates
   (completion-cycle-threshold t)
   :config
-  (fido-mode)
-  (icomplete-vertical-mode)
+  (fido-mode t)
+  (icomplete-vertical-mode t) ;; new in Emacs 28
   ;; Not the best place for this, but since icomplete displaced amx/smex...
   (define-key hoagie-keymap (kbd "<menu>") #'execute-extended-command)
-  (define-key hoagie-keymap (kbd "C-'") #'execute-extended-command))
+  (define-key hoagie-keymap (kbd "C-'") #'execute-extended-command)
+  :bind
+  (:map icomplete-minibuffer-map
+        ("C-<return>" . icomplete-fido-exit) ;; when there's no exact match
+        ("C-j" . icomplete-fido-exit) ;; from the IDO days...
+        ("<down>" . icomplete-forward-completions)
+        ("C-n" . icomplete-forward-completions)
+        ("<up>" . icomplete-backward-completions)
+        ("C-p" . icomplete-backward-completions)))
 
 (use-package json-mode
   :mode "\\.json$")
