@@ -543,6 +543,7 @@ Meant to be added to `occur-hook'."
 
 (use-package shell
   :ensure nil
+  :demand t
   :hook
   (shell-mode-hook . (lambda ()
                        (toggle-truncate-lines t)
