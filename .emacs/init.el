@@ -28,9 +28,10 @@
 (when (eq window-system 'pgtk)
   (pgtk-use-im-context t))
 
-(when (fboundp 'native-compile-async)
-  (setq comp-deferred-compilation t
-        warning-minimum-level :error))
+;; Remember: emacs -Q then eval (native-compile-async "~/.emacs.d" 3 t)
+;; Solves problem "(setf seq-elt) is already defined as something else than a generic function"
+(setq comp-deferred-compilation t
+      warning-minimum-level :error)
 
 (require 'use-package)
 (setq use-package-verbose t)
@@ -337,12 +338,6 @@
   ;; set the child frame face as 1.0 relative to the default font
   (set-face-attribute 'eldoc-box-body nil :inherit 'default :height 1.0))
 
-(use-package elec-pair
-  :ensure nil
-  :demand t
-  :config
-  (electric-pair-mode))
-
 (use-package expand-region
   :bind
   ("M-<SPC>" . er/expand-region)
@@ -546,31 +541,22 @@ Meant to be added to `occur-hook'."
   :custom
   (show-paren-style 'mixed))
 
-;; (use-package shell
-;;   :ensure nil
-;;   :hook
-;;   (shell-mode-hook . (lambda ()
-;;                        (toggle-truncate-lines t)
-;;                        (setq comint-process-echoes t))))
+(use-package shell
+  :ensure nil
+  :hook
+  (shell-mode-hook . (lambda ()
+                       (toggle-truncate-lines t)
+                       (setq comint-process-echoes t))))
 
-;; (use-package better-shell
-;;   :after shell
-;;   :bind (:map hoagie-keymap
-;;               ("`" . better-shell-for-current-dir)))
-
-(use-package vterm
-  :custom
-  (vterm-max-scrollback 5000))
-
-(use-package vterm-toggle
-  :after vterm
+(use-package better-shell
+  :after shell
   :bind (:map hoagie-keymap
-              ("`" . vterm-toggle-cd)))
+              ("`" . better-shell-for-current-dir)))
 
 (use-package sly
   :commands sly
   :custom
-  (inferior-lisp-program "sbcl --dynamic-space-size 2048"))
+  (inferior-lisp-program "sbcl --dynamic-space-size 4096"))
 
 (use-package sly-quicklisp
   :after sly)
@@ -593,8 +579,8 @@ Meant to be added to `occur-hook'."
   :custom-face
   (visible-mark-face1 ((t (:background "tomato"))))
   (visible-mark-face2 ((t (:background "gold"))))
-  (visible-mark-forward-face1 ((t (:background "sea green"))))
-  (visible-mark-forward-face2 ((t (:background "pale green"))))
+  (visible-mark-forward-face1 ((t (:background "medium purple"))))
+  (visible-mark-forward-face2 ((t (:background "thistle"))))
   :custom
   (visible-mark-max 2)
   (visible-mark-faces '(visible-mark-face1 visible-mark-face2))
