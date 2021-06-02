@@ -117,9 +117,10 @@
   :bind
   ("C-;" . dabbrev-expand))
 
-(define-key hoagie-keymap (kbd "G") #'project-find-regexp)
 (use-package deadgrep
   :bind
+  (:map hoagie-keymap
+        ("g" . deadgrep))
   (:map deadgrep-mode-map
         ("t" . (lambda () (interactive) (deadgrep--search-term nil)))
         ("r" . (lambda () (interactive) (setq deadgrep--search-type 'regexp) (deadgrep-restart)))
@@ -129,8 +130,7 @@
   (defun deadgrep--format-command-patch (rg-command)
     "Add --hidden to rg-command."
     (replace-regexp-in-string "^rg " "rg --hidden " rg-command))
-  (advice-add 'deadgrep--format-command :filter-return #'deadgrep--format-command-patch)
-  (define-key hoagie-keymap (kbd "g") #'deadgrep))
+  (advice-add 'deadgrep--format-command :filter-return #'deadgrep--format-command-patch))
 
 (use-package dired
   :ensure nil
@@ -149,15 +149,17 @@
   (dired-compress-files-alist
         '(("\\.7z\\'" . "7z a -r %o %i")
           ("\\.zip\\'" . "7z a -r %o  %i")))
+  :bind
+  (:map hoagie-keymap
+        ("F" . find-name-dired))
+  (:map dired-mode-map
+        ("C-<return>" . dired-open-file))
   :config
-  (define-key hoagie-keymap (kbd "f") #'project-find-file)
-  (define-key hoagie-keymap (kbd "F") #'find-name-dired)
   ;; from Emacs Wiki
   (defun dired-open-file ()
     "Call xdg-open on the file at point."
     (interactive)
     (call-process "xdg-open" nil 0 nil (dired-get-filename nil t)))
-  (define-key dired-mode-map (kbd "C-<return>") #'dired-open-file)
   (defun hoagie-dired-jump-other-window ()
     (interactive)
     (dired-jump t))
@@ -478,6 +480,10 @@
 
 (use-package project
   :ensure nil
+  :bind
+  (:map hoagie-keymap
+        ("G" . project-find-regexp)
+        ("f" . project-find-file))
   :config
   (add-to-list 'project-switch-commands '(?m "Magit status" magit-status))
   (add-to-list 'project-switch-commands '(?s "Shell" project-shell)))
