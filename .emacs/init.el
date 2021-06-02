@@ -16,14 +16,14 @@
 
 ;;; Code:
 
+(setq custom-file (expand-file-name (concat user-emacs-directory "custom.el")))
+
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
-(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
+
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
-
-(setq custom-file (concat user-emacs-directory "custom.el"))
 
 (when (eq window-system 'pgtk)
   (pgtk-use-im-context t))
@@ -47,6 +47,8 @@
 (define-key key-translation-map (kbd "<print>") (kbd "<menu>")) ;; curse you, thinkpad keyboard!!!
 (global-set-key (kbd "<menu>") 'hoagie-keymap)
 (global-set-key (kbd "C-'") 'hoagie-keymap) ;; BT keyboard has an uncomfortable menu key, so...
+(global-set-key (kbd "C-z") 'hoagie-keymap) ;; BT keyboard has an uncomfortable menu key, so...
+(global-set-key (kbd "M-z") 'hoagie-keymap) ;; BT keyboard has an uncomfortable menu key, so...
 (define-key hoagie-keymap (kbd "k") (lambda () (interactive) (kill-buffer)))
 
 ;; could be replaced by isearch-lazy-count, but I don't get live preview in that case
@@ -412,6 +414,8 @@
   :custom
   (icomplete-show-matches-on-no-input t)
   (icomplete-prospects-height 10)
+  (icomplete-delay-completions-threshold 1000)
+  (icomplete-max-delay-chars 1)
   (icomplete-in-buffer t)
   (completion-styles '(substring partial-completion flex))
   (read-buffer-completion-ignore-case t)
@@ -424,6 +428,8 @@
   ;; Not the best place for this, but since icomplete displaced amx/smex...
   (define-key hoagie-keymap (kbd "<menu>") #'execute-extended-command)
   (define-key hoagie-keymap (kbd "C-'") #'execute-extended-command)
+  (define-key hoagie-keymap (kbd "M-z") #'execute-extended-command)
+  (define-key hoagie-keymap (kbd "C-z") #'execute-extended-command)
   :bind
   (:map icomplete-minibuffer-map
         ("C-<return>" . icomplete-fido-exit) ;; when there's no exact match
@@ -483,8 +489,6 @@
   :custom
   (plantuml-jar-path "~/plantuml.jar"))
 
-(use-package powershell)
-
 (use-package python
   :ensure nil
   :mode ("\\.py\\'" . python-mode)
@@ -529,6 +533,7 @@ Meant to be added to `occur-hook'."
   (sharper-run-only-one t))
 
 (use-package shr
+  :ensure nil
   :custom
   (shr-use-fonts nil)
   (shr-discard-aria-hidden t))
@@ -961,13 +966,6 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
   :config
   (load-theme 'cloud t)
   (enable-theme 'cloud))
-
-;; (use-package dracula-theme
-;;   :demand t
-;;   :config
-;;   (setq dracula-enlarge-headings nil)
-;;   (load-theme 'dracula t)
-;;   (enable-theme 'dracula))
 
 (use-package mood-line
   :demand t
