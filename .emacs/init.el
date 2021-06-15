@@ -2,7 +2,7 @@
 
 ;; Author: Sebastian Monia <smonia@outlook.com>
 ;; URL: https://github.com/sebasmonia/.emacs
-;; Version: 3
+;; Version: 4
 ;; Keywords: .emacs dotemacs
 
 ;; This file is not part of GNU Emacs.
@@ -13,6 +13,7 @@
 ;; In theory I should be able to just drop the file in any computer and have
 ;; the config synced without merging/adapting anything
 ;; Update 2019-05-06: V3 means I moved to use-package
+;; Update 2020-06-14: Arbitrarily bumping the version number
 
 ;;; Code:
 
@@ -39,35 +40,15 @@
 (setq use-package-hook-name-suffix nil)
 
 (custom-set-faces
- '(default ((t (:family "IBM Plex Mono" :foundry "IBM " :slant normal :weight normal :height 113 :width normal)))))
+ '(default ((t (:family "IBM Plex Mono" :foundry "IBM " :slant normal :weight normal :height 128 :width normal)))))
 
 ;; based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html
 (defvar hoagie-keymap (define-prefix-command 'hoagie-keymap) "My custom bindings.")
 (define-key key-translation-map (kbd "<apps>") (kbd "<menu>")) ;; compat Linux-Windows
 (define-key key-translation-map (kbd "<print>") (kbd "<menu>")) ;; curse you, thinkpad keyboard!!!
 (global-set-key (kbd "<menu>") 'hoagie-keymap)
-(global-set-key (kbd "C-'") 'hoagie-keymap) ;; BT keyboard has an uncomfortable menu key, so...
-(global-set-key (kbd "C-z") 'hoagie-keymap) ;; BT keyboard has an uncomfortable menu key, so...
-(global-set-key (kbd "M-z") 'hoagie-keymap) ;; BT keyboard has an uncomfortable menu key, so...
+(global-set-key (kbd "C-M-;") 'hoagie-keymap)
 (define-key hoagie-keymap (kbd "k") (lambda () (interactive) (kill-buffer)))
-
-;; could be replaced by isearch-lazy-count, but I don't get live preview in that case
-(use-package anzu
-  :demand t
-  :bind
-  (("<remap> <isearch-query-replace>" . anzu-isearch-query-replace)
-   ("<remap> <isearch-query-replace-regexp>" . anzu-isearch-query-replace-regexp)
-   ("<remap> <query-replace>" . anzu-query-replace)
-   ("<remap> <query-replace-regexp>" . anzu-query-replace-regexp))
-  :config
-  (global-anzu-mode 1)
-  :custom
-  (anzu-cons-mode-line-p nil)
-  (anzu-deactivate-region t)
-  (anzu-mode-lighter "")
-  (anzu-replace-threshold 50)
-  (anzu-replace-to-string-separator " => ")
-  (anzu-search-threshold 1000))
 
 (use-package browse-kill-ring
   :config
@@ -135,9 +116,6 @@
 (use-package dired
   :ensure nil
   :custom
-  ;; Can get the same effect manually with M-n. When dwim is _not_
-  ;; what I want, it can be super annoying
-  (dired-dwim-target nil)
   (dired-listing-switches "-laogGhvD")
   (dired-compress-file-suffixes
         '(("\\.tar\\.gz\\'" #1="" "7z x -aoa -o%o %i")
@@ -308,15 +286,15 @@
   (require 'dap-netcore)
   (defvar hoagie-dap-run-keymap (define-prefix-command 'hoagie-dap-run-keymap))
   (defvar hoagie-dap-bpoints-keymap (define-prefix-command 'hoagie-dap-bpoints-keymap))
-  (global-set-key (kbd "<f7>") hoagie-dap-run-keymap)
-  (global-set-key (kbd "<f8>") hoagie-dap-bpoints-keymap)
+  (global-set-key (kbd "<f5>") hoagie-dap-run-keymap)
+  (global-set-key (kbd "<f9>") hoagie-dap-bpoints-keymap)
   :bind
   (:map hoagie-dap-run-keymap
-        ("<f7>" . dap-debug)
-        ("<f8>" . dap-next)
-        ("<f9>" . dap-step-in)
-        ("<f10>" . dap-step-out)
-        ("<f6>" . dap-continue)
+        ("<f5>" . dap-debug)
+        ("<f6>" . dap-next)
+        ("<f7>" . dap-step-in)
+        ("<f8>" . dap-step-out)
+        ("<f9>" . dap-continue)
         ("<f1>" . dap-eval-thing-at-point)
         ("C-<f1>" . dap-eval)
         ("<f2>" . dap-ui-expressions)
@@ -325,10 +303,10 @@
         ("<f3>" . dap-ui-repl)
         ("C-c" . dap-disconnect)) ;; "Stop"
   (:map hoagie-dap-bpoints-keymap
-        ("<f6>" . dap-ui-breakpoints-list)
-        ("<f8>" . dap-breakpoint-toggle) ;; f8 twice -> toggle
-        ("<f7>" . dap-breakpoint-log-message)
-        ("<f9>" . dap-breakpoint-condition))
+        ("<f10>" . dap-ui-breakpoints-list)
+        ("<f9>" . dap-breakpoint-toggle) ;; f9 twice -> toggle
+        ("<f11>" . dap-breakpoint-log-message)
+        ("<f12>" . dap-breakpoint-condition))
   :custom
   (dap-netcore-install-dir "/home/hoagie/.emacs.d/.cache/"))
 
@@ -382,43 +360,17 @@
   :hook
   (after-init-hook . global-hl-line-mode))
 
-(use-package ibuffer
-  :ensure nil
-  :bind
-  ("C-x C-b" . ibuffer-other-window)
-  :custom
-  (ibuffer-default-sorting-mode 'major-mode)
-  (ibuffer-expert t)
-  (ibuffer-show-empty-filter-groups nil))
-
-(use-package ibuffer-vc
-  :demand t
-  :after ibuffer
-  :hook (ibuffer-mode-hook . (lambda ()
-                          (ibuffer-vc-set-filter-groups-by-vc-root)
-                          (unless (eq ibuffer-sorting-mode 'alphabetic)
-                            (ibuffer-do-sort-by-alphabetic))))
-  :custom
-  (ibuffer-formats '((mark modified read-only vc-status-mini " "
-                           (name 18 18 :left :elide)
-                           " "
-                           (size 9 -1 :right)
-                           " "
-                           (mode 16 16 :left :elide)
-                           " "
-                           (vc-status 16 16 :left)
-                           " "
-                           vc-relative-file))))
-
 (use-package icomplete
   :ensure nil
   :demand t
   :custom
+  (icomplete-hide-common-prefix nil)
   (icomplete-show-matches-on-no-input t)
   (icomplete-prospects-height 10)
   (icomplete-delay-completions-threshold 1000)
   (icomplete-max-delay-chars 1)
-  (icomplete-in-buffer t)
+  ;; The following are minibuffer/C customizations
+  ;; but it makes sense to have them here:
   (completion-styles '(substring partial-completion flex))
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
@@ -427,11 +379,11 @@
   :config
   (fido-mode t)
   (icomplete-vertical-mode t) ;; new in Emacs 28
+  ;; Non-custom configuration:
+  (setq icomplete-in-buffer t)
   ;; Not the best place for this, but since icomplete displaced amx/smex...
   (define-key hoagie-keymap (kbd "<menu>") #'execute-extended-command)
-  (define-key hoagie-keymap (kbd "C-'") #'execute-extended-command)
-  (define-key hoagie-keymap (kbd "M-z") #'execute-extended-command)
-  (define-key hoagie-keymap (kbd "C-z") #'execute-extended-command)
+  (define-key hoagie-keymap (kbd "C-M-;") #'execute-extended-command)
   :bind
   (:map icomplete-minibuffer-map
         ("C-<return>" . icomplete-fido-exit) ;; when there's no exact match
@@ -440,6 +392,17 @@
         ("C-n" . icomplete-forward-completions)
         ("<up>" . icomplete-backward-completions)
         ("C-p" . icomplete-backward-completions)))
+
+(use-package isearch
+  :ensure nil
+  :demand t
+  :custom
+  (isearch-lazy-count t)
+  (isearch-lazy-highlight 'all-windows)
+  (lazy-highlight-initial-delay 0.1)
+  (regexp-search-ring-max 64)
+  (search-default-mode t)
+  (search-ring-max 64))
 
 (use-package json-mode
   :mode "\\.json$")
@@ -488,13 +451,6 @@
   (add-to-list 'project-switch-commands '(?m "Magit status" magit-status))
   (add-to-list 'project-switch-commands '(?s "Shell" project-shell)))
 
-(use-package plantuml-mode
-  :commands plantuml-mode
-  :mode (("\\.puml$" . plantuml-mode)
-	 ("\\.plantuml$" . plantuml-mode))
-  :custom
-  (plantuml-jar-path "~/plantuml.jar"))
-
 (use-package python
   :ensure nil
   :mode ("\\.py\\'" . python-mode)
@@ -521,6 +477,21 @@ Meant to be added to `occur-hook'."
       (rename-buffer (format "*Occur: %s %s*" search-term buffer-name) t)))
   (add-hook 'occur-hook #'hoagie-rename-occur-buffer))
 
+(use-package rcirc
+  :ensure nil
+  :commands rcirc
+  :custom
+  (rcirc-server-alist '(("irc.libera.chat"
+                         :port 7000
+                         :encryption tls
+                         :server-alias "libera"
+                         :nick "hoagie"
+                         :full-name "Sebastián Monía"
+                         :user-name "seb.hoagie@outlook.com"
+                         :channels ("#emacs" "#emacs-es" "#argentina"))))
+  :hook
+  (rcirc-mode-hook . (lambda () (rcirc-track-minor-mode 1))))
+
 (use-package savehist
   :ensure nil
   :demand t
@@ -531,7 +502,7 @@ Meant to be added to `occur-hook'."
   :config
   (savehist-mode))
 
-(use-package sharper :load-path "~/github/sharper"
+(use-package sharper
   :bind
   (:map hoagie-keymap
         ("n" . sharper-main-transient))
@@ -967,11 +938,13 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
 (advice-add 'scroll-up-command :before #'push-mark-if-not-repeat)
 (advice-add 'scroll-down-command :before #'push-mark-if-not-repeat)
 
-(use-package cloud-theme
+(use-package modus-operandi-theme
   :demand t
+  :custom
+  (modus-operandi-theme-completions 'moderate)
   :config
-  (load-theme 'cloud t)
-  (enable-theme 'cloud))
+  (load-theme 'modus-operandi t)
+  (enable-theme 'modus-operandi))
 
 (use-package mood-line
   :demand t
