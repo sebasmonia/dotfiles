@@ -47,7 +47,7 @@
 (define-key key-translation-map (kbd "<apps>") (kbd "<menu>")) ;; compat Linux-Windows
 (define-key key-translation-map (kbd "<print>") (kbd "<menu>")) ;; curse you, thinkpad keyboard!!!
 (global-set-key (kbd "<menu>") 'hoagie-keymap)
-(global-set-key (kbd "C-M-;") 'hoagie-keymap)
+(global-set-key (kbd "C-'") 'hoagie-keymap)
 (define-key hoagie-keymap (kbd "k") (lambda () (interactive) (kill-buffer)))
 
 (use-package browse-kill-ring
@@ -270,7 +270,7 @@
   (lsp-ui-sideline-enable nil))
 
 (use-package lsp-pyright
-  :after lsp
+  :ensure t
   :hook (python-mode-hook . (lambda ()
                               (require 'lsp-pyright)
                               (lsp))))
@@ -383,7 +383,7 @@
   (setq icomplete-in-buffer t)
   ;; Not the best place for this, but since icomplete displaced amx/smex...
   (define-key hoagie-keymap (kbd "<menu>") #'execute-extended-command)
-  (define-key hoagie-keymap (kbd "C-M-;") #'execute-extended-command)
+  (define-key hoagie-keymap (kbd "C-'") #'execute-extended-command)
   :bind
   (:map icomplete-minibuffer-map
         ("C-<return>" . icomplete-fido-exit) ;; when there's no exact match
