@@ -433,6 +433,13 @@
   :custom
   (minions-mode-line-lighter "^"))
 
+(use-package org
+  :ensure nil
+  :config
+  ;; I don't use this feature and it clashes with
+  ;; my mode map binding
+  (define-key org-mode-map (kbd "C-'") nil))
+
 (use-package package-lint
   :commands package-lint-current-buffer)
 
