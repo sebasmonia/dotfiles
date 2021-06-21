@@ -50,10 +50,6 @@
 (global-set-key (kbd "C-'") 'hoagie-keymap)
 (define-key hoagie-keymap (kbd "k") (lambda () (interactive) (kill-buffer)))
 
-(use-package browse-kill-ring
-  :config
-  (browse-kill-ring-default-keybindings))
-
 (use-package company
   :bind
   ("M-S-<SPC>" . company-complete-common)
