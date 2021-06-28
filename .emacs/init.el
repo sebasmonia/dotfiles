@@ -124,8 +124,11 @@
         '(("\\.7z\\'" . "7z a -r %o %i")
           ("\\.zip\\'" . "7z a -r %o  %i")))
   :bind
+  ("<C-f1>" . 'hoagie-kill-buffer-filename)
   (:map hoagie-keymap
-        ("F" . find-name-dired))
+        (("F" . find-name-dired)
+         ("j" . hoagie-dired-jump-other-window)
+         ("J" . dired-jump)))
   (:map dired-mode-map
         ("C-<return>" . dired-open-file))
   :config
@@ -137,8 +140,6 @@
   (defun hoagie-dired-jump-other-window ()
     (interactive)
     (dired-jump t))
-  (define-key hoagie-keymap (kbd "j") #'hoagie-dired-jump-other-window)
-  (define-key hoagie-keymap (kbd "J") #'dired-jump)
   (defun hoagie-kill-buffer-filename ()
     "Sends the current buffer's filename to the kill ring."
     (interactive)
@@ -146,7 +147,6 @@
       (when name
         (kill-new name))
       (message (format "Filename: %s" (or name "-No file for this buffer-")))))
-  (global-set-key (kbd "<C-f1>") 'hoagie-kill-buffer-filename)
   (define-key dired-mode-map (kbd "<C-f1>") (lambda () (interactive) (dired-copy-filename-as-kill 0))))
 
 (use-package dired-narrow
