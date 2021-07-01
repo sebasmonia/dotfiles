@@ -658,11 +658,10 @@ Meant to be added to `occur-hook'."
       (dired "~/")))
   (defun hoagie-open-org (arg)
     (interactive "P")
-    (let ((opener (if arg
-                      #'ido-find-file-other-window
-                    #'ido-find-file))
-          (default-directory "~/org"))
-      (funcall opener)))
+    (let ((org-file (read-file-name "Open org file:" "~/org/")))
+      (if arg
+          (find-file-other-window org-file)
+        (find-file org-file))))
   ;; from https://www.emacswiki.org/emacs/BackwardDeleteWord
   ;; because I agree C-backspace shouldn't kill the word!
   ;; it litters my kill ring
@@ -781,7 +780,19 @@ With ARG, do this that many times."
           `((".*" ,auto-save-dir t)))
     (make-directory backup-dir t)
     (setq backup-directory-alist
-          `((".*" . ,backup-dir)))))
+          `((".*" . ,backup-dir))))
+  (defvar hoagie-container-name nil "Stores the name of the current container, if present.")
+  (when (file-exists-p "/run/.containerenv")
+    ;; from http://ergoemacs.org/emacs/elisp_read_file_content.html
+    ;; insert content in temp buffer rather than open a file
+    (with-temp-buffer
+      (insert-file-contents "/run/.containerenv")
+      (search-forward "name=") ;; move point to the line with the name
+      (setq hoagie-container-name
+            (cl-subseq (thing-at-point 'line) 6 -2))))
+  ;; Identify the toolbox container for this Emacs instance in the frame title
+  (setq frame-title-format '(" %b @ " (:eval hoagie-container-name))
+        icon-title-format '(" %b @ " (:eval hoagie-container-name))))
 
 ;; Convenient to work with AWS timestamps
 (defun hoagie-convert-timestamp (&optional timestamp)
