@@ -367,7 +367,7 @@
   (icomplete-max-delay-chars 1)
   ;; The following are minibuffer/C customizations
   ;; but it makes sense to have them here:
-  (completion-styles '(substring partial-completion flex))
+  (completion-styles '(substring partial-completion))
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
@@ -397,7 +397,6 @@
   (isearch-lazy-highlight 'all-windows)
   (lazy-highlight-initial-delay 0.1)
   (regexp-search-ring-max 64)
-  (search-default-mode t)
   (search-ring-max 64))
 
 (use-package json-mode
@@ -457,6 +456,9 @@
 (use-package python
   :ensure nil
   :mode ("\\.py\\'" . python-mode)
+  :hook (python-mode-hook . (lambda ()
+                              (setf fill-colum 79)
+                              (display-fill-column-indicator-mode)))
   :custom
   (python-shell-font-lock-enable nil)
   (python-shell-interpreter "ipython")
@@ -516,6 +518,9 @@ Meant to be added to `occur-hook'."
   :ensure nil
   :custom
   (shr-use-fonts nil)
+  (shr-use-colors nil)
+  (shr-bullet "• ")
+  (shr-indentation 2)
   (shr-discard-aria-hidden t))
 
 (use-package paren
@@ -565,8 +570,8 @@ Meant to be added to `occur-hook'."
   :custom-face
   (visible-mark-face1 ((t (:background "tomato"))))
   (visible-mark-face2 ((t (:background "gold"))))
-  (visible-mark-forward-face1 ((t (:background "medium purple"))))
-  (visible-mark-forward-face2 ((t (:background "thistle"))))
+  (visible-mark-forward-face1 ((t (:background "sea green"))))
+  (visible-mark-forward-face2 ((t (:background "pale green"))))
   :custom
   (visible-mark-max 2)
   (visible-mark-faces '(visible-mark-face1 visible-mark-face2))
@@ -782,14 +787,15 @@ With ARG, do this that many times."
     (setq backup-directory-alist
           `((".*" . ,backup-dir))))
   (defvar hoagie-container-name nil "Stores the name of the current container, if present.")
-  (when (file-exists-p "/run/.containerenv")
-    ;; from http://ergoemacs.org/emacs/elisp_read_file_content.html
-    ;; insert content in temp buffer rather than open a file
-    (with-temp-buffer
-      (insert-file-contents "/run/.containerenv")
-      (search-forward "name=") ;; move point to the line with the name
-      (setq hoagie-container-name
-            (cl-subseq (thing-at-point 'line) 6 -2))))
+  (if (file-exists-p "/run/.containerenv")
+      ;; from http://ergoemacs.org/emacs/elisp_read_file_content.html
+      ;; insert content in temp buffer rather than open a file
+      (with-temp-buffer
+        (insert-file-contents "/run/.containerenv")
+        (search-forward "name=") ;; move point to the line with the name
+        (setq hoagie-container-name
+              (cl-subseq (thing-at-point 'line) 6 -2)))
+    (setq hoagie-container-name (system-name)))
   ;; Identify the toolbox container for this Emacs instance in the frame title
   (setq frame-title-format '(" %b @ " (:eval hoagie-container-name))
         icon-title-format '(" %b @ " (:eval hoagie-container-name))))
