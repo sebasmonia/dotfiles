@@ -17,7 +17,7 @@
 
 ;;; Code:
 
-(setq custom-file (expand-file-name (concat user-emacs-directory "custom.el")))
+(setf custom-file (expand-file-name (concat user-emacs-directory "custom.el")))
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
@@ -31,13 +31,13 @@
 
 ;; Remember: emacs -Q then eval (native-compile-async "~/.emacs.d" 3 t)
 ;; Solves problem "(setf seq-elt) is already defined as something else than a generic function"
-(setq comp-deferred-compilation t
+(setf comp-deferred-compilation t
       warning-minimum-level :error)
 
 (require 'use-package)
-(setq use-package-verbose t)
-(setq use-package-always-ensure t)
-(setq use-package-hook-name-suffix nil)
+(setf use-package-verbose t)
+(setf use-package-always-ensure t)
+(setf use-package-hook-name-suffix nil)
 
 (custom-set-faces
  '(default ((t (:family "IBM Plex Mono" :foundry "IBM " :slant normal :weight normal :height 128 :width normal)))))
@@ -69,16 +69,16 @@
 (use-package company-dabbrev
   :after company
   :ensure nil
-  :init
-  (setq company-dabbrev-ignore-case nil
-        company-dabbrev-downcase nil))
+  :custom
+  (company-dabbrev-ignore-case nil)
+  (company-dabbrev-downcase nil))
 
 (use-package company-dabbrev-code
   :after company
   :ensure nil
-  :init
-  (setq company-dabbrev-code-modes t
-        company-dabbrev-code-ignore-case nil))
+  :custom
+  (company-dabbrev-code-modes t)
+  (company-dabbrev-code-ignore-case nil))
 
 (use-package csharp-mode
   :mode "\\.cs$"
@@ -100,8 +100,8 @@
         ("g" . deadgrep))
   (:map deadgrep-mode-map
         ("t" . (lambda () (interactive) (deadgrep--search-term nil)))
-        ("r" . (lambda () (interactive) (setq deadgrep--search-type 'regexp) (deadgrep-restart)))
-        ("s" . (lambda () (interactive) (setq deadgrep--search-type 'string) (deadgrep-restart)))
+        ("r" . (lambda () (interactive) (setf deadgrep--search-type 'regexp) (deadgrep-restart)))
+        ("s" . (lambda () (interactive) (setf deadgrep--search-type 'string) (deadgrep-restart)))
         ("d" . (lambda () (interactive) (deadgrep--directory nil))))
   :config
   (defun deadgrep--format-command-patch (rg-command)
@@ -195,7 +195,7 @@
   (defvar hoagie-pre-ediff-windows nil "Window configuration before starting ediff.")
   (defun hoagie-ediff-store-windows ()
     "Store the pre-ediff window setup"
-    (setq hoagie-pre-ediff-windows (current-window-configuration)))
+    (setf hoagie-pre-ediff-windows (current-window-configuration)))
   (defun hoagie-ediff-restore-windows ()
     "Use `hoagie-pre-ediff-windows' to restore the window setup."
     (set-window-configuration hoagie-pre-ediff-windows))
@@ -223,7 +223,7 @@
         ("C-c SPC" . eww-lnum-follow)))
 
 ;; My own shortcut bindings to LSP, under hoagie-keymap "l", are defined in the :config section
-(setq lsp-keymap-prefix "C-c C-l")
+(setf lsp-keymap-prefix "C-c C-l")
 (defvar hoagie-lsp-keymap (define-prefix-command 'hoagie-lsp-keymap) "Custom bindings for LSP mode.")
 (use-package lsp-mode
   :hook
@@ -376,7 +376,7 @@
   (fido-mode t)
   (icomplete-vertical-mode t) ;; new in Emacs 28
   ;; Non-custom configuration:
-  (setq icomplete-in-buffer t)
+  (setf icomplete-in-buffer t)
   ;; Not the best place for this, but since icomplete displaced amx/smex...
   (define-key hoagie-keymap (kbd "<menu>") #'execute-extended-command)
   (define-key hoagie-keymap (kbd "C-'") #'execute-extended-command)
@@ -457,7 +457,7 @@
   :ensure nil
   :mode ("\\.py\\'" . python-mode)
   :hook (python-mode-hook . (lambda ()
-                              (setf fill-colum 79)
+                              (setf fill-column 79)
                               (display-fill-column-indicator-mode)))
   :custom
   (python-shell-font-lock-enable nil)
@@ -537,7 +537,7 @@ Meant to be added to `occur-hook'."
   :hook
   (shell-mode-hook . (lambda ()
                        (toggle-truncate-lines t)
-                       (setq comint-process-echoes t))))
+                       (setf comint-process-echoes t))))
 
 (use-package better-shell
   :after shell
@@ -558,7 +558,7 @@ Meant to be added to `occur-hook'."
   (sql-ms-options '("--driver" "ODBC Driver 17 for SQL Server"))
   (sql-ms-program "/home/hoagie/github/sqlcmdline/sqlcmdline.py")
   :hook
-  (sql-interactive-mode-hook . (lambda () (setq truncate-lines t))))
+  (sql-interactive-mode-hook . (lambda () (setf truncate-lines t))))
 
 (use-package terraform-mode
   :mode "\\.tf$")
@@ -625,7 +625,7 @@ Meant to be added to `occur-hook'."
            (side . right))))
   ;; ignore the config above if I'm explicitly moving to a buffer and
   ;; allow sidewindows to become the only window if want them to
-  (setq switch-to-buffer-obey-display-actions nil
+  (setf switch-to-buffer-obey-display-actions nil
         ignore-window-parameters t)
   :config
   (defun hoagie-quit-side-windows ()
@@ -749,7 +749,7 @@ With ARG, do this that many times."
   ;; see https://emacs.stackexchange.com/a/28746/17066
   ;; https://blog.danielgempesaw.com/post/129841682030/fixing-a-laggy-compilation-buffer
   ;;
-  (setq disabled-command-function nil
+  (setf disabled-command-function nil
         w32-use-native-image-API t
         inhibit-compacting-font-caches t
         auto-window-vscroll nil
@@ -780,11 +780,11 @@ With ARG, do this that many times."
                                        "backups/"))))
     (make-directory auto-save-dir t)
     (make-directory backup-dir t)
-    (setq auto-save-list-file-prefix auto-save-dir
+    (setf auto-save-list-file-prefix auto-save-dir
           auto-save-file-name-transforms
           `((".*" ,auto-save-dir t)))
     (make-directory backup-dir t)
-    (setq backup-directory-alist
+    (setf backup-directory-alist
           `((".*" . ,backup-dir))))
   (defvar hoagie-container-name nil "Stores the name of the current container, if present.")
   (if (file-exists-p "/run/.containerenv")
@@ -793,18 +793,18 @@ With ARG, do this that many times."
       (with-temp-buffer
         (insert-file-contents "/run/.containerenv")
         (search-forward "name=") ;; move point to the line with the name
-        (setq hoagie-container-name
+        (setf hoagie-container-name
               (cl-subseq (thing-at-point 'line) 6 -2)))
-    (setq hoagie-container-name (system-name)))
+    (setf hoagie-container-name (system-name)))
   ;; Identify the toolbox container for this Emacs instance in the frame title
-  (setq frame-title-format '(" %b @ " (:eval hoagie-container-name))
+  (setf frame-title-format '(" %b @ " (:eval hoagie-container-name))
         icon-title-format '(" %b @ " (:eval hoagie-container-name))))
 
 ;; Convenient to work with AWS timestamps
 (defun hoagie-convert-timestamp (&optional timestamp)
   "Convert a Unix TIMESTAMP (as string) to date.  If the parameter is not provided use word at point."
   (interactive)
-  (setq timestamp (or timestamp (thing-at-point 'word t)))
+  (setf timestamp (or timestamp (thing-at-point 'word t)))
   (let ((to-convert (if (< 10 (length timestamp)) (substring timestamp 0 10) timestamp))
         (millis (if (< 10 (length timestamp)) (substring timestamp 10 (length timestamp)) "000")))
     (message "%s.%s"
@@ -853,12 +853,12 @@ With ARG, do this that many times."
 (define-key hoagie-keymap (kbd "1") #'hoagie-restore-window-configuration)
 (defun hoagie-store-config (&rest _)
   "Store the current window configuration in `hoagie-window-configuration'."
-  (setq hoagie-window-configuration (current-window-configuration)))
+  (setf hoagie-window-configuration (current-window-configuration)))
 (advice-add 'delete-other-windows :before #'hoagie-store-config)
 
 ;; Per-OS configuration
 
-(setq user-full-name "Sebastián Monía"
+(setf user-full-name "Sebastián Monía"
       user-mail-address "seb.hoagie@outlook.com")
 
 (when (string= system-type "windows-nt")
@@ -873,10 +873,10 @@ With ARG, do this that many times."
 		     dired-directory)))
       (when fname
         (if (string-match "^/sudo:root@localhost:" fname)
-	    (setq fname (replace-regexp-in-string
+	    (setf fname (replace-regexp-in-string
 		         "^/sudo:root@localhost:" ""
 		         fname))
-	  (setq fname (concat "/sudo:root@localhost:" fname)))
+	  (setf fname (concat "/sudo:root@localhost:" fname)))
         (find-alternate-file fname))))
   (global-set-key (kbd "C-x F") 'find-alternative-file-with-sudo)
 
@@ -894,7 +894,7 @@ With ARG, do this that many times."
                             'equal)))
       ;; override for "laptop screen only"
       (when (eq (length (display-monitor-attributes-list)) 1)
-        (setq size 120))
+        (setf size 120))
       (set-face-attribute 'default (selected-frame) :height size)
       (set-face-font 'eldoc-box-body
                      (frame-parameter nil 'font))))
@@ -923,9 +923,9 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
     (let ((pos (marker-position (car (last mark-ring)))))
       (if (not (= (point) pos))
           (goto-char pos)
-        (setq mark-ring (cons (copy-marker (mark-marker)) mark-ring))
+        (setf mark-ring (cons (copy-marker (mark-marker)) mark-ring))
         (set-marker (mark-marker) pos)
-        (setq mark-ring (nbutlast mark-ring))
+        (setf mark-ring (nbutlast mark-ring))
         (goto-char (marker-position (car (last mark-ring)))))
       (message "Mark unpopped"))))
 
@@ -977,4 +977,8 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
                                  (count-lines (region-beginning)
                                               (region-end))
                                  (- (region-end) (region-beginning))))))
-    (list "%l:%c" region-size))))
+    (list "%l:%c %p%%" region-size))))
+
+(provide 'init)
+
+;;; init.el ends here
