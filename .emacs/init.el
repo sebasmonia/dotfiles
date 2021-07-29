@@ -227,8 +227,7 @@
 (defvar hoagie-lsp-keymap (define-prefix-command 'hoagie-lsp-keymap) "Custom bindings for LSP mode.")
 (use-package lsp-mode
   :hook
-  ((csharp-mode-hook . lsp)
-   (lsp-mode-hook . lsp-enable-which-key-integration))
+  (csharp-mode-hook . lsp)
   :commands
   (lsp lsp-signature-active)
   :bind
@@ -635,17 +634,6 @@ Meant to be added to `occur-hook'."
       (quit-window nil window)))
   (define-key hoagie-keymap (kbd "0") #'hoagie-quit-side-windows))
 
-(use-package which-key
-  :config
-  (which-key-mode)
-  (which-key-setup-side-window-right-bottom)
-  :custom
-  (which-key-side-window-max-width 0.4)
-  (which-key-idle-delay 10000)
-  (which-key-idle-secondary-delay 0.05)
-  (which-key-show-early-on-C-h t)
-  (which-key-sort-order 'which-key-prefix-then-key-order))
-
 (use-package ws-butler
   :hook (prog-mode-hook . ws-butler-mode))
 
@@ -887,7 +875,8 @@ With ARG, do this that many times."
     ;; a meaningul value in all cases, so:
     (let* ((monitor-name (alist-get 'name (frame-monitor-attributes)))
            (monitor-font '(("S240HL" . 113) ;; 24"
-                           ("2757" . 105))) ;; 27"
+                           ("2757" . 105) ;; 27"
+                           ("LG HDR 4K" . 181))) ;; 27" office
            (size (alist-get monitor-name monitor-font
                             143 ;; default size, "big just in case"
                             nil
@@ -978,6 +967,109 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
                                               (region-end))
                                  (- (region-end) (region-beginning))))))
     (list "%l:%c %p%%" region-size))))
+
+;; Use keyboard oled screen & RGB colors, depends on apex7tkl_lisp
+;; setup using the udev rule mentioned in the repo + files in a "standard" directory
+(defvar hoagie-apex-cli-path (expand-file-name
+                              "~/.local/bin/apex7tkl"))
+(when (file-exists-p hoagie-apex-cli-path)
+  (defun hoagie-string-size-pieces (text size)
+    "Break TEXT into a list of SIZE pieces."
+    (if (> size (length text))
+        (cons text nil)
+      (cons (substring text 0 size)
+            (hoagie-string-size-pieces (substring text size) size))))
+
+  (defun hoagie-keyboard-message (text &optional no-time)
+    "Print TEXT in the keyboard's oled screen.  If NO-TIME is t, don't add a timestamp.
+The text is split in lines of 20 chars."
+    (let* ((formatted (if no-time
+                          text
+                        (concat (format-time-string "[%I:%M] ") text)))
+           (lines (hoagie-string-size-pieces
+                   formatted
+                   20))
+           (arguments `("keyboard-message"
+                        "*keyboard-message*"
+                        ,hoagie-apex-cli-path
+                        "text"
+                        "-1" ,(or (cl-first lines) "--"))))
+      (when (cl-second lines)
+        (setf arguments (append  arguments (list "-2" (cl-second lines)))))
+      (when (cl-third lines)
+        (setf arguments (append  arguments (list "-3" (cl-third lines)))))
+      (apply #'start-process arguments)))
+
+  (defun hoagie-keyboard-change-color (r g b &optional keys)
+    "Set KEYS to R G B colors. If KEYS is not specified, change all of them."
+    (start-process "keyboard-color"
+                   "*keyboard-color*"
+                   hoagie-apex-cli-path
+                   "color"
+                   (or keys "all")
+                   (number-to-string r)
+                   (number-to-string g)
+                   (number-to-string b)))
+
+  (defun hoagie-keyboard-default-color ()
+    "Convenience function to set the keyboard to purple quickly."
+    (hoagie-keyboard-change-color 255 0 255))
+
+  (defun hoagie-keyboard-flash-keys (r g b time)
+    "Change the keyboard color to R G B and call `hoagie-keyboard-default-color' after TIME."
+    (hoagie-keyboard-change-color r g b)
+    (run-with-timer time nil #'hoagie-keyboard-default-color))
+
+  (defun hoagie-compilation-finish (_ message)
+    "Code to run in `compilation-finish-functions' for keyboard notification."
+    (hoagie-keyboard-flash-keys 255 255 255 5)
+    (hoagie-keyboard-message (concat "Compilation message: " message)))
+  (add-to-list 'compilation-finish-functions #'hoagie-compilation-finish)
+
+  (defun hoagie-keyboard-message-handler (message)
+    "Show the text from \"messages\" in the OLED screen, then handle as usual."
+    (hoagie-keyboard-message message t)
+    (set-minibuffer-message message))
+  (setf set-message-function #'hoagie-keyboard-message-handler)
+
+;;   (defun hoagie-keyboard-clear-message ()
+;;     "Clear text from the OLED screen and echo area.
+;; This is a clone if `clear-minibuffer-message', but adds the OLED screen and
+;; showing the value of `smudge-controller-player-status' when bound and non-empty."
+;;     (let ((oled-idle-text (if (and (boundp 'smudge-controller-player-status)
+;;                                    smudge-controller-player-status)
+;;                               smudge-controller-player-status
+;;                             " ")))
+;;       (when (not noninteractive)
+;;         (when (timerp minibuffer-message-timer)
+;;           (cancel-timer minibuffer-message-timer)
+;;           (setq minibuffer-message-timer nil))
+;;         (when (overlayp minibuffer-message-overlay)
+;;           (delete-overlay minibuffer-message-overlay)
+;;           (setq minibuffer-message-overlay nil))
+;;         (hoagie-keyboard-message oled-idle-text t))))
+;;   (setf clear-message-function #'hoagie-keyboard-clear-message)
+  ;; (setf clear-message-function #'clear-minibuffer-message)
+
+  (defun hoagie-keyboard-bell ()
+    "Set in `ring-bell-function' to briefly flash the keys."
+    (hoagie-keyboard-flash-keys 255 0 0 1))
+  (setf ring-bell-function #'hoagie-keyboard-bell)
+
+  ;; (setf set-message-function #'set-minibuffer-message)
+  ;; (dbus-register-method :session
+  ;;                       "org.freedesktop.Notifications"
+  ;;                       "/org/freedesktop/Notifications"
+  ;;                       nil
+  ;;                       nil
+  ;;                       #'hoagie-keyboard-handle-notification)
+
+
+  ;; (defun hoagie-keyboard-handle-notification (&rest args)
+  ;;   (message "Args are: %s" args)
+  ;;   )
+  (hoagie-keyboard-default-color)
+  (hoagie-keyboard-message "Keyboard initialized"))
 
 (provide 'init)
 
