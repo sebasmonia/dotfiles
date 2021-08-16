@@ -60,7 +60,8 @@
         ("[?\t]" . company-complete-selection)
         ("C-n" . company-select-next)
         ("C-p" . company-select-previous))
-  :hook (after-init-hook . global-company-mode)
+  :hook
+  (after-init-hook . global-company-mode)
   :custom
   (company-idle-delay 0.01)
   (company-minimum-prefix-length 2)
@@ -266,47 +267,50 @@
 
 (use-package lsp-pyright
   :ensure t
-  :hook (python-mode-hook . (lambda ()
-                              (require 'lsp-pyright)
-                              (lsp))))
+  :after python
+  :hook
+  (python-mode-hook . (lambda ()
+                        (require 'lsp-pyright)
+                        (lsp))))
 
-(use-package dap-mode
-  :commands (dap-debug dap-breakpoints-add)
-  :init
-  (dap-mode 1)
-  (dap-ui-mode 1)
-  (dap-auto-configure-mode)
-  (require 'dap-python)
-  (require 'dap-pwsh)
-  (require 'dap-netcore)
-  (defvar hoagie-dap-run-keymap (define-prefix-command 'hoagie-dap-run-keymap))
-  (defvar hoagie-dap-bpoints-keymap (define-prefix-command 'hoagie-dap-bpoints-keymap))
-  (global-set-key (kbd "<f5>") hoagie-dap-run-keymap)
-  (global-set-key (kbd "<f9>") hoagie-dap-bpoints-keymap)
-  :bind
-  (:map hoagie-dap-run-keymap
-        ("<f5>" . dap-debug)
-        ("<f6>" . dap-next)
-        ("<f7>" . dap-step-in)
-        ("<f8>" . dap-step-out)
-        ("<f9>" . dap-continue)
-        ("<f1>" . dap-eval-thing-at-point)
-        ("C-<f1>" . dap-eval)
-        ("<f2>" . dap-ui-expressions)
-        ("C-<f2>" . dap-ui-expressions-add)
-        ("M-<f2>" . dap-ui-expressions-remove)
-        ("<f3>" . dap-ui-repl)
-        ("C-c" . dap-disconnect)) ;; "Stop"
-  (:map hoagie-dap-bpoints-keymap
-        ("<f10>" . dap-ui-breakpoints-list)
-        ("<f9>" . dap-breakpoint-toggle) ;; f9 twice -> toggle
-        ("<f11>" . dap-breakpoint-log-message)
-        ("<f12>" . dap-breakpoint-condition))
-  :custom
-  (dap-netcore-install-dir "/home/hoagie/.emacs.d/.cache/"))
+;; (use-package dap-mode
+;;   :commands (dap-debug dap-breakpoints-add)
+;;   :init
+;;   (dap-mode 1)
+;;   (dap-ui-mode 1)
+;;   (dap-auto-configure-mode)
+;;   (require 'dap-python)
+;;   (require 'dap-pwsh)
+;;   (require 'dap-netcore)
+;;   (defvar hoagie-dap-run-keymap (define-prefix-command 'hoagie-dap-run-keymap))
+;;   (defvar hoagie-dap-bpoints-keymap (define-prefix-command 'hoagie-dap-bpoints-keymap))
+;;   (global-set-key (kbd "<f5>") hoagie-dap-run-keymap)
+;;   (global-set-key (kbd "<f9>") hoagie-dap-bpoints-keymap)
+;;   :bind
+;;   (:map hoagie-dap-run-keymap
+;;         ("<f5>" . dap-debug)
+;;         ("<f6>" . dap-next)
+;;         ("<f7>" . dap-step-in)
+;;         ("<f8>" . dap-step-out)
+;;         ("<f9>" . dap-continue)
+;;         ("<f1>" . dap-eval-thing-at-point)
+;;         ("C-<f1>" . dap-eval)
+;;         ("<f2>" . dap-ui-expressions)
+;;         ("C-<f2>" . dap-ui-expressions-add)
+;;         ("M-<f2>" . dap-ui-expressions-remove)
+;;         ("<f3>" . dap-ui-repl)
+;;         ("C-c" . dap-disconnect)) ;; "Stop"
+;;   (:map hoagie-dap-bpoints-keymap
+;;         ("<f10>" . dap-ui-breakpoints-list)
+;;         ("<f9>" . dap-breakpoint-toggle) ;; f9 twice -> toggle
+;;         ("<f11>" . dap-breakpoint-log-message)
+;;         ("<f12>" . dap-breakpoint-condition))
+;;   :custom
+;;   (dap-netcore-install-dir "/home/hoagie/.omnisharp/netcoredbg/1.2.0-825/"))
 
 (use-package eldoc-box
-  :hook (prog-mode-hook . eldoc-box-hover-mode)
+  :hook
+  (prog-mode-hook . eldoc-box-hover-mode)
   :custom
   (eldoc-box-max-pixel-width 1024)
   (eldoc-box-max-pixel-height 768)
@@ -371,14 +375,15 @@
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
   (completion-cycle-threshold t)
+  :init
+  ;; Not the best place for this, but since icomplete displaced amx/smex...
+  (define-key hoagie-keymap (kbd "<menu>") #'execute-extended-command)
+  (define-key hoagie-keymap (kbd "C-'") #'execute-extended-command)
   :config
   (fido-mode t)
   (icomplete-vertical-mode t) ;; new in Emacs 28
   ;; Non-custom configuration:
   (setf icomplete-in-buffer t)
-  ;; Not the best place for this, but since icomplete displaced amx/smex...
-  (define-key hoagie-keymap (kbd "<menu>") #'execute-extended-command)
-  (define-key hoagie-keymap (kbd "C-'") #'execute-extended-command)
   :bind
   (:map icomplete-minibuffer-map
         ("C-<return>" . icomplete-fido-exit) ;; when there's no exact match
@@ -390,7 +395,6 @@
 
 (use-package isearch
   :ensure nil
-  :demand t
   :custom
   (isearch-lazy-count t)
   (isearch-lazy-highlight 'all-windows)
@@ -429,6 +433,7 @@
 
 (use-package org
   :ensure nil
+  :mode (("\\.org$" . org-mode))
   :config
   ;; I don't use this feature and it clashes with
   ;; my mode map binding
@@ -455,9 +460,10 @@
 (use-package python
   :ensure nil
   :mode ("\\.py\\'" . python-mode)
-  :hook (python-mode-hook . (lambda ()
-                              (setf fill-column 79)
-                              (display-fill-column-indicator-mode)))
+  :hook
+  (python-mode-hook . (lambda ()
+                        (setf fill-column 79)
+                        (display-fill-column-indicator-mode)))
   :custom
   (python-shell-font-lock-enable nil)
   (python-shell-interpreter "ipython")
@@ -498,7 +504,6 @@ Meant to be added to `occur-hook'."
 
 (use-package savehist
   :ensure nil
-  :demand t
   :custom
   (savehist-additional-variables '(kill-ring
                                    search-ring
@@ -524,7 +529,6 @@ Meant to be added to `occur-hook'."
 
 (use-package paren
   :ensure nil
-  :demand t
   :config
   (show-paren-mode)
   :custom
@@ -532,7 +536,6 @@ Meant to be added to `occur-hook'."
 
 (use-package shell
   :ensure nil
-  :demand t
   :hook
   (shell-mode-hook . (lambda ()
                        (toggle-truncate-lines t)
@@ -553,11 +556,10 @@ Meant to be added to `occur-hook'."
 
 (use-package sql
   :ensure nil
-  :custom
-  (sql-ms-options '("--driver" "ODBC Driver 17 for SQL Server"))
-  (sql-ms-program "/home/hoagie/github/sqlcmdline/sqlcmdline.py")
   :hook
   (sql-interactive-mode-hook . (lambda () (setf truncate-lines t))))
+
+(use-package sql-datum :load-path "/home/hoagie/github/datum")
 
 (use-package terraform-mode
   :mode "\\.tf$")
@@ -601,31 +603,30 @@ Meant to be added to `occur-hook'."
   :ensure nil
   :init
   ;; Using the code in https://protesilaos.com/dotemacs as starting point:
-  (setq display-buffer-alist
-        '(;; right side window
-          ("\\(*vterm.*\\|*shell.*\\|*xref.*\\|\\*Occur\\*\\|\\*deadgrep.*\\)"
-           (display-buffer-in-side-window)
-           (window-height . 0.33)
-           (side . bottom)
-           (slot . 0))
-          ;; bottom side window - reuse if in another frame
-          ("\\*\\(Backtrace\\|Warnings\\|Environments .*\\|Builds .*\\|compilation\\|[Hh]elp\\|Messages\\|Flymake.*\\|eglot.*\\)\\*"
-           (display-buffer-reuse-window
-            display-buffer-in-side-window)
-           (window-height . 0.33)
-           (reusable-frames . visible)
-           (side . bottom)
-           (slot . 1))
-          ;; stuff that splits to the right
-          ("\\(magit\\COMMIT_EDITMSG\\*info\\).*"
-           (display-buffer-reuse-window
-            display-buffer-in-side-window)
-           (window-width . 0.5)
-           (side . right))))
+  ;; (setf display-buffer-alist
+  ;;       '(;; right side window
+  ;;         ("\\(*vterm.*\\|*shell.*\\|*xref.*\\|\\*Occur\\*\\|\\*deadgrep.*\\)"
+  ;;          (display-buffer-in-side-window)
+  ;;          (window-height . 0.33)
+  ;;          (side . bottom)
+  ;;          (slot . 0))
+  ;;         ;; bottom side window - reuse if in another frame
+  ;;         ("\\*\\(Backtrace\\|Warnings\\|Environments .*\\|Builds .*\\|compilation\\|[Hh]elp\\|Messages\\|Flymake.*\\|eglot.*\\)\\*"
+  ;;          (display-buffer-reuse-window
+  ;;           display-buffer-in-side-window)
+  ;;          (window-height . 0.33)
+  ;;          (reusable-frames . visible)
+  ;;          (side . bottom)
+  ;;          (slot . 1))
+  ;;         ;; stuff that splits to the right
+  ;;         ("\\(magit\\COMMIT_EDITMSG\\*info\\).*"
+  ;;          (display-buffer-reuse-window
+  ;;           display-buffer-in-side-window)
+  ;;          (window-width . 0.5)
+  ;;          (side . right))))
   ;; ignore the config above if I'm explicitly moving to a buffer and
   ;; allow sidewindows to become the only window if want them to
-  (setf switch-to-buffer-obey-display-actions nil
-        ignore-window-parameters t)
+  (setf switch-to-buffer-obey-display-actions nil)
   :config
   (defun hoagie-quit-side-windows ()
     "Quit side windows of the current frame."
@@ -635,7 +636,8 @@ Meant to be added to `occur-hook'."
   (define-key hoagie-keymap (kbd "0") #'hoagie-quit-side-windows))
 
 (use-package ws-butler
-  :hook (prog-mode-hook . ws-butler-mode))
+  :hook
+  (prog-mode-hook . ws-butler-mode))
 
 (use-package yaml-mode
   :mode "\\.yml$")
