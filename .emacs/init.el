@@ -14,6 +14,8 @@
 ;; the config synced without merging/adapting anything
 ;; Update 2019-05-06: V3 means I moved to use-package
 ;; Update 2020-06-14: Arbitrarily bumping the version number
+;; Update 2021-09-02: Used https://www.manueluberti.eu/emacs/2021/09/01/package-report/
+;;                    to remove some dead packages and things I didn't use that much.
 
 ;;; Code:
 
@@ -223,90 +225,23 @@
   (:map eww-mode-map
         ("C-c SPC" . eww-lnum-follow)))
 
-;; My own shortcut bindings to LSP, under hoagie-keymap "l", are defined in the :config section
-(setf lsp-keymap-prefix "C-c C-l")
-(defvar hoagie-lsp-keymap (define-prefix-command 'hoagie-lsp-keymap) "Custom bindings for LSP mode.")
-(use-package lsp-mode
+(use-package eglot
+  :commands (eglot eglot-ensure)
   :hook
-  (csharp-mode-hook . lsp)
-  :commands
-  (lsp lsp-signature-active)
+  ((python-mode-hook . eglot-ensure)
+   (csharp-mode-hook . eglot-ensure))
   :bind
-  (:map hoagie-lsp-keymap
-        ("d" . lsp-find-declaration)
-        ("." . lsp-find-definition)
-        ("?" . lsp-find-references)
-        ("o" . lsp-signature-activate) ;; o for "overloads"
-        ("r" . lsp-rename))
-  (:map hoagie-keymap
-        ("l" . hoagie-lsp-keymap))
-  :custom
-  (lsp-csharp-server-path "c:/home/omnisharp_64/OmniSharp.exe")
-  (lsp-enable-snippet nil)
-  (lsp-enable-folding nil)
-  (lsp-lens-enable nil)
-  (lsp-headerline-breadcrumb-enable nil)
-  (lsp-auto-guess-root t)
-  (lsp-file-watch-threshold nil)
-  (lsp-eldoc-render-all t)
-  (lsp-signature-auto-activate nil)
-  (lsp-enable-symbol-highlighting nil)
-  (lsp-modeline-code-actions-enable nil))
-
-(use-package lsp-ui
-  :commands lsp-ui-mode
-  :bind
-  (:map hoagie-lsp-keymap
-        ("i" . lsp-ui-imenu))
-  :custom
-  (lsp-ui-doc-enable nil)
-  (lsp-ui-doc-position 'top)
-  (lsp-ui-doc-use-childframe nil)
-  (lsp-ui-peek-enable nil)
-  (lsp-ui-sideline-enable nil))
-
-(use-package lsp-pyright
-  :ensure t
-  :after python
-  :hook
-  (python-mode-hook . (lambda ()
-                        (require 'lsp-pyright)
-                        (lsp))))
-
-;; (use-package dap-mode
-;;   :commands (dap-debug dap-breakpoints-add)
-;;   :init
-;;   (dap-mode 1)
-;;   (dap-ui-mode 1)
-;;   (dap-auto-configure-mode)
-;;   (require 'dap-python)
-;;   (require 'dap-pwsh)
-;;   (require 'dap-netcore)
-;;   (defvar hoagie-dap-run-keymap (define-prefix-command 'hoagie-dap-run-keymap))
-;;   (defvar hoagie-dap-bpoints-keymap (define-prefix-command 'hoagie-dap-bpoints-keymap))
-;;   (global-set-key (kbd "<f5>") hoagie-dap-run-keymap)
-;;   (global-set-key (kbd "<f9>") hoagie-dap-bpoints-keymap)
-;;   :bind
-;;   (:map hoagie-dap-run-keymap
-;;         ("<f5>" . dap-debug)
-;;         ("<f6>" . dap-next)
-;;         ("<f7>" . dap-step-in)
-;;         ("<f8>" . dap-step-out)
-;;         ("<f9>" . dap-continue)
-;;         ("<f1>" . dap-eval-thing-at-point)
-;;         ("C-<f1>" . dap-eval)
-;;         ("<f2>" . dap-ui-expressions)
-;;         ("C-<f2>" . dap-ui-expressions-add)
-;;         ("M-<f2>" . dap-ui-expressions-remove)
-;;         ("<f3>" . dap-ui-repl)
-;;         ("C-c" . dap-disconnect)) ;; "Stop"
-;;   (:map hoagie-dap-bpoints-keymap
-;;         ("<f10>" . dap-ui-breakpoints-list)
-;;         ("<f9>" . dap-breakpoint-toggle) ;; f9 twice -> toggle
-;;         ("<f11>" . dap-breakpoint-log-message)
-;;         ("<f12>" . dap-breakpoint-condition))
-;;   :custom
-;;   (dap-netcore-install-dir "/home/hoagie/.omnisharp/netcoredbg/1.2.0-825/"))
+  (:map eglot-mode-map
+        (("C-c C-e r" . eglot-rename)
+         ("C-c C-e f" . eglot-format)
+         ("C-c C-e h" . eglot-help-at-point)))
+  :config
+  (add-to-list 'eglot-server-programs
+               `(csharp-mode . ("/home/hoagie/.omnisharp/1.37.15/run" "-lsp")))
+  ;; patch the argument. when nil, use "" instead.
+  (defun eglot--format-markup-patch (args)
+    (list (or (car args) "")))
+  (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch))
 
 (use-package eldoc-box
   :hook
@@ -350,9 +285,6 @@
                                     (lambda (start end)
                                       (let ((indent-region-function #'c-indent-region))
                                         (indent-region start end)))))))
-
-(use-package format-all
-  :bind ("C-c f" . format-all-buffer))
 
 (use-package hl-line
   :ensure nil
@@ -969,109 +901,6 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
                                               (region-end))
                                  (- (region-end) (region-beginning))))))
     (list "%l:%c %p%%" region-size))))
-
-;; Use keyboard oled screen & RGB colors, depends on apex7tkl_lisp
-;; setup using the udev rule mentioned in the repo + files in a "standard" directory
-(defvar hoagie-apex-cli-path (expand-file-name
-                              "~/.local/bin/apex7tkl"))
-(when (file-exists-p hoagie-apex-cli-path)
-  (defun hoagie-string-size-pieces (text size)
-    "Break TEXT into a list of SIZE pieces."
-    (if (> size (length text))
-        (cons text nil)
-      (cons (substring text 0 size)
-            (hoagie-string-size-pieces (substring text size) size))))
-
-  (defun hoagie-keyboard-message (text &optional no-time)
-    "Print TEXT in the keyboard's oled screen.  If NO-TIME is t, don't add a timestamp.
-The text is split in lines of 20 chars."
-    (let* ((formatted (if no-time
-                          text
-                        (concat (format-time-string "[%I:%M] ") text)))
-           (lines (hoagie-string-size-pieces
-                   formatted
-                   20))
-           (arguments `("keyboard-message"
-                        "*keyboard-message*"
-                        ,hoagie-apex-cli-path
-                        "text"
-                        "-1" ,(or (cl-first lines) "--"))))
-      (when (cl-second lines)
-        (setf arguments (append  arguments (list "-2" (cl-second lines)))))
-      (when (cl-third lines)
-        (setf arguments (append  arguments (list "-3" (cl-third lines)))))
-      (apply #'start-process arguments)))
-
-  (defun hoagie-keyboard-change-color (r g b &optional keys)
-    "Set KEYS to R G B colors. If KEYS is not specified, change all of them."
-    (start-process "keyboard-color"
-                   "*keyboard-color*"
-                   hoagie-apex-cli-path
-                   "color"
-                   (or keys "all")
-                   (number-to-string r)
-                   (number-to-string g)
-                   (number-to-string b)))
-
-  (defun hoagie-keyboard-default-color ()
-    "Convenience function to set the keyboard to purple quickly."
-    (hoagie-keyboard-change-color 255 0 255))
-
-  (defun hoagie-keyboard-flash-keys (r g b time)
-    "Change the keyboard color to R G B and call `hoagie-keyboard-default-color' after TIME."
-    (hoagie-keyboard-change-color r g b)
-    (run-with-timer time nil #'hoagie-keyboard-default-color))
-
-  (defun hoagie-compilation-finish (_ message)
-    "Code to run in `compilation-finish-functions' for keyboard notification."
-    (hoagie-keyboard-flash-keys 255 255 255 5)
-    (hoagie-keyboard-message (concat "Compilation message: " message)))
-  (add-to-list 'compilation-finish-functions #'hoagie-compilation-finish)
-
-  (defun hoagie-keyboard-message-handler (message)
-    "Show the text from \"messages\" in the OLED screen, then handle as usual."
-    (hoagie-keyboard-message message t)
-    (set-minibuffer-message message))
-  (setf set-message-function #'hoagie-keyboard-message-handler)
-
-;;   (defun hoagie-keyboard-clear-message ()
-;;     "Clear text from the OLED screen and echo area.
-;; This is a clone if `clear-minibuffer-message', but adds the OLED screen and
-;; showing the value of `smudge-controller-player-status' when bound and non-empty."
-;;     (let ((oled-idle-text (if (and (boundp 'smudge-controller-player-status)
-;;                                    smudge-controller-player-status)
-;;                               smudge-controller-player-status
-;;                             " ")))
-;;       (when (not noninteractive)
-;;         (when (timerp minibuffer-message-timer)
-;;           (cancel-timer minibuffer-message-timer)
-;;           (setq minibuffer-message-timer nil))
-;;         (when (overlayp minibuffer-message-overlay)
-;;           (delete-overlay minibuffer-message-overlay)
-;;           (setq minibuffer-message-overlay nil))
-;;         (hoagie-keyboard-message oled-idle-text t))))
-;;   (setf clear-message-function #'hoagie-keyboard-clear-message)
-  ;; (setf clear-message-function #'clear-minibuffer-message)
-
-  (defun hoagie-keyboard-bell ()
-    "Set in `ring-bell-function' to briefly flash the keys."
-    (hoagie-keyboard-flash-keys 255 0 0 1))
-  (setf ring-bell-function #'hoagie-keyboard-bell)
-
-  ;; (setf set-message-function #'set-minibuffer-message)
-  ;; (dbus-register-method :session
-  ;;                       "org.freedesktop.Notifications"
-  ;;                       "/org/freedesktop/Notifications"
-  ;;                       nil
-  ;;                       nil
-  ;;                       #'hoagie-keyboard-handle-notification)
-
-
-  ;; (defun hoagie-keyboard-handle-notification (&rest args)
-  ;;   (message "Args are: %s" args)
-  ;;   )
-  (hoagie-keyboard-default-color)
-  (hoagie-keyboard-message "Keyboard initialized"))
 
 (provide 'init)
 
