@@ -50,7 +50,12 @@
 (define-key key-translation-map (kbd "<print>") (kbd "<menu>")) ;; curse you, thinkpad keyboard!!!
 (global-set-key (kbd "<menu>") 'hoagie-keymap)
 (global-set-key (kbd "C-'") 'hoagie-keymap)
-(define-key hoagie-keymap (kbd "k") (lambda () (interactive) (kill-buffer)))
+(define-key hoagie-keymap (kbd "k") #'kill-this-buffer)
+
+;; experimenting with new types of keybindings/entry keys for keymaps
+(global-set-key (kbd "<f6>") 'hoagie-keymap)
+(global-set-key (kbd "<f7>") ctl-x-map)
+(global-set-key (kbd "<f8>") mode-specific-map)
 
 (use-package company
   :bind
@@ -97,20 +102,24 @@
   :bind
   ("C-;" . dabbrev-expand))
 
-(use-package deadgrep
-  :bind
-  (:map hoagie-keymap
-        ("g" . deadgrep))
-  (:map deadgrep-mode-map
-        ("t" . (lambda () (interactive) (deadgrep--search-term nil)))
-        ("r" . (lambda () (interactive) (setf deadgrep--search-type 'regexp) (deadgrep-restart)))
-        ("s" . (lambda () (interactive) (setf deadgrep--search-type 'string) (deadgrep-restart)))
-        ("d" . (lambda () (interactive) (deadgrep--directory nil))))
-  :config
-  (defun deadgrep--format-command-patch (rg-command)
-    "Add --hidden to rg-command."
-    (replace-regexp-in-string "^rg " "rg --hidden " rg-command))
-  (advice-add 'deadgrep--format-command :filter-return #'deadgrep--format-command-patch))
+;; (use-package grep
+;;   :ensure nil
+;;   :bind
+;;   (:map hoagie-keymap
+;;         ("g" . rgrep)))
+
+;; (use-package deadgrep
+;;   :bind
+;;   (:map hoagie-keymap
+;;         ("g" . deadgrep))
+;;   (:map deadgrep-mode-map
+;;         ("r" . (lambda () (interactive) (setf deadgrep--search-type 'regexp) (deadgrep-restart)))
+;;         ("s" . (lambda () (interactive) (setf deadgrep--search-type 'string) (deadgrep-restart))))
+;;   :config
+;;   (defun deadgrep--format-command-patch (rg-command)
+;;     "Add --hidden to rg-command."
+;;     (replace-regexp-in-string "^rg " "rg --hidden " rg-command))
+;;   (advice-add 'deadgrep--format-command :filter-return #'deadgrep--format-command-patch))
 
 (use-package dired
   :ensure nil
@@ -246,6 +255,7 @@
 (use-package eldoc-box
   :hook
   (prog-mode-hook . eldoc-box-hover-mode)
+  (comint-mode-hook . eldoc-box-hover-mode)
   :custom
   (eldoc-box-max-pixel-width 1024)
   (eldoc-box-max-pixel-height 768)
@@ -309,6 +319,7 @@
   (completion-cycle-threshold t)
   :init
   ;; Not the best place for this, but since icomplete displaced amx/smex...
+  (define-key hoagie-keymap (kbd "<f6>") #'execute-extended-command)
   (define-key hoagie-keymap (kbd "<menu>") #'execute-extended-command)
   (define-key hoagie-keymap (kbd "C-'") #'execute-extended-command)
   :config
@@ -896,11 +907,13 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
   (defun mood-line-segment-position ()
     "Displays the current cursor position in the mode-line, with region size if applicable."
     (let ((region-size (when (use-region-p)
-                         (format " (%sL:%sC)"
-                                 (count-lines (region-beginning)
-                                              (region-end))
-                                 (- (region-end) (region-beginning))))))
-    (list "%l:%c %p%%" region-size))))
+                         (propertize (format " (%sL:%sC)"
+                                             (count-lines (region-beginning)
+                                                          (region-end))
+                                             (- (region-end) (region-beginning)))
+                                     'face 'mood-line-unimportant)))
+          (position (propertize " %p%%" 'face 'mood-line-unimportant)))
+    (list "%l:%c" position region-size))))
 
 (provide 'init)
 
