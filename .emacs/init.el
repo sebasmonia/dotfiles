@@ -27,6 +27,7 @@
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
+;; (setf use-package-compute-statistics t)
 
 (when (eq window-system 'pgtk)
   (pgtk-use-im-context t))
@@ -264,6 +265,13 @@
   ;; set the child frame face as 1.0 relative to the default font
   (set-face-attribute 'eldoc-box-body nil :inherit 'default :height 1.0))
 
+(use-package elec-pair
+  :ensure nil
+  :custom
+  (electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
+  :config
+  (electric-pair-mode))
+
 (use-package expand-region
   :bind
   ("M-<SPC>" . er/expand-region)
@@ -488,6 +496,13 @@ Meant to be added to `occur-hook'."
   :after shell
   :bind (:map hoagie-keymap
               ("`" . better-shell-for-current-dir)))
+
+(use-package lisp-mode
+  :ensure nil
+  :hook
+  (lisp-mode-hook . (lambda ()
+                      (setf fill-column 100)
+                      (display-fill-column-indicator-mode))))
 
 (use-package sly
   :commands sly
@@ -914,7 +929,5 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
                                      'face 'mood-line-unimportant)))
           (position (propertize " %p%%" 'face 'mood-line-unimportant)))
     (list "%l:%c" position region-size))))
-
-(provide 'init)
 
 ;;; init.el ends here
