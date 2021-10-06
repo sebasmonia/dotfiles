@@ -241,10 +241,14 @@
   ((python-mode-hook . eglot-ensure)
    (csharp-mode-hook . eglot-ensure))
   :bind
+  (:map hoagie-keymap
+        (("e r" . eglot-rename)
+         ("e f" . eglot-format)
+         ("e h" . eldoc)))
   (:map eglot-mode-map
         (("C-c C-e r" . eglot-rename)
          ("C-c C-e f" . eglot-format)
-         ("C-c C-e h" . eglot-help-at-point)))
+         ("C-c C-e h" . eldoc)))
   :config
   (add-to-list 'eglot-server-programs
                `(csharp-mode . ("/home/hoagie/.omnisharp/1.37.15/run" "-lsp")))
@@ -557,42 +561,6 @@ Meant to be added to `occur-hook'."
   (web-mode-enable-current-element-highlight t)
   (web-mode-markup-indent-offset 2))
 
-(use-package window
-  :ensure nil
-  :init
-  ;; Using the code in https://protesilaos.com/dotemacs as starting point:
-  ;; (setf display-buffer-alist
-  ;;       '(;; right side window
-  ;;         ("\\(*vterm.*\\|*shell.*\\|*xref.*\\|\\*Occur\\*\\|\\*deadgrep.*\\)"
-  ;;          (display-buffer-in-side-window)
-  ;;          (window-height . 0.33)
-  ;;          (side . bottom)
-  ;;          (slot . 0))
-  ;;         ;; bottom side window - reuse if in another frame
-  ;;         ("\\*\\(Backtrace\\|Warnings\\|Environments .*\\|Builds .*\\|compilation\\|[Hh]elp\\|Messages\\|Flymake.*\\|eglot.*\\)\\*"
-  ;;          (display-buffer-reuse-window
-  ;;           display-buffer-in-side-window)
-  ;;          (window-height . 0.33)
-  ;;          (reusable-frames . visible)
-  ;;          (side . bottom)
-  ;;          (slot . 1))
-  ;;         ;; stuff that splits to the right
-  ;;         ("\\(magit\\COMMIT_EDITMSG\\*info\\).*"
-  ;;          (display-buffer-reuse-window
-  ;;           display-buffer-in-side-window)
-  ;;          (window-width . 0.5)
-  ;;          (side . right))))
-  ;; ignore the config above if I'm explicitly moving to a buffer and
-  ;; allow sidewindows to become the only window if want them to
-  (setf switch-to-buffer-obey-display-actions nil)
-  :config
-  (defun hoagie-quit-side-windows ()
-    "Quit side windows of the current frame."
-    (interactive)
-    (dolist (window (window-at-side-list))
-      (quit-window nil window)))
-  (define-key hoagie-keymap (kbd "0") #'hoagie-quit-side-windows))
-
 (use-package ws-butler
   :hook
   (prog-mode-hook . ws-butler-mode))
@@ -762,34 +730,6 @@ With ARG, do this that many times."
              millis)))
 (define-key hoagie-keymap (kbd "t") 'hoagie-convert-timestamp)
 
-;; from https://stackoverflow.com/a/33456622/91877, just like ediff's |
-(defun toggle-window-split ()
-  "Swap two windows between vertical and horizontal split."
-  (interactive)
-  (if (= (count-windows) 2)
-      (let* ((this-win-buffer (window-buffer))
-         (next-win-buffer (window-buffer (next-window)))
-         (this-win-edges (window-edges (selected-window)))
-         (next-win-edges (window-edges (next-window)))
-         (this-win-2nd (not (and (<= (car this-win-edges)
-                     (car next-win-edges))
-                     (<= (cadr this-win-edges)
-                     (cadr next-win-edges)))))
-         (splitter
-          (if (= (car this-win-edges)
-             (car (window-edges (next-window))))
-          'split-window-horizontally
-        'split-window-vertically)))
-    (delete-other-windows)
-    (let ((first-win (selected-window)))
-      (funcall splitter)
-      (if this-win-2nd (other-window 1))
-      (set-window-buffer (selected-window) this-win-buffer)
-      (set-window-buffer (next-window) next-win-buffer)
-      (select-window first-win)
-      (if this-win-2nd (other-window 1))))))
-(global-set-key (kbd "C-M-|") 'toggle-window-split)
-
 ;; simplified version that restores stored window config and advices delete-other-windows
 ;; idea from https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
 (defvar hoagie-window-configuration nil "Last window configuration saved.")
@@ -910,7 +850,8 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
 (use-package modus-operandi-theme
   :demand t
   :custom
-  (modus-operandi-theme-completions 'moderate)
+  (modus-themes-completions 'moderate)
+  (modus-themes-intense-hl-line t)
   :config
   (load-theme 'modus-operandi t)
   (enable-theme 'modus-operandi))
