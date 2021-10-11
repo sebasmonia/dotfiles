@@ -92,7 +92,7 @@
 (use-package csharp-mode
   :mode "\\.cs$"
   :hook
-  (csharp-mode-hook . (lambda () (subword-mode))))
+  (csharp-mode-hook . subword-mode))
 
 (use-package dabbrev
   :ensure nil
@@ -239,7 +239,8 @@
   :commands (eglot eglot-ensure)
   :hook
   ((python-mode-hook . eglot-ensure)
-   (csharp-mode-hook . eglot-ensure))
+   (csharp-mode-hook . eglot-ensure)
+   (java-mode-hook . eglot-ensure))
   :bind
   (:map hoagie-keymap
         (("e r" . eglot-rename)
@@ -250,6 +251,8 @@
          ("C-c C-e f" . eglot-format)
          ("C-c C-e h" . eldoc)))
   :config
+  ;; for Java LSP to work
+  (setenv "CLASSPATH" "$CLASSPATH:/var/home/hoagie/java_lsp_server/plugins/org.eclipse.equinox.launcher_1.6.300.v20210813-1054.jar" t)
   (add-to-list 'eglot-server-programs
                `(csharp-mode . ("/home/hoagie/.omnisharp/1.37.15/run" "-lsp")))
   ;; patch the argument. when nil, use "" instead.
@@ -356,6 +359,11 @@
   (lazy-highlight-initial-delay 0.1)
   (regexp-search-ring-max 64)
   (search-ring-max 64))
+
+(use-package java-mode
+  :ensure nil
+  :hook
+  (java-mode-hook . subword-mode))
 
 (use-package json-mode
   :mode "\\.json$")
@@ -621,6 +629,8 @@ With ARG, do this that many times."
   ("<remap> <comment-dwim>" . comment-line)
   ;; replace delete-char
   ("C-d" . delete-forward-char)
+  ;; like backspace, but closer
+  ("C-S-d" . delete-backward-char)
   ("M-c" . capitalize-dwim)
   ("M-u" . upcase-dwim)
   ("M-l" . downcase-dwim)
