@@ -103,25 +103,6 @@
   :bind
   ("C-;" . dabbrev-expand))
 
-;; (use-package grep
-;;   :ensure nil
-;;   :bind
-;;   (:map hoagie-keymap
-;;         ("g" . rgrep)))
-
-;; (use-package deadgrep
-;;   :bind
-;;   (:map hoagie-keymap
-;;         ("g" . deadgrep))
-;;   (:map deadgrep-mode-map
-;;         ("r" . (lambda () (interactive) (setf deadgrep--search-type 'regexp) (deadgrep-restart)))
-;;         ("s" . (lambda () (interactive) (setf deadgrep--search-type 'string) (deadgrep-restart))))
-;;   :config
-;;   (defun deadgrep--format-command-patch (rg-command)
-;;     "Add --hidden to rg-command."
-;;     (replace-regexp-in-string "^rg " "rg --hidden " rg-command))
-;;   (advice-add 'deadgrep--format-command :filter-return #'deadgrep--format-command-patch))
-
 (use-package dired
   :ensure nil
   :custom
@@ -328,6 +309,8 @@
   ;; The following are minibuffer/C customizations
   ;; but it makes sense to have them here:
   (completion-styles '(substring partial-completion))
+  ;; I usually don't like the flex completion style, by default eglot uses it
+  (completion-category-overrides '((eglot (styles substring partial-completion) (cycle . t))))
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
@@ -414,7 +397,7 @@
   :ensure nil
   :bind
   (:map hoagie-keymap
-        ("G" . project-find-regexp)
+        ("g" . project-find-regexp)
         ("f" . project-find-file))
   :config
   (add-to-list 'project-switch-commands '(?m "Magit status" magit-status))
@@ -629,12 +612,14 @@ With ARG, do this that many times."
   ("<remap> <comment-dwim>" . comment-line)
   ;; replace delete-char
   ("C-d" . delete-forward-char)
-  ;; like backspace, but closer
-  ("C-S-d" . delete-backward-char)
+  ;; testing setup from https://www.emacswiki.org/emacs/BackspaceKey
+  ("C-?" . help-command)
+  ("M-?" . mark-paragraph)
+  ("C-h" . delete-backward-char)
+  ("M-h" . backward-delete-word)
   ("M-c" . capitalize-dwim)
   ("M-u" . upcase-dwim)
   ("M-l" . downcase-dwim)
-  ("C-<backspace>" . backward-delete-word)
   ;; like flycheck's C-c ! l
   ("C-c !" . flymake-show-diagnostics-buffer)
   :custom
@@ -755,7 +740,6 @@ With ARG, do this that many times."
 (advice-add 'delete-other-windows :before #'hoagie-store-config)
 
 ;; Per-OS configuration
-
 (setf user-full-name "Sebastián Monía"
       user-mail-address "seb.hoagie@outlook.com")
 
@@ -786,7 +770,7 @@ With ARG, do this that many times."
     (let* ((monitor-name (alist-get 'name (frame-monitor-attributes)))
            (monitor-font '(("S240HL" . 113) ;; 24"
                            ("2757" . 105) ;; 27"
-                           ("LG HDR 4K" . 181))) ;; 27" office
+                           ("LG HDR 4K" . 165))) ;; 27" office - was 181
            (size (alist-get monitor-name monitor-font
                             143 ;; default size, "big just in case"
                             nil
