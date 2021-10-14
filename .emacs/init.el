@@ -612,11 +612,7 @@ With ARG, do this that many times."
   ("<remap> <comment-dwim>" . comment-line)
   ;; replace delete-char
   ("C-d" . delete-forward-char)
-  ;; testing setup from https://www.emacswiki.org/emacs/BackspaceKey
-  ("C-?" . help-command)
-  ("M-?" . mark-paragraph)
-  ("C-h" . delete-backward-char)
-  ("M-h" . backward-delete-word)
+  ("C-<backspace>" . backward-delete-word)
   ("M-c" . capitalize-dwim)
   ("M-u" . upcase-dwim)
   ("M-l" . downcase-dwim)
