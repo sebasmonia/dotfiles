@@ -41,6 +41,7 @@
 (setf use-package-verbose t)
 (setf use-package-always-ensure t)
 (setf use-package-hook-name-suffix nil)
+(setf package-native-compile t)
 
 (custom-set-faces
  '(default ((t (:family "IBM Plex Mono" :foundry "IBM " :slant normal :weight normal :height 128 :width normal)))))
@@ -55,8 +56,8 @@
 
 ;; experimenting with new types of keybindings/entry keys for keymaps
 (global-set-key (kbd "<f6>") 'hoagie-keymap)
-(global-set-key (kbd "<f7>") ctl-x-map)
-(global-set-key (kbd "<f8>") mode-specific-map)
+(define-key key-translation-map (kbd "<f7>") (kbd "ESC")) ;; esc-map ~= alt
+(global-set-key (kbd "<f8>") mode-specific-map)  ;; C-c
 
 (use-package company
   :bind
@@ -531,6 +532,38 @@ Meant to be added to `occur-hook'."
   (visible-mark-faces '(visible-mark-face1 visible-mark-face2))
   (visible-mark-forward-max 2)
   (visible-mark-forward-faces '(visible-mark-forward-face1 visible-mark-forward-face2)))
+
+(use-package window
+  :ensure nil
+  :custom
+  (display-buffer-alist
+   '(;; show at bottom
+     ("\\(*shell.*\\|*xref.*\\|\\*Occur\\*\\|\\*deadgrep.*\\)"
+      (display-buffer-reuse-window display-buffer-in-side-window)
+      (window-height . 0.35)
+      (side . bottom)
+      (slot . 0))
+     ;; show at bottom - reuse if in another frame
+     ("\\*\\(Backtrace\\|Warnings\\|Environments .*\\|Builds .*\\|compilation\\|[Hh]elp\\|Messages\\|Flymake.*\\|eglot.*\\)\\*"
+      (display-buffer-reuse-window display-buffer-in-side-window)
+      (window-height . 0.35)
+      (reusable-frames . visible)
+      (side . bottom)
+      (slot . 0))
+     ;; show at bottom, in a slightly bigger side window
+     ("\\(magit\\|\\*info\\).*"
+      (display-buffer-reuse-window display-buffer-in-side-window)
+      (side . bottom)
+      (window-height . 0.4)
+      (slot . 0))))
+  (switch-to-buffer-preserve-window-point nil)
+  (switch-to-buffer-obey-display-actions nil))
+(defun hoagie-quit-side-windows ()
+  "Quit side windows of the current frame."
+  (interactive)
+  (dolist (window (window-at-side-list))
+    (quit-window nil window)))
+(define-key hoagie-keymap (kbd "0") #'hoagie-quit-side-windows)
 
 (use-package web-mode
   :mode
