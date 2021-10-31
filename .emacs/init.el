@@ -57,6 +57,7 @@
 ;; experimenting with new types of keybindings/entry keys for keymaps
 (global-set-key (kbd "<f6>") 'hoagie-keymap)
 (define-key key-translation-map (kbd "<f7>") (kbd "ESC")) ;; esc-map ~= alt
+(define-key key-translation-map (kbd "C-z") (kbd "ESC")) ;; esc-map ~= alt
 (global-set-key (kbd "<f8>") mode-specific-map)  ;; C-c
 
 (use-package company
