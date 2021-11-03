@@ -373,6 +373,12 @@
 (use-package git-timemachine
   :bind ("C-x M-G" . git-timemachine))
 
+(use-package grep
+  :ensure nil
+  :bind
+  (:map hoagie-keymap
+        ("G" . rgrep)))
+
 (use-package minions
   :config
   (minions-mode 1)
