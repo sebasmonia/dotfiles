@@ -305,7 +305,7 @@
   :custom
   (icomplete-hide-common-prefix nil)
   (icomplete-show-matches-on-no-input t)
-  (icomplete-prospects-height 10)
+  (icomplete-prospects-height 12)
   (icomplete-delay-completions-threshold 1000)
   (icomplete-max-delay-chars 1)
   ;; The following are minibuffer/C customizations
@@ -323,17 +323,13 @@
   (define-key hoagie-keymap (kbd "<menu>") #'execute-extended-command)
   (define-key hoagie-keymap (kbd "C-'") #'execute-extended-command)
   :config
-  (fido-mode t)
-  (icomplete-vertical-mode t) ;; new in Emacs 28
+  (fido-vertical-mode t)
   ;; Non-custom configuration:
   (setf icomplete-in-buffer t)
   :bind
   (:map icomplete-minibuffer-map
-        ("C-<return>" . icomplete-fido-exit) ;; when there's no exact match
         ("C-j" . icomplete-fido-exit) ;; from the IDO days...
-        ("<down>" . icomplete-forward-completions)
         ("C-n" . icomplete-forward-completions)
-        ("<up>" . icomplete-backward-completions)
         ("C-p" . icomplete-backward-completions)))
 
 (use-package isearch
@@ -475,8 +471,8 @@ Meant to be added to `occur-hook'."
 (use-package shr
   :ensure nil
   :custom
-  (shr-use-fonts nil)
-  (shr-use-colors nil)
+  (shr-use-fonts t)
+  (shr-use-colors t)
   (shr-bullet "• ")
   (shr-indentation 2)
   (shr-discard-aria-hidden t))
@@ -885,6 +881,11 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
   :config
   (load-theme 'modus-operandi t)
   (enable-theme 'modus-operandi))
+
+;; (use-package challenger-deep-theme
+;;   :ensure t
+;;   :config
+;;   (load-theme 'challenger-deep t))
 
 (use-package mood-line
   :demand t
