@@ -536,38 +536,6 @@ Meant to be added to `occur-hook'."
   (visible-mark-forward-max 2)
   (visible-mark-forward-faces '(visible-mark-forward-face1 visible-mark-forward-face2)))
 
-(use-package window
-  :ensure nil
-  :custom
-  (display-buffer-alist
-   '(;; show at bottom
-     ("\\(*shell.*\\|*xref.*\\|\\*Occur\\*\\|\\*deadgrep.*\\)"
-      (display-buffer-reuse-window display-buffer-in-side-window)
-      (window-height . 0.35)
-      (side . bottom)
-      (slot . 0))
-     ;; show at bottom - reuse if in another frame
-     ("\\*\\(Backtrace\\|Warnings\\|Environments .*\\|Builds .*\\|compilation\\|[Hh]elp\\|Messages\\|Flymake.*\\|eglot.*\\)\\*"
-      (display-buffer-reuse-window display-buffer-in-side-window)
-      (window-height . 0.35)
-      (reusable-frames . visible)
-      (side . bottom)
-      (slot . 0))
-     ;; show at bottom, in a slightly bigger side window
-     ("\\(magit\\|\\*info\\).*"
-      (display-buffer-reuse-window display-buffer-in-side-window)
-      (side . bottom)
-      (window-height . 0.4)
-      (slot . 0))))
-  (switch-to-buffer-preserve-window-point nil)
-  (switch-to-buffer-obey-display-actions nil))
-(defun hoagie-quit-side-windows ()
-  "Quit side windows of the current frame."
-  (interactive)
-  (dolist (window (window-at-side-list))
-    (quit-window nil window)))
-(define-key hoagie-keymap (kbd "0") #'hoagie-quit-side-windows)
-
 (use-package web-mode
   :mode
   (("\\.html$" . web-mode)
@@ -655,6 +623,11 @@ With ARG, do this that many times."
   ;; like flycheck's C-c ! l
   ("C-c !" . flymake-show-diagnostics-buffer)
   :custom
+  (display-line-numbers-current-absolute nil)
+  (display-line-numbers-major-tick 10)
+  (display-line-numbers-minor-tick 5)
+  (display-line-numbers-type 'relative)
+  (global-display-line-numbers-mode t)
   (recenter-positions '(1 middle -2)) ;; behaviour for C-l
   (comint-prompt-read-only t)
   (read-file-name-completion-ignore-case t) ;; useful in Linux
@@ -859,9 +832,9 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
     (push-mark-no-activate)))
 
 ;; manually setting the mark bindings
-(global-set-key (kbd "C-<return>") #'push-mark-no-activate)
-(global-set-key (kbd "M-<return>") #'pop-to-mark-push-if-first)
-(global-set-key (kbd "M-S-<return>") #'unpop-to-mark-command)
+(global-set-key (kbd "C-RET") #'push-mark-no-activate)
+(global-set-key (kbd "M-RET") #'pop-to-mark-push-if-first)
+(global-set-key (kbd "M-S-RET") #'unpop-to-mark-command)
 
 ;; Using advice instead of isearch-mode-end-hook, as the latter pushes mark first in search
 ;; destination, then in search start position.
