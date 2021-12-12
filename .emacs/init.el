@@ -435,7 +435,12 @@ By default, occur _limits the search to the region_ if it is active."
 Meant to be added to `occur-hook'."
     (cl-destructuring-bind (search-term _ (buffer-name &rest _)) occur-revert-arguments
       (rename-buffer (format "*Occur: %s %s*" search-term buffer-name) t)))
-  (add-hook 'occur-hook #'hoagie-rename-occur-buffer))
+  (add-hook 'occur-hook #'hoagie-rename-occur-buffer)
+  ;; from https://masteringemacs.org/article/removing-blank-lines-buffer
+  ;; NOTE: don't forget about C-x C-o
+  (defun hoagie-delete-empty-lines ()
+    (interactive)
+    (flush-lines "^\\s-*$" nil nil t)))
 
 (use-package rcirc
   :ensure nil
@@ -595,6 +600,15 @@ With ARG, do this that many times."
 With ARG, do this that many times."
     (interactive "p")
     (delete-word (- arg)))
+  ;; from https://demonastery.org/2013/04/emacs-narrow-to-region-indirect/
+  (defun narrow-to-region-indirect (start end)
+  "Restrict editing in this buffer to the current region, indirectly."
+  (interactive "r")
+  (deactivate-mark)
+  (let ((buf (clone-indirect-buffer nil nil)))
+    (with-current-buffer buf
+      (narrow-to-region start end))
+      (switch-to-buffer buf)))
   :bind
   ("<S-f1>" . (lambda () (interactive) (find-file user-init-file)))
   ("<f1>" . hoagie-go-home)
@@ -622,6 +636,7 @@ With ARG, do this that many times."
   ("M-l" . downcase-dwim)
   ;; like flycheck's C-c ! l
   ("C-c !" . flymake-show-diagnostics-buffer)
+  ("C-x n o" . narrow-to-region-indirect)
   :custom
   (display-line-numbers-current-absolute nil)
   (display-line-numbers-major-tick 10)
@@ -872,7 +887,9 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
                                                           (region-end))
                                              (- (region-end) (region-beginning)))
                                      'face 'mood-line-unimportant)))
-          (position (propertize " %p%%" 'face 'mood-line-unimportant)))
-    (list "%l:%c" position region-size))))
+          (narrowed (when (buffer-narrowed-p)
+                        "[N]"))
+          (position (propertize " %p%% " 'face 'mood-line-unimportant)))
+      (list "%l:%c" position region-size narrowed))))
 
 ;;; init.el ends here
