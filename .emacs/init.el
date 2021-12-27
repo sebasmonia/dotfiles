@@ -605,7 +605,7 @@ With ARG, do this that many times."
   "Restrict editing in this buffer to the current region, indirectly."
   (interactive "r")
   (deactivate-mark)
-  (let ((buf (clone-indirect-buffer nil nil)))
+  (let ((buf (clone-indirect-buffer nil t)))
     (with-current-buffer buf
       (narrow-to-region start end))
       (switch-to-buffer buf)))
@@ -636,7 +636,7 @@ With ARG, do this that many times."
   ("M-l" . downcase-dwim)
   ;; like flycheck's C-c ! l
   ("C-c !" . flymake-show-diagnostics-buffer)
-  ("C-x n o" . narrow-to-region-indirect)
+  ("C-x n i" . narrow-to-region-indirect)
   :custom
   (display-line-numbers-current-absolute nil)
   (display-line-numbers-major-tick 10)
