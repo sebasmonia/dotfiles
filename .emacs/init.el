@@ -1,8 +1,8 @@
-;; .emacs --- My dot emacs file
+;; .emacs --- My dot emacs file  -*- lexical-binding: t; -*-
 
 ;; Author: Sebastian Monia <smonia@outlook.com>
 ;; URL: https://github.com/sebasmonia/.emacs
-;; Version: 4
+;; Version: 4.1
 ;; Keywords: .emacs dotemacs
 
 ;; This file is not part of GNU Emacs.
@@ -16,6 +16,8 @@
 ;; Update 2020-06-14: Arbitrarily bumping the version number
 ;; Update 2021-09-02: Used https://www.manueluberti.eu/emacs/2021/09/01/package-report/
 ;;                    to remove some dead packages and things I didn't use that much.
+;; Update 2022-01-01: Make init file use lexical binding, update mark and point bindings.
+;;                    Bumping minor version (!) so 4.1 it is :)
 
 ;;; Code:
 
@@ -184,7 +186,7 @@
                       (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
   (defun add-d-to-ediff-mode-map ()
     "Add key 'd' for 'copy both to C' functionality in ediff."
-    (define-key ediff-mode-map "d" 'ediff-copy-both-to-C))
+    (define-key ediff-mode-map "d" #'ediff-copy-both-to-C))
   ;; TODO: after moving 100% to Linux, the will/need to use VC is gone. The code below is candidate
   ;; for deletion
   ;; One minor annoyance of using ediff with built-in vc was the window config being altered, so:
@@ -419,6 +421,12 @@
   (python-shell-interpreter "ipython")
   (python-shell-interpreter-args "--pprint --simple-prompt"))
 
+(use-package repeat
+  :ensure nil
+  :demand t
+  :config
+  (repeat-mode))
+
 (use-package replace
   :ensure nil
   :config
@@ -429,7 +437,7 @@ By default, occur _limits the search to the region_ if it is active."
     (if (use-region-p)
         (occur (buffer-substring-no-properties (region-beginning) (region-end)))
       (command-execute 'occur)))
-  (define-key hoagie-keymap (kbd "o") 'hoagie-occur-dwim)
+  (define-key hoagie-keymap (kbd "o") #'hoagie-occur-dwim)
   (defun hoagie-rename-occur-buffer ()
     "Renames the current buffer to *Occur: [term] [buffer]*.
 Meant to be added to `occur-hook'."
@@ -743,7 +751,7 @@ With ARG, do this that many times."
                                  (seconds-to-time
                                   (string-to-number to-convert)))
              millis)))
-(define-key hoagie-keymap (kbd "t") 'hoagie-convert-timestamp)
+(define-key hoagie-keymap (kbd "t") #'hoagie-convert-timestamp)
 
 ;; simplified version that restores stored window config and advices delete-other-windows
 ;; idea from https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
@@ -847,9 +855,24 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
     (push-mark-no-activate)))
 
 ;; manually setting the mark bindings
-(global-set-key (kbd "C-RET") #'push-mark-no-activate)
-(global-set-key (kbd "M-RET") #'pop-to-mark-push-if-first)
-(global-set-key (kbd "M-S-RET") #'unpop-to-mark-command)
+;; 2022-01-01: After one too many collisions with existing bindings (Powershell-mode in the past,
+;; org-mode, markdown mode) and considering this for quite some time, I am changing these bindings,
+;; which are an evolution of the ones recommended in Mickey Petersen's post, to something using
+;; my own keymap.
+(defvar mark-keymap (define-prefix-command 'mark-keymap) "Custom bindings to push the mark and cycle the mark ring.")
+;; My first use of repeat-maps!!!
+(defvar mark-keymap-repeat-map (make-sparse-keymap) "Repeat map for commands in `mark-keymap'.")
+;; I am using "l" and "r" rather than "n" and "p" thinking of help/info using the former to move navigate pages
+(define-key mark-keymap (kbd "m") #'push-mark-no-activate)
+(define-key mark-keymap (kbd "l") #'pop-to-mark-push-if-first)
+(define-key mark-keymap (kbd "r") #'unpop-to-mark-command)
+;; setup "repeat keys"" to navigate the mark ring
+(define-key mark-keymap-repeat-map "l" #'pop-to-mark-push-if-first)
+(define-key mark-keymap-repeat-map "r" #'unpop-to-mark-command)
+;; set the "repeat-map" symbol property
+(put 'pop-to-mark-push-if-first 'repeat-map 'mark-keymap-repeat-map)
+(put 'unpop-to-mark-command 'repeat-map 'mark-keymap-repeat-map)
+(define-key hoagie-keymap (kbd "m") #'mark-keymap)
 
 ;; Using advice instead of isearch-mode-end-hook, as the latter pushes mark first in search
 ;; destination, then in search start position.
