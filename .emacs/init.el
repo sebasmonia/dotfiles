@@ -59,39 +59,23 @@
 ;; experimenting with new types of keybindings/entry keys for keymaps
 (global-set-key (kbd "<f6>") 'hoagie-keymap)
 (define-key key-translation-map (kbd "<f7>") (kbd "ESC")) ;; esc-map ~= alt
+
 (define-key key-translation-map (kbd "C-z") (kbd "ESC")) ;; esc-map ~= alt
+(global-set-key (kbd "M-z") 'hoagie-keymap)
+
 (global-set-key (kbd "<f8>") mode-specific-map)  ;; C-c
 
-(use-package company
-  :bind
-  ("M-S-<SPC>" . company-complete-common)
-  (:map hoagie-keymap
-        ("<SPC>" . company-complete-common))
-  (:map company-active-map
-        ("C-<RET>" . company-abort)
-        ("[?\t]" . company-complete-selection)
-        ("C-n" . company-select-next)
-        ("C-p" . company-select-previous))
+(use-package corfu
+  :custom
+  (corfu-cycle t)
+  (corfu-auto t)
+  (corfu-auto-delay 0.01)
+  (corfu-auto-prefix 2)
+  (corfu-count 15)
+  (corfu-min-width 25)
+  (corfu--preview-current nil)
   :hook
-  (after-init-hook . global-company-mode)
-  :custom
-  (company-idle-delay 0.01)
-  (company-minimum-prefix-length 2)
-  (company-selection-wrap-around t))
-
-(use-package company-dabbrev
-  :after company
-  :ensure nil
-  :custom
-  (company-dabbrev-ignore-case nil)
-  (company-dabbrev-downcase nil))
-
-(use-package company-dabbrev-code
-  :after company
-  :ensure nil
-  :custom
-  (company-dabbrev-code-modes t)
-  (company-dabbrev-code-ignore-case nil))
+  (after-init-hook . corfu-global-mode))
 
 (use-package csharp-mode
   :mode "\\.cs$"
@@ -646,11 +630,6 @@ With ARG, do this that many times."
   ("C-c !" . flymake-show-diagnostics-buffer)
   ("C-x n i" . narrow-to-region-indirect)
   :custom
-  (display-line-numbers-current-absolute nil)
-  (display-line-numbers-major-tick 10)
-  (display-line-numbers-minor-tick 5)
-  (display-line-numbers-type 'relative)
-  (global-display-line-numbers-mode t)
   (recenter-positions '(1 middle -2)) ;; behaviour for C-l
   (comint-prompt-read-only t)
   (read-file-name-completion-ignore-case t) ;; useful in Linux
@@ -863,7 +842,7 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
 ;; My first use of repeat-maps!!!
 (defvar mark-keymap-repeat-map (make-sparse-keymap) "Repeat map for commands in `mark-keymap'.")
 ;; I am using "l" and "r" rather than "n" and "p" thinking of help/info using the former to move navigate pages
-(define-key mark-keymap (kbd "m") #'push-mark-no-activate)
+(define-key mark-keymap (kbd "SPC") #'push-mark-no-activate)
 (define-key mark-keymap (kbd "l") #'pop-to-mark-push-if-first)
 (define-key mark-keymap (kbd "r") #'unpop-to-mark-command)
 ;; setup "repeat keys"" to navigate the mark ring
@@ -872,7 +851,7 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
 ;; set the "repeat-map" symbol property
 (put 'pop-to-mark-push-if-first 'repeat-map 'mark-keymap-repeat-map)
 (put 'unpop-to-mark-command 'repeat-map 'mark-keymap-repeat-map)
-(define-key hoagie-keymap (kbd "m") #'mark-keymap)
+(define-key hoagie-keymap (kbd "SPC") #'mark-keymap)
 
 ;; Using advice instead of isearch-mode-end-hook, as the latter pushes mark first in search
 ;; destination, then in search start position.
