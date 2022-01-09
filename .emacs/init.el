@@ -65,17 +65,27 @@
 
 (global-set-key (kbd "<f8>") mode-specific-map)  ;; C-c
 
-(use-package corfu
-  :custom
-  (corfu-cycle t)
-  (corfu-auto t)
-  (corfu-auto-delay 0.01)
-  (corfu-auto-prefix 2)
-  (corfu-count 15)
-  (corfu-min-width 25)
-  (corfu--preview-current nil)
+(use-package company
   :hook
-  (after-init-hook . corfu-global-mode))
+  (after-init-hook . global-company-mode)
+  :custom
+  (company-idle-delay 0.01)
+  (company-minimum-prefix-length 2)
+  (company-selection-wrap-around t))
+
+(use-package company-dabbrev
+  :after company
+  :ensure nil
+  :custom
+  (company-dabbrev-ignore-case nil)
+  (company-dabbrev-downcase nil))
+
+(use-package company-dabbrev-code
+  :after company
+  :ensure nil
+  :custom
+  (company-dabbrev-code-modes t)
+  (company-dabbrev-code-ignore-case nil))
 
 (use-package csharp-mode
   :mode "\\.cs$"
