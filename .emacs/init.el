@@ -543,6 +543,45 @@ Meant to be added to `occur-hook'."
   (visible-mark-forward-max 2)
   (visible-mark-forward-faces '(visible-mark-forward-face1 visible-mark-forward-face2)))
 
+(use-package window
+  :ensure nil
+  :bind
+  ("<f9>" . window-toggle-side-windows)
+  (:map hoagie-keymap
+        ("0" . window-toggle-side-windows))
+  :custom
+  (display-buffer-alist
+   '(;; show at bottom
+     ("\\*\\(shell.*\\||Environments .*\\|Builds .*\\|compilation\\||Messages\\|Flymake.*\\|eglot.*\\)\\*"
+      (display-buffer-reuse-window display-buffer-in-side-window)
+      (window-height . 0.40)
+      (side . bottom)
+      (slot . 0))
+     ;; show in side window - left side
+     ("\\(*shell.*\\|*xref.*\\|\\*Occur\\*\\|\\*grep.*\\)"
+      (display-buffer-reuse-window display-buffer-in-side-window)
+      (window-width . 0.40)
+      (side . left))
+     ;; show to the right, in side window at 40% size
+     ("\\(magit\\|\\*info\\|\\*[Hh]elp\\).*"
+      (display-buffer-reuse-window display-buffer-in-side-window)
+      (side . right)
+      (window-width . 0.4))))
+  :config
+  ;; simplified version that restores stored window config and advices delete-other-windows
+  ;; idea from https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
+  (defvar hoagie-window-configuration nil "Last window configuration saved.")
+  (defun hoagie-restore-window-configuration ()
+    "Use `hoagie-window-configuration' to restore the window setup."
+    (interactive)
+    (when hoagie-window-configuration
+      (set-window-configuration hoagie-window-configuration)))
+  (define-key hoagie-keymap (kbd "1") #'hoagie-restore-window-configuration)
+  (defun hoagie-store-config (&rest _)
+    "Store the current window configuration in `hoagie-window-configuration'."
+    (setf hoagie-window-configuration (current-window-configuration)))
+  (advice-add 'delete-other-windows :before #'hoagie-store-config))
+
 (use-package web-mode
   :mode
   (("\\.html$" . web-mode)
@@ -741,20 +780,6 @@ With ARG, do this that many times."
                                   (string-to-number to-convert)))
              millis)))
 (define-key hoagie-keymap (kbd "t") #'hoagie-convert-timestamp)
-
-;; simplified version that restores stored window config and advices delete-other-windows
-;; idea from https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
-(defvar hoagie-window-configuration nil "Last window configuration saved.")
-(defun hoagie-restore-window-configuration ()
-  "Use `hoagie-window-configuration' to restore the window setup."
-  (interactive)
-  (when hoagie-window-configuration
-    (set-window-configuration hoagie-window-configuration)))
-(define-key hoagie-keymap (kbd "1") #'hoagie-restore-window-configuration)
-(defun hoagie-store-config (&rest _)
-  "Store the current window configuration in `hoagie-window-configuration'."
-  (setf hoagie-window-configuration (current-window-configuration)))
-(advice-add 'delete-other-windows :before #'hoagie-store-config)
 
 ;; Per-OS configuration
 (setf user-full-name "Sebastián Monía"
