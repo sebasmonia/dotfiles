@@ -465,6 +465,7 @@ Meant to be added to `occur-hook'."
   (savehist-additional-variables '(kill-ring
                                    search-ring
                                    regexp-search-ring))
+  (history-delete-duplicates t)
   :config
   (savehist-mode))
 
@@ -528,6 +529,15 @@ Meant to be added to `occur-hook'."
 (use-package terraform-mode
   :mode "\\.tf$")
 
+(use-package undo-tree
+  :custom
+  (undo-tree-visualizer-diff t)
+  :bind
+  ;; I have been using my own binding for dabbrev since _forever_, this is fine
+  ("M-/" . undo-tree-redo)
+  :config
+  (global-undo-tree-mode))
+
 (use-package visible-mark
   :demand t ;; has to be loaded, no command
   :config
@@ -563,7 +573,7 @@ Meant to be added to `occur-hook'."
       (window-width . 0.40)
       (side . left))
      ;; show to the right, in side window at 40% size
-     ("\\(magit\\|\\*info\\|\\*[Hh]elp\\).*"
+     ("\\(\\*info\\|\\*[Hh]elp\\).*"
       (display-buffer-reuse-window display-buffer-in-side-window)
       (side . right)
       (window-width . 0.4))))
