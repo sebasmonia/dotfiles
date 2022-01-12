@@ -432,12 +432,13 @@ By default, occur _limits the search to the region_ if it is active."
         (occur (buffer-substring-no-properties (region-beginning) (region-end)))
       (command-execute 'occur)))
   (define-key hoagie-keymap (kbd "o") #'hoagie-occur-dwim)
-  (defun hoagie-rename-occur-buffer ()
+  (defun hoagie-rename-and-select-occur-buffer ()
     "Renames the current buffer to *Occur: [term] [buffer]*.
 Meant to be added to `occur-hook'."
     (cl-destructuring-bind (search-term _ (buffer-name &rest _)) occur-revert-arguments
-      (rename-buffer (format "*Occur: %s %s*" search-term buffer-name) t)))
-  (add-hook 'occur-hook #'hoagie-rename-occur-buffer)
+      (pop-to-buffer
+       (rename-buffer (format "*Occur: %s %s*" search-term buffer-name) t))))
+  (add-hook 'occur-hook #'hoagie-rename-and-select-occur-buffer)
   ;; from https://masteringemacs.org/article/removing-blank-lines-buffer
   ;; NOTE: don't forget about C-x C-o
   (defun hoagie-delete-empty-lines ()
