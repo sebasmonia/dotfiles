@@ -561,23 +561,34 @@ Meant to be added to `occur-hook'."
         ("0" . window-toggle-side-windows))
   :custom
   (display-buffer-alist
-   '(;; show at bottom
-     ("\\*\\(shell.*\\||Environments .*\\|Builds .*\\|compilation\\||Messages\\|Flymake.*\\|eglot.*\\)\\*"
+   '((hoagie-right-side-window-p
       (display-buffer-reuse-window display-buffer-in-side-window)
-      (window-height . 0.40)
-      (side . bottom)
-      (slot . 0))
-     ;; show in side window - left side
-     ("\\(*shell.*\\|*xref.*\\|\\*Occur\\*\\|\\*grep.*\\)"
-      (display-buffer-reuse-window display-buffer-in-side-window)
-      (window-width . 0.40)
-      (side . left))
-     ;; show to the right, in side window at 40% size
-     ("\\(\\*info\\|\\*[Hh]elp\\).*"
-      (display-buffer-reuse-window display-buffer-in-side-window)
+      (window-width . 0.35)
       (side . right)
-      (window-width . 0.4))))
+      (slot . 0))
+     (hoagie-bottom-side-window-p
+      (display-buffer-reuse-window display-buffer-in-side-window)
+      (window-height . 0.35)
+      (side . bottom)
+      (slot . 0))))
   :config
+  (defun hoagie-right-side-window-p (buffer-name _action)
+    "Determines if BUFFER-NAME is one that should be displayed in the right side window."
+    (let ((names '("shell" "compilation" "messages" "flymake" "info" "help" "vc-dir"))
+          (modes '(dired-mode)))
+      (or (cl-some (lambda (a-name) (string-match-p (regexp-quote a-name) buffer-name)) names)
+          (with-current-buffer buffer-name
+            (apply #'derived-mode-p modes)))))
+  (defun hoagie-bottom-side-window-p (buffer-name _action)
+    "Determines if BUFFER-NAME is one that should be displayed in the bottom side window."
+    (let ((names '("shell" "compilation" "messages" "flymake" "xref" "occur" "grep" "backtrace"
+                   "magit" "commit_msg"))
+          (modes nil))
+      (or (cl-some (lambda (a-name) (string-match-p (regexp-quote a-name) buffer-name)) names)
+          (with-current-buffer buffer-name
+            (apply #'derived-mode-p modes)))))
+  ;; sometimes I really want to make that side window the only window in the frame, so:
+  (setf ignore-window-parameters t)
   ;; simplified version that restores stored window config and advices delete-other-windows
   ;; idea from https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
   (defvar hoagie-window-configuration nil "Last window configuration saved.")
