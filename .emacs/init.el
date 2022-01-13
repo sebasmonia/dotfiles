@@ -561,10 +561,12 @@ Meant to be added to `occur-hook'."
   (:map hoagie-keymap
         ("0" . window-toggle-side-windows))
   :custom
+  (window-sides-vertical t)
   (display-buffer-alist
+   ;; there's potential to add one slot in the right side window
    '((hoagie-right-side-window-p
       (display-buffer-reuse-window display-buffer-in-side-window)
-      (window-width . 0.35)
+      (window-width . 0.40)
       (side . right)
       (slot . 0))
      (hoagie-bottom-side-window-p
@@ -575,34 +577,28 @@ Meant to be added to `occur-hook'."
   :config
   (defun hoagie-right-side-window-p (buffer-name _action)
     "Determines if BUFFER-NAME is one that should be displayed in the right side window."
-    (let ((names '("shell" "compilation" "messages" "flymake" "info" "help" "vc-dir"))
+    (let ((names '("info" "help" "vc-dir"))
           (modes '(dired-mode)))
       (or (cl-some (lambda (a-name) (string-match-p (regexp-quote a-name) buffer-name)) names)
           (with-current-buffer buffer-name
             (apply #'derived-mode-p modes)))))
   (defun hoagie-bottom-side-window-p (buffer-name _action)
     "Determines if BUFFER-NAME is one that should be displayed in the bottom side window."
-    (let ((names '("shell" "compilation" "messages" "flymake" "xref" "occur" "grep" "backtrace"
-                   "magit" "commit_msg"))
-          (modes nil))
+    (let ((names '("shell" "compilation" "messages" "flymake" "xref" "grep" "backtrace"
+                   "magit"))
+          (modes '(occur-mode)))
       (or (cl-some (lambda (a-name) (string-match-p (regexp-quote a-name) buffer-name)) names)
           (with-current-buffer buffer-name
             (apply #'derived-mode-p modes)))))
   ;; sometimes I really want to make that side window the only window in the frame, so:
-  (setf ignore-window-parameters t)
-  ;; simplified version that restores stored window config and advices delete-other-windows
-  ;; idea from https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
-  (defvar hoagie-window-configuration nil "Last window configuration saved.")
-  (defun hoagie-restore-window-configuration ()
-    "Use `hoagie-window-configuration' to restore the window setup."
+  (defun hoagie-focus-on-side-window ()
+    "More or less like `delete-other-windows', but to \"promote\" a side window.
+Ignoring window parameters has unhappy consequences, hence this function."
     (interactive)
-    (when hoagie-window-configuration
-      (set-window-configuration hoagie-window-configuration)))
-  (define-key hoagie-keymap (kbd "1") #'hoagie-restore-window-configuration)
-  (defun hoagie-store-config (&rest _)
-    "Store the current window configuration in `hoagie-window-configuration'."
-    (setf hoagie-window-configuration (current-window-configuration)))
-  (advice-add 'delete-other-windows :before #'hoagie-store-config))
+    (let ((display-buffer-alist nil))
+      (pop-to-buffer (buffer-name) t)
+      (delete-other-windows)))
+  (define-key hoagie-keymap (kbd "1") #'hoagie-focus-on-side-window))
 
 (use-package web-mode
   :mode
