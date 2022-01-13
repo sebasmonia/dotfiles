@@ -119,8 +119,7 @@
   ("<C-f1>" . 'hoagie-kill-buffer-filename)
   (:map hoagie-keymap
         (("F" . find-name-dired)
-         ("j" . hoagie-dired-jump-other-window)
-         ("J" . dired-jump)))
+         ("j" . dired-jump)))
   (:map dired-mode-map
         ("C-<return>" . dired-open-file))
   :config
@@ -129,9 +128,6 @@
     "Call xdg-open on the file at point."
     (interactive)
     (call-process "xdg-open" nil 0 nil (dired-get-filename nil t)))
-  (defun hoagie-dired-jump-other-window ()
-    (interactive)
-    (dired-jump t))
   (defun hoagie-kill-buffer-filename ()
     "Sends the current buffer's filename to the kill ring."
     (interactive)
@@ -239,17 +235,17 @@
     (list (or (car args) "")))
   (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch))
 
-(use-package eldoc-box
-  :hook
-  (prog-mode-hook . eldoc-box-hover-mode)
-  (comint-mode-hook . eldoc-box-hover-mode)
-  :custom
-  (eldoc-box-max-pixel-width 1024)
-  (eldoc-box-max-pixel-height 768)
-  (eldoc-idle-delay 0.1)
-  :config
-  ;; set the child frame face as 1.0 relative to the default font
-  (set-face-attribute 'eldoc-box-body nil :inherit 'default :height 1.0))
+;; (use-package eldoc-box
+;;   :hook
+;;   (prog-mode-hook . eldoc-box-hover-mode)
+;;   (comint-mode-hook . eldoc-box-hover-mode)
+;;   :custom
+;;   (eldoc-box-max-pixel-width 1024)
+;;   (eldoc-box-max-pixel-height 768)
+;;   (eldoc-idle-delay 0.1)
+;;   :config
+;;   ;; set the child frame face as 1.0 relative to the default font
+;;   (set-face-attribute 'eldoc-box-body nil :inherit 'default :height 1.0))
 
 (use-package elec-pair
   :ensure nil
@@ -563,22 +559,33 @@ Meant to be added to `occur-hook'."
   :custom
   (window-sides-vertical t)
   (display-buffer-alist
-   ;; there's potential to add one slot in the right side window
-   '((hoagie-right-side-window-p
+   '((hoagie-right-top-side-window-p
       (display-buffer-reuse-window display-buffer-in-side-window)
       (window-width . 0.40)
       (side . right)
-      (slot . 0))
+      (slot . -1))
+     (hoagie-right-bottom-side-window-p
+      (display-buffer-reuse-window display-buffer-in-side-window)
+      (window-width . 0.40)
+      (side . right)
+      (slot . 1))
      (hoagie-bottom-side-window-p
       (display-buffer-reuse-window display-buffer-in-side-window)
       (window-height . 0.35)
       (side . bottom)
       (slot . 0))))
   :config
-  (defun hoagie-right-side-window-p (buffer-name _action)
+  (defun hoagie-right-top-side-window-p (buffer-name _action)
     "Determines if BUFFER-NAME is one that should be displayed in the right side window."
     (let ((names '("info" "help" "vc-dir"))
           (modes '(dired-mode)))
+      (or (cl-some (lambda (a-name) (string-match-p (regexp-quote a-name) buffer-name)) names)
+          (with-current-buffer buffer-name
+            (apply #'derived-mode-p modes)))))
+  (defun hoagie-right-bottom-side-window-p (buffer-name _action)
+    "Determines if BUFFER-NAME is one that should be displayed in the right side window."
+    (let ((names '("vc-git"))
+          (modes nil))
       (or (cl-some (lambda (a-name) (string-match-p (regexp-quote a-name) buffer-name)) names)
           (with-current-buffer buffer-name
             (apply #'derived-mode-p modes)))))
@@ -839,8 +846,9 @@ With ARG, do this that many times."
       (when (eq (length (display-monitor-attributes-list)) 1)
         (setf size 120))
       (set-face-attribute 'default (selected-frame) :height size)
-      (set-face-font 'eldoc-box-body
-                     (frame-parameter nil 'font))))
+      ))
+      ;; (set-face-font 'eldoc-box-body
+      ;;                (frame-parameter nil 'font))))
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
 
 ;; MARK PUSH AND POP - maybe I should make a package out of this
