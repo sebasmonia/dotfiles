@@ -552,7 +552,17 @@ Meant to be added to `occur-hook'."
   ;; I have been using my own binding for dabbrev since _forever_, this is fine
   ("M-/" . undo-tree-redo)
   :config
-  (global-undo-tree-mode))
+  (global-undo-tree-mode)
+  (defvar undoredo-keymap-repeat-map (make-sparse-keymap) "Repeat map for undo/redo")
+  ;; setup "repeat keys"" to undo & redo
+  (define-key undoredo-keymap-repeat-map (kbd "/") #'undo-tree-undo)
+  ;; add shift to redo
+  (define-key undoredo-keymap-repeat-map (kbd "?") #'undo-tree-redo)
+  ;; use space to jump to the undo tree
+  (define-key undoredo-keymap-repeat-map (kbd "SPC") #'undo-tree-visualize)
+  ;; set the "repeat-map" symbol property
+  (put 'undo-tree-undo 'repeat-map 'undoredo-keymap-repeat-map)
+  (put 'undo-tree-redo 'repeat-map 'undoredo-keymap-repeat-map))
 
 (use-package visible-mark
   :demand t ;; has to be loaded, no command
@@ -588,6 +598,12 @@ Meant to be added to `occur-hook'."
       (window-width . 0.40)
       (side . right)
       (slot . 1))
+     ;; very particular rule for committing files with vc-git
+     ("\\*log-edit-files\\*"
+      (display-buffer-reuse-window display-buffer-in-side-window)
+      (window-width . 0.40)
+      (side . right)
+      (slot . 2))
      (hoagie-bottom-side-window-p
       (display-buffer-reuse-window display-buffer-in-side-window)
       (window-height . 0.35)
@@ -596,7 +612,7 @@ Meant to be added to `occur-hook'."
   :config
   (defun hoagie-right-top-side-window-p (buffer-name _action)
     "Determines if BUFFER-NAME is one that should be displayed in the right side window."
-    (let ((names '("info" "help" "*vc-dir"))
+    (let ((names '("info" "help" "*vc-dir" "*undo-tree*"))
           (modes '(dired-mode)))
       (or (cl-some (lambda (a-name) (string-match-p (regexp-quote a-name) buffer-name)) names)
           (with-current-buffer buffer-name
@@ -604,7 +620,7 @@ Meant to be added to `occur-hook'."
   (defun hoagie-right-bottom-side-window-p (buffer-name _action)
     "Determines if BUFFER-NAME is one that should be displayed in the right side window."
     ;; Note that *vc- will not include "*vc-dir*" because it is matched in the top side window (and that function runs first)
-    (let ((names '("*vc-"))
+    (let ((names '("*vc-" "*undo-tree diff"))
           (modes nil))
       (or (cl-some (lambda (a-name) (string-match-p (regexp-quote a-name) buffer-name)) names)
           (with-current-buffer buffer-name
