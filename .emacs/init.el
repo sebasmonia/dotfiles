@@ -68,9 +68,13 @@
 (use-package company
   :hook
   (after-init-hook . global-company-mode)
+  :bind
+  ("<tab>" . company-indent-or-complete-common)
+  (:map company-active-map
+        ("C-<RET>" . company-abort)
+        ("<tab>" . company-complete-selection))
   :custom
-  (company-idle-delay 0.01)
-  (company-minimum-prefix-length 2)
+  (company-idle-delay nil)
   (company-selection-wrap-around t))
 
 (use-package company-dabbrev
@@ -302,9 +306,7 @@
   (icomplete-max-delay-chars 1)
   ;; The following are minibuffer/C customizations
   ;; but it makes sense to have them here:
-  (completion-styles '(substring partial-completion))
-  ;; I usually don't like the flex completion style, by default eglot uses it
-  (completion-category-overrides '((eglot (styles substring partial-completion) (cycle . t))))
+  (completion-styles '(flex))
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
@@ -527,6 +529,7 @@ Meant to be added to `occur-hook'."
   :mode "\\.tf$")
 
 (use-package undo-tree
+  :demand t
   :custom
   (undo-tree-visualizer-diff t)
   :bind
@@ -584,7 +587,8 @@ Meant to be added to `occur-hook'."
             (apply #'derived-mode-p modes)))))
   (defun hoagie-right-bottom-side-window-p (buffer-name _action)
     "Determines if BUFFER-NAME is one that should be displayed in the right side window."
-    (let ((names '("vc-git"))
+    ;; Note that vc-.* will not include "vc-dir" because it is matched in the top side window (that function runs first)
+    (let ((names '("vc-"))
           (modes nil))
       (or (cl-some (lambda (a-name) (string-match-p (regexp-quote a-name) buffer-name)) names)
           (with-current-buffer buffer-name
