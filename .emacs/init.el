@@ -69,7 +69,7 @@
   :hook
   (after-init-hook . global-company-mode)
   :bind
-  ("<tab>" . company-indent-or-complete-common)
+  ("C-<tab>" . company-indent-or-complete-common)
   (:map company-active-map
         ("C-<RET>" . company-abort)
         ("<tab>" . company-complete-selection))
@@ -343,16 +343,26 @@
 (use-package json-mode
   :mode "\\.json$")
 
-(with-eval-after-load "vc-hooks"
-  (define-key vc-prefix-map "=" 'vc-ediff))
-(with-eval-after-load "vc-dir"
-  (define-key vc-dir-mode-map "=" 'vc-ediff)
-  (define-key vc-dir-mode-map "k" 'vc-revert))
+
 (defun hoagie-try-vc-here-and-there ()
   "Open `vc-dir' for the root of the current project."
   (interactive)
   (vc-dir (project-root (project-current))))
 (global-set-key (kbd "C-x t") #'hoagie-try-vc-here-and-there)
+(defun hoagie-vc-git-fetch-all ()
+  "Run \"git fetch --all\" in the current repo.
+No validations, so better be in a git repo when calling this :)."
+  (interactive)
+  (vc-git-command nil 0 nil "fetch" "--all")
+  (message "Completed \"fetch --all\" for current repo."))
+(with-eval-after-load "vc-hooks"
+  ;; default is vc-dir-find-file, but I always use project-find-file
+  (define-key vc-prefix-map "f" #'hoagie-vc-git-fetch-all)
+  (define-key vc-prefix-map "e" #'vc-ediff))
+(with-eval-after-load "vc-dir"
+  (define-key vc-dir-mode-map "f" #'hoagie-vc-git-fetch-all)
+  (define-key vc-dir-mode-map "e" #'vc-ediff)
+  (define-key vc-dir-mode-map "k" #'vc-revert))
 (use-package magit
   :init
   :bind
@@ -580,15 +590,15 @@ Meant to be added to `occur-hook'."
   :config
   (defun hoagie-right-top-side-window-p (buffer-name _action)
     "Determines if BUFFER-NAME is one that should be displayed in the right side window."
-    (let ((names '("info" "help" "vc-dir"))
+    (let ((names '("info" "help" "*vc-dir"))
           (modes '(dired-mode)))
       (or (cl-some (lambda (a-name) (string-match-p (regexp-quote a-name) buffer-name)) names)
           (with-current-buffer buffer-name
             (apply #'derived-mode-p modes)))))
   (defun hoagie-right-bottom-side-window-p (buffer-name _action)
     "Determines if BUFFER-NAME is one that should be displayed in the right side window."
-    ;; Note that vc-.* will not include "vc-dir" because it is matched in the top side window (that function runs first)
-    (let ((names '("vc-"))
+    ;; Note that *vc- will not include "*vc-dir*" because it is matched in the top side window (and that function runs first)
+    (let ((names '("*vc-"))
           (modes nil))
       (or (cl-some (lambda (a-name) (string-match-p (regexp-quote a-name) buffer-name)) names)
           (with-current-buffer buffer-name
