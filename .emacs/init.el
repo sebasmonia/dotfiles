@@ -374,6 +374,7 @@ branch remains local-only."
     (when (y-or-n-p (format "Set the upstream of %s to origin?" current-branch))
       (vc-git-command nil 0 nil "push" "--set-upstream" "origin" current-branch)
       (message "Upstream of %s is now ORIGIN." current-branch))))
+
 (with-eval-after-load "vc-hooks"
   ;; default is vc-dir-find-file, but I always use project-find-file
   (define-key vc-prefix-map "f" #'hoagie-vc-git-fetch-all)
@@ -766,7 +767,7 @@ With ARG, do this that many times."
   ("M-u" . upcase-dwim)
   ("M-l" . downcase-dwim)
   ;; like flycheck's C-c ! l
-  ("C-c !" . flymake-show-diagnostics-buffer)
+  ("C-c !" . flymake-show-buffer-diagnostics)
   ("C-x n i" . narrow-to-region-indirect)
   :custom
   (recenter-positions '(1 middle -2)) ;; behaviour for C-l
@@ -971,8 +972,8 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
 (define-key mark-keymap (kbd "l") #'pop-to-mark-push-if-first)
 (define-key mark-keymap (kbd "r") #'unpop-to-mark-command)
 ;; setup "repeat keys"" to navigate the mark ring
-(define-key mark-keymap-repeat-map "l" #'pop-to-mark-push-if-first)
-(define-key mark-keymap-repeat-map "r" #'unpop-to-mark-command)
+(define-key mark-keymap-repeat-map (kbd "l") #'pop-to-mark-push-if-first)
+(define-key mark-keymap-repeat-map (kbd "r") #'unpop-to-mark-command)
 ;; set the "repeat-map" symbol property
 (put 'pop-to-mark-push-if-first 'repeat-map 'mark-keymap-repeat-map)
 (put 'unpop-to-mark-command 'repeat-map 'mark-keymap-repeat-map)
