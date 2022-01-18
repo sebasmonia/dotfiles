@@ -600,6 +600,8 @@ Meant to be added to `occur-hook'."
 (use-package window
   :ensure nil
   :bind
+  ;; this binding is a complement of <f6> 1 and <f6> ! to toggle
+  ;; focusing on a single side window
   ("<f9>" . window-toggle-side-windows)
   (:map hoagie-keymap
         ("0" . window-toggle-side-windows))
@@ -651,15 +653,24 @@ Meant to be added to `occur-hook'."
       (or (cl-some (lambda (a-name) (string-match-p (regexp-quote a-name) buffer-name)) names)
           (with-current-buffer buffer-name
             (apply #'derived-mode-p modes)))))
-  ;; sometimes I really want to make that side window the only window in the frame, so:
-  (defun hoagie-focus-on-side-window ()
+  ;; sometimes I really want to make that side window the only window in the frame, but it usually
+  ;; is a temporary thing, using my old "store window config" code, which was a simplified version
+  ;; of https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
+  (defvar hoagie-pre-focus-window-configuration nil "Window config before calling `hoagie-focus-side-window'.")
+  (defun hoagie-focus-side-window ()
     "More or less like `delete-other-windows', but to \"promote\" a side window.
 Ignoring window parameters has unhappy consequences, hence this function."
     (interactive)
+    (setf hoagie-pre-focus-window-configuration (current-window-configuration))
     (let ((display-buffer-alist nil))
       (pop-to-buffer (buffer-name) t)
       (delete-other-windows)))
-  (define-key hoagie-keymap (kbd "1") #'hoagie-focus-on-side-window))
+  (define-key hoagie-keymap (kbd "1") #'hoagie-focus-on-side-window)
+  (defun hoagie-undo-focus-side-window ()
+    "Use `hoagie-pre-focus-window-configuration' to restore the window setup to before calling `hoagie-focus-side-window'."
+    (interactive)
+    (set-window-configuration hoagie-pre-focus-window-configuration))
+  (define-key hoagie-keymap (kbd "!") #'hoagie-undo-focus-side-window))
 
 (use-package web-mode
   :mode
