@@ -74,7 +74,8 @@
         ("C-<RET>" . company-abort)
         ("<tab>" . company-complete-selection))
   :custom
-  (company-idle-delay nil)
+  (company-idle-delay 0.1)
+  (company-minimum-prefix-length 2)
   (company-selection-wrap-around t))
 
 (use-package company-dabbrev
@@ -239,17 +240,17 @@
     (list (or (car args) "")))
   (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch))
 
-;; (use-package eldoc-box
-;;   :hook
-;;   (prog-mode-hook . eldoc-box-hover-mode)
-;;   (comint-mode-hook . eldoc-box-hover-mode)
-;;   :custom
-;;   (eldoc-box-max-pixel-width 1024)
-;;   (eldoc-box-max-pixel-height 768)
-;;   (eldoc-idle-delay 0.1)
-;;   :config
-;;   ;; set the child frame face as 1.0 relative to the default font
-;;   (set-face-attribute 'eldoc-box-body nil :inherit 'default :height 1.0))
+(use-package eldoc-box
+  :hook
+  (prog-mode-hook . eldoc-box-hover-mode)
+  (comint-mode-hook . eldoc-box-hover-mode)
+  :custom
+  (eldoc-box-max-pixel-width 1024)
+  (eldoc-box-max-pixel-height 768)
+  (eldoc-idle-delay 0.1)
+  :config
+  ;; set the child frame face as 1.0 relative to the default font
+  (set-face-attribute 'eldoc-box-body nil :inherit 'default :height 1.0))
 
 (use-package elec-pair
   :ensure nil
@@ -349,23 +350,40 @@
   (vc-dir (project-root (project-current))))
 ;; taking over the usual Magit binding for vc-dir
 (global-set-key (kbd "C-x g") #'hoagie-try-vc-here-and-there)
+
 (defun hoagie-vc-git-fetch-all ()
   "Run \"git fetch --all\" in the current repo.
 No validations, so better be in a git repo when calling this :)."
   (interactive)
   (vc-git-command nil 0 nil "fetch" "--all")
   (message "Completed \"fetch --all\" for current repo."))
+
 (defun hoagie-vc-git-clone ()
   "Run \"git clone\" in the current directory."
   (interactive)
   (vc-git-command nil 0 nil "clone" (read-string "Repository URL: "))
   (message "Repository cloned!"))
+
+(defun hoagie-vc-git-current-branch-upstream-origin ()
+  "Set the upstream of the current git branch to \"origin\".
+This is meant to be called after creating a new branch with `vc-create-tag' (do
+not forget the prefix arg, else you get a new TAG not BRANCH). Else the new
+branch remains local-only."
+  (interactive)
+  (let ((current-branch (car (vc-git-branches))))
+    (when (y-or-n-p (format "Set the upstream of %s to origin?" current-branch))
+      (vc-git-command nil 0 nil "push" "--set-upstream" "origin" current-branch)
+      (message "Upstream of %s is now ORIGIN." current-branch))))
 (with-eval-after-load "vc-hooks"
   ;; default is vc-dir-find-file, but I always use project-find-file
   (define-key vc-prefix-map "f" #'hoagie-vc-git-fetch-all)
+  ;; o for "origin"
+  (define-key vc-prefix-map (kbd "o") #'hoagie-vc-git-current-branch-upstream-origin)
   (define-key vc-prefix-map "e" #'vc-ediff))
 (with-eval-after-load "vc-dir"
   (define-key vc-dir-mode-map "f" #'hoagie-vc-git-fetch-all)
+  ;; default is vc-dir-find-file-other-window, but I use project-find-file
+  (define-key vc-dir-mode-map "o" #'hoagie-vc-git-current-branch-upstream-origin)
   (define-key vc-dir-mode-map "e" #'vc-ediff)
   (define-key vc-dir-mode-map "k" #'vc-revert))
 ;; Trying to use more integrated vc-mode, but leave Magit for the "power stuff"
@@ -882,9 +900,8 @@ With ARG, do this that many times."
       (when (eq (length (display-monitor-attributes-list)) 1)
         (setf size 120))
       (set-face-attribute 'default (selected-frame) :height size)
-      ))
-      ;; (set-face-font 'eldoc-box-body
-      ;;                (frame-parameter nil 'font))))
+      (set-face-font 'eldoc-box-body
+                     (frame-parameter nil 'font))))
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
 
 ;; MARK PUSH AND POP - maybe I should make a package out of this
