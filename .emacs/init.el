@@ -666,12 +666,14 @@ Meant to be added to `occur-hook'."
   (defvar hoagie-pre-focus-window-configuration nil "Window config before calling `hoagie-focus-side-window'.")
   (defun hoagie-focus-side-window ()
     "More or less like `delete-other-windows', but to \"promote\" a side window.
-Ignoring window parameters has unhappy consequences, hence this function."
+Ignoring window parameters has unhappy consequences, hence this function.
+Also, ignore this command if there's only one visible window...so I don't lose the window configuration on accident."
     (interactive)
-    (setf hoagie-pre-focus-window-configuration (current-window-configuration))
-    (let ((display-buffer-alist nil))
-      (pop-to-buffer (buffer-name) t)
-      (delete-other-windows)))
+    (unless (length= (window-list) 1)
+      (setf hoagie-pre-focus-window-configuration (current-window-configuration))
+      (let ((display-buffer-alist nil))
+        (pop-to-buffer (buffer-name) t)
+        (delete-other-windows))))
   (define-key hoagie-keymap (kbd "1") #'hoagie-focus-side-window)
   (defun hoagie-undo-focus-side-window ()
     "Use `hoagie-pre-focus-window-configuration' to restore the window setup to before calling `hoagie-focus-side-window'."
