@@ -65,6 +65,10 @@
 
 (global-set-key (kbd "<f8>") mode-specific-map)  ;; C-c
 
+(use-package browse-kill-ring
+  :config
+  (browse-kill-ring-default-keybindings))
+
 (use-package company
   :hook
   (after-init-hook . global-company-mode)
