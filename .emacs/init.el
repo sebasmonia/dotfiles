@@ -219,31 +219,6 @@
   (:map eww-mode-map
         ("C-c SPC" . eww-lnum-follow)))
 
-(use-package eglot
-  :commands (eglot eglot-ensure)
-  :hook
-  ((python-mode-hook . eglot-ensure)
-   (csharp-mode-hook . eglot-ensure)
-   (java-mode-hook . eglot-ensure))
-  :bind
-  (:map hoagie-keymap
-        (("e r" . eglot-rename)
-         ("e f" . eglot-format)
-         ("e h" . eldoc)))
-  (:map eglot-mode-map
-        (("C-c C-e r" . eglot-rename)
-         ("C-c C-e f" . eglot-format)
-         ("C-c C-e h" . eldoc)))
-  :config
-  ;; for Java LSP to work
-  (setenv "CLASSPATH" "$CLASSPATH:/var/home/hoagie/java_lsp_server/plugins/org.eclipse.equinox.launcher_1.6.300.v20210813-1054.jar" t)
-  (add-to-list 'eglot-server-programs
-               `(csharp-mode . ("/home/hoagie/.omnisharp/1.37.15/run" "-lsp")))
-  ;; patch the argument. when nil, use "" instead.
-  (defun eglot--format-markup-patch (args)
-    (list (or (car args) "")))
-  (advice-add 'eglot--format-markup :filter-args #'eglot--format-markup-patch))
-
 (use-package eldoc-box
   :hook
   (prog-mode-hook . eldoc-box-hover-mode)
@@ -350,49 +325,89 @@
 (use-package json-mode
   :mode "\\.json$")
 
-(defun hoagie-try-vc-here-and-there ()
-  "Open `vc-dir' for the root of the current project."
-  (interactive)
-  (vc-dir (project-root (project-current))))
-;; taking over the usual Magit binding for vc-dir
-(global-set-key (kbd "C-x g") #'hoagie-try-vc-here-and-there)
+(use-package lisp-mode
+  :ensure nil
+  :hook
+  (lisp-mode-hook . (lambda ()
+                      (setf fill-column 100)
+                      (display-fill-column-indicator-mode))))
 
-(defun hoagie-vc-git-fetch-all ()
-  "Run \"git fetch --all\" in the current repo.
-No validations, so better be in a git repo when calling this :)."
-  (interactive)
-  (vc-git-command nil 0 nil "fetch" "--all")
-  (message "Completed \"fetch --all\" for current repo."))
+(defvar hoagie-lsp-keymap (define-prefix-command 'hoagie-lsp-keymap) "Custom bindings for LSP mode.")
+(use-package lsp-mode
+  :hook
+  (python-mode-hook . lsp)
+  (csharp-mode-hook . lsp)
+  :commands
+  (lsp lsp-signature-active)
+  :bind
+  (:map hoagie-lsp-keymap
+        ("d" . lsp-find-declaration)
+        ("." . lsp-find-definition)
+        ("?" . lsp-find-references)
+        ("o" . lsp-signature-activate) ;; o for "overloads"
+        ("r" . lsp-rename))
+  (:map hoagie-keymap
+        ("l" . hoagie-lsp-keymap))
+  :custom
+  (lsp-keymap-prefix "C-c C-l")
+  (lsp-enable-snippet nil)
+  (lsp-enable-folding nil)
+  (lsp-lens-enable nil)
+  (lsp-headerline-breadcrumb-enable nil)
+  (lsp-auto-guess-root t)
+  (lsp-file-watch-threshold nil)
+  (lsp-eldoc-render-all t)
+  (lsp-signature-auto-activate nil)
+  (lsp-enable-symbol-highlighting nil)
+  (lsp-modeline-code-actions-enable nil))
 
-(defun hoagie-vc-git-clone ()
-  "Run \"git clone\" in the current directory."
-  (interactive)
-  (vc-git-command nil 0 nil "clone" (read-string "Repository URL: "))
-  (message "Repository cloned!"))
+(use-package lsp-ui
+  :commands lsp-ui-mode
+  :bind
+  (:map hoagie-lsp-keymap
+        ("i" . lsp-ui-imenu))
+  :custom
+  (lsp-ui-doc-enable nil)
+  (lsp-ui-doc-position 'top)
+  (lsp-ui-doc-use-childframe nil)
+  (lsp-ui-peek-enable nil)
+  (lsp-ui-sideline-enable nil))
 
-(defun hoagie-vc-git-current-branch-upstream-origin ()
-  "Set the upstream of the current git branch to \"origin\".
-This is meant to be called after creating a new branch with `vc-create-tag' (do
-not forget the prefix arg, else you get a new TAG not BRANCH). Else the new
-branch remains local-only."
-  (interactive)
-  (let ((current-branch (car (vc-git-branches))))
-    (when (y-or-n-p (format "Set the upstream of %s to origin?" current-branch))
-      (vc-git-command nil 0 nil "push" "--set-upstream" "origin" current-branch)
-      (message "Upstream of %s is now ORIGIN." current-branch))))
+;; (use-package dap-mode
+;;   :commands (dap-debug dap-breakpoints-add)
+;;   :init
+;;   (dap-mode 1)
+;;   (dap-ui-mode 1)
+;;   (dap-auto-configure-mode)
+;;   (require 'dap-python)
+;;   (require 'dap-pwsh)
+;;   (require 'dap-netcore)
+;;   (defvar hoagie-dap-run-keymap (define-prefix-command 'hoagie-dap-run-keymap))
+;;   (defvar hoagie-dap-bpoints-keymap (define-prefix-command 'hoagie-dap-bpoints-keymap))
+;;   (global-set-key (kbd "<f5>") hoagie-dap-run-keymap)
+;;   (global-set-key (kbd "<f9>") hoagie-dap-bpoints-keymap)
+;;   :bind
+;;   (:map hoagie-dap-run-keymap
+;;         ("<f5>" . dap-debug)
+;;         ("<f6>" . dap-next)
+;;         ("<f7>" . dap-step-in)
+;;         ("<f8>" . dap-step-out)
+;;         ("<f9>" . dap-continue)
+;;         ("<f1>" . dap-eval-thing-at-point)
+;;         ("C-<f1>" . dap-eval)
+;;         ("<f2>" . dap-ui-expressions)
+;;         ("C-<f2>" . dap-ui-expressions-add)
+;;         ("M-<f2>" . dap-ui-expressions-remove)
+;;         ("<f3>" . dap-ui-repl)
+;;         ("C-c" . dap-disconnect)) ;; "Stop"
+;;   (:map hoagie-dap-bpoints-keymap
+;;         ("<f10>" . dap-ui-breakpoints-list)
+;;         ("<f9>" . dap-breakpoint-toggle) ;; f9 twice -> toggle
+;;         ("<f11>" . dap-breakpoint-log-message)
+;;         ("<f12>" . dap-breakpoint-condition))
+;;   :custom
+;;   (dap-netcore-install-dir "/home/hoagie/.omnisharp/netcoredbg/1.2.0-825/"))
 
-(with-eval-after-load "vc-hooks"
-  ;; default is vc-dir-find-file, but I always use project-find-file
-  (define-key vc-prefix-map "f" #'hoagie-vc-git-fetch-all)
-  ;; o for "origin"
-  (define-key vc-prefix-map (kbd "o") #'hoagie-vc-git-current-branch-upstream-origin)
-  (define-key vc-prefix-map "e" #'vc-ediff))
-(with-eval-after-load "vc-dir"
-  (define-key vc-dir-mode-map "f" #'hoagie-vc-git-fetch-all)
-  ;; default is vc-dir-find-file-other-window, but I use project-find-file
-  (define-key vc-dir-mode-map "o" #'hoagie-vc-git-current-branch-upstream-origin)
-  (define-key vc-dir-mode-map "e" #'vc-ediff)
-  (define-key vc-dir-mode-map "k" #'vc-revert))
 ;; Trying to use more integrated vc-mode, but leave Magit for the "power stuff"
 (use-package magit
   :init
@@ -544,13 +559,6 @@ Meant to be added to `occur-hook'."
   :bind (:map hoagie-keymap
               ("`" . better-shell-for-current-dir)))
 
-(use-package lisp-mode
-  :ensure nil
-  :hook
-  (lisp-mode-hook . (lambda ()
-                      (setf fill-column 100)
-                      (display-fill-column-indicator-mode))))
-
 (use-package sly
   :commands sly
   :custom
@@ -589,15 +597,73 @@ Meant to be added to `occur-hook'."
   (put 'undo-tree-undo 'repeat-map 'undoredo-keymap-repeat-map)
   (put 'undo-tree-redo 'repeat-map 'undoredo-keymap-repeat-map))
 
+(use-package vc
+  :ensure nil
+  :demand t)
+
+(use-package vc-dir
+  :ensure nil
+  :after (vc project)
+  :init
+  (defun hoagie-try-vc-here-and-there ()
+    "Open `vc-dir' for the root of the current project."
+    (interactive)
+    (vc-dir (project-root (project-current))))
+  :bind
+  ;; taking over the usual Magit binding for vc-dir
+  ("C-x g" . #'hoagie-try-vc-here-and-there)
+  (:map vc-dir-mode-map
+        ("f" . hoagie-vc-git-fetch-all)
+        ;; vc-dir-find-file-other-window, but I use project-find-file instead
+        ("o" . hoagie-vc-git-current-branch-upstream-origin)
+        ("e" . vc-ediff)
+        ("k" . vc-revert)))
+
+(use-package vc-git
+  :ensure nil
+  :after vc
+  :bind
+  :config
+  (defun hoagie-vc-git-fetch-all ()
+    "Run \"git fetch --all\" in the current repo.
+No validations, so better be in a git repo when calling this :)."
+    (interactive)
+    (vc-git-command nil 0 nil "fetch" "--all")
+    (message "Completed \"fetch --all\" for current repo."))
+  (defun hoagie-vc-git-clone ()
+    "Run \"git clone\" in the current directory."
+    (interactive)
+    (vc-git-command nil 0 nil "clone" (read-string "Repository URL: "))
+    (message "Repository cloned!"))
+  (defun hoagie-vc-git-current-branch-upstream-origin ()
+    "Set the upstream of the current git branch to \"origin\".
+This is meant to be called after creating a new branch with `vc-create-tag' (do
+not forget the prefix arg, else you get a new TAG not BRANCH). Else the new
+branch remains local-only."
+    (interactive)
+    (let ((current-branch (car (vc-git-branches))))
+      (when (y-or-n-p (format "Set the upstream of %s to origin?" current-branch))
+        (vc-git-command nil 0 nil "push" "--set-upstream" "origin" current-branch)
+        (message "Upstream of %s is now ORIGIN." current-branch)))))
+
+(use-package vc-hooks
+  :ensure nil
+  :after (vc vc-git)
+  :bind
+  (:map vc-prefix-map
+        ("f" . hoagie-vc-git-fetch-all) ;; vc-dir-find-file, but I use project-find-file instead
+        ("o" . hoagie-vc-git-current-branch-upstream-origin)
+        ("e" . vc-ediff)))
+
 (use-package visible-mark
   :demand t ;; has to be loaded, no command
   :config
   (global-visible-mark-mode t)
   :custom-face
-  (visible-mark-face1 ((t (:background "tomato"))))
-  (visible-mark-face2 ((t (:background "gold"))))
-  (visible-mark-forward-face1 ((t (:background "sea green"))))
-  (visible-mark-forward-face2 ((t (:background "pale green"))))
+  (visible-mark-face1 ((t (:box "tomato"))))
+  (visible-mark-face2 ((t (:box "gold"))))
+  (visible-mark-forward-face1 ((t (:box "sea green"))))
+  (visible-mark-forward-face2 ((t (:box "pale green"))))
   :custom
   (visible-mark-max 2)
   (visible-mark-faces '(visible-mark-face1 visible-mark-face2))
@@ -807,8 +873,8 @@ With ARG, do this that many times."
   (kept-new-versions 5)   ; Keep 5 new versions
   (kept-old-versions 5)   ; Keep 3 old versions
   ;; Experimental - from LSP perf suggestions
-  (gc-cons-threshold 100000000)
-  (read-process-output-max (* 1024 1024))
+  ;; (gc-cons-threshold 100000000)
+  ;; (read-process-output-max (* 1024 1024))
   ;; from https://depp.brause.cc/dotemacs/
   (echo-keystrokes 0.25)
   :config
@@ -1016,7 +1082,7 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
   :init
   (mood-line-mode)
   (defun mood-line-segment-position ()
-    "Displays the current cursor position in the mode-line, with region size if applicable."
+    "Display the current cursor position in the mode-line, with region size if applicable."
     (let ((region-size (when (use-region-p)
                          (propertize (format " (%sL:%sC)"
                                              (count-lines (region-beginning)
