@@ -186,8 +186,6 @@
   (defun add-d-to-ediff-mode-map ()
     "Add key 'd' for 'copy both to C' functionality in ediff."
     (define-key ediff-mode-map "d" #'ediff-copy-both-to-C))
-  ;; TODO: after moving 100% to Linux, the will/need to use VC is gone. The code below is candidate
-  ;; for deletion
   ;; One minor annoyance of using ediff with built-in vc was the window config being altered, so:
   (defvar hoagie-pre-ediff-windows nil "Window configuration before starting ediff.")
   (defun hoagie-ediff-store-windows ()
@@ -198,7 +196,7 @@
     (set-window-configuration hoagie-pre-ediff-windows))
   (add-hook 'ediff-before-setup-hook #'hoagie-ediff-store-windows)
   ;; Welp, don't like using internals but, the regular hook doesn't quite work
-  ;; the window config is restore but them _stuff happens_, so:
+  ;; the window config is restored but them _stuff happens_, so:
   (add-hook 'ediff-after-quit-hook-internal #'hoagie-ediff-restore-windows))
 
 (use-package eww
@@ -311,6 +309,8 @@
 (use-package isearch
   :ensure nil
   :custom
+  (search-default-mode t)
+  (search-exit-option 'edit)
   (isearch-lazy-count t)
   (isearch-lazy-highlight 'all-windows)
   (lazy-highlight-initial-delay 0.1)
@@ -454,7 +454,6 @@
         ("g" . project-find-regexp)
         ("f" . project-find-file))
   :config
-  ;; (add-to-list 'project-switch-commands '(?m "Magit status" magit-status))
   (add-to-list 'project-switch-commands '(?s "Shell" project-shell)))
 
 (use-package python
@@ -477,6 +476,9 @@
 
 (use-package replace
   :ensure nil
+  :bind
+  (:map hoagie-keymap
+        ("o" . hoagie-occur-dwim))
   :config
   (defun hoagie-occur-dwim ()
     "Run occur, if there's a region selected use that as input.
@@ -485,19 +487,13 @@ By default, occur _limits the search to the region_ if it is active."
     (if (use-region-p)
         (occur (buffer-substring-no-properties (region-beginning) (region-end)))
       (command-execute 'occur)))
-  (define-key hoagie-keymap (kbd "o") #'hoagie-occur-dwim)
   (defun hoagie-rename-and-select-occur-buffer ()
     "Renames the current buffer to *Occur: [term] [buffer]*.
 Meant to be added to `occur-hook'."
     (cl-destructuring-bind (search-term _ (buffer-name &rest _)) occur-revert-arguments
       (pop-to-buffer
        (rename-buffer (format "*Occur: %s %s*" search-term buffer-name) t))))
-  (add-hook 'occur-hook #'hoagie-rename-and-select-occur-buffer)
-  ;; from https://masteringemacs.org/article/removing-blank-lines-buffer
-  ;; NOTE: don't forget about C-x C-o
-  (defun hoagie-delete-empty-lines ()
-    (interactive)
-    (flush-lines "^\\s-*$" nil nil t)))
+  (add-hook 'occur-hook #'hoagie-rename-and-select-occur-buffer))
 
 (use-package rcirc
   :ensure nil
@@ -603,15 +599,10 @@ Meant to be added to `occur-hook'."
 
 (use-package vc-dir
   :ensure nil
-  :after (vc project)
-  :init
-  (defun hoagie-try-vc-here-and-there ()
-    "Open `vc-dir' for the root of the current project."
-    (interactive)
-    (vc-dir (project-root (project-current))))
+  :after (vc project vc-git)
   :bind
   ;; taking over the usual Magit binding for vc-dir
-  ("C-x g" . #'hoagie-try-vc-here-and-there)
+  ("C-x g" . project-vc-dir)
   (:map vc-dir-mode-map
         ("f" . hoagie-vc-git-fetch-all)
         ;; vc-dir-find-file-other-window, but I use project-find-file instead
@@ -676,8 +667,6 @@ branch remains local-only."
   ;; this binding is a complement of <f6> 1 and <f6> ! to toggle
   ;; focusing on a single side window
   ("<f9>" . window-toggle-side-windows)
-  (:map hoagie-keymap
-        ("0" . window-toggle-side-windows))
   :custom
   (window-sides-vertical t)
   (display-buffer-alist
@@ -950,10 +939,10 @@ With ARG, do this that many times."
 (setf user-full-name "Sebastián Monía"
       user-mail-address "seb.hoagie@outlook.com")
 
-(when (string= system-type "windows-nt")
-  (global-set-key (kbd "M-`") #'other-frame) ;; Gnome-like frame switching in Windows
-  (load "c:/repos/miscscripts/workonlyconfig.el"))
-;; (load "/home/hoagie/repos/miscscripts/workonlyconfig.el")
+;; (when (string= system-type "windows-nt")
+;;   (global-set-key (kbd "M-`") #'other-frame) ;; Gnome-like frame switching in Windows
+;;   (load "c:/repos/miscscripts/workonlyconfig.el"))
+(load "/home/hoagie/repos/miscscripts/workonlyconfig.el")
 
 (when (string= system-type "gnu/linux")
   (defun find-alternative-file-with-sudo ()
