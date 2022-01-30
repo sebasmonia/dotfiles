@@ -196,7 +196,7 @@
     (set-window-configuration hoagie-pre-ediff-windows))
   (add-hook 'ediff-before-setup-hook #'hoagie-ediff-store-windows)
   ;; Welp, don't like using internals but, the regular hook doesn't quite work
-  ;; the window config is restored but them _stuff happens_, so:
+  ;; the window config is restored but then _stuff happens_, so:
   (add-hook 'ediff-after-quit-hook-internal #'hoagie-ediff-restore-windows))
 
 (use-package eww
@@ -329,6 +329,8 @@
   :ensure nil
   :hook
   (lisp-mode-hook . (lambda ()
+                      (set (make-local-variable lisp-indent-function)
+		           'common-lisp-indent-function)
                       (setf fill-column 100)
                       (display-fill-column-indicator-mode))))
 
