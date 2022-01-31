@@ -306,6 +306,13 @@
         ("C-n" . icomplete-forward-completions)
         ("C-p" . icomplete-backward-completions)))
 
+(use-package imenu
+  :ensure nil
+  :demand t
+  :bind
+  (:map hoagie-keymap
+        ("i" . imenu)))
+
 (use-package isearch
   :ensure nil
   :custom
@@ -365,20 +372,36 @@
 
 (use-package lsp-ui
   :custom
-  (lsp-ui-imenu-colors '("blue" "red"))
-  :bind
-  ;; this is really nice, and works with elisp/common lisp too
-  ;; so giving it slightly shorter binding
-  (:map hoagie-keymap
-        ("i" . lsp-ui-imenu))
-  (:map hoagie-lsp-keymap
-        ("i" . lsp-ui-imenu))
-  :custom
+  ;; matches "font-lock-builtin-face", "font-lock-keyword-face"
+  ;; and "font-lock-string-face" from the modus-vivendi theme
+  (lsp-ui-imenu-colors '("#8f0075" "#2544bb" "#5317ac"))
   (lsp-ui-doc-enable nil)
   (lsp-ui-doc-position 'top)
   (lsp-ui-doc-use-childframe nil)
   (lsp-ui-peek-enable nil)
-  (lsp-ui-sideline-enable nil))
+  (lsp-ui-sideline-enable nil)
+  :bind
+  (:map hoagie-keymap
+        ("C-i" . hoagie-lsp-ui-imenu))
+  (:map hoagie-lsp-keymap
+        ("i" . lsp-ui-imenu))
+  (:map lsp-ui-imenu-mode-map
+        ;; Use bindings that are closer to occur-mode...
+        ("n" . next-line)
+        ("p" . previous-line)
+        ("o" . lsp-ui-imenu--view)
+        ("g" . lsp-ui-imenu--refresh)
+        ("<return>" . lsp-ui-imenu--visit))
+  :config
+  (defun hoagie-lsp-ui-imenu ()
+    "Display `lsp-ui-menu' respecting `display-buffer-alist'.
+This code deletes the window just created, then calls `pop-to-buffer' with it
+so the display parameters kick in."
+    ;; this is very fickle, but it works, so :shrug:
+    (interactive)
+    (lsp-ui-imenu)
+    (delete-window)
+    (pop-to-buffer "*lsp-ui-imenu*")))
 
 ;; (use-package dap-mode
 ;;   :commands (dap-debug dap-breakpoints-add)
@@ -701,7 +724,7 @@ branch remains local-only."
   :config
   (defun hoagie-right-top-side-window-p (buffer-name _action)
     "Determines if BUFFER-NAME is one that should be displayed in the right side window."
-    (let ((names '("info" "help" "*vc-dir" "*undo-tree*"))
+    (let ((names '("info" "help" "*vc-dir" "*undo-tree*" "*lsp-ui-imenu*"))
           (modes '(dired-mode)))
       (or (cl-some (lambda (a-name) (string-match-p (regexp-quote a-name) buffer-name)) names)
           (with-current-buffer buffer-name
