@@ -362,8 +362,13 @@
   (lsp-modeline-code-actions-enable nil))
 
 (use-package lsp-ui
-  :commands lsp-ui-mode
+  :custom
+  (lsp-ui-imenu-colors '("blue" "red"))
   :bind
+  ;; this is really nice, and works with elisp/common lisp too
+  ;; so giving it slightly shorter binding
+  (:map hoagie-keymap
+        ("i" . lsp-ui-imenu))
   (:map hoagie-lsp-keymap
         ("i" . lsp-ui-imenu))
   :custom
