@@ -132,6 +132,7 @@
   (:map dired-mode-map
         ("C-<return>" . dired-open-file))
   :config
+  (add-hook 'dired-mode-hook 'dired-hide-details-mode)
   ;; from Emacs Wiki
   (defun dired-open-file ()
     "Call xdg-open on the file at point."
@@ -442,7 +443,7 @@ so the display parameters kick in."
 (use-package magit
   :init
   :bind
-  ("C-x C-g" . magit-status)
+  ("C-x G" . magit-status)
   :custom
   (magit-display-buffer-function 'display-buffer))
 
