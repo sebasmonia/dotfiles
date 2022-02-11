@@ -61,7 +61,6 @@
 (define-key key-translation-map (kbd "<f7>") (kbd "ESC")) ;; esc-map ~= alt
 
 (define-key key-translation-map (kbd "C-z") (kbd "ESC")) ;; esc-map ~= alt
-(global-set-key (kbd "M-z") 'hoagie-keymap)
 
 (global-set-key (kbd "<f8>") mode-specific-map)  ;; C-c
 
@@ -239,7 +238,10 @@
 
 (use-package expand-region
   :bind
-  ("M-<SPC>" . er/expand-region)
+  ;; I want to keep cycle-spacing in its default binding, so
+  ;; moving expand-region to C-c SPC which in turns moves it from
+  ;; F7 SPC to F8 SPC
+  ("C-c <SPC>" . er/expand-region)
   :config
   (er/enable-mode-expansions 'csharp-mode 'er/add-cc-mode-expansions))
 
@@ -473,6 +475,13 @@ so the display parameters kick in."
 (use-package package-lint
   :commands package-lint-current-buffer)
 
+(use-package paren
+  :ensure nil
+  :config
+  (show-paren-mode)
+  :custom
+  (show-paren-style 'mixed))
+
 (use-package proced
   :ensure nil
   :custom
@@ -486,6 +495,22 @@ so the display parameters kick in."
         ("f" . project-find-file))
   :config
   (add-to-list 'project-switch-commands '(?s "Shell" project-shell)))
+
+;; via https://karthinks.com/software/batteries-included-with-emacs/#pulse--pulse-dot-el
+(use-package pulse
+  :ensure nil
+  :custom
+  (pulse-delay 0.05)
+  (pulse-iterations 20)
+  :config
+  (defun pulse-line (&rest _)
+    "Pulse the current line."
+    (pulse-momentary-highlight-one-line (point)))
+                   ;; blog post commands
+  (dolist (command '(scroll-up-command scroll-down-command recenter-top-bottom other-window
+                   ;; my extras
+                   push-mark-no-activate pop-to-mark-push-if-first unpop-to-mark-command))
+    (advice-add command :after #'pulse-line)))
 
 (use-package python
   :ensure nil
@@ -567,13 +592,6 @@ Meant to be added to `occur-hook'."
   (shr-indentation 2)
   (shr-discard-aria-hidden t))
 
-(use-package paren
-  :ensure nil
-  :config
-  (show-paren-mode)
-  :custom
-  (show-paren-style 'mixed))
-
 (use-package shell
   :ensure nil
   :hook
@@ -589,7 +607,7 @@ Meant to be added to `occur-hook'."
 (use-package sly
   :commands sly
   :custom
-  (inferior-lisp-program "sbcl --dynamic-space-size 4096"))
+  (inferior-lisp-program "sbcl --dynamic-space-size 10240"))
 
 (use-package sly-quicklisp
   :after sly)
@@ -725,7 +743,7 @@ branch remains local-only."
   :config
   (defun hoagie-right-top-side-window-p (buffer-name _action)
     "Determines if BUFFER-NAME is one that should be displayed in the right side window."
-    (let ((names '("info" "help" "*vc-dir" "*undo-tree*" "*lsp-ui-imenu*"))
+    (let ((names '("info" "help" "*vc-dir" "*lsp-ui-imenu*"))
           (modes '(dired-mode)))
       (or (cl-some (lambda (a-name) (string-match-p (regexp-quote a-name) buffer-name)) names)
           (with-current-buffer buffer-name
@@ -733,7 +751,7 @@ branch remains local-only."
   (defun hoagie-right-bottom-side-window-p (buffer-name _action)
     "Determines if BUFFER-NAME is one that should be displayed in the right side window."
     ;; Note that *vc- will not include "*vc-dir*" because it is matched in the top side window (and that function runs first)
-    (let ((names '("*vc-" "*undo-tree diff"))
+    (let ((names '("*vc-"))
           (modes nil))
       (or (cl-some (lambda (a-name) (string-match-p (regexp-quote a-name) buffer-name)) names)
           (with-current-buffer buffer-name
@@ -852,6 +870,8 @@ With ARG, do this that many times."
   ("M-O" . other-frame)
   ("M-N" . next-buffer)
   ("M-P" . previous-buffer)
+  ;; from https://karthinks.com/software/batteries-included-with-emacs/#cycle-spacing--m-spc
+  ("M-SPC" . cycle-spacing)
   ;; from https://emacsredux.com/blog/2020/06/10/comment-commands-redux/
   ("<remap> <comment-dwim>" . comment-line)
   ;; replace delete-char
@@ -1091,11 +1111,6 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
   :config
   (load-theme 'modus-operandi t)
   (enable-theme 'modus-operandi))
-
-;; (use-package challenger-deep-theme
-;;   :ensure t
-;;   :config
-;;   (load-theme 'challenger-deep t))
 
 (use-package mood-line
   :demand t
