@@ -273,6 +273,15 @@
                                       (let ((indent-region-function #'c-indent-region))
                                         (indent-region start end)))))))
 
+(use-package howm
+  :demand t
+  :bind
+  ("<f3>" . howm-menu)
+  ("S-<f3>" . howm-list-schedule)
+  ("C-S-<f3>" . howm-list-todo)
+  :config
+  (setq howm-file-name-format "%Y/%m/%Y-%m-%d-%H%M%S.md"))
+
 (use-package hl-line
   :ensure nil
   :hook
@@ -821,12 +830,6 @@ Also, ignore this command if there's only one visible window...so I don't lose t
     (if arg
         (dired-other-window "~/")
       (dired "~/")))
-  (defun hoagie-open-org (arg)
-    (interactive "P")
-    (let ((org-file (read-file-name "Open org file:" "~/org/")))
-      (if arg
-          (find-file-other-window org-file)
-        (find-file org-file))))
   ;; from https://www.emacswiki.org/emacs/BackwardDeleteWord
   ;; because I agree C-backspace shouldn't kill the word!
   ;; it litters my kill ring
@@ -857,7 +860,6 @@ With ARG, do this that many times."
   ("<S-f1>" . (lambda () (interactive) (find-file user-init-file)))
   ("<f1>" . hoagie-go-home)
   ("<f2>" . project-switch-project)
-  ("<f3>" . hoagie-open-org)
   ;; from https://stackoverflow.com/a/6465415
   ("C-x 3" . (lambda () (interactive)(split-window-right) (other-window 1)))
   ("C-x 2" . (lambda () (interactive)(split-window-below) (other-window 1)))
