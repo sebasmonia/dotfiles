@@ -273,15 +273,6 @@
                                       (let ((indent-region-function #'c-indent-region))
                                         (indent-region start end)))))))
 
-(use-package howm
-  :demand t
-  :bind
-  ("<f3>" . howm-menu)
-  ("S-<f3>" . howm-list-schedule)
-  ("C-S-<f3>" . howm-list-todo)
-  :config
-  (setq howm-file-name-format "%Y/%m/%Y-%m-%d-%H%M%S.md"))
-
 (use-package hl-line
   :ensure nil
   :hook
@@ -476,10 +467,14 @@ so the display parameters kick in."
 (use-package org
   :ensure nil
   :mode (("\\.org$" . org-mode))
-  :config
-  ;; I don't use this feature and it clashes with
-  ;; my mode map binding
-  (define-key org-mode-map (kbd "C-'") nil))
+  :bind
+  (("<f3>" . org-capture)
+   ("C-<f3>" . org-store-link)
+   ("M-<f3>" . org-agenda)))
+  ;; :config
+  ;; ;; I don't use this feature and it clashes with
+  ;; ;; my mode map binding
+  ;; (define-key org-mode-map (kbd "C-'") nil))
 
 (use-package package-lint
   :commands package-lint-current-buffer)
@@ -671,7 +666,6 @@ Meant to be added to `occur-hook'."
 (use-package vc-git
   :ensure nil
   :after vc
-  :bind
   :config
   (defun hoagie-vc-git-fetch-all ()
     "Run \"git fetch --all\" in the current repo.
