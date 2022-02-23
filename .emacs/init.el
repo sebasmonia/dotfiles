@@ -61,7 +61,6 @@
 (define-key key-translation-map (kbd "<f7>") (kbd "ESC")) ;; esc-map ~= alt
 
 (define-key key-translation-map (kbd "C-z") (kbd "ESC")) ;; esc-map ~= alt
-
 (global-set-key (kbd "<f8>") mode-specific-map)  ;; C-c
 
 (use-package browse-kill-ring
@@ -467,14 +466,39 @@ so the display parameters kick in."
 (use-package org
   :ensure nil
   :mode (("\\.org$" . org-mode))
+  :custom
+  (org-default-notes-file "~/org/_default_notes.org")
+  (org-capture-templates '(("n" "Note"  plain
+                            (file org-default-notes-file)
+                            " %?" :empty-lines 1)
+                           ("t" "Task for me"  plain
+                            (file "~/org/TODO.org")
+                            "** TODO %?\nADDED: %t" :empty-lines 1)
+                           ("w" "Weekly Report item"  plain
+                            (file "~/org/weeklyreport.org")
+                            "** TODO %? %^g\nADDED: %t" :empty-lines 1)))
+  (org-agenda-files '("/home/hoagie/org"))
+  (org-todo-keywords '((sequence "TODO(t)" "STARTED(s!)" "|" "DONE(d@)" "CANCELED(c@)")))
+  (org-log-done 'note)
   :bind
-  (("<f3>" . org-capture)
-   ("C-<f3>" . org-store-link)
-   ("M-<f3>" . org-agenda)))
-  ;; :config
-  ;; ;; I don't use this feature and it clashes with
-  ;; ;; my mode map binding
-  ;; (define-key org-mode-map (kbd "C-'") nil))
+  (("<f3>" . hoagie-open-org)
+   ("C-<f3>" . org-capture)
+   ("M-<f3>" . org-agenda)
+   ;; everything from here on works with F8/C-C
+   ("C-c <f3>" . org-agenda))
+  (:map esc-map
+        ("<f3>" . org-agenda))
+  (:map mode-specific-map
+        ("t" . org-todo)
+        ("c" . org-toggle-checkbox)
+        ("a" . org-archive-subtree))
+  :config
+  (defun hoagie-open-org (arg)
+    (interactive "P")
+    (let ((org-file (read-file-name "Open org file:" "~/org/")))
+      (if arg
+          (find-file-other-window org-file)
+        (find-file org-file)))))
 
 (use-package package-lint
   :commands package-lint-current-buffer)
@@ -503,9 +527,13 @@ so the display parameters kick in."
 ;; via https://karthinks.com/software/batteries-included-with-emacs/#pulse--pulse-dot-el
 (use-package pulse
   :ensure nil
+  :demand t
   :custom
   (pulse-delay 0.05)
   (pulse-iterations 20)
+  ;; :custom-face
+  ;; (pulse-highlight-face ((t (:extend t :inherit diff-indicator-removed))))
+  ;; (pulse-highlight-start-face ((t (:extend t :inherit diff-indicator-removed))))
   :config
   (defun pulse-line (&rest _)
     "Pulse the current line."
@@ -1099,14 +1127,19 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
 (advice-add 'scroll-up-command :before #'push-mark-if-not-repeat)
 (advice-add 'scroll-down-command :before #'push-mark-if-not-repeat)
 
-(use-package modus-operandi-theme
-  :demand t
-  :custom
-  (modus-themes-completions 'moderate)
-  (modus-themes-intense-hl-line t)
+;; (use-package modus-themes
+;;   :demand t
+;;   :custom
+;;   (modus-themes-completions 'moderate)
+;;   (modus-themes-intense-hl-line t)
+;;   :config
+;;   (load-theme 'modus-operandi t)
+;;   (enable-theme 'modus-operandi))
+
+(use-package solo-jazz-theme
+  :ensure t
   :config
-  (load-theme 'modus-operandi t)
-  (enable-theme 'modus-operandi))
+  (load-theme 'solo-jazz t))
 
 (use-package mood-line
   :demand t
