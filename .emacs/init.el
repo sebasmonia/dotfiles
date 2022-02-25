@@ -463,11 +463,12 @@ so the display parameters kick in."
   :custom
   (minions-mode-line-lighter "^"))
 
+(defvar hoagie-org-keymap (define-prefix-command 'hoagie-org-keymap) "Custom bindings for org-mode.")
 (use-package org
   :ensure nil
   :mode (("\\.org$" . org-mode))
   :custom
-  (org-default-notes-file "~/org/_default_notes.org")
+  (org-default-notes-file "~/org/inbox.org")
   (org-capture-templates '(("n" "Note"  plain
                             (file org-default-notes-file)
                             " %?" :empty-lines 1)
@@ -480,15 +481,14 @@ so the display parameters kick in."
   (org-agenda-files '("/home/hoagie/org"))
   (org-todo-keywords '((sequence "TODO(t)" "STARTED(s!)" "|" "DONE(d@)" "CANCELED(c@)")))
   (org-log-done 'note)
+  :bind-keymap
+  ("<f3>" . hoagie-org-keymap)
   :bind
-  (("<f3>" . hoagie-open-org)
-   ("C-<f3>" . org-capture)
-   ("M-<f3>" . org-agenda)
-   ;; everything from here on works with F8/C-C
-   ("C-c <f3>" . org-agenda))
-  (:map esc-map
-        ("<f3>" . org-agenda))
-  (:map mode-specific-map
+  ("C-<f3>" . org-capture)
+  (:map hoagie-org-keymap
+        ("<f3>" . hoagie-open-org)
+        ("M-<f3>" . org-store-link)
+        ("C-<f3>" . org-agenda)
         ("t" . org-todo)
         ("c" . org-toggle-checkbox)
         ("a" . org-archive-subtree))
