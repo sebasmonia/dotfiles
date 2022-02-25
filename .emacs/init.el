@@ -128,9 +128,11 @@
         (("F" . find-name-dired)
          ("j" . dired-jump)))
   (:map dired-mode-map
-        ("C-<return>" . dired-open-file))
+        ("C-<return>" . dired-open-file)
+        ("<C-f1>" . (lambda () (interactive) (dired-copy-filename-as-kill 0))))
+  :hook
+  (dired-mode-hook . dired-hide-details-mode)
   :config
-  (add-hook 'dired-mode-hook 'dired-hide-details-mode)
   ;; from Emacs Wiki
   (defun dired-open-file ()
     "Call xdg-open on the file at point."
@@ -142,8 +144,7 @@
     (let ((name (buffer-file-name)))
       (when name
         (kill-new name))
-      (message (format "Filename: %s" (or name "-No file for this buffer-")))))
-  (define-key dired-mode-map (kbd "<C-f1>") (lambda () (interactive) (dired-copy-filename-as-kill 0))))
+      (message (format "Filename: %s" (or name "-No file for this buffer-"))))))
 
 (use-package dired-narrow
   :after dired
@@ -531,9 +532,6 @@ so the display parameters kick in."
   :custom
   (pulse-delay 0.05)
   (pulse-iterations 20)
-  ;; :custom-face
-  ;; (pulse-highlight-face ((t (:extend t :inherit diff-indicator-removed))))
-  ;; (pulse-highlight-start-face ((t (:extend t :inherit diff-indicator-removed))))
   :config
   (defun pulse-line (&rest _)
     "Pulse the current line."
@@ -1131,8 +1129,10 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
 (use-package modus-themes
   :demand t
   :custom
-  (modus-themes-completions 'moderate)
-  (modus-themes-intense-hl-line t)
+  (modus-themes-completions '((selection . (accented intense))
+                              (popup . (accented))))
+  (modus-themes-box-buttons '(flat))
+  (modus-themes-hl-line '(accented intense))
   :config
   (load-theme 'modus-operandi t))
 
