@@ -46,7 +46,7 @@
 (setf package-native-compile t)
 
 (custom-set-faces
- '(default ((t (:family "IBM Plex Mono" :foundry "IBM " :slant normal :weight normal :height 128 :width normal)))))
+ '(default ((t (:family "Consolas" :foundry "MS  " :slant normal :weight regular :height 128 :width normal)))))
 
 ;; based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html
 (defvar hoagie-keymap (define-prefix-command 'hoagie-keymap) "My custom bindings.")
@@ -469,8 +469,8 @@ so the display parameters kick in."
   :mode ("\\.org$" . org-mode)
   :custom
   (org-default-notes-file "~/org/inbox.org")
-  (org-capture-templates '(("n" "Note"  plain
-                            (file org-default-notes-file)
+  (org-capture-templates '(("n" "Note to inbox.org"  plain
+                            (file+datetree org-default-notes-file)
                             " %?" :empty-lines 1)
                            ("t" "Task for me"  plain
                             (file "~/org/TODO.org")
@@ -1039,16 +1039,17 @@ With ARG, do this that many times."
     ;; 2021-05-22: now I use the pgtk branch everywhere, and the monitor name has
     ;; a meaningul value in all cases, so:
     (let* ((monitor-name (alist-get 'name (frame-monitor-attributes)))
-           (monitor-font '(("S240HL" . 113) ;; 24"
-                           ("2757" . 105) ;; 27"
+           (monitor-font '(("S240HL" . 143) ;; 24"
+                           ("2757" . 128) ;; 27"
+                           ;; todo: adjust
                            ("LG HDR 4K" . 165))) ;; 27" office - was 181
            (size (alist-get monitor-name monitor-font
-                            143 ;; default size, "big just in case"
+                            180 ;; default size, "big just in case"
                             nil
                             'equal)))
       ;; override for "laptop screen only"
       (when (eq (length (display-monitor-attributes-list)) 1)
-        (setf size 120))
+        (setf size 128)) ;;  Adjust
       (set-face-attribute 'default (selected-frame) :height size)
       (set-face-font 'eldoc-box-body
                      (frame-parameter nil 'font))))
