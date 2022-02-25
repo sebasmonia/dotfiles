@@ -466,7 +466,7 @@ so the display parameters kick in."
 (defvar hoagie-org-keymap (define-prefix-command 'hoagie-org-keymap) "Custom bindings for org-mode.")
 (use-package org
   :ensure nil
-  :mode (("\\.org$" . org-mode))
+  :mode ("\\.org$" . org-mode)
   :custom
   (org-default-notes-file "~/org/inbox.org")
   (org-capture-templates '(("n" "Note"  plain
@@ -1127,19 +1127,13 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
 (advice-add 'scroll-up-command :before #'push-mark-if-not-repeat)
 (advice-add 'scroll-down-command :before #'push-mark-if-not-repeat)
 
-;; (use-package modus-themes
-;;   :demand t
-;;   :custom
-;;   (modus-themes-completions 'moderate)
-;;   (modus-themes-intense-hl-line t)
-;;   :config
-;;   (load-theme 'modus-operandi t)
-;;   (enable-theme 'modus-operandi))
-
-(use-package solo-jazz-theme
-  :ensure t
+(use-package modus-themes
+  :demand t
+  :custom
+  (modus-themes-completions 'moderate)
+  (modus-themes-intense-hl-line t)
   :config
-  (load-theme 'solo-jazz t))
+  (load-theme 'modus-operandi t))
 
 (use-package mood-line
   :demand t
