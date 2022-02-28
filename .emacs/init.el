@@ -472,13 +472,13 @@ so the display parameters kick in."
   (org-default-notes-file "~/org/inbox.org")
   (org-capture-templates '(("n" "Note to inbox.org"  plain
                             (file+datetree org-default-notes-file)
-                            " %?" :empty-lines 1)
+                            " %u\n%?" :empty-lines 1)
                            ("t" "Task for me"  plain
                             (file "~/org/TODO.org")
-                            "** TODO %?\nADDED: %t" :empty-lines 1)
+                            "** TODO %?\nADDED: %u" :empty-lines 1)
                            ("w" "Weekly Report item"  plain
                             (file "~/org/weeklyreport.org")
-                            "** TODO %? %^g\nADDED: %t" :empty-lines 1)))
+                            "** TODO %? %^g\nADDED: %u" :empty-lines 1)))
   (org-agenda-files '("/home/hoagie/org"))
   (org-todo-keywords '((sequence "TODO(t)" "STARTED(s!)" "|" "DONE(d@)" "CANCELED(c@)")))
   (org-log-done 'note)
