@@ -1040,7 +1040,7 @@ With ARG, do this that many times."
            (monitor-font '(("S240HL" . 143) ;; 24"
                            ("2757" . 128) ;; 27"
                            ;; todo: adjust
-                           ("LG HDR 4K" . 165))) ;; 27" office - was 181
+                           ("LG HDR 4K" . 188))) ;; 27" office - was 181
            (size (alist-get monitor-name monitor-font
                             180 ;; default size, "big just in case"
                             nil
