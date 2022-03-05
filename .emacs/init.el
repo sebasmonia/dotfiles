@@ -525,23 +525,6 @@ so the display parameters kick in."
   :config
   (add-to-list 'project-switch-commands '(?s "Shell" project-shell)))
 
-;; via https://karthinks.com/software/batteries-included-with-emacs/#pulse--pulse-dot-el
-(use-package pulse
-  :ensure nil
-  :demand t
-  :custom
-  (pulse-delay 0.05)
-  (pulse-iterations 20)
-  :config
-  (defun pulse-line (&rest _)
-    "Pulse the current line."
-    (pulse-momentary-highlight-one-line (point)))
-                   ;; blog post commands
-  (dolist (command '(scroll-up-command scroll-down-command recenter-top-bottom other-window
-                   ;; my extras
-                   push-mark-no-activate pop-to-mark-push-if-first unpop-to-mark-command))
-    (advice-add command :after #'pulse-line)))
-
 (use-package python
   :ensure nil
   :mode ("\\.py\\'" . python-mode)
@@ -1047,7 +1030,7 @@ With ARG, do this that many times."
                             'equal)))
       ;; override for "laptop screen only"
       (when (eq (length (display-monitor-attributes-list)) 1)
-        (setf size 128)) ;;  Adjust
+        (setf size 143))
       (set-face-attribute 'default (selected-frame) :height size)
       (set-face-font 'eldoc-box-body
                      (frame-parameter nil 'font))))
