@@ -19,4 +19,4 @@ I run this configuration in Fedora Silverblue, with just a few extensions instal
 * Vertical overview (with the Gnome 3 bindings as [suggested here](https://github.com/RensAlthuis/vertical-overview/issues/7#issuecomment-816054137))
 * Background logo :P
 
-In addition, I setup Caps Lock as another Control key using dconf. I really like the idea of not layering anything the base image.  
+In addition, I setup Caps Lock as another Control key using dconf. I really like the idea of not layering anything over the base image.  
