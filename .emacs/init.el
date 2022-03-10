@@ -488,7 +488,7 @@ so the display parameters kick in."
   ("C-<f3>" . org-capture)
   (:map hoagie-org-keymap
         ("<f3>" . hoagie-open-org)
-        ("M-<f3>" . org-store-link)
+        ("l" . org-store-link)
         ("C-<f3>" . org-agenda)
         ("t" . org-todo)
         ("c" . org-toggle-checkbox)
