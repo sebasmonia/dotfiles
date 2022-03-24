@@ -56,6 +56,26 @@
 (global-set-key (kbd "C-'") 'hoagie-keymap)
 (define-key hoagie-keymap (kbd "k") #'kill-this-buffer)
 
+;; In case the config is not running on Silverblue, or if I ever layer Emacs on the base system...
+(defvar hoagie-toolbox-name (if (file-exists-p "/run/.containerenv")
+                                ;; from http://ergoemacs.org/emacs/elisp_read_file_content.html
+                                ;; insert content in temp buffer rather than open a file
+                                (with-temp-buffer
+                                  (insert-file-contents "/run/.containerenv")
+                                  (search-forward "name=") ;; move point to the line with the name
+                                  (setf hoagie-container-name
+                                        (cl-subseq (thing-at-point 'line) 6 -2)))
+                              "Running on host")
+  "Stores the name of the current container, if present.")
+
+(defun hoagie-work-toolbox-p ()
+  (string-prefix-p "starz-" hoagie-toolbox-name))
+
+;; These things depend on the type of container running container
+;; The org config is the other piece that changes heavily depending on the container type
+(defvar hoagie-org-path (if (hoagie-work-toolbox-p) "~/starz/org/" "~/org/") "Path to use for org documents.")
+(defvar hoagie-home-path (if (hoagie-work-toolbox-p) "~/starz" "~/") "Path to use as \"home\" for most files.")
+
 ;; experimenting with new types of keybindings/entry keys for keymaps
 (global-set-key (kbd "<f6>") 'hoagie-keymap)
 (define-key key-translation-map (kbd "<f7>") (kbd "ESC")) ;; esc-map ~= alt
@@ -469,17 +489,33 @@ so the display parameters kick in."
   :ensure nil
   :mode ("\\.org$" . org-mode)
   :custom
-  (org-default-notes-file "~/org/inbox.org")
-  (org-capture-templates '(("n" "Note to inbox.org"  plain
-                            (file+datetree org-default-notes-file)
-                            " %u\n%?" :empty-lines 1)
-                           ("t" "Task for me"  plain
-                            (file "~/org/TODO.org")
-                            "** TODO %?\nADDED: %u" :empty-lines 1)
-                           ("w" "Weekly Report item"  plain
-                            (file "~/org/weeklyreport.org")
-                            "** TODO %? %^g\nADDED: %u" :empty-lines 1)))
-  (org-agenda-files '("/home/hoagie/org"))
+  (org-default-notes-file (if (hoagie-work-toolbox-p)
+                              "~/starz/org/inbox.org"
+                            "~/org/inbox.org"))
+  (org-capture-templates (if (hoagie-work-toolbox-p)
+                             ;; work templates
+                             '(("n" "Note to inbox.org"  plain
+                                (file+datetree org-default-notes-file)
+                                " %u\n%?" :empty-lines 1)
+                               ("t" "Task for me"  plain
+                                (file "~/org/TODO.org")
+                                "** TODO %?\nADDED: %u" :empty-lines 1)
+                               ("w" "Weekly Report item"  plain
+                                (file "~/org/weeklyreport.org")
+                                "** TODO %? %^g\nADDED: %u" :empty-lines 1))
+                           ;; personal templates
+                           '(("n" "Note to inbox.org"  plain
+                              (file+datetree org-default-notes-file)
+                              " %u\n%?" :empty-lines 1)
+                             ("g" "Google note"  plain
+                              (file "~/org/googleprep.org")
+                              "* TODO %? %^g\nADDED: %t" :empty-lines 1)
+                             ("t" "TODO (Personal)"  plain
+                              (file "~/org/todo.org")
+                              "* TODO %? %^g\nADDED: %t" :empty-lines 1))))
+  (org-agenda-files (if (hoagie-work-toolbox-p)
+                        '("/var/home/hoagie/starz/org/TODO.org" "/var/home/hoagie/starz/org/weeklyreport.org")
+                      '("/home/hoagie/org")))
   (org-todo-keywords '((sequence "TODO(t)" "STARTED(s!)" "|" "DONE(d@)" "CANCELED(c@)")))
   (org-log-done 'note)
   :bind-keymap
@@ -496,7 +532,7 @@ so the display parameters kick in."
   :config
   (defun hoagie-open-org (arg)
     (interactive "P")
-    (let ((org-file (read-file-name "Open org file:" "~/org/")))
+    (let ((org-file (read-file-name "Open org file:" hoagie-org-path)))
       (if arg
           (find-file-other-window org-file)
         (find-file org-file)))))
@@ -542,6 +578,9 @@ so the display parameters kick in."
   :demand t
   :config
   (repeat-mode))
+
+(use-package restclient
+  :mode ("\\.http\\'" . restclient-mode))
 
 (use-package replace
   :ensure nil
@@ -639,6 +678,7 @@ Meant to be added to `occur-hook'."
   :demand t
   :custom
   (undo-tree-visualizer-diff t)
+  (undo-tree-auto-save-history nil)
   :bind
   ;; I have been using my own binding for dabbrev since _forever_, this is fine
   ("M-/" . undo-tree-redo)
@@ -670,7 +710,22 @@ Meant to be added to `occur-hook'."
         ;; vc-dir-find-file-other-window, but I use project-find-file instead
         ("o" . hoagie-vc-git-current-branch-upstream-origin)
         ("e" . vc-ediff)
-        ("k" . vc-revert)))
+        ("k" . vc-revert)
+        ("d" . hoagie-vc-dir-delete))
+  :config
+  (defun hoagie-vc-dir-delete ()
+    "Delete files directly in the vc-dir buffer."
+    (interactive)
+    ;; idea from https://stackoverflow.com/a/29504426/91877 but much
+    ;; simplified (many cases I really don't need) and getting the
+    ;; list of files using `vc-deduce-fileset'
+    (let ((files (cl-second (vc-deduce-fileset))))
+      (when (and files
+                 (yes-or-no-p (format "Delete %s? "
+                                      (string-join files ", " ))))
+        (unwind-protect
+            (mapcar (lambda (path) (delete-file path t)) files)
+            (revert-buffer))))))
 
 (use-package vc-git
   :ensure nil
@@ -831,8 +886,8 @@ Also, ignore this command if there's only one visible window...so I don't lose t
   (defun hoagie-go-home (arg)
     (interactive "P")
     (if arg
-        (dired-other-window "~/")
-      (dired "~/")))
+        (dired-other-window hoagie-home-path)
+      (dired hoagie-home-path)))
   ;; from https://www.emacswiki.org/emacs/BackwardDeleteWord
   ;; because I agree C-backspace shouldn't kill the word!
   ;; it litters my kill ring
@@ -963,19 +1018,9 @@ With ARG, do this that many times."
     (make-directory backup-dir t)
     (setf backup-directory-alist
           `((".*" . ,backup-dir))))
-  (defvar hoagie-container-name nil "Stores the name of the current container, if present.")
-  (if (file-exists-p "/run/.containerenv")
-      ;; from http://ergoemacs.org/emacs/elisp_read_file_content.html
-      ;; insert content in temp buffer rather than open a file
-      (with-temp-buffer
-        (insert-file-contents "/run/.containerenv")
-        (search-forward "name=") ;; move point to the line with the name
-        (setf hoagie-container-name
-              (cl-subseq (thing-at-point 'line) 6 -2)))
-    (setf hoagie-container-name (system-name)))
   ;; Identify the toolbox container for this Emacs instance in the frame title
-  (setf frame-title-format '(" %b @ " (:eval hoagie-container-name))
-        icon-title-format '(" %b @ " (:eval hoagie-container-name))))
+  (setf frame-title-format '(" %b @ " (:eval hoagie-toolbox-name))
+        icon-title-format '(" %b @ " (:eval hoagie-toolbox-name))))
 
 ;; Convenient to work with AWS timestamps
 (defun hoagie-convert-timestamp (&optional timestamp)
@@ -995,10 +1040,8 @@ With ARG, do this that many times."
 (setf user-full-name "Sebastián Monía"
       user-mail-address "seb.hoagie@outlook.com")
 
-;; (when (string= system-type "windows-nt")
-;;   (global-set-key (kbd "M-`") #'other-frame) ;; Gnome-like frame switching in Windows
-;;   (load "c:/repos/miscscripts/workonlyconfig.el"))
-(load "/home/hoagie/repos/miscscripts/workonlyconfig.el")
+(when (hoagie-work-toolbox-p)
+  (load "/var/home/hoagie/starz/repos/miscscripts/workonlyconfig.el"))
 
 (when (string= system-type "gnu/linux")
   (defun find-alternative-file-with-sudo ()
