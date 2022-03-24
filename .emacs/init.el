@@ -73,8 +73,8 @@
 
 ;; These things depend on the type of container running container
 ;; The org config is the other piece that changes heavily depending on the container type
-(defvar hoagie-org-path (if (hoagie-work-toolbox-p) "~/starz/org/" "~/org/") "Path to use for org documents.")
-(defvar hoagie-home-path (if (hoagie-work-toolbox-p) "~/starz" "~/") "Path to use as \"home\" for most files.")
+(defvar hoagie-org-path "~/org/") "Path to use for org documents. See \"workonlyconfig.el\" for override.")
+(defvar hoagie-home-path "~/") "Path to use as \"home\" for most files. . See \"workonlyconfig.el\" for override.")
 
 ;; experimenting with new types of keybindings/entry keys for keymaps
 (global-set-key (kbd "<f6>") 'hoagie-keymap)
