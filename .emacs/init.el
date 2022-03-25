@@ -76,6 +76,12 @@
 (defvar hoagie-org-path "~/org/") "Path to use for org documents. See \"workonlyconfig.el\" for override.")
 (defvar hoagie-home-path "~/") "Path to use as \"home\" for most files. . See \"workonlyconfig.el\" for override.")
 
+;; Opening a terminal in toolbox includes ~/.local/bin so let's add that for Emacs too
+(setenv "PATH" "/var/home/hoagie/.local/bin:$PATH" t)
+;; Also add the directory to exec-path
+;; TODO: Figure out what changes exec-path? Because the "original value" does include the ~/.local dirs
+(push "/var/home/hoagie/.local/bin" exec-path)
+
 ;; experimenting with new types of keybindings/entry keys for keymaps
 (global-set-key (kbd "<f6>") 'hoagie-keymap)
 (define-key key-translation-map (kbd "<f7>") (kbd "ESC")) ;; esc-map ~= alt
