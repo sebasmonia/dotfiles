@@ -73,8 +73,8 @@
 
 ;; These things depend on the type of container running container
 ;; The org config is the other piece that changes heavily depending on the container type
-(defvar hoagie-org-path "~/org/") "Path to use for org documents. See \"workonlyconfig.el\" for override.")
-(defvar hoagie-home-path "~/") "Path to use as \"home\" for most files. . See \"workonlyconfig.el\" for override.")
+(defvar hoagie-org-path "~/org/" "Path to use for org documents. See \"workonlyconfig.el\" for override.")
+(defvar hoagie-home-path "~/" "Path to use as \"home\" for most files. . See \"workonlyconfig.el\" for override.")
 
 ;; Opening a terminal in toolbox includes ~/.local/bin so let's add that for Emacs too
 (setenv "PATH" "/var/home/hoagie/.local/bin:$PATH" t)
@@ -138,16 +138,6 @@
   :ensure nil
   :custom
   (dired-listing-switches "-laogGhvD")
-  (dired-compress-file-suffixes
-        '(("\\.tar\\.gz\\'" #1="" "7z x -aoa -o%o %i")
-          ("\\.tgz\\'" #1# "7z x -aoa -o%o %i")
-          ("\\.zip\\'" #1# "7z x -aoa -o%o %i")
-          ("\\.7z\\'" #1# "7z x -aoa -o%o %i")
-          ("\\.tar\\'" ".tgz" nil)
-          (":" ".tar.gz" "tar -cf- %i | gzip -c9 > %o")))
-  (dired-compress-files-alist
-        '(("\\.7z\\'" . "7z a -r %o %i")
-          ("\\.zip\\'" . "7z a -r %o  %i")))
   :bind
   ("<C-f1>" . 'hoagie-kill-buffer-filename)
   (:map hoagie-keymap
@@ -171,6 +161,21 @@
       (when name
         (kill-new name))
       (message (format "Filename: %s" (or name "-No file for this buffer-"))))))
+
+(use-package dired-aux
+  :after dired
+  :ensure nil
+  :custom
+  (dired-compress-file-suffixes
+        '(("\\.tar\\.gz\\'" #1="" "7za x -aoa -o%o %i")
+          ("\\.tgz\\'" #1# "7za x -aoa -o%o %i")
+          ("\\.zip\\'" #1# "7za x -aoa -o%o %i")
+          ("\\.7z\\'" #1# "7za x -aoa -o%o %i")
+          ("\\.tar\\'" ".tgz" nil)
+          (":" ".tar.gz" "tar -cf- %i | gzip -c9 > %o")))
+  (dired-compress-files-alist
+        '(("\\.7z\\'" . "7za a -r %o %i")
+          ("\\.zip\\'" . "7za a -r %o  %i"))))
 
 (use-package dired-narrow
   :after dired
