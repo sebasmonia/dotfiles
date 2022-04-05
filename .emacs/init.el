@@ -792,10 +792,6 @@ branch remains local-only."
 
 (use-package window
   :ensure nil
-  :bind
-  ;; this binding is a complement of <f6> 1 and <f6> ! to toggle
-  ;; focusing on a single side window
-  ("<f9>" . window-toggle-side-windows)
   :custom
   (window-sides-vertical t)
   (ignore-window-parameters t)
@@ -853,11 +849,44 @@ branch remains local-only."
     (interactive)
     (when hoagie-window-configuration
       (set-window-configuration hoagie-window-configuration)))
-  (define-key hoagie-keymap (kbd "1") #'hoagie-restore-window-configuration)
   (defun hoagie-store-window-configuration ()
     (interactive)
-    (setf hoagie-window-configuration (current-window-configuration)))
-  (advice-add 'delete-other-windows :before #'hoagie-store-window-configuration))
+    (setf hoagie-window-configuration (current-window-configuration))
+    (delete-other-windows))
+  :custom
+  (window-sides-vertical t)
+  (ignore-window-parameters t)
+  (display-buffer-alist
+   '((hoagie-right-top-side-window-p
+      (display-buffer-reuse-window display-buffer-in-side-window)
+      (window-width . 0.40)
+      (side . right)
+      (slot . -1))
+     (hoagie-right-bottom-side-window-p
+      (display-buffer-reuse-window display-buffer-in-side-window)
+      (window-width . 0.40)
+      (side . right)
+      (slot . 1))
+     ;; very particular rule for committing files with vc-git
+     ("\\*log-edit-files\\*"
+      (display-buffer-reuse-window display-buffer-in-side-window)
+      (window-width . 0.40)
+      (side . right)
+      (slot . 2))
+     (hoagie-bottom-side-window-p
+      (display-buffer-reuse-window display-buffer-in-side-window)
+      (window-height . 0.35)
+      (side . bottom)
+      (slot . 0))))
+  :bind
+  ;; this binding is a complement of C-x 1 and <f6> 1 to toggle
+  ;; all windows vs one window.
+  ("<f9>" . window-toggle-side-windows)
+  ;; My own version of delete-other-windows. Adding an advice to
+  ;; the existing command  was finicky
+  ("C-x 1" . hoagie-delete-other-windows)
+  (:map hoagie-keymap
+        ("1" . hoagie-restore-window-configuration)))
 
 (use-package web-mode
   :mode
