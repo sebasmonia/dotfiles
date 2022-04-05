@@ -153,7 +153,11 @@
   (defun dired-open-file ()
     "Call xdg-open on the file at point."
     (interactive)
-    (call-process "xdg-open" nil 0 nil (dired-get-filename nil t)))
+    ;; Can probably make this code nicer and more DRY,
+    ;; although this way it is clear/readable enough...
+    (if hoagie-container-name
+        (call-process "flatpak-spawn" nil 0 nil "--host" "xdg-open" (dired-get-filename nil t))
+      (call-process "xdg-open" nil 0 nil (dired-get-filename nil t))))
   (defun hoagie-kill-buffer-filename ()
     "Sends the current buffer's filename to the kill ring."
     (interactive)
@@ -164,6 +168,7 @@
 
 (use-package dired-aux
   :after dired
+  :demand t
   :ensure nil
   :custom
   (dired-compress-file-suffixes
@@ -478,6 +483,9 @@ so the display parameters kick in."
   :bind
   ("C-x G" . magit-status)
   :custom
+  ;; this option solves the problems with Magit commits & diffs with
+  ;; my current `display-buffer-alist' configuration
+  (magit-commit-diff-inhibit-same-window t)
   (magit-display-buffer-function 'display-buffer))
 
 (use-package git-timemachine
@@ -488,12 +496,6 @@ so the display parameters kick in."
   :bind
   (:map hoagie-keymap
         ("G" . rgrep)))
-
-(use-package minions
-  :config
-  (minions-mode 1)
-  :custom
-  (minions-mode-line-lighter "^"))
 
 (defvar hoagie-org-keymap (define-prefix-command 'hoagie-org-keymap) "Custom bindings for org-mode.")
 (use-package org
@@ -796,6 +798,7 @@ branch remains local-only."
   ("<f9>" . window-toggle-side-windows)
   :custom
   (window-sides-vertical t)
+  (ignore-window-parameters t)
   (display-buffer-alist
    '((hoagie-right-top-side-window-p
       (display-buffer-reuse-window display-buffer-in-side-window)
@@ -822,14 +825,14 @@ branch remains local-only."
   (defun hoagie-right-top-side-window-p (buffer-name _action)
     "Determines if BUFFER-NAME is one that should be displayed in the right side window."
     (let ((names '("info" "help" "*vc-dir" "*lsp-ui-imenu*"))
-          (modes '(dired-mode)))
+          (modes nil))
       (or (cl-some (lambda (a-name) (string-match-p (regexp-quote a-name) buffer-name)) names)
           (with-current-buffer buffer-name
             (apply #'derived-mode-p modes)))))
   (defun hoagie-right-bottom-side-window-p (buffer-name _action)
     "Determines if BUFFER-NAME is one that should be displayed in the right side window."
     ;; Note that *vc- will not include "*vc-dir*" because it is matched in the top side window (and that function runs first)
-    (let ((names '("*vc-"))
+    (let ((names '("*vc-diff*" "*vc-log*" "*log-edit-files*"))
           (modes nil))
       (or (cl-some (lambda (a-name) (string-match-p (regexp-quote a-name) buffer-name)) names)
           (with-current-buffer buffer-name
@@ -842,26 +845,19 @@ branch remains local-only."
       (or (cl-some (lambda (a-name) (string-match-p (regexp-quote a-name) buffer-name)) names)
           (with-current-buffer buffer-name
             (apply #'derived-mode-p modes)))))
-  ;; sometimes I really want to make that side window the only window in the frame, but it usually
-  ;; is a temporary thing, using my old "store window config" code, which was a simplified version
-  ;; of https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
-  (defvar hoagie-pre-focus-window-configuration nil "Window config before calling `hoagie-focus-side-window'.")
-  (defun hoagie-focus-side-window ()
-    "More or less like `delete-other-windows', but to \"promote\" a side window.
-Ignoring window parameters has unhappy consequences, hence this function.
-Also, ignore this command if there's only one visible window...so I don't lose the window configuration on accident."
+  ;; simplified version that restores a window config and advices delete-other-windows
+  ;; idea from https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
+  (defvar hoagie-window-configuration nil "Last window configuration saved.")
+  (defun hoagie-restore-window-configuration ()
+    "Use `hoagie-window-configuration' to restore the window setup."
     (interactive)
-    (unless (length= (window-list) 1)
-      (setf hoagie-pre-focus-window-configuration (current-window-configuration))
-      (let ((display-buffer-alist nil))
-        (pop-to-buffer (buffer-name) t)
-        (delete-other-windows))))
-  (define-key hoagie-keymap (kbd "1") #'hoagie-focus-side-window)
-  (defun hoagie-undo-focus-side-window ()
-    "Use `hoagie-pre-focus-window-configuration' to restore the window setup to before calling `hoagie-focus-side-window'."
+    (when hoagie-window-configuration
+      (set-window-configuration hoagie-window-configuration)))
+  (define-key hoagie-keymap (kbd "1") #'hoagie-restore-window-configuration)
+  (defun hoagie-store-window-configuration ()
     (interactive)
-    (set-window-configuration hoagie-pre-focus-window-configuration))
-  (define-key hoagie-keymap (kbd "!") #'hoagie-undo-focus-side-window))
+    (setf hoagie-window-configuration (current-window-configuration)))
+  (advice-add 'delete-other-windows :before #'hoagie-store-window-configuration))
 
 (use-package web-mode
   :mode
@@ -966,7 +962,7 @@ With ARG, do this that many times."
   (custom-safe-themes t)
   (indent-tabs-mode nil)
   (delete-by-moving-to-trash t)
-  (enable-recursive-minibuffers t)
+  ;; (enable-recursive-minibuffers t)
   (global-mark-ring-max 64)
   (mark-ring-max 64)
   (grep-command "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
@@ -1006,7 +1002,9 @@ With ARG, do this that many times."
                                (let ((buffer-file-name (buffer-name)))
                                  (set-auto-mode)))))
   ;; https://200ok.ch/posts/2020-09-29_comprehensive_guide_on_handling_long_lines_in_emacs.html
-  (setq-default bidi-paragraph-direction 'left-to-right)
+  (setq-default bidi-paragraph-direction 'left-to-right
+  ;; from https://github.com/SystemCrafters/rational-emacs/blob/master/modules/rational-defaults.el
+                bidi-inhibit-bpa t)
   (delete-selection-mode)
   (blink-cursor-mode -1)
   (column-number-mode 1)
