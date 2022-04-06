@@ -178,9 +178,12 @@
           ("\\.7z\\'" #1# "7za x -aoa -o%o %i")
           ("\\.tar\\'" ".tgz" nil)
           (":" ".tar.gz" "tar -cf- %i | gzip -c9 > %o")))
+  (dired-compress-directory-default-suffix ".7z")
+  (dired-compress-file-default-suffix ".7z")
   (dired-compress-files-alist
         '(("\\.7z\\'" . "7za a -r %o %i")
-          ("\\.zip\\'" . "7za a -r %o  %i"))))
+          ("\\.zip\\'" . "7za a -r %o  %i")))
+  (dired-do-revert-buffer t))
 
 (use-package dired-narrow
   :after dired
@@ -203,6 +206,9 @@
 
 (use-package ediff
   :ensure nil
+  :bind
+  (:map hoagie-keymap
+        ("e" . ediff-buffers))
   :custom
   (ediff-forward-word-function 'forward-char) ;; from https://emacs.stackexchange.com/a/9411/17066
   (ediff-highlight-all-diffs t)
@@ -330,6 +336,7 @@
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
   (completion-cycle-threshold t)
+  (completions-detailed t)
   :init
   ;; Not the best place for this, but since icomplete displaced amx/smex...
   (define-key hoagie-keymap (kbd "<f6>") #'execute-extended-command)
@@ -359,6 +366,8 @@
   (search-exit-option 'edit)
   (isearch-lazy-count t)
   (isearch-lazy-highlight 'all-windows)
+  (isearch-wrap-pause 'no)
+  (isearch-repeat-on-direction-change t)
   (lazy-highlight-initial-delay 0.1)
   (regexp-search-ring-max 64)
   (search-ring-max 64))
@@ -556,6 +565,7 @@ so the display parameters kick in."
 (use-package paren
   :ensure nil
   :config
+  ;; apparently it is now enabled by default?
   (show-paren-mode)
   :custom
   (show-paren-style 'mixed))
@@ -718,6 +728,8 @@ Meant to be added to `occur-hook'."
   :bind
   ;; taking over the usual Magit binding for vc-dir
   ("C-x g" . project-vc-dir)
+  ;; shadows `vc-dir'
+  ("C-x v d" . vc-dir-root)
   (:map vc-dir-mode-map
         ("f" . hoagie-vc-git-fetch-all)
         ;; vc-dir-find-file-other-window, but I use project-find-file instead
@@ -743,6 +755,8 @@ Meant to be added to `occur-hook'."
 (use-package vc-git
   :ensure nil
   :after vc
+  :custom
+  (vc-git-revision-complete-only-branches t)
   :config
   (defun hoagie-vc-git-fetch-all ()
     "Run \"git fetch --all\" in the current repo.
@@ -818,11 +832,14 @@ branch remains local-only."
       (side . bottom)
       (slot . 0))))
   :config
+  (defun hoagie--some-match (buffer-name list-of-names)
+    "Check LIST-OF-NAMES for a (partial) match to BUFFER-NAME."
+    (cl-some (lambda (a-name) (string-match-p (regexp-quote a-name) buffer-name)) list-of-names))
   (defun hoagie-right-top-side-window-p (buffer-name _action)
     "Determines if BUFFER-NAME is one that should be displayed in the right side window."
     (let ((names '("info" "help" "*vc-dir" "*lsp-ui-imenu*"))
           (modes nil))
-      (or (cl-some (lambda (a-name) (string-match-p (regexp-quote a-name) buffer-name)) names)
+      (or (hoagie--some-match buffer-name names)
           (with-current-buffer buffer-name
             (apply #'derived-mode-p modes)))))
   (defun hoagie-right-bottom-side-window-p (buffer-name _action)
@@ -830,7 +847,7 @@ branch remains local-only."
     ;; Note that *vc- will not include "*vc-dir*" because it is matched in the top side window (and that function runs first)
     (let ((names '("*vc-diff*" "*vc-log*" "*log-edit-files*"))
           (modes nil))
-      (or (cl-some (lambda (a-name) (string-match-p (regexp-quote a-name) buffer-name)) names)
+      (or (hoagie--some-match buffer-name names)
           (with-current-buffer buffer-name
             (apply #'derived-mode-p modes)))))
   (defun hoagie-bottom-side-window-p (buffer-name _action)
@@ -838,7 +855,7 @@ branch remains local-only."
     (let ((names '("shell" "compilation" "messages" "flymake" "xref" "grep" "backtrace"
                    "magit"))
           (modes '(occur-mode)))
-      (or (cl-some (lambda (a-name) (string-match-p (regexp-quote a-name) buffer-name)) names)
+      (or (hoagie--some-match buffer-name names)
           (with-current-buffer buffer-name
             (apply #'derived-mode-p modes)))))
   ;; simplified version that restores a window config and advices delete-other-windows
@@ -849,7 +866,7 @@ branch remains local-only."
     (interactive)
     (when hoagie-window-configuration
       (set-window-configuration hoagie-window-configuration)))
-  (defun hoagie-store-window-configuration ()
+  (defun hoagie-delete-other-windows ()
     (interactive)
     (setf hoagie-window-configuration (current-window-configuration))
     (delete-other-windows))
@@ -884,7 +901,8 @@ branch remains local-only."
   ("<f9>" . window-toggle-side-windows)
   ;; My own version of delete-other-windows. Adding an advice to
   ;; the existing command  was finicky
-  ("C-x 1" . hoagie-delete-other-windows)
+  (:map ctl-x-map
+        ("1" . hoagie-delete-other-windows))
   (:map hoagie-keymap
         ("1" . hoagie-restore-window-configuration)))
 
@@ -1013,6 +1031,10 @@ With ARG, do this that many times."
   ;; (read-process-output-max (* 1024 1024))
   ;; from https://depp.brause.cc/dotemacs/
   (echo-keystrokes 0.25)
+  (use-short-answers t)
+  ;; this works for compile but also occur, grep etc
+  (next-error-message-highlight t)
+  (read-minibuffer-restore-windows nil)
   :config
   ;; see https://emacs.stackexchange.com/a/28746/17066
   ;; https://blog.danielgempesaw.com/post/129841682030/fixing-a-laggy-compilation-buffer
@@ -1022,7 +1044,6 @@ With ARG, do this that many times."
         inhibit-compacting-font-caches t
         auto-window-vscroll nil
         compilation-error-regexp-alist (delete 'maven compilation-error-regexp-alist))
-  (defalias 'yes-or-no-p 'y-or-n-p)
   ;; from http://www.jurta.org/en/emacs/dotemacs, set the major mode
   ;; of buffers that are not visiting a file
   (setq-default major-mode (lambda ()
