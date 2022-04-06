@@ -1,8 +1,8 @@
 ;; .emacs --- My dot emacs file  -*- lexical-binding: t; -*-
 
 ;; Author: Sebastian Monia <smonia@outlook.com>
-;; URL: https://github.com/sebasmonia/.emacs
-;; Version: 4.1
+;; URL: https://github.com/sebasmonia/dotfiles
+;; Version: 28.1
 ;; Keywords: .emacs dotemacs
 
 ;; This file is not part of GNU Emacs.
@@ -18,7 +18,11 @@
 ;;                    to remove some dead packages and things I didn't use that much.
 ;; Update 2022-01-01: Make init file use lexical binding, update mark and point bindings.
 ;;                    Bumping minor version (!) so 4.1 it is :)
-
+;; Update 2022-04-06: Starting today, the major version of this file will match the minimum
+;;                    Emacs version targeted. Since yesterday I added variables and settings
+;;                    that are new in Emacs 28, the new init version is 28.1 (I plan to start
+;;                    bumping the minor version more often, too).
+;;
 ;;; Code:
 
 (setf custom-file (expand-file-name (concat user-emacs-directory "custom.el")))

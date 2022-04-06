@@ -11,12 +11,18 @@ My mode line of choice is [mood-line](https://gitlab.com/jessieh/mood-line), a t
 
 This config uses the Consolas font :)  
 
+### Version numbers
+
+Up until April 2022, the init file Version was arbitrary and bumped on milestones (moving to use-package, changing too many settings, etc.)  
+Starting with Emacs 28, my config file version number will match the minimum Emacs version needed to run it. I will do my best to update the minor version on changes.  
+
 ## Where this runs
 
 I run this configuration in Fedora Silverblue, with just a few extensions installed:
 
-* Clipboard indicator
-* Vertical overview (with the Gnome 3 bindings as [suggested here](https://github.com/RensAlthuis/vertical-overview/issues/7#issuecomment-816054137))
-* Background logo :P
+* [Clipboard history](https://extensions.gnome.org//extension/4839/clipboard-history/): I got used to having a clipboard history in Emacs, and in i3, now I need it in Gnome too.  
+* [Tray icons reloaded](https://extensions.gnome.org//extension/2890/tray-icons-reloaded/): For Slack, mostly.  
+* Background logo, because it looks fancy.  
 
-In addition, I setup Caps Lock as another Control key using dconf. I really like the idea of not layering anything over the base image.  
+I really like the idea of not layering anything over the base image.  
+
