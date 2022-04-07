@@ -613,7 +613,8 @@ so the display parameters kick in."
   :ensure nil
   :bind
   (:map hoagie-keymap
-        ("o" . hoagie-occur-dwim))
+        ("o" . hoagie-occur-dwim)
+        ("O" . multi-occur-in-matching-buffers))
   :config
   (defun hoagie-occur-dwim ()
     "Run occur, if there's a region selected use that as input.
