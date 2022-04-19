@@ -93,6 +93,11 @@
 (define-key key-translation-map (kbd "C-z") (kbd "ESC")) ;; esc-map ~= alt
 (global-set-key (kbd "<f8>") mode-specific-map)  ;; C-c
 
+(use-package better-shell
+  :after shell
+  :bind (:map hoagie-keymap
+              ("`" . better-shell-for-current-dir)))
+
 (use-package browse-kill-ring
   :config
   (browse-kill-ring-default-keybindings))
@@ -245,24 +250,6 @@
   ;; the window config is restored but then _stuff happens_, so:
   (add-hook 'ediff-after-quit-hook-internal #'hoagie-ediff-restore-windows))
 
-(use-package eww
-  :ensure nil
-  :hook
-  (eww-mode-hook . toggle-word-wrap)
-  (eww-mode-hook . visual-line-mode)
-  :custom
-  (browse-url-browser-function #'eww-browse-url)
-  :bind
-  (:map eww-mode-map
-        ("o" . eww)
-        ("O" . eww-browse-with-external-browser)))
-
-(use-package eww-lnum
-  :after eww
-  :bind
-  (:map eww-mode-map
-        ("C-c SPC" . eww-lnum-follow)))
-
 (use-package eldoc-box
   :hook
   (prog-mode-hook . eldoc-box-hover-mode)
@@ -281,6 +268,24 @@
   (electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
   :config
   (electric-pair-mode))
+
+(use-package eww
+  :ensure nil
+  :hook
+  (eww-mode-hook . toggle-word-wrap)
+  (eww-mode-hook . visual-line-mode)
+  :custom
+  (browse-url-browser-function #'eww-browse-url)
+  :bind
+  (:map eww-mode-map
+        ("o" . eww)
+        ("O" . eww-browse-with-external-browser)))
+
+(use-package eww-lnum
+  :after eww
+  :bind
+  (:map eww-mode-map
+        ("C-c SPC" . eww-lnum-follow)))
 
 (use-package expand-region
   :bind
@@ -318,6 +323,15 @@
                                     (lambda (start end)
                                       (let ((indent-region-function #'c-indent-region))
                                         (indent-region start end)))))))
+
+(use-package git-timemachine
+  :bind ("C-x M-G" . git-timemachine))
+
+(use-package grep
+  :ensure nil
+  :bind
+  (:map hoagie-keymap
+        ("G" . rgrep)))
 
 (use-package hl-line
   :ensure nil
@@ -501,15 +515,6 @@ so the display parameters kick in."
   (magit-commit-diff-inhibit-same-window t)
   (magit-display-buffer-function 'display-buffer))
 
-(use-package git-timemachine
-  :bind ("C-x M-G" . git-timemachine))
-
-(use-package grep
-  :ensure nil
-  :bind
-  (:map hoagie-keymap
-        ("G" . rgrep)))
-
 (defvar hoagie-org-keymap (define-prefix-command 'hoagie-org-keymap) "Custom bindings for org-mode.")
 (use-package org
   :ensure nil
@@ -678,11 +683,6 @@ Meant to be added to `occur-hook'."
   (shell-mode-hook . (lambda ()
                        (toggle-truncate-lines t)
                        (setf comint-process-echoes t))))
-
-(use-package better-shell
-  :after shell
-  :bind (:map hoagie-keymap
-              ("`" . better-shell-for-current-dir)))
 
 (use-package sly
   :commands sly
@@ -875,6 +875,20 @@ branch remains local-only."
     (interactive)
     (setf hoagie-window-configuration (current-window-configuration))
     (delete-other-windows))
+  (defun hoagie-toggle-frame-split ()
+    "Toggle orientation, just like ediff's |.
+See https://www.emacswiki.org/emacs/ToggleWindowSplit for sources, this version is my own
+spin ones of the first two in the page."
+    (interactive)
+    (unless (= (count-windows) 2)
+      (error "Can only toggle a frame split in two"))
+    (let ((was-split-vertically (window-combined-p))
+          (other-buffer (window-buffer (next-window))))
+      (delete-other-windows) ; closes the other window
+      (if was-split-vertically
+          (split-window-horizontally)
+        (split-window-vertically))
+      (set-window-buffer (next-window) other-buffer)))
   :custom
   (window-sides-vertical t)
   (ignore-window-parameters t)
@@ -907,9 +921,11 @@ branch remains local-only."
   ;; My own version of delete-other-windows. Adding an advice to
   ;; the existing command  was finicky
   (:map ctl-x-map
-        ("1" . hoagie-delete-other-windows))
+        ("1" . hoagie-delete-other-windows)
+        ("|" . hoagie-toggle-frame-split))
   (:map hoagie-keymap
-        ("1" . hoagie-restore-window-configuration)))
+        ("1" . hoagie-restore-window-configuration)
+        ("|" . hoagie-toggle-frame-split)))
 
 (use-package web-mode
   :mode
