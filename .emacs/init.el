@@ -811,31 +811,6 @@ branch remains local-only."
 
 (use-package window
   :ensure nil
-  :custom
-  (window-sides-vertical t)
-  (ignore-window-parameters t)
-  (display-buffer-alist
-   '((hoagie-right-top-side-window-p
-      (display-buffer-reuse-window display-buffer-in-side-window)
-      (window-width . 0.40)
-      (side . right)
-      (slot . -1))
-     (hoagie-right-bottom-side-window-p
-      (display-buffer-reuse-window display-buffer-in-side-window)
-      (window-width . 0.40)
-      (side . right)
-      (slot . 1))
-     ;; very particular rule for committing files with vc-git
-     ("\\*log-edit-files\\*"
-      (display-buffer-reuse-window display-buffer-in-side-window)
-      (window-width . 0.40)
-      (side . right)
-      (slot . 2))
-     (hoagie-bottom-side-window-p
-      (display-buffer-reuse-window display-buffer-in-side-window)
-      (window-height . 0.35)
-      (side . bottom)
-      (slot . 0))))
   :config
   (defun hoagie--some-match (buffer-name list-of-names)
     "Check LIST-OF-NAMES for a (partial) match to BUFFER-NAME."
@@ -843,7 +818,7 @@ branch remains local-only."
   (defun hoagie-right-top-side-window-p (buffer-name _action)
     "Determines if BUFFER-NAME is one that should be displayed in the right side window."
     (let ((names '("info" "help" "*vc-dir" "*lsp-ui-imenu*"))
-          (modes nil))
+          (modes '(dired-mode)))
       (or (hoagie--some-match buffer-name names)
           (with-current-buffer buffer-name
             (apply #'derived-mode-p modes)))))
@@ -891,7 +866,6 @@ spin ones of the first two in the page."
       (set-window-buffer (next-window) other-buffer)))
   :custom
   (window-sides-vertical t)
-  (ignore-window-parameters t)
   (display-buffer-alist
    '((hoagie-right-top-side-window-p
       (display-buffer-reuse-window display-buffer-in-side-window)
