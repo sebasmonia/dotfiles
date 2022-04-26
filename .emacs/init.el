@@ -90,7 +90,6 @@
 (global-set-key (kbd "<f6>") 'hoagie-keymap)
 (define-key key-translation-map (kbd "<f7>") (kbd "ESC")) ;; esc-map ~= alt
 
-(define-key key-translation-map (kbd "C-z") (kbd "ESC")) ;; esc-map ~= alt
 (global-set-key (kbd "<f8>") mode-specific-map)  ;; C-c
 
 (use-package better-shell
@@ -825,7 +824,7 @@ branch remains local-only."
   (defun hoagie-right-bottom-side-window-p (buffer-name _action)
     "Determines if BUFFER-NAME is one that should be displayed in the right side window."
     ;; Note that *vc- will not include "*vc-dir*" because it is matched in the top side window (and that function runs first)
-    (let ((names '("*vc-diff*" "*vc-log*" "*log-edit-files*"))
+    (let ((names '("*vc-diff*" "*vc-log*"))
           (modes nil))
       (or (hoagie--some-match buffer-name names)
           (with-current-buffer buffer-name
@@ -877,12 +876,6 @@ spin ones of the first two in the page."
       (window-width . 0.40)
       (side . right)
       (slot . 1))
-     ;; very particular rule for committing files with vc-git
-     ("\\*log-edit-files\\*"
-      (display-buffer-reuse-window display-buffer-in-side-window)
-      (window-width . 0.40)
-      (side . right)
-      (slot . 2))
      (hoagie-bottom-side-window-p
       (display-buffer-reuse-window display-buffer-in-side-window)
       (window-height . 0.35)
@@ -983,12 +976,12 @@ With ARG, do this that many times."
   ("M-SPC" . cycle-spacing)
   ;; from https://emacsredux.com/blog/2020/06/10/comment-commands-redux/
   ("<remap> <comment-dwim>" . comment-line)
-  ;; replace delete-char
-  ("C-d" . delete-forward-char)
+  ("C-d" . delete-forward-char) ;; replace delete-char, as recommended in the docs
   ("C-<backspace>" . backward-delete-word)
   ("M-c" . capitalize-dwim)
   ("M-u" . upcase-dwim)
   ("M-l" . downcase-dwim)
+  ("C-z" . zap-to-char)
   ;; like flycheck's C-c ! l
   ("C-c !" . flymake-show-buffer-diagnostics)
   ("C-x n i" . narrow-to-region-indirect)
