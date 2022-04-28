@@ -611,6 +611,8 @@ so the display parameters kick in."
   (repeat-mode))
 
 (use-package restclient
+  :custom
+  (restclient-same-buffer-response . nil)
   :mode ("\\.http\\'" . restclient-mode))
 
 (use-package replace
