@@ -2,7 +2,7 @@
 
 ;; Author: Sebastian Monia <smonia@outlook.com>
 ;; URL: https://github.com/sebasmonia/dotfiles
-;; Version: 28.1
+;; Version: 28.2
 ;; Keywords: .emacs dotemacs
 
 ;; This file is not part of GNU Emacs.
@@ -146,6 +146,19 @@
   :ensure nil
   :custom
   (dired-listing-switches "-laogGhvD")
+  (dired-compress-file-suffixes
+        '(("\\.tar\\.gz\\'" #1="" "7za x -aoa -o%o %i")
+          ("\\.tgz\\'" #1# "7za x -aoa -o%o %i")
+          ("\\.zip\\'" #1# "7za x -aoa -o%o %i")
+          ("\\.7z\\'" #1# "7za x -aoa -o%o %i")
+          ("\\.tar\\'" ".tgz" nil)
+          (":" ".tar.gz" "tar -cf- %i | gzip -c9 > %o")))
+  (dired-compress-directory-default-suffix ".7z")
+  (dired-compress-file-default-suffix ".7z")
+  (dired-compress-files-alist
+        '(("\\.7z\\'" . "7za a -r %o %i")
+          ("\\.zip\\'" . "7za a -r %o  %i")))
+  (dired-do-revert-buffer t)
   :bind
   ("<C-f1>" . 'hoagie-kill-buffer-filename)
   (:map hoagie-keymap
@@ -173,25 +186,6 @@
       (when name
         (kill-new name))
       (message (format "Filename: %s" (or name "-No file for this buffer-"))))))
-
-(use-package dired-aux
-  :after dired
-  :demand t
-  :ensure nil
-  :custom
-  (dired-compress-file-suffixes
-        '(("\\.tar\\.gz\\'" #1="" "7za x -aoa -o%o %i")
-          ("\\.tgz\\'" #1# "7za x -aoa -o%o %i")
-          ("\\.zip\\'" #1# "7za x -aoa -o%o %i")
-          ("\\.7z\\'" #1# "7za x -aoa -o%o %i")
-          ("\\.tar\\'" ".tgz" nil)
-          (":" ".tar.gz" "tar -cf- %i | gzip -c9 > %o")))
-  (dired-compress-directory-default-suffix ".7z")
-  (dired-compress-file-default-suffix ".7z")
-  (dired-compress-files-alist
-        '(("\\.7z\\'" . "7za a -r %o %i")
-          ("\\.zip\\'" . "7za a -r %o  %i")))
-  (dired-do-revert-buffer t))
 
 (use-package dired-narrow
   :after dired
@@ -260,13 +254,6 @@
   :config
   ;; set the child frame face as 1.0 relative to the default font
   (set-face-attribute 'eldoc-box-body nil :inherit 'default :height 1.0))
-
-(use-package elec-pair
-  :ensure nil
-  :custom
-  (electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
-  :config
-  (electric-pair-mode))
 
 (use-package eww
   :ensure nil
@@ -703,27 +690,6 @@ Meant to be added to `occur-hook'."
 (use-package terraform-mode
   :mode "\\.tf$")
 
-(use-package undo-tree
-  :demand t
-  :custom
-  (undo-tree-visualizer-diff t)
-  (undo-tree-auto-save-history nil)
-  :bind
-  ;; I have been using my own binding for dabbrev since _forever_, this is fine
-  ("M-/" . undo-tree-redo)
-  :config
-  (global-undo-tree-mode)
-  (defvar undoredo-keymap-repeat-map (make-sparse-keymap) "Repeat map for undo/redo")
-  ;; setup "repeat keys"" to undo & redo
-  (define-key undoredo-keymap-repeat-map (kbd "/") #'undo-tree-undo)
-  ;; add shift to redo
-  (define-key undoredo-keymap-repeat-map (kbd "?") #'undo-tree-redo)
-  ;; use space to jump to the undo tree
-  (define-key undoredo-keymap-repeat-map (kbd "SPC") #'undo-tree-visualize)
-  ;; set the "repeat-map" symbol property
-  (put 'undo-tree-undo 'repeat-map 'undoredo-keymap-repeat-map)
-  (put 'undo-tree-redo 'repeat-map 'undoredo-keymap-repeat-map))
-
 (use-package vc
   :ensure nil
   :demand t)
@@ -810,35 +776,14 @@ branch remains local-only."
   (visible-mark-forward-max 2)
   (visible-mark-forward-faces '(visible-mark-forward-face1 visible-mark-forward-face2)))
 
+(use-package vundo
+  :demand t
+  :bind
+  ("C-x /" . vundo))
+
 (use-package window
   :ensure nil
   :config
-  (defun hoagie--some-match (buffer-name list-of-names)
-    "Check LIST-OF-NAMES for a (partial) match to BUFFER-NAME."
-    (cl-some (lambda (a-name) (string-match-p (regexp-quote a-name) buffer-name)) list-of-names))
-  (defun hoagie-right-top-side-window-p (buffer-name _action)
-    "Determines if BUFFER-NAME is one that should be displayed in the right side window."
-    (let ((names '("info" "help" "*vc-dir" "*lsp-ui-imenu*"))
-          (modes '(dired-mode)))
-      (or (hoagie--some-match buffer-name names)
-          (with-current-buffer buffer-name
-            (apply #'derived-mode-p modes)))))
-  (defun hoagie-right-bottom-side-window-p (buffer-name _action)
-    "Determines if BUFFER-NAME is one that should be displayed in the right side window."
-    ;; Note that *vc- will not include "*vc-dir*" because it is matched in the top side window (and that function runs first)
-    (let ((names '("*vc-diff*" "*vc-log*"))
-          (modes nil))
-      (or (hoagie--some-match buffer-name names)
-          (with-current-buffer buffer-name
-            (apply #'derived-mode-p modes)))))
-  (defun hoagie-bottom-side-window-p (buffer-name _action)
-    "Determines if BUFFER-NAME is one that should be displayed in the bottom side window."
-    (let ((names '("shell" "compilation" "messages" "flymake" "xref" "grep" "backtrace"
-                   "magit"))
-          (modes '(occur-mode)))
-      (or (hoagie--some-match buffer-name names)
-          (with-current-buffer buffer-name
-            (apply #'derived-mode-p modes)))))
   ;; simplified version that restores a window config and advices delete-other-windows
   ;; idea from https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
   (defvar hoagie-window-configuration nil "Last window configuration saved.")
@@ -865,28 +810,7 @@ spin ones of the first two in the page."
           (split-window-horizontally)
         (split-window-vertically))
       (set-window-buffer (next-window) other-buffer)))
-  :custom
-  (window-sides-vertical t)
-  (display-buffer-alist
-   '((hoagie-right-top-side-window-p
-      (display-buffer-reuse-window display-buffer-in-side-window)
-      (window-width . 0.40)
-      (side . right)
-      (slot . -1))
-     (hoagie-right-bottom-side-window-p
-      (display-buffer-reuse-window display-buffer-in-side-window)
-      (window-width . 0.40)
-      (side . right)
-      (slot . 1))
-     (hoagie-bottom-side-window-p
-      (display-buffer-reuse-window display-buffer-in-side-window)
-      (window-height . 0.35)
-      (side . bottom)
-      (slot . 0))))
   :bind
-  ;; this binding is a complement of C-x 1 and <f6> 1 to toggle
-  ;; all windows vs one window.
-  ("<f9>" . window-toggle-side-windows)
   ;; My own version of delete-other-windows. Adding an advice to
   ;; the existing command  was finicky
   (:map ctl-x-map
