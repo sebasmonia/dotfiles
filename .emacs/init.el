@@ -2,7 +2,7 @@
 
 ;; Author: Sebastian Monia <smonia@outlook.com>
 ;; URL: https://github.com/sebasmonia/dotfiles
-;; Version: 28.2
+;; Version: 28.3
 ;; Keywords: .emacs dotemacs
 
 ;; This file is not part of GNU Emacs.
@@ -19,9 +19,11 @@
 ;; Update 2022-01-01: Make init file use lexical binding, update mark and point bindings.
 ;;                    Bumping minor version (!) so 4.1 it is :)
 ;; Update 2022-04-06: Starting today, the major version of this file will match the minimum
-;;                    Emacs version targeted. Since yesterday I added variables and settings
+;;                    Emacs version targeted.  Since yesterday I added variables and settings
 ;;                    that are new in Emacs 28, the new init version is 28.1 (I plan to start
 ;;                    bumping the minor version more often, too).
+;; Update 2022-06-09: Finished reading Mastering Emacs, added some notes and bindings
+;;                    Cleaned up some functions, removed some values.
 ;;
 ;;; Code:
 
@@ -48,7 +50,6 @@
 (setf use-package-always-ensure t)
 (setf use-package-hook-name-suffix nil)
 (setf package-native-compile t)
-
 (custom-set-faces
  '(default ((t (:family "Consolas" :foundry "MS  " :slant normal :weight regular :height 128 :width normal)))))
 
@@ -73,12 +74,13 @@
   "Stores the name of the current container, if present.")
 
 (defun hoagie-work-toolbox-p ()
+  "Return t if the toolbox name matches a \"work\" one."
   (string-prefix-p "starz-" hoagie-toolbox-name))
 
 ;; These things depend on the type of container running container
 ;; The org config is the other piece that changes heavily depending on the container type
-(defvar hoagie-org-path "~/org/" "Path to use for org documents. See \"workonlyconfig.el\" for override.")
-(defvar hoagie-home-path "~/" "Path to use as \"home\" for most files. . See \"workonlyconfig.el\" for override.")
+(defvar hoagie-org-path "~/org/" "Path to use for org documents.  See \"workonlyconfig.el\" for override.")
+(defvar hoagie-home-path "~/" "Path to use as \"home\" for most files.  . See \"workonlyconfig.el\" for override.")
 
 ;; Opening a terminal in toolbox includes ~/.local/bin so let's add that for Emacs too
 (setenv "PATH" "/var/home/hoagie/.local/bin:$PATH" t)
@@ -163,7 +165,8 @@
   ("<C-f1>" . 'hoagie-kill-buffer-filename)
   (:map hoagie-keymap
         (("F" . find-name-dired)
-         ("j" . dired-jump)))
+         ("j" . dired-jump)
+         ("J" . dired-jump-other-window)))
   (:map dired-mode-map
         ("C-<return>" . dired-open-file)
         ("<C-f1>" . (lambda () (interactive) (dired-copy-filename-as-kill 0))))
@@ -172,10 +175,8 @@
   :config
   ;; from Emacs Wiki
   (defun dired-open-file ()
-    "Call xdg-open on the file at point."
+    "Call xdg-open on the file at point, using \"flatpak spawn\" when running inside a toolbox."
     (interactive)
-    ;; Can probably make this code nicer and more DRY,
-    ;; although this way it is clear/readable enough...
     (if hoagie-container-name
         (call-process "flatpak-spawn" nil 0 nil "--host" "xdg-open" (dired-get-filename nil t))
       (call-process "xdg-open" nil 0 nil (dired-get-filename nil t))))
@@ -360,6 +361,7 @@
   :ensure nil
   :demand t
   :bind
+  ("M-i" . imenu) ;; TODO - on probation
   (:map hoagie-keymap
         ("i" . imenu)))
 
@@ -434,7 +436,7 @@
   (lsp-ui-sideline-enable nil)
   :bind
   (:map hoagie-keymap
-        ("C-i" . hoagie-lsp-ui-imenu))
+        ("C-i" . lsp-ui-imenu))
   (:map hoagie-lsp-keymap
         ("i" . lsp-ui-imenu))
   (:map lsp-ui-imenu-mode-map
@@ -443,17 +445,7 @@
         ("p" . previous-line)
         ("o" . lsp-ui-imenu--view)
         ("g" . lsp-ui-imenu--refresh)
-        ("<return>" . lsp-ui-imenu--visit))
-  :config
-  (defun hoagie-lsp-ui-imenu ()
-    "Display `lsp-ui-menu' respecting `display-buffer-alist'.
-This code deletes the window just created, then calls `pop-to-buffer' with it
-so the display parameters kick in."
-    ;; this is very fickle, but it works, so :shrug:
-    (interactive)
-    (lsp-ui-imenu)
-    (delete-window)
-    (pop-to-buffer "*lsp-ui-imenu*")))
+        ("<return>" . lsp-ui-imenu--visit)))
 
 ;; (use-package dap-mode
 ;;   :commands (dap-debug dap-breakpoints-add)
@@ -501,7 +493,7 @@ so the display parameters kick in."
   (magit-commit-diff-inhibit-same-window t)
   (magit-display-buffer-function 'display-buffer))
 
-(defvar hoagie-org-keymap (define-prefix-command 'hoagie-org-keymap) "Custom bindings for org-mode.")
+(defvar hoagie-org-keymap (define-prefix-command 'hoagie-org-keymap) "Custom bindings for `org-mode'.")
 (use-package org
   :ensure nil
   :mode ("\\.org$" . org-mode)
@@ -682,6 +674,9 @@ Meant to be added to `occur-hook'."
 
 (use-package sql
   :ensure nil
+  :custom
+  (sql-ms-options '("--driver" "ODBC Driver 17 for SQL Server"))
+  (sql-ms-program "/var/home/hoagie/github/sqlcmdline/sqlcmdline.py")
   :hook
   (sql-interactive-mode-hook . (lambda () (setf truncate-lines t))))
 
@@ -784,22 +779,25 @@ branch remains local-only."
 (use-package window
   :ensure nil
   :config
-  ;; simplified version that restores a window config and advices delete-other-windows
-  ;; idea from https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
-  (defvar hoagie-window-configuration nil "Last window configuration saved.")
+  ;; Stores the window setup before focusing on a single window, and restore it
+  ;; on a "mirror" binding: C-x 1 vs F6 1. Simplified version of the
+  ;; idea at https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
+  (defvar hoagie-window-configuration nil "Window configuration saved before deleting other windows.")
   (defun hoagie-restore-window-configuration ()
     "Use `hoagie-window-configuration' to restore the window setup."
     (interactive)
     (when hoagie-window-configuration
       (set-window-configuration hoagie-window-configuration)))
   (defun hoagie-delete-other-windows ()
+    "Custom `delete-other-windows' that stores the current setup in `hoagie-window-configuration'.
+Adding an advice to the existing command was finicky."
     (interactive)
     (setf hoagie-window-configuration (current-window-configuration))
     (delete-other-windows))
   (defun hoagie-toggle-frame-split ()
     "Toggle orientation, just like ediff's |.
 See https://www.emacswiki.org/emacs/ToggleWindowSplit for sources, this version is my own
-spin ones of the first two in the page."
+spin of the first two in the page."
     (interactive)
     (unless (= (count-windows) 2)
       (error "Can only toggle a frame split in two"))
@@ -811,8 +809,6 @@ spin ones of the first two in the page."
         (split-window-vertically))
       (set-window-buffer (next-window) other-buffer)))
   :bind
-  ;; My own version of delete-other-windows. Adding an advice to
-  ;; the existing command  was finicky
   (:map ctl-x-map
         ("1" . hoagie-delete-other-windows)
         ("|" . hoagie-toggle-frame-split))
@@ -856,9 +852,8 @@ spin ones of the first two in the page."
     (if arg
         (dired-other-window hoagie-home-path)
       (dired hoagie-home-path)))
-  ;; from https://www.emacswiki.org/emacs/BackwardDeleteWord
-  ;; because I agree C-backspace shouldn't kill the word!
-  ;; it litters my kill ring
+  ;; from https://www.emacswiki.org/emacs/BackwardDeleteWord because I
+  ;; agree C-backspace shouldn't kill the word! It litters my kill ring
   (defun delete-word (arg)
     "Delete characters forward until encountering the end of a word.
 With ARG, do this that many times."
@@ -875,13 +870,13 @@ With ARG, do this that many times."
     (delete-word (- arg)))
   ;; from https://demonastery.org/2013/04/emacs-narrow-to-region-indirect/
   (defun narrow-to-region-indirect (start end)
-  "Restrict editing in this buffer to the current region, indirectly."
-  (interactive "r")
-  (deactivate-mark)
-  (let ((buf (clone-indirect-buffer nil t)))
-    (with-current-buffer buf
-      (narrow-to-region start end))
-      (switch-to-buffer buf)))
+    "Restrict editing in this buffer to the current region, indirectly."
+    (interactive "r")
+    (deactivate-mark)
+    (let ((buf (clone-indirect-buffer nil t)))
+      (with-current-buffer buf
+        (narrow-to-region start end)
+        (switch-to-buffer buf))))
   :bind
   ("<S-f1>" . (lambda () (interactive) (find-file user-init-file)))
   ("<f1>" . hoagie-go-home)
@@ -907,7 +902,7 @@ With ARG, do this that many times."
   ("M-c" . capitalize-dwim)
   ("M-u" . upcase-dwim)
   ("M-l" . downcase-dwim)
-  ("C-z" . zap-to-char)
+  ("C-z" . zap-up-to-char)
   ;; like flycheck's C-c ! l
   ("C-c !" . flymake-show-buffer-diagnostics)
   ("C-x n i" . narrow-to-region-indirect)
@@ -931,7 +926,7 @@ With ARG, do this that many times."
   (initial-buffer-choice t)
   (reb-re-syntax 'string)
   (initial-scratch-message
-   ";; Il semble que la perfection soit atteinte non quand il n'y a plus rien à ajouter, mais quand il n'y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n")
+   ";; Il semble que la perfection soit atteinte non quand il n'y a plus rien à ajouter, mais quand il n'y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n;; New bindings\n;; M-h mnemonic mark bindings (replaces mark-paragraph)\n;; Act on sexp: C-M-SPC mark, C-M-k kill\n;; imenu: M-i\n;; Transpose word M-t sexp C-M-t\n;; C-x C-k e edit kmacro\n;; C-z zap-up-to-char\n\n;; SHELL:\n;; C-c C-[p|n] prev/next input\n;; C-c C-o clear last output (prefix to kill)\n\n;; C-; dabbrev\n;; M-\\ hippie-expand (on trial)\n\n;; Available Function keys: F5 F9 F10 menu-bar-open F11 toggle-frame-fullscreen F12 \n\n;; REMEMBER YOUR REGEXPS")
   (save-interprogram-paste-before-kill t)
   (visible-bell t)
   ;; from https://gitlab.com/jessieh/dot-emacs
@@ -998,8 +993,7 @@ With ARG, do this that many times."
 ;; Convenient to work with AWS timestamps
 (defun hoagie-convert-timestamp (&optional timestamp)
   "Convert a Unix TIMESTAMP (as string) to date.  If the parameter is not provided use word at point."
-  (interactive)
-  (setf timestamp (or timestamp (thing-at-point 'word t)))
+  (interactive (list (thing-at-point 'word t)))
   (let ((to-convert (if (< 10 (length timestamp)) (substring timestamp 0 10) timestamp))
         (millis (if (< 10 (length timestamp)) (substring timestamp 10 (length timestamp)) "000")))
     (message "%s.%s"
@@ -1011,7 +1005,7 @@ With ARG, do this that many times."
 
 ;; Per-OS configuration
 (setf user-full-name "Sebastián Monía"
-      user-mail-address "seb.hoagie@outlook.com")
+      user-mail-address "sebastian@sebasmonia.com")
 
 (when (hoagie-work-toolbox-p)
   (load "/var/home/hoagie/starz/repos/miscscripts/workonlyconfig.el"))
@@ -1061,11 +1055,12 @@ With ARG, do this that many times."
 ;; So, rolling back :)
 
 (defun push-mark-no-activate ()
-  "Pushes `point` to `mark-ring' and does not activate the region.
-Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled.
+  "Pushes `point' to `mark-ring' and does not activate the region.
+Equivalent to `set-mark-command' when `transient-mark-mode' is disabled.
 Source: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode"
   (interactive)
-  (push-mark (point) t nil)) ; removed the message, visible-mark takes care of this
+  ;; removed the message, visible-mark takes care of this
+  (push-mark (point) t nil))
 
 (defun unpop-to-mark-command ()
   "Unpop off mark ring.  Does nothing if mark ring is empty.
@@ -1095,14 +1090,14 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
   (unless (equal last-command this-command)
     (push-mark-no-activate)))
 
-;; manually setting the mark bindings
+;; Manually setting the mark bindings
 ;; 2022-01-01: After one too many collisions with existing bindings (Powershell-mode in the past,
 ;; org-mode, markdown mode) and considering this for quite some time, I am changing these bindings,
 ;; which are an evolution of the ones recommended in Mickey Petersen's post, to something using
 ;; my own keymap.
 (defvar mark-keymap (define-prefix-command 'mark-keymap) "Custom bindings to push the mark and cycle the mark ring.")
 ;; My first use of repeat-maps!!!
-(defvar mark-keymap-repeat-map (make-sparse-keymap) "Repeat map for commands in `mark-keymap'.")
+(defvar mark-keymap-repeat-map (make-sparse-keymap) "Repeat map for commands in variable `mark-keymap'.")
 ;; I am using "l" and "r" rather than "n" and "p" thinking of help/info using the former to move navigate pages
 (define-key mark-keymap (kbd "SPC") #'push-mark-no-activate)
 (define-key mark-keymap (kbd "l") #'pop-to-mark-push-if-first)
@@ -1150,6 +1145,51 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
           (narrowed (when (buffer-narrowed-p)
                         "[N]"))
           (position (propertize " %p%% " 'face 'mood-line-unimportant)))
-      (list "%l:%c" position region-size narrowed))))
+      (list "%l:%c" position region-size narrowed)))
+  (defun mood-line-segment-misc-info ()
+    "Displays the current value of `mode-line-misc-info' in the mode-line.
+Unlike the original, it also adds keyboard macro recording status."
+    (let ((misc-info (concat (format-mode-line mode-line-misc-info 'mood-line-unimportant)
+                             (when defining-kbd-macro
+                               (format-mode-line mode-line-defining-kbd-macro
+                                                 'mood-line-major-mode)))))
+      (unless (string= (mood-line--string-trim misc-info) "")
+        (concat (mood-line--string-trim misc-info) "  "))))
+  )
+
+;;; Experimental features - from reading Mastering Emacs
+
+;; I like the idea of using mark commands other than M-h, but I don't find most of the default bindings
+;; that need @ very easy to type. Using C-M-h for the new prefix, and leaving M-h as-is, proved difficult
+;; (lots of modes override the command with their own variants, shadowing the global map)
+;; so I'll take the leap to replace M-h with these longer, but mnemonic, variants:
+;; 1. Mark word (w)
+;; 2. Mark defun (d)
+;; 3. Mark sexp (s)
+;; 4. Mark paragraph (p)
+(defvar hoagie-mark-map (define-prefix-command 'hoagie-mark-map) "Custom, mnemonic, bindings for (some) mark commands.")
+
+(define-key hoagie-mark-map (kbd "w") #'mark-word)
+(define-key hoagie-mark-map (kbd "d") #'mark-defun)
+(define-key hoagie-mark-map (kbd "s") #'mark-sexp)
+(define-key hoagie-mark-map (kbd "p") #'mark-paragraph)
+
+(global-set-key (kbd "M-h") 'hoagie-mark-map)
+
+
+;; TODO: an alternative, rely on C-M-SPC for mark-sexp and change M-h to mark-defun,
+;; which seems more apt for prog-modes.
+
+;; Follow up to previous: C-M-SPC to select, C-M-k to kill by sexp.
+;; I should be using these two a lot more
+
+;; TODO: suggest ezwinports over gnucore utils to Mickey P.
+
+;; See M-i for imenu
+
+;; Transpose word M-t sexp C-M-t
+
+;; Keeping C-; for dabbrev but trying hippie-expand too
+(global-set-key (kbd "M-/") #'hippie-expand)
 
 ;;; init.el ends here
