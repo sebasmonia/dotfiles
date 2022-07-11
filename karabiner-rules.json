@@ -1,0 +1,39 @@
+{
+  "title": "Minimal change",
+  "rules": [
+    {
+      "description": "Left Control to Esc if tapped, else Control",
+      "manipulators": [
+        {
+          "type": "basic",
+          "from": {
+            "modifiers": {
+              "optional": [
+                "any"
+              ]
+            },
+            "key_code": "left_control"
+          },
+          "to": [
+            {
+              "repeat": true,
+              "key_code": "left_control"
+            }
+          ],
+          "to_if_alone": [
+            {
+              "repeat": false,
+              "key_code": "escape"
+            }
+          ],
+          "to_if_held_down": [
+            {
+              "repeat": true,
+              "key_code": "left_control"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
