@@ -51,7 +51,7 @@
 (setf use-package-hook-name-suffix nil)
 (setf package-native-compile t)
 (custom-set-faces
- '(default ((t (:family "Consolas" :foundry "MS  " :slant normal :weight regular :height 128 :width normal)))))
+ '(default ((t (:family "Consolas" :foundry "MS  " :slant normal :weight regular :height 160 :width normal)))))
 
 ;; based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html
 (defvar hoagie-keymap (define-prefix-command 'hoagie-keymap) "My custom bindings.")
@@ -70,7 +70,7 @@
                                   (search-forward "name=") ;; move point to the line with the name
                                   (setf hoagie-container-name
                                         (cl-subseq (thing-at-point 'line) 6 -2)))
-                              "Running on host")
+                              "host")
   "Stores the name of the current container, if present.")
 
 (defun hoagie-work-toolbox-p ()
@@ -81,12 +81,6 @@
 ;; The org config is the other piece that changes heavily depending on the container type
 (defvar hoagie-org-path "~/org/" "Path to use for org documents.  See \"workonlyconfig.el\" for override.")
 (defvar hoagie-home-path "~/" "Path to use as \"home\" for most files.  . See \"workonlyconfig.el\" for override.")
-
-;; Opening a terminal in toolbox includes ~/.local/bin so let's add that for Emacs too
-(setenv "PATH" "/var/home/hoagie/.local/bin:$PATH" t)
-;; Also add the directory to exec-path
-;; TODO: Figure out what changes exec-path? Because the "original value" does include the ~/.local dirs
-(push "/var/home/hoagie/.local/bin" exec-path)
 
 ;; experimenting with new types of keybindings/entry keys for keymaps
 (global-set-key (kbd "<f6>") 'hoagie-keymap)
@@ -173,13 +167,23 @@
   :hook
   (dired-mode-hook . dired-hide-details-mode)
   :config
-  ;; from Emacs Wiki
   (defun dired-open-file ()
-    "Call xdg-open on the file at point, using \"flatpak spawn\" when running inside a toolbox."
+    "Open a file with the default OS program.
+Initial version from EmacsWiki, added macOS & Silverblue toolbox support."
     (interactive)
-    (if hoagie-container-name
-        (call-process "flatpak-spawn" nil 0 nil "--host" "xdg-open" (dired-get-filename nil t))
-      (call-process "xdg-open" nil 0 nil (dired-get-filename nil t))))
+    (let ((program-name (if (eq system-type 'darwin)
+                            "open"
+                          ;; For Linux, change based on toolbox vs non-toolbox
+                          (if (string= hoagie-toolbox-name "host")
+                              "xdg-open"
+                            "flatpak-spawn"))))
+      (apply #'call-process
+             program-name
+             ;; arguments to `call-process' + args for toolbox when required + target filename
+             `(nil 0 nil
+                   ,@(unless (string= hoagie-toolbox-name "host")
+                       '("--host" "xdg-open"))
+                   ,(dired-get-filename nil t)))))
   (defun hoagie-kill-buffer-filename ()
     "Sends the current buffer's filename to the kill ring."
     (interactive)
@@ -243,6 +247,11 @@
   ;; Welp, don't like using internals but, the regular hook doesn't quite work
   ;; the window config is restored but then _stuff happens_, so:
   (add-hook 'ediff-after-quit-hook-internal #'hoagie-ediff-restore-windows))
+
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (exec-path-from-shell-initialize))
 
 (use-package eldoc-box
   :hook
@@ -312,7 +321,13 @@
                                         (indent-region start end)))))))
 
 (use-package git-timemachine
-  :bind ("C-x M-G" . git-timemachine))
+  :bind
+  ("C-x M-G" . git-timemachine))
+
+(use-package go-mode
+  :hook
+  (before-save-hook . lsp-format-buffer)
+  (before-save-hook . lsp-organize-imports))
 
 (use-package grep
   :ensure nil
@@ -386,6 +401,18 @@
 (use-package json-mode
   :mode "\\.json$")
 
+(use-package kubernetes
+  :ensure t
+  :commands (kubernetes-overview)
+  :bind
+  ("C-c k" . kubernetes-overview)
+  :custom
+  ;; setting these means I have to manually
+  ;; refresh the "main" screen
+  (kubernetes-poll-frequency 3600)
+  (kubernetes-redraw-frequency 3600))
+
+
 (use-package lisp-mode
   :ensure nil
   :hook
@@ -400,6 +427,7 @@
   :hook
   (python-mode-hook . lsp)
   (csharp-mode-hook . lsp)
+  (go-mode-hook . lsp)
   :commands
   (lsp lsp-signature-active)
   :bind
@@ -928,7 +956,7 @@ With ARG, do this that many times."
   (initial-scratch-message
    ";; Il semble que la perfection soit atteinte non quand il n'y a plus rien à ajouter, mais quand il n'y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n;; New bindings\n;; M-h mnemonic mark bindings (replaces mark-paragraph)\n;; Act on sexp: C-M-SPC mark, C-M-k kill\n;; imenu: M-i\n;; Transpose word M-t sexp C-M-t\n;; C-x C-k e edit kmacro\n;; C-z zap-up-to-char\n\n;; SHELL:\n;; C-c C-[p|n] prev/next input\n;; C-c C-o clear last output (prefix to kill)\n\n;; C-; dabbrev\n;; M-\\ hippie-expand (on trial)\n\n;; Available Function keys: F5 F9 F10 menu-bar-open F11 toggle-frame-fullscreen F12 \n\n;; REMEMBER YOUR REGEXPS")
   (save-interprogram-paste-before-kill t)
-  (visible-bell t)
+  (visible-bell nil) ;; macOS change
   ;; from https://gitlab.com/jessieh/dot-emacs
   (backup-by-copying t)   ; Don't delink hardlinks
   (version-control t)     ; Use version numbers on backups
@@ -1009,6 +1037,11 @@ With ARG, do this that many times."
 
 (when (hoagie-work-toolbox-p)
   (load "/var/home/hoagie/starz/repos/miscscripts/workonlyconfig.el"))
+
+(when (string= system-type "darwin")
+  ;; use `ls` from coreutils, installed with homebrew
+  (customize-set-value 'insert-directory-program "gls")
+  )
 
 (when (string= system-type "gnu/linux")
   (defun find-alternative-file-with-sudo ()
@@ -1171,6 +1204,7 @@ Unlike the original, it also adds keyboard macro recording status."
 
 (define-key hoagie-mark-map (kbd "w") #'mark-word)
 (define-key hoagie-mark-map (kbd "d") #'mark-defun)
+(define-key hoagie-mark-map (kbd "f") #'mark-defun) ;; welp...
 (define-key hoagie-mark-map (kbd "s") #'mark-sexp)
 (define-key hoagie-mark-map (kbd "p") #'mark-paragraph)
 
@@ -1182,8 +1216,6 @@ Unlike the original, it also adds keyboard macro recording status."
 
 ;; Follow up to previous: C-M-SPC to select, C-M-k to kill by sexp.
 ;; I should be using these two a lot more
-
-;; TODO: suggest ezwinports over gnucore utils to Mickey P.
 
 ;; See M-i for imenu
 
