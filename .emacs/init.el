@@ -1233,4 +1233,33 @@ Unlike the original, it also adds keyboard macro recording status."
 ;; Keeping C-; for dabbrev but trying hippie-expand too
 (global-set-key (kbd "M-/") #'hippie-expand)
 
+;; temp location for this function:
+(defvar hoagie-run-kubectl-history nil "History for `hoagie-run-kubectl'")
+(defun hoagie-run-kubectl ()
+  "Execute kubectl, display output in a *kubectl* buffer."
+  (interactive)
+  (let* ((buffer-name "*kubectl*")
+         (output-buffer (get-buffer-create buffer-name))
+         (target (thing-at-point 'symbol t))
+         (prompt (if target
+                     (concat "Args (target: " target "):\n")
+                   "Args: "))
+         (args-as-str (read-string prompt
+                                   nil
+                                   'hoagie-run-kubectl-history))
+         (last-command-pos nil))
+    (pop-to-buffer buffer-name)
+    (with-current-buffer buffer-name
+      (goto-char (setf last-command-pos (point-max)))
+      (insert "---------kubectl " args-as-str (concat target ":---------\n"))
+      (apply #'start-process 
+             "*kubectl-proc*"
+             "*kubectl*"
+             "kubectl"
+             (split-string (concat args-as-str " " target)))
+      (insert "--------------------------------------------\n")
+      (goto-char last-command-pos))))
+
+(global-set-key (kbd "C-c k") #'hoagie-run-kubectl)
+
 ;;; init.el ends here
