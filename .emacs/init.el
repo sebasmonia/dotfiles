@@ -2,7 +2,7 @@
 
 ;; Author: Sebastian Monia <smonia@outlook.com>
 ;; URL: https://github.com/sebasmonia/dotfiles
-;; Version: 28.3
+;; Version: 28.4
 ;; Keywords: .emacs dotemacs
 
 ;; This file is not part of GNU Emacs.
@@ -270,12 +270,21 @@ Initial version from EmacsWiki, added macOS & Silverblue toolbox support."
   :hook
   (eww-mode-hook . toggle-word-wrap)
   (eww-mode-hook . visual-line-mode)
-  :custom
-  (browse-url-browser-function #'eww-browse-url)
   :bind
   (:map eww-mode-map
         ("o" . eww)
-        ("O" . eww-browse-with-external-browser)))
+        ("O" . eww-browse-with-external-browser))
+  (:map hoagie-keymap
+        ("b" . hoagie-browse-url-at-point))
+  :config
+  (defun hoagie-browse-url-at-point (&optional arg)
+    "A mix of `browse-url-button-open-url' and `browse-url-at-point'.
+Open the URL at point in EWW, use external browser with prefix arg."
+    (interactive "P")
+    (funcall (if arg
+                 'browse-url
+               'eww-browse-url)
+             (browse-url-url-at-point))))
 
 (use-package eww-lnum
   :after eww
