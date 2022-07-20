@@ -159,8 +159,8 @@
   ("<C-f1>" . 'hoagie-kill-buffer-filename)
   (:map hoagie-keymap
         (("F" . find-name-dired)
-         ("j" . dired-jump)
-         ("J" . dired-jump-other-window)))
+         ("J" . dired-jump)
+         ("j" . dired-jump-other-window)))
   (:map dired-mode-map
         ("C-<return>" . dired-open-file)
         ("<C-f1>" . (lambda () (interactive) (dired-copy-filename-as-kill 0))))
@@ -334,6 +334,10 @@ Open the URL at point in EWW, use external browser with prefix arg."
   ("C-x M-G" . git-timemachine))
 
 (use-package go-mode
+  :custom
+  (godoc-at-point-function 'godoc-gogetdoc)
+  :bind
+  ("C-c g d" . godoc-at-point)
   :hook
   (before-save-hook . lsp-format-buffer)
   (before-save-hook . lsp-organize-imports))
@@ -414,13 +418,13 @@ Open the URL at point in EWW, use external browser with prefix arg."
   :ensure t
   :commands (kubernetes-overview)
   :bind
-  ("C-c k" . kubernetes-overview)
+  ("C-c K" . kubernetes-overview)
   :custom
   ;; setting these means I have to manually
   ;; refresh the "main" screen
   (kubernetes-poll-frequency 3600)
-  (kubernetes-redraw-frequency 3600))
-
+  (kubernetes-redraw-frequency 3600)
+  (kubernetes-pods-display-completed t))
 
 (use-package lisp-mode
   :ensure nil
@@ -943,7 +947,13 @@ With ARG, do this that many times."
   ;; like flycheck's C-c ! l
   ("C-c !" . flymake-show-buffer-diagnostics)
   ("C-x n i" . narrow-to-region-indirect)
+  (:map hoagie-keymap
+        ;; u for "unwrap"...
+        ;; I think this plus the new mark commands I'm using,
+        ;; can make expand-region obsolete
+        ("u" . delete-pair))
   :custom
+  (delete-pair-blink-delay 0.1)
   (recenter-positions '(1 middle -2)) ;; behaviour for C-l
   (comint-prompt-read-only t)
   (read-file-name-completion-ignore-case t) ;; useful in Linux
@@ -1235,30 +1245,30 @@ Unlike the original, it also adds keyboard macro recording status."
 
 ;; temp location for this function:
 (defvar hoagie-run-kubectl-history nil "History for `hoagie-run-kubectl'")
-(defun hoagie-run-kubectl ()
-  "Execute kubectl, display output in a *kubectl* buffer."
-  (interactive)
+(defun hoagie-run-kubectl (&optional prefix-arg)
+  "Execute kubectl, display output in a *kubectl* buffer.
+With prefix arg, read the symbol at point as target."
+  (interactive "P")
   (let* ((buffer-name "*kubectl*")
          (output-buffer (get-buffer-create buffer-name))
-         (target (thing-at-point 'symbol t))
-         (prompt (if target
-                     (concat "Args (target: " target "):\n")
-                   "Args: "))
-         (args-as-str (read-string prompt
-                                   nil
+         (target (when prefix-arg
+                   (thing-at-point 'symbol t)))
+         (args-as-str (read-string "kubectl> "
+                                   target
                                    'hoagie-run-kubectl-history))
          (last-command-pos nil))
     (pop-to-buffer buffer-name)
     (with-current-buffer buffer-name
       (goto-char (setf last-command-pos (point-max)))
-      (insert "---------kubectl " args-as-str (concat target ":---------\n"))
+      (push-mark (point) t nil)
+      (insert "---------kubectl " args-as-str ":---------\n"))
       (apply #'start-process 
              "*kubectl-proc*"
              "*kubectl*"
              "kubectl"
-             (split-string (concat args-as-str " " target)))
+             (split-string args-as-str))
       (insert "--------------------------------------------\n")
-      (goto-char last-command-pos))))
+      (goto-char last-command-pos)))
 
 (global-set-key (kbd "C-c k") #'hoagie-run-kubectl)
 
