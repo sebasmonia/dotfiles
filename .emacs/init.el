@@ -91,7 +91,8 @@
 (use-package better-shell
   :after shell
   :bind (:map hoagie-keymap
-              ("`" . better-shell-for-current-dir)))
+              ("`" . better-shell-for-current-dir)
+              ("~" . better-shell-remote-open)))
 
 (use-package browse-kill-ring
   :config
@@ -106,7 +107,7 @@
         ("C-<RET>" . company-abort)
         ("<tab>" . company-complete-selection))
   :custom
-  (company-idle-delay 0.1)
+  (company-idle-delay 0.25)
   (company-minimum-prefix-length 2)
   (company-selection-wrap-around t))
 
@@ -248,6 +249,13 @@ Initial version from EmacsWiki, added macOS & Silverblue toolbox support."
   ;; the window config is restored but then _stuff happens_, so:
   (add-hook 'ediff-after-quit-hook-internal #'hoagie-ediff-restore-windows))
 
+(use-package elec-pair
+  :ensure nil
+  :custom
+  (electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
+  :config
+  (electric-pair-mode))
+
 (use-package exec-path-from-shell
   :ensure t
   :config
@@ -277,6 +285,19 @@ Initial version from EmacsWiki, added macOS & Silverblue toolbox support."
   (:map hoagie-keymap
         ("b" . hoagie-browse-url-at-point))
   :config
+  ;; from https://emacs.stackexchange.com/a/36287 I want this for a
+  ;; function to open the gcloud docs but I think it is useful as a
+  ;; general tool to have around
+  (defun hoagie-eww-readable (url &optional new-buffer)
+    "Open URL, after the page loads, call `eww-readable'.
+Optional argument NEW-BUFFER is passed to `eww' as prefix arg."
+    ;;TIL letrec, too
+    (letrec ((nonce (lambda ()
+                      (unwind-protect
+                          (eww-readable)
+                        (remove-hook 'eww-after-render-hook nonce)))))
+      (add-hook 'eww-after-render-hook nonce))
+    (eww url new-buffer))
   (defun hoagie-browse-url-at-point (&optional arg)
     "A mix of `browse-url-button-open-url' and `browse-url-at-point'.
 Open the URL at point in EWW, use external browser with prefix arg."
@@ -337,7 +358,8 @@ Open the URL at point in EWW, use external browser with prefix arg."
   :custom
   (godoc-at-point-function 'godoc-gogetdoc)
   :bind
-  ("C-c g d" . godoc-at-point)
+  ;; need a better binding for this, but haven't used it yet
+  ("C-c G d" . godoc-at-point)
   :hook
   (before-save-hook . lsp-format-buffer)
   (before-save-hook . lsp-organize-imports))
@@ -352,6 +374,32 @@ Open the URL at point in EWW, use external browser with prefix arg."
   :ensure nil
   :hook
   (after-init-hook . global-hl-line-mode))
+
+(defvar hoagie-howm-keymap (define-prefix-command 'hoagie-howm-keymap) "Custom bindings for `howm-mode'.")
+(use-package howm
+  :demand t
+  :bind-keymap
+  ("<f3>" . hoagie-howm-keymap)
+  :bind
+  ("C-<f3>" . hoagie-howm-inbox)
+  ("S-<f3>" . howm-list-todo)
+  ("C-S-<f3>" . howm-list-schedule)
+  (:map hoagie-howm-keymap
+        ("<f3>" . howm-menu)
+        ("C-<f3>" . howm-list-grep-fixed)
+        ("t" . howm-insert-date))
+  :config
+  (setf howm-file-name-format "%Y/%m/%Y-%m-%d-%H%M%S.md")
+  ;; https://leahneukirchen.org/blog/archive/2022/03/note-taking-in-emacs-with-howm.html
+  ;; keep C-h for help in howm modes
+  (define-key howm-menu-mode-map "\C-h" nil)
+  (define-key riffle-summary-mode-map "\C-h" nil)
+  (define-key howm-view-contents-mode-map "\C-h" nil)
+  (defun hoagie-howm-inbox ()
+    (interactive)
+    (find-file "~/howm/tasks.md")
+    (howm-set-mode)
+    (goto-char (point-max))))
 
 (use-package icomplete
   :ensure nil
@@ -534,59 +582,6 @@ Open the URL at point in EWW, use external browser with prefix arg."
   (magit-commit-diff-inhibit-same-window t)
   (magit-display-buffer-function 'display-buffer))
 
-(defvar hoagie-org-keymap (define-prefix-command 'hoagie-org-keymap) "Custom bindings for `org-mode'.")
-(use-package org
-  :ensure nil
-  :mode ("\\.org$" . org-mode)
-  :custom
-  (org-default-notes-file (if (hoagie-work-toolbox-p)
-                              "~/starz/org/inbox.org"
-                            "~/org/inbox.org"))
-  (org-capture-templates (if (hoagie-work-toolbox-p)
-                             ;; work templates
-                             '(("n" "Note to inbox.org"  plain
-                                (file+datetree org-default-notes-file)
-                                " %u\n%?" :empty-lines 1)
-                               ("t" "Task for me"  plain
-                                (file "~/org/TODO.org")
-                                "** TODO %?\nADDED: %u" :empty-lines 1)
-                               ("w" "Weekly Report item"  plain
-                                (file "~/org/weeklyreport.org")
-                                "** TODO %? %^g\nADDED: %u" :empty-lines 1))
-                           ;; personal templates
-                           '(("n" "Note to inbox.org"  plain
-                              (file+datetree org-default-notes-file)
-                              " %u\n%?" :empty-lines 1)
-                             ("g" "Google note"  plain
-                              (file "~/org/googleprep.org")
-                              "* TODO %? %^g\nADDED: %t" :empty-lines 1)
-                             ("t" "TODO (Personal)"  plain
-                              (file "~/org/todo.org")
-                              "* TODO %? %^g\nADDED: %t" :empty-lines 1))))
-  (org-agenda-files (if (hoagie-work-toolbox-p)
-                        '("/var/home/hoagie/starz/org/TODO.org" "/var/home/hoagie/starz/org/weeklyreport.org")
-                      '("/home/hoagie/org")))
-  (org-todo-keywords '((sequence "TODO(t)" "STARTED(s!)" "|" "DONE(d@)" "CANCELED(c@)")))
-  (org-log-done 'note)
-  :bind-keymap
-  ("<f3>" . hoagie-org-keymap)
-  :bind
-  ("C-<f3>" . org-capture)
-  (:map hoagie-org-keymap
-        ("<f3>" . hoagie-open-org)
-        ("l" . org-store-link)
-        ("C-<f3>" . org-agenda)
-        ("t" . org-todo)
-        ("c" . org-toggle-checkbox)
-        ("a" . org-archive-subtree))
-  :config
-  (defun hoagie-open-org (arg)
-    (interactive "P")
-    (let ((org-file (read-file-name "Open org file:" hoagie-org-path)))
-      (if arg
-          (find-file-other-window org-file)
-        (find-file org-file)))))
-
 (use-package package-lint
   :commands package-lint-current-buffer)
 
@@ -642,12 +637,14 @@ Open the URL at point in EWW, use external browser with prefix arg."
         ("o" . hoagie-occur-dwim)
         ("O" . multi-occur-in-matching-buffers))
   :config
-  (defun hoagie-occur-dwim ()
+  ;; TIL that I should have used (interactive "r") instead
+  ;; of calling (region-beginning) and (region-end)
+  (defun hoagie-occur-dwim (region-start region-end)
     "Run occur, if there's a region selected use that as input.
 By default, occur _limits the search to the region_ if it is active."
-    (interactive)
+    (interactive "r")
     (if (use-region-p)
-        (occur (buffer-substring-no-properties (region-beginning) (region-end)))
+        (occur (buffer-substring-no-properties region-start region-end))
       (command-execute 'occur)))
   (defun hoagie-rename-and-select-occur-buffer ()
     "Renames the current buffer to *Occur: [term] [buffer]*.
@@ -891,8 +888,8 @@ spin of the first two in the page."
   (defun hoagie-go-home (arg)
     (interactive "P")
     (if arg
-        (dired-other-window hoagie-home-path)
-      (dired hoagie-home-path)))
+        (dired-other-window "~/")
+      (dired "~/")))
   ;; from https://www.emacswiki.org/emacs/BackwardDeleteWord because I
   ;; agree C-backspace shouldn't kill the word! It litters my kill ring
   (defun delete-word (arg)
@@ -951,6 +948,7 @@ With ARG, do this that many times."
         ;; u for "unwrap"...
         ;; I think this plus the new mark commands I'm using,
         ;; can make expand-region obsolete
+        ;; UPDATE: I was wrong :)
         ("u" . delete-pair))
   :custom
   (delete-pair-blink-delay 0.1)
@@ -1053,9 +1051,6 @@ With ARG, do this that many times."
 ;; Per-OS configuration
 (setf user-full-name "Sebastián Monía"
       user-mail-address "sebastian@sebasmonia.com")
-
-(when (hoagie-work-toolbox-p)
-  (load "/var/home/hoagie/starz/repos/miscscripts/workonlyconfig.el"))
 
 (when (string= system-type "darwin")
   ;; use `ls` from coreutils, installed with homebrew
@@ -1243,7 +1238,9 @@ Unlike the original, it also adds keyboard macro recording status."
 ;; Keeping C-; for dabbrev but trying hippie-expand too
 (global-set-key (kbd "M-/") #'hippie-expand)
 
-;; temp location for this function:
+
+;;; New functions/config that need a permanent home :)
+
 (defvar hoagie-run-kubectl-history nil "History for `hoagie-run-kubectl'")
 (defun hoagie-run-kubectl (&optional prefix-arg)
   "Execute kubectl, display output in a *kubectl* buffer.
@@ -1271,5 +1268,16 @@ With prefix arg, read the symbol at point as target."
       (goto-char last-command-pos)))
 
 (global-set-key (kbd "C-c k") #'hoagie-run-kubectl)
+
+(defun hoagie-gcloud-help (region-start region-end)
+  "Open the gcloud help in eww for the phrase typed.
+If there's an active region, use it as a starting search term."
+  (interactive "r")
+  (let* ((target (when (use-region-p)
+                   (buffer-substring-no-properties region-start region-end)))
+         (args-as-str (read-string "gcloud... "
+                                   target)))
+    (hoagie-eww-readable (concat "https://cloud.google.com/sdk/gcloud/reference/"
+                                 (string-replace " " "/" args-as-str)))))
 
 ;;; init.el ends here
