@@ -679,7 +679,7 @@ Meant to be added to `occur-hook'."
   :config
   (savehist-mode))
 
-(use-package sharper
+(use-package sharper :load-path "~/github/sharper"
   :bind
   (:map hoagie-keymap
         ("n" . sharper-main-transient))
@@ -718,7 +718,7 @@ Meant to be added to `occur-hook'."
   :hook
   (sql-interactive-mode-hook . (lambda () (setf truncate-lines t))))
 
-(use-package sql-datum :load-path "/home/hoagie/github/datum")
+(use-package sql-datum :load-path "~/github/datum")
 
 (use-package terraform-mode
   :mode "\\.tf$")
@@ -1079,7 +1079,6 @@ With ARG, do this that many times."
     (let* ((monitor-name (alist-get 'name (frame-monitor-attributes)))
            (monitor-font '(("S240HL" . 143) ;; 24"
                            ("2757" . 128) ;; 27"
-                           ;; todo: adjust
                            ("LG HDR 4K" . 188))) ;; 27" office - was 181
            (size (alist-get monitor-name monitor-font
                             180 ;; default size, "big just in case"
