@@ -1,20 +1,21 @@
 (defcfg
-  input  (device-file "/dev/input/by-path/platform-i8042-serio-0-event-kbd")
+  ;; built-in keyboard
+  ;; input  (device-file "/dev/input/by-path/platform-i8042-serio-0-event-kbd")
+  ;; MD770 - wired
+  input  (device-file "/dev/input/by-id/usb-Mistel_Co._Ltd._MD770BT-M-event-kbd")
   output (uinput-sink "KMonad kbd")
   ;; This option tells KMonad to let non-configured keys act normal
   fallthrough true
 )
 
-
 (defsrc
     lctl)
 
 (defalias
-    lctl-as-esc (tap-hold-next-release 200 esc lctl)
+    lctl-as-esc (tap-hold-next-release 150 esc lctl)
 )
-
-
 
 (deflayer homerowmods
     @lctl-as-esc
 )
+
