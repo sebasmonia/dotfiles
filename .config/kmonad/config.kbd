@@ -1,0 +1,20 @@
+(defcfg
+  input  (device-file "/dev/input/by-path/platform-i8042-serio-0-event-kbd")
+  output (uinput-sink "KMonad kbd")
+  ;; This option tells KMonad to let non-configured keys act normal
+  fallthrough true
+)
+
+
+(defsrc
+    lctl)
+
+(defalias
+    lctl-as-esc (tap-hold-next-release 200 esc lctl)
+)
+
+
+
+(deflayer homerowmods
+    @lctl-as-esc
+)

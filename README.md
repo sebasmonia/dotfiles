@@ -2,7 +2,7 @@ A place to store my Emacs configuration. I used to have more things here, but I 
 
 ## Emacs config
 
-A [use-package](https://github.com/jwiegley/use-package) based configuration, that tries its best to be platform agnostic, even though nowadays I use Linux everywhere.  
+A [use-package](https://github.com/jwiegley/use-package) based configuration, that tries its best to be platform agnostic.  
 In most cases I prefer smaller packages, if built-in, even better (eg icomplete over ivy/helm, project.el over projectile, etc.).  
 I use [lsp-mode](https://emacs-lsp.github.io/lsp-mode/) for C# and Python LSP, haven't re-configured dap-mode yet (for debugging).  
 I got used to [Sly](https://github.com/joaotavora/sly) for Common Lisp.  
@@ -16,13 +16,28 @@ This config uses the Consolas font :)
 Up until April 2022, the init file Version was arbitrary and bumped on milestones (moving to use-package, changing too many settings, etc.)  
 Starting with Emacs 28, my config file version number will match the minimum Emacs version needed to run it. I will do my best to update the minor version on changes.  
 
+## Keyboard utils
+
+I have a pair of [Mistel MD770 Bluetooth](https://mistelkeyboard.com/products/94f05206cb24bbeeb103e664e89d7b98) keyboards (blue & brown switches).
+The most important configuration in the keyboard is remapping the right half of space to control.
+
+I am experimenting with KMonad to try tap-space as ESC and hold-space for control, which is useful in Emacs (ESC ~= meta/alt).
+
 ## Where this runs
 
-I run this configuration in Fedora Silverblue, with just a few extensions installed:
+### Home setup
+
+Lenovo L390 Yoga running Fedora Silverblue, with just a few extensions installed:
 
 * [Clipboard history](https://extensions.gnome.org//extension/4839/clipboard-history/): I got used to having a clipboard history in Emacs, and in i3, now I need it in Gnome too.  
 * [Tray icons reloaded](https://extensions.gnome.org//extension/2890/tray-icons-reloaded/): For Slack, mostly.  
 * Background logo, because it looks fancy.  
 
 I really like the idea of not layering anything over the base image.  
+
+### Work setup
+
+MacBook Pro running latest macOS
+
+
 
