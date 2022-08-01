@@ -1,3 +1,13 @@
+;;;; MD770 has a spacebar in two halves, I configured in the board that the
+;;;; right half is Control (never type space with it). I am using ESC and F7
+;;;; inside of Emacs in lieu of Alt/Meta, but want to test using _tap control
+;;;; for meta/esc_. That is what this configuration does.
+
+;;; references:
+;;; https://precondition.github.io/home-row-mods#using-home-row-mods-with-kmonad
+;;; https://aldama.hashnode.dev/kmonad-and-the-power-of-infinite-leader-keys
+;;; https://github.com/kmonad/kmonad/blob/master/keymap/tutorial.kbd
+
 (defcfg
   ;; built-in keyboard
   ;; input  (device-file "/dev/input/by-path/platform-i8042-serio-0-event-kbd")
