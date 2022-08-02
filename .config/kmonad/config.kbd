@@ -8,24 +8,29 @@
 ;;; https://aldama.hashnode.dev/kmonad-and-the-power-of-infinite-leader-keys
 ;;; https://github.com/kmonad/kmonad/blob/master/keymap/tutorial.kbd
 
+;; from https://github.com/kmonad/kmonad/issues/28, I found out how to run kmonad
+;; using "sleep 2 && sudo ~/.local/bin/kmonad-0.4.1-linux ~/.config/kmonad/config.kbd"
+;; still can't quite crack how to avoid sudo'ing to run it.
+
 (defcfg
+
   ;; built-in keyboard
   ;; input  (device-file "/dev/input/by-path/platform-i8042-serio-0-event-kbd")
+
   ;; MD770 - wired
   input  (device-file "/dev/input/by-id/usb-Mistel_Co._Ltd._MD770BT-M-event-kbd")
   output (uinput-sink "KMonad kbd")
-  ;; This option tells KMonad to let non-configured keys act normal
-  fallthrough true
-)
+
+;; This option tells KMonad to let non-configured keys act normal
+  fallthrough true)
 
 (defsrc
-    lctl)
+    caps lctl)
 
 (defalias
-    lctl-as-esc (tap-hold-next-release 150 esc lctl)
-)
+    caps-as-lctlesc (tap-hold-next-release 150 esc lctl) 
+    lctl-as-esc (tap-hold-next-release 150 esc lctl))
 
 (deflayer homerowmods
-    @lctl-as-esc
-)
-
+    @caps-as-lctlesc
+    @lctl-as-esc)
