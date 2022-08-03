@@ -1,0 +1,65 @@
+{
+  "rules": [
+    {
+      "description": "Left Control to Esc if tapped, else Control",
+      "manipulators": [
+        {
+          "from": {
+            "key_code": "left_control",
+            "modifiers": {
+              "optional": [
+                "any"
+              ]
+            }
+          },
+          "to": [
+            {
+              "key_code": "left_control",
+              "repeat": true
+            }
+          ],
+          "to_if_alone": [
+            {
+              "key_code": "escape",
+              "repeat": false
+            }
+          ],
+          "to_if_held_down": [
+            {
+              "key_code": "left_control",
+              "repeat": true
+            }
+          ],
+          "type": "basic"
+        }
+      ]
+    },
+    {
+      "description": "Space is space if tapped, Control if held down",
+      "manipulators": [
+        {
+          "from": {
+            "key_code": "spacebar",
+            "modifiers": {
+              "optional": [
+                "any"
+              ]
+            }
+          },
+          "to": [
+            {
+              "key_code": "left_control"
+            }
+          ],
+          "to_if_alone": [
+            {
+              "key_code": "spacebar"
+            }
+          ],
+          "type": "basic"
+        }  
+      ]
+    }
+  ],
+  "title": "MD770 modifiers"
+}
