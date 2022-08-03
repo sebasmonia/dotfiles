@@ -25,12 +25,14 @@
   fallthrough true)
 
 (defsrc
-    caps lctl)
+    caps lctl rctl)
 
 (defalias
     caps-as-lctlesc (tap-hold-next-release 150 esc lctl) 
-    lctl-as-esc (tap-hold-next-release 150 esc lctl))
+    lctl-as-esc (tap-hold-next-release 150 esc lctl)
+    rctl-as-esc (tap-hold-next-release 150 esc rctl))
 
-(deflayer homerowmods
+(deflayer modifiersmods
     @caps-as-lctlesc
-    @lctl-as-esc)
+    @lctl-as-esc
+    @rctl-as-esc)
