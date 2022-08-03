@@ -59,7 +59,6 @@
 (define-key key-translation-map (kbd "<print>") (kbd "<menu>")) ;; curse you, thinkpad keyboard!!!
 (global-set-key (kbd "<menu>") 'hoagie-keymap)
 (global-set-key (kbd "C-'") 'hoagie-keymap)
-(define-key hoagie-keymap (kbd "k") #'kill-this-buffer)
 
 ;; In case the config is not running on Silverblue, or if I ever layer Emacs on the base system...
 (defvar hoagie-toolbox-name (if (file-exists-p "/run/.containerenv")
@@ -467,6 +466,9 @@ Open the URL at point in EWW, use external browser with prefix arg."
   :commands (kubernetes-overview)
   :bind
   ("C-c K" . kubernetes-overview)
+  ;; experimental alternative
+  (:map hoagie-keymap
+        ("K" . kubernetes-overview))
   :custom
   ;; setting these means I have to manually
   ;; refresh the "main" screen
@@ -622,6 +624,8 @@ Open the URL at point in EWW, use external browser with prefix arg."
 (use-package repeat
   :ensure nil
   :demand t
+  :custom
+  (repeat-exit-key (kbd "RET"))
   :config
   (repeat-mode))
 
@@ -722,6 +726,11 @@ Meant to be added to `occur-hook'."
 
 (use-package terraform-mode
   :mode "\\.tf$")
+
+(use-package tramp
+  :ensure nil
+  :custom
+  (tramp-default-method "sshx"))
 
 (use-package vc
   :ensure nil
@@ -931,10 +940,14 @@ With ARG, do this that many times."
   ("M-O" . other-frame)
   ("M-N" . next-buffer)
   ("M-P" . previous-buffer)
+  ("C-S-k" . kill-whole-line) ;; more convenient than default C-S-<backspace>
   ;; from https://karthinks.com/software/batteries-included-with-emacs/#cycle-spacing--m-spc
   ("M-SPC" . cycle-spacing)
   ;; from https://emacsredux.com/blog/2020/06/10/comment-commands-redux/
   ("<remap> <comment-dwim>" . comment-line)
+  ;; I use `kill-buffer' rarely enough that this is worth it
+  ;; (now I get to use "k" in my personal bindings too)
+  ("<remap> <kill-buffer>" . kill-this-buffer)
   ("C-d" . delete-forward-char) ;; replace delete-char, as recommended in the docs
   ("C-<backspace>" . backward-delete-word)
   ("M-c" . capitalize-dwim)
@@ -951,6 +964,7 @@ With ARG, do this that many times."
         ;; UPDATE: I was wrong :)
         ("u" . delete-pair))
   :custom
+  (tab-width 4) ;; make golang code nicer to read
   (delete-pair-blink-delay 0.1)
   (recenter-positions '(1 middle -2)) ;; behaviour for C-l
   (comint-prompt-read-only t)
@@ -1267,6 +1281,8 @@ With prefix arg, read the symbol at point as target."
       (goto-char last-command-pos)))
 
 (global-set-key (kbd "C-c k") #'hoagie-run-kubectl)
+;; extra, experimental binding
+(define-key hoagie-keymap (kbd "k") #'hoagie-run-kubectl)
 
 (defun hoagie-gcloud-help (region-start region-end)
   "Open the gcloud help in eww for the phrase typed.
