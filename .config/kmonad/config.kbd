@@ -21,18 +21,20 @@
   input  (device-file "/dev/input/by-id/usb-Mistel_Co._Ltd._MD770BT-M-event-kbd")
   output (uinput-sink "KMonad kbd")
 
-;; This option tells KMonad to let non-configured keys act normal
+  ;; This option tells KMonad to let non-configured keys act normal
   fallthrough true)
 
 (defsrc
-    caps lctl rctl)
+    caps lctl spc rctl)
 
 (defalias
-    caps-as-lctlesc (tap-hold-next-release 150 esc lctl) 
-    lctl-as-esc (tap-hold-next-release 150 esc lctl)
-    rctl-as-esc (tap-hold-next-release 150 esc rctl))
+    caps-as-lctlesc (tap-hold-next-release 200 esc lctl) 
+    lctl-as-esc (tap-hold-next-release 200 esc lctl)
+    spc-as-rctl (tap-hold-next-release 200 spc rctl)
+    rctl-as-esc (tap-hold-next-release 200 esc rctl))
 
 (deflayer modifiersmods
     @caps-as-lctlesc
     @lctl-as-esc
+    @spc-as-rctl
     @rctl-as-esc)
