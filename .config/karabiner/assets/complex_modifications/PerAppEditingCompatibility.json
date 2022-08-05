@@ -1,12 +1,13 @@
 {
   "rules": [
     {
-      "description": "Control + F => Command + F, for Firefox and Slack",
+      "description": "Control + F => Command + F",
       "manipulators": [
         {
           "conditions": [
             {
               "bundle_identifiers": [
+                "^org\\.whispersystems\\.signal-desktop$",
                 "^com\\.tinyspeck\\.slackmacgap$",
                 "^org\\.mozilla\\.firefox$"
               ],
@@ -34,12 +35,13 @@
       ]
     },
     {
-      "description": "Control + C => Command + C, for Firefox and Slack",
+      "description": "Control + C => Command + C",
       "manipulators": [
         {
           "conditions": [
             {
               "bundle_identifiers": [
+                "^org\\.whispersystems\\.signal-desktop$",
                 "^com\\.tinyspeck\\.slackmacgap$",
                 "^org\\.mozilla\\.firefox$"
               ],
@@ -67,12 +69,13 @@
       ]
     },
     {
-      "description": "Control + X => Command + X, for Firefox and Slack",
+      "description": "Control + X => Command + X",
       "manipulators": [
         {
           "conditions": [
             {
               "bundle_identifiers": [
+                "^org\\.whispersystems\\.signal-desktop$",
                 "^com\\.tinyspeck\\.slackmacgap$",
                 "^org\\.mozilla\\.firefox$"
               ],
@@ -100,12 +103,13 @@
       ]
     },
     {
-      "description": "Control + V => Command + V, for Firefox and Slack",
+      "description": "Control + V => Command + V",
       "manipulators": [
         {
           "conditions": [
             {
               "bundle_identifiers": [
+                "^org\\.whispersystems\\.signal-desktop$",
                 "^com\\.tinyspeck\\.slackmacgap$",
                 "^org\\.mozilla\\.firefox$"
               ],
@@ -133,12 +137,13 @@
       ]
     },
     {
-      "description": "Control + T => Command + T, for Firefox and Slack",
+      "description": "Control + T => Command + T",
       "manipulators": [
         {
           "conditions": [
             {
               "bundle_identifiers": [
+                "^org\\.whispersystems\\.signal-desktop$",
                 "^com\\.tinyspeck\\.slackmacgap$",
                 "^org\\.mozilla\\.firefox$"
               ],
@@ -228,7 +233,41 @@
           "type": "basic"
         }
       ]
+    },
+    {
+      "description": "Control + A => Command + A",
+      "manipulators": [
+        {
+          "conditions": [
+            {
+              "bundle_identifiers": [
+                "^org\\.whispersystems\\.signal-desktop$",
+                "^com\\.tinyspeck\\.slackmacgap$",
+                "^org\\.mozilla\\.firefox$"
+              ],
+              "type": "frontmost_application_if"
+            }
+          ],
+          "from": {
+            "key_code": "a",
+            "modifiers": {
+              "mandatory": [
+                "control"
+              ]
+            }
+          },
+          "to": [
+            {
+              "key_code": "a",
+              "modifiers": [
+                "command"
+              ]
+            }
+          ],
+          "type": "basic"
+        }
+      ]
     }
   ],
-  "title": "Firefox and Slack only mappings"
+  "title": "Mappings for common editing tasks for select applications"
 }
