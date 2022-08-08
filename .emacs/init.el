@@ -2,7 +2,7 @@
 
 ;; Author: Sebastian Monia <smonia@outlook.com>
 ;; URL: https://github.com/sebasmonia/dotfiles
-;; Version: 28.4
+;; Version: 28.5
 ;; Keywords: .emacs dotemacs
 
 ;; This file is not part of GNU Emacs.
@@ -985,7 +985,7 @@ With ARG, do this that many times."
   (initial-buffer-choice t)
   (reb-re-syntax 'string)
   (initial-scratch-message
-   ";; Il semble que la perfection soit atteinte non quand il n'y a plus rien à ajouter, mais quand il n'y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n;; New bindings\n;; M-h mnemonic mark bindings (replaces mark-paragraph)\n;; Act on sexp: C-M-SPC mark, C-M-k kill\n;; imenu: M-i\n;; Transpose word M-t sexp C-M-t\n;; C-x C-k e edit kmacro\n;; C-z zap-up-to-char\n\n;; SHELL:\n;; C-c C-[p|n] prev/next input\n;; C-c C-o clear last output (prefix to kill)\n\n;; C-; dabbrev\n;; M-\\ hippie-expand (on trial)\n\n;; Available Function keys: F5 F9 F10 menu-bar-open F11 toggle-frame-fullscreen F12 \n\n;; REMEMBER YOUR REGEXPS")
+   ";; Il semble que la perfection soit atteinte non quand il n'y a plus rien à ajouter, mais quand il n'y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n;; Setting the region:\n;; M-h - Paragraph\n;; C-x h - Buffer\n;; C-M-h - Next defun\n;; M-@ - Next word\n;; C-M-<SPC> and C-M-@ - Next sexp\n\n;; Act on sexp: C-M-SPC mark, C-M-k kill\n;; imenu: M-i\n;; Transpose word M-t sexp C-M-t\n;; C-x C-k e edit kmacro\n;; C-z zap-up-to-char\n\n;; SHELL:\n;; C-c C-[p|n] prev/next input\n;; C-c C-o clear last output (prefix to kill)\n\n;; Others:\n;; C-s C-w search word at point, each C-w adds next word\n;; C-; dabbrev\n;; M-\ hippie-expand (on trial)\n\n;; Available Function keys: F5 F9 F10 menu-bar-open F11 toggle-frame-fullscreen F12 \n\n;; REMEMBER YOUR REGEXPS")
   (save-interprogram-paste-before-kill t)
   (visible-bell nil) ;; macOS change
   ;; from https://gitlab.com/jessieh/dot-emacs
@@ -1173,12 +1173,12 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
 ;; Using advice instead of isearch-mode-end-hook, as the latter pushes mark first in search
 ;; destination, then in search start position.
 ;; Using the advice pushes first at start position, and then destination.
-(require 'isearch)
-(advice-add 'isearch-forward :after #'push-mark-no-activate)
-(advice-add 'isearch-backward :after #'push-mark-no-activate)
-(require 'window)
-(advice-add 'scroll-up-command :before #'push-mark-if-not-repeat)
-(advice-add 'scroll-down-command :before #'push-mark-if-not-repeat)
+;; (require 'isearch)
+;; (advice-add 'isearch-forward :after #'push-mark-no-activate)
+;; (advice-add 'isearch-backward :after #'push-mark-no-activate)
+;; (require 'window)
+;; (advice-add 'scroll-up-command :before #'push-mark-if-not-repeat)
+;; (advice-add 'scroll-down-command :before #'push-mark-if-not-repeat)
 
 (use-package modus-themes
   :demand t
@@ -1235,9 +1235,6 @@ Unlike the original, it also adds keyboard macro recording status."
 (define-key hoagie-mark-map (kbd "s") #'mark-sexp)
 (define-key hoagie-mark-map (kbd "p") #'mark-paragraph)
 
-(global-set-key (kbd "M-h") 'hoagie-mark-map)
-
-
 ;; TODO: an alternative, rely on C-M-SPC for mark-sexp and change M-h to mark-defun,
 ;; which seems more apt for prog-modes.
 
@@ -1250,49 +1247,5 @@ Unlike the original, it also adds keyboard macro recording status."
 
 ;; Keeping C-; for dabbrev but trying hippie-expand too
 (global-set-key (kbd "M-/") #'hippie-expand)
-
-
-;;; New functions/config that need a permanent home :)
-
-(defvar hoagie-run-kubectl-history nil "History for `hoagie-run-kubectl'")
-(defun hoagie-run-kubectl (&optional prefix-arg)
-  "Execute kubectl, display output in a *kubectl* buffer.
-With prefix arg, read the symbol at point as target."
-  (interactive "P")
-  (let* ((buffer-name "*kubectl*")
-         (output-buffer (get-buffer-create buffer-name))
-         (target (when prefix-arg
-                   (thing-at-point 'symbol t)))
-         (args-as-str (read-string "kubectl> "
-                                   target
-                                   'hoagie-run-kubectl-history))
-         (last-command-pos nil))
-    (pop-to-buffer buffer-name)
-    (with-current-buffer buffer-name
-      (goto-char (setf last-command-pos (point-max)))
-      (push-mark (point) t nil)
-      (insert "---------kubectl " args-as-str ":---------\n"))
-      (apply #'start-process 
-             "*kubectl-proc*"
-             "*kubectl*"
-             "kubectl"
-             (split-string args-as-str))
-      (insert "--------------------------------------------\n")
-      (goto-char last-command-pos)))
-
-(global-set-key (kbd "C-c k") #'hoagie-run-kubectl)
-;; extra, experimental binding
-(define-key hoagie-keymap (kbd "k") #'hoagie-run-kubectl)
-
-(defun hoagie-gcloud-help (region-start region-end)
-  "Open the gcloud help in eww for the phrase typed.
-If there's an active region, use it as a starting search term."
-  (interactive "r")
-  (let* ((target (when (use-region-p)
-                   (buffer-substring-no-properties region-start region-end)))
-         (args-as-str (read-string "gcloud... "
-                                   target)))
-    (hoagie-eww-readable (concat "https://cloud.google.com/sdk/gcloud/reference/"
-                                 (string-replace " " "/" args-as-str)))))
 
 ;;; init.el ends here
