@@ -72,15 +72,6 @@
                               "host")
   "Stores the name of the current container, if present.")
 
-(defun hoagie-work-toolbox-p ()
-  "Return t if the toolbox name matches a \"work\" one."
-  (string-prefix-p "starz-" hoagie-toolbox-name))
-
-;; These things depend on the type of container running container
-;; The org config is the other piece that changes heavily depending on the container type
-(defvar hoagie-org-path "~/org/" "Path to use for org documents.  See \"workonlyconfig.el\" for override.")
-(defvar hoagie-home-path "~/" "Path to use as \"home\" for most files.  . See \"workonlyconfig.el\" for override.")
-
 ;; experimenting with new types of keybindings/entry keys for keymaps
 (global-set-key (kbd "<f6>") 'hoagie-keymap)
 (define-key key-translation-map (kbd "<f7>") (kbd "ESC")) ;; esc-map ~= alt
@@ -451,7 +442,17 @@ Open the URL at point in EWW, use external browser with prefix arg."
   (isearch-repeat-on-direction-change t)
   (lazy-highlight-initial-delay 0.1)
   (regexp-search-ring-max 64)
-  (search-ring-max 64))
+  (search-ring-max 64)
+  :config
+  (defun isearch-mark-and-exit+ ()
+    "Exit `isearch', but keep the region active.
+From https://www.reddit.com/r/emacs/comments/gf64oq/comment/fprm9nn/."
+    (interactive)
+    (isearch-done)
+    (push-mark isearch-other-end 'no-message 'activate))
+  :bind
+  (:map isearch-mode-map
+        ("M-RET" . 'isearch-mark-and-exit+)))
 
 (use-package java-mode
   :ensure nil
@@ -985,7 +986,7 @@ With ARG, do this that many times."
   (initial-buffer-choice t)
   (reb-re-syntax 'string)
   (initial-scratch-message
-   ";; Il semble que la perfection soit atteinte non quand il n'y a plus rien à ajouter, mais quand il n'y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n;; Setting the region:\n;; M-h - Paragraph\n;; C-x h - Buffer\n;; C-M-h - Next defun\n;; M-@ - Next word\n;; C-M-<SPC> and C-M-@ - Next sexp\n\n;; Act on sexp: C-M-SPC mark, C-M-k kill\n;; imenu: M-i\n;; Transpose word M-t sexp C-M-t\n;; C-x C-k e edit kmacro\n;; C-z zap-up-to-char\n\n;; SHELL:\n;; C-c C-[p|n] prev/next input\n;; C-c C-o clear last output (prefix to kill)\n\n;; Others:\n;; C-s C-w search word at point, each C-w adds next word\n;; C-; dabbrev\n;; M-\ hippie-expand (on trial)\n\n;; Available Function keys: F5 F9 F10 menu-bar-open F11 toggle-frame-fullscreen F12 \n\n;; REMEMBER YOUR REGEXPS")
+   ";; Il semble que la perfection soit atteinte non quand il n’y a plus rien à ajouter, mais quand il n’y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n;; Setting the region:\n;; M-h - Paragraph\n;; C-x h - Buffer\n;; C-M-h - Next defun\n;; M-@ - Next word\n;; C-M-<SPC> and C-M-@ - Next sexp\n\n;; Act on sexp: C-M-SPC mark, C-M-k kill\n;; imenu: M-i\n;; Transpose word M-t sexp C-M-t\n;; C-x C-k e edit kmacro\n;; C-z zap-up-to-char\n\n;; SHELL:\n;; C-c C-[p|n] prev/next input\n;; C-c C-o clear last output (prefix to kill)\n\n;; Search\n;; C-s C-w search word at point, each C-w adds next word\n;; Replace "movie" with "film" and "movies" with "films": `movie\(s\)?` -> `\,(if \1 "films" "film")`\n;; Another common use case is to transform numbers in the matches using the format function.\n\n;; C-; dabbrev\n;; M-\ hippie-expand (on trial)\n\n;; Available Function keys: F5 F9 F10 menu-bar-open F11 toggle-frame-fullscreen F12 \n\n;; REMEMBER YOUR REGEXPS")
   (save-interprogram-paste-before-kill t)
   (visible-bell nil) ;; macOS change
   ;; from https://gitlab.com/jessieh/dot-emacs
@@ -1170,15 +1171,6 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
 (put 'unpop-to-mark-command 'repeat-map 'mark-keymap-repeat-map)
 (define-key hoagie-keymap (kbd "SPC") #'mark-keymap)
 
-;; Using advice instead of isearch-mode-end-hook, as the latter pushes mark first in search
-;; destination, then in search start position.
-;; Using the advice pushes first at start position, and then destination.
-;; (require 'isearch)
-;; (advice-add 'isearch-forward :after #'push-mark-no-activate)
-;; (advice-add 'isearch-backward :after #'push-mark-no-activate)
-;; (require 'window)
-;; (advice-add 'scroll-up-command :before #'push-mark-if-not-repeat)
-;; (advice-add 'scroll-down-command :before #'push-mark-if-not-repeat)
 
 (use-package modus-themes
   :demand t
@@ -1219,24 +1211,7 @@ Unlike the original, it also adds keyboard macro recording status."
 
 ;;; Experimental features - from reading Mastering Emacs
 
-;; I like the idea of using mark commands other than M-h, but I don't find most of the default bindings
-;; that need @ very easy to type. Using C-M-h for the new prefix, and leaving M-h as-is, proved difficult
-;; (lots of modes override the command with their own variants, shadowing the global map)
-;; so I'll take the leap to replace M-h with these longer, but mnemonic, variants:
-;; 1. Mark word (w)
-;; 2. Mark defun (d)
-;; 3. Mark sexp (s)
-;; 4. Mark paragraph (p)
-(defvar hoagie-mark-map (define-prefix-command 'hoagie-mark-map) "Custom, mnemonic, bindings for (some) mark commands.")
-
-(define-key hoagie-mark-map (kbd "w") #'mark-word)
-(define-key hoagie-mark-map (kbd "d") #'mark-defun)
-(define-key hoagie-mark-map (kbd "f") #'mark-defun) ;; welp...
-(define-key hoagie-mark-map (kbd "s") #'mark-sexp)
-(define-key hoagie-mark-map (kbd "p") #'mark-paragraph)
-
-;; TODO: an alternative, rely on C-M-SPC for mark-sexp and change M-h to mark-defun,
-;; which seems more apt for prog-modes.
+;; TODO: rely on C-M-SPC for mark-sexp and change M-h to mark-defun
 
 ;; Follow up to previous: C-M-SPC to select, C-M-k to kill by sexp.
 ;; I should be using these two a lot more
