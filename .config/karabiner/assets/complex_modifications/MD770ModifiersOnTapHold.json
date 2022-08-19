@@ -46,20 +46,32 @@
               ]
             }
           },
-          "to": [
+          "parameters": {
+            "basic.to_delayed_action_delay_milliseconds": 100,
+            "basic.to_if_held_down_threshold_milliseconds": 100
+          },
+          "to_delayed_action": {
+            "to_if_canceled": [
+              {
+                "key_code": "spacebar"
+              }
+            ]
+          },
+          "to_if_alone": [
+            {
+              "key_code": "spacebar",
+              "halt": true
+            }
+          ],
+          "to_if_held_down": [
             {
               "key_code": "left_control"
             }
           ],
-          "to_if_alone": [
-            {
-              "key_code": "spacebar"
-            }
-          ],
           "type": "basic"
-        }  
+        }
       ]
     }
-  ],
+  ], 
   "title": "MD770 modifiers"
 }
