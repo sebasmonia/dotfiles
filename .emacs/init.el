@@ -31,6 +31,8 @@
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
+
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -195,6 +197,16 @@ Initial version from EmacsWiki, added macOS & Silverblue toolbox support."
   (:map dired-mode-map
         (")" . dired-git-info-mode)))
 
+(use-package display-line-numbers
+  :ensure nil
+  :custom
+  (display-line-numbers-major-tick 10)
+  (display-line-numbers-type 'relative)
+  :hook
+  ;; add more modes here as needed
+  (prog-mode-hook . display-line-numbers-mode)
+  (markdown-mode-hook . display-line-numbers-mode))
+
 (use-package docker
   :bind
   ("C-c d" . docker))
@@ -242,7 +254,8 @@ Initial version from EmacsWiki, added macOS & Silverblue toolbox support."
 (use-package elec-pair
   :ensure nil
   :custom
-  (electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
+  ;; (electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
+  (electric-pair-inhibit-predicate 'electric-pair-inhibit-if-helps-balance)
   :config
   (electric-pair-mode))
 
@@ -376,7 +389,7 @@ Open the URL at point in EWW, use external browser with prefix arg."
   ("C-S-<f3>" . howm-list-schedule)
   (:map hoagie-howm-keymap
         ("<f3>" . howm-menu)
-        ("C-<f3>" . howm-list-grep-fixed)
+        ("s" . howm-list-grep-fixed)
         ("t" . howm-insert-date))
   :config
   (setf howm-file-name-format "%Y/%m/%Y-%m-%d-%H%M%S.md")
@@ -735,7 +748,11 @@ Meant to be added to `occur-hook'."
 
 (use-package vc
   :ensure nil
-  :demand t)
+  :demand t
+  :bind
+  (:map vc-prefix-map
+        ;; make it consistent with vc-dir
+        ("k" . vc-revert)))
 
 (use-package vc-dir
   :ensure nil
@@ -987,7 +1004,7 @@ With ARG, do this that many times."
   (reb-re-syntax 'string)
   (initial-scratch-message
    ";; Il semble que la perfection soit atteinte non quand il n’y a plus rien à ajouter, mais quand il n’y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n;; Setting the region:\n;; M-h - Paragraph\n;; C-x h - Buffer\n;; C-M-h - Next defun\n;; M-@ - Next word\n;; C-M-<SPC> and C-M-@ - Next sexp\n\n;; Act on sexp: C-M-SPC mark, C-M-k kill\n;; imenu: M-i\n;; Transpose word M-t sexp C-M-t\n;; C-x C-k e edit kmacro\n;; C-z zap-up-to-char\n\n;; SHELL:\n;; C-c C-[p|n] prev/next input\n;; C-c C-o clear last output (prefix to kill)\n\n;; Search\n;; C-s C-w search word at point, each C-w adds next word\n;; Replace \"movie\" with \"film\" and \"movies\" with \"films\": `movie\(s\)?` -> `\,(if \1 \"films\" \"film\")`\n;; Another common use case is to transform numbers in the matches using the format function.\n\n;; C-; dabbrev\n;; M-\ hippie-expand (on trial)\n\n;; Available Function keys: F5 F9 F10 menu-bar-open F11 toggle-frame-fullscreen F12 \n\n;; REMEMBER YOUR REGEXPS\n")
-  (save-interprogram-paste-before-kill t)  
+  (save-interprogram-paste-before-kill t)
   (visible-bell nil) ;; macOS change
   ;; from https://gitlab.com/jessieh/dot-emacs
   (backup-by-copying t)   ; Don't delink hardlinks
