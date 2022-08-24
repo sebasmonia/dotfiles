@@ -267,6 +267,40 @@
           "type": "basic"
         }
       ]
+    },
+    {
+      "description": "Control + Z => Command + Z",
+      "manipulators": [
+        {
+          "conditions": [
+            {
+              "bundle_identifiers": [
+                "^org\\.whispersystems\\.signal-desktop$",
+                "^com\\.tinyspeck\\.slackmacgap$",
+                "^org\\.mozilla\\.firefox$"
+              ],
+              "type": "frontmost_application_if"
+            }
+          ],
+          "from": {
+            "key_code": "z",
+            "modifiers": {
+              "mandatory": [
+                "control"
+              ]
+            }
+          },
+          "to": [
+            {
+              "key_code": "z",
+              "modifiers": [
+                "command"
+              ]
+            }
+          ],
+          "type": "basic"
+        }
+      ]
     }
   ],
   "title": "Mappings for common editing tasks for select applications"
