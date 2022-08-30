@@ -31,8 +31,6 @@
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
-
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -269,8 +267,8 @@ Initial version from EmacsWiki, added macOS & Silverblue toolbox support."
   (prog-mode-hook . eldoc-box-hover-mode)
   (comint-mode-hook . eldoc-box-hover-mode)
   :custom
-  (eldoc-box-max-pixel-width 1024)
-  (eldoc-box-max-pixel-height 768)
+  (eldoc-box-max-pixel-width 800)
+  (eldoc-box-max-pixel-height 600)
   (eldoc-idle-delay 0.1)
   :config
   ;; set the child frame face as 1.0 relative to the default font
@@ -505,6 +503,7 @@ From https://www.reddit.com/r/emacs/comments/gf64oq/comment/fprm9nn/."
   (python-mode-hook . lsp)
   (csharp-mode-hook . lsp)
   (go-mode-hook . lsp)
+  (php-mode-hook . lsp)
   :commands
   (lsp lsp-signature-active)
   :bind
@@ -609,6 +608,10 @@ From https://www.reddit.com/r/emacs/comments/gf64oq/comment/fprm9nn/."
   :custom
   (show-paren-style 'mixed))
 
+(use-package php-mode
+  :ensure t
+  )
+
 (use-package proced
   :ensure nil
   :custom
@@ -646,7 +649,17 @@ From https://www.reddit.com/r/emacs/comments/gf64oq/comment/fprm9nn/."
 (use-package restclient
   :custom
   (restclient-same-buffer-response . nil)
-  :mode ("\\.http\\'" . restclient-mode))
+  :mode
+  ("\\.http\\'" . restclient-mode)
+  :bind
+  ("<f4>" . hoagie-open-restclient)
+  :config
+  (defun hoagie-open-restclient (arg)
+    (interactive "P")
+    (let ((restclient-file (read-file-name "Open restclient file:" "~/restclient/")))
+      (if arg
+          (find-file-other-window restclient-file)
+        (find-file restclient-file)))))
 
 (use-package replace
   :ensure nil
@@ -796,10 +809,10 @@ No validations, so better be in a git repo when calling this :)."
     (interactive)
     (vc-git-command nil 0 nil "fetch" "--all")
     (message "Completed \"fetch --all\" for current repo."))
-  (defun hoagie-vc-git-clone ()
-    "Run \"git clone\" in the current directory."
-    (interactive)
-    (vc-git-command nil 0 nil "clone" (read-string "Repository URL: "))
+  (defun hoagie-vc-git-clone (repository-url directory)
+    "Run \"git clone REPOSITORY-URL\" into DIRECTORY."
+    (interactive "sRepository URL: \nsTarget directory (empty for default): ")
+    (vc-git-command nil 0 nil "clone" repository-url directory)
     (message "Repository cloned!"))
   (defun hoagie-vc-git-current-branch-upstream-origin ()
     "Set the upstream of the current git branch to \"origin\".
@@ -982,6 +995,7 @@ With ARG, do this that many times."
         ;; UPDATE: I was wrong :)
         ("u" . delete-pair))
   :custom
+  (sentence-end-double-space nil)
   (tab-width 4) ;; make golang code nicer to read
   (delete-pair-blink-delay 0.1)
   (recenter-positions '(1 middle -2)) ;; behaviour for C-l
@@ -1003,7 +1017,7 @@ With ARG, do this that many times."
   (initial-buffer-choice t)
   (reb-re-syntax 'string)
   (initial-scratch-message
-   ";; Il semble que la perfection soit atteinte non quand il n’y a plus rien à ajouter, mais quand il n’y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n;; Setting the region:\n;; M-h - Paragraph\n;; C-x h - Buffer\n;; C-M-h - Next defun\n;; M-@ - Next word\n;; C-M-<SPC> and C-M-@ - Next sexp\n\n;; Act on sexp: C-M-SPC mark, C-M-k kill\n;; imenu: M-i\n;; Transpose word M-t sexp C-M-t\n;; C-x C-k e edit kmacro\n;; C-z zap-up-to-char\n\n;; SHELL:\n;; C-c C-[p|n] prev/next input\n;; C-c C-o clear last output (prefix to kill)\n\n;; Search\n;; C-s C-w search word at point, each C-w adds next word\n;; Replace \"movie\" with \"film\" and \"movies\" with \"films\": `movie\(s\)?` -> `\,(if \1 \"films\" \"film\")`\n;; Another common use case is to transform numbers in the matches using the format function.\n\n;; C-; dabbrev\n;; M-\ hippie-expand (on trial)\n\n;; Available Function keys: F5 F9 F10 menu-bar-open F11 toggle-frame-fullscreen F12 \n\n;; REMEMBER YOUR REGEXPS\n")
+   ";; Il semble que la perfection soit atteinte non quand il n’y a plus rien à ajouter, mais quand il n’y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n;; Setting the region:\n;; M-h - Paragraph\n;; C-x h - Buffer\n;; C-M-h - Next defun\n;; M-@ - Next word\n;; C-M-<SPC> and C-M-@ - Next sexp\n\n;; Act on sexp: C-M-SPC mark, C-M-k kill\n;; imenu: M-i\n;; Transpose word M-t sexp C-M-t\n;; C-x C-k e edit kmacro\n;; C-z zap-up-to-char\n\n;; SHELL:\n;; C-c C-[p|n] prev/next input\n;; C-c C-o clear last output (prefix to kill)\n\n;; Search\n;; C-s C-w search word at point, each C-w adds next word\n;; Replace \"movie\" with \"film\" and \"movies\" with \"films\": `movie\(s\)?` -> `\,(if \\1 \"films\" \"film\")`\n;; Another common use case is to transform numbers in the matches using the format function.\n\n;; C-; dabbrev\n;; M-\ hippie-expand (on trial)\n\n;; Available Function keys: F5 F9 F10 menu-bar-open F11 toggle-frame-fullscreen F12 \n\n;; REMEMBER YOUR REGEXPS\n")
   (save-interprogram-paste-before-kill t)
   (visible-bell nil) ;; macOS change
   ;; from https://gitlab.com/jessieh/dot-emacs
