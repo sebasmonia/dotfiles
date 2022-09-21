@@ -209,6 +209,12 @@ Initial version from EmacsWiki, added macOS & Silverblue toolbox support."
   :bind
   ("C-c d" . docker))
 
+(use-package docker-tramp
+  :ensure t
+  :custom
+  (docker-tramp-docker-executable "podman")
+  (docker-tramp-use-names t))
+
 (use-package dockerfile-mode
   :mode "Dockerfile\\'")
 
@@ -445,7 +451,6 @@ Open the URL at point in EWW, use external browser with prefix arg."
 (use-package isearch
   :ensure nil
   :custom
-  (search-default-mode t)
   (search-exit-option 'edit)
   (isearch-lazy-count t)
   (isearch-lazy-highlight 'all-windows)
@@ -606,7 +611,8 @@ From https://www.reddit.com/r/emacs/comments/gf64oq/comment/fprm9nn/."
   ;; apparently it is now enabled by default?
   (show-paren-mode)
   :custom
-  (show-paren-style 'mixed))
+  (show-paren-style 'mixed)
+  (show-paren-when-point-inside-paren t))
 
 (use-package php-mode
   :ensure t
@@ -637,6 +643,11 @@ From https://www.reddit.com/r/emacs/comments/gf64oq/comment/fprm9nn/."
   (python-shell-font-lock-enable nil)
   (python-shell-interpreter "ipython")
   (python-shell-interpreter-args "--pprint --simple-prompt"))
+
+(use-package re-builder
+  :ensure nil
+  :custom
+  (reb-re-syntax 'string))
 
 (use-package repeat
   :ensure nil
@@ -976,9 +987,6 @@ With ARG, do this that many times."
   ("M-SPC" . cycle-spacing)
   ;; from https://emacsredux.com/blog/2020/06/10/comment-commands-redux/
   ("<remap> <comment-dwim>" . comment-line)
-  ;; I use `kill-buffer' rarely enough that this is worth it
-  ;; (now I get to use "k" in my personal bindings too)
-  ("<remap> <kill-buffer>" . kill-this-buffer)
   ("C-d" . delete-forward-char) ;; replace delete-char, as recommended in the docs
   ("C-<backspace>" . backward-delete-word)
   ("M-c" . capitalize-dwim)
@@ -988,6 +996,8 @@ With ARG, do this that many times."
   ;; like flycheck's C-c ! l
   ("C-c !" . flymake-show-buffer-diagnostics)
   ("C-x n i" . narrow-to-region-indirect)
+  ;; it's back...
+  ("<remap> <list-buffers>" . ibuffer)
   (:map hoagie-keymap
         ;; u for "unwrap"...
         ;; I think this plus the new mark commands I'm using,
@@ -997,6 +1007,7 @@ With ARG, do this that many times."
   :custom
   (sentence-end-double-space nil)
   (tab-width 4) ;; make golang code nicer to read
+  (tab-always-indent 'complete)
   (delete-pair-blink-delay 0.1)
   (recenter-positions '(1 middle -2)) ;; behaviour for C-l
   (comint-prompt-read-only t)
@@ -1015,9 +1026,8 @@ With ARG, do this that many times."
   (grep-command "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
   (inhibit-startup-screen t)
   (initial-buffer-choice t)
-  (reb-re-syntax 'string)
   (initial-scratch-message
-   ";; Il semble que la perfection soit atteinte non quand il n’y a plus rien à ajouter, mais quand il n’y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n;; Setting the region:\n;; M-h - Paragraph\n;; C-x h - Buffer\n;; C-M-h - Next defun\n;; M-@ - Next word\n;; C-M-<SPC> and C-M-@ - Next sexp\n\n;; Act on sexp: C-M-SPC mark, C-M-k kill\n;; imenu: M-i\n;; Transpose word M-t sexp C-M-t\n;; C-x C-k e edit kmacro\n;; C-z zap-up-to-char\n\n;; SHELL:\n;; C-c C-[p|n] prev/next input\n;; C-c C-o clear last output (prefix to kill)\n\n;; Search\n;; C-s C-w search word at point, each C-w adds next word\n;; Replace \"movie\" with \"film\" and \"movies\" with \"films\": `movie\(s\)?` -> `\,(if \\1 \"films\" \"film\")`\n;; Another common use case is to transform numbers in the matches using the format function.\n\n;; C-; dabbrev\n;; M-\ hippie-expand (on trial)\n\n;; Available Function keys: F5 F9 F10 menu-bar-open F11 toggle-frame-fullscreen F12 \n\n;; REMEMBER YOUR REGEXPS\n")
+   ";; Il semble que la perfection soit atteinte non quand il n’y a plus rien à ajouter, mais quand il n’y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n;; Setting the region:\n;; M-h - Paragraph\n;; C-x h - Buffer\n;; C-M-h - Next defun\n;; M-@ - Next word\n;; C-M-<SPC> or C-M-@ - Mark next sexp --- C-M-k kill it\n\n;; imenu: M-i\n;; Transpose word M-t sexp C-M-t\n;; C-x C-k e edit kmacro\n;; C-z zap-up-to-char\n\n;; SHELL:\n;; C-c C-[p|n] prev/next input\n;; C-c C-o clear last output (prefix to kill)\n\n;; Search\n;; C-s C-w search word at point, each C-w adds next word\n;; Replace \"movie\" with \"film\" and \"movies\" with \"films\": `movie\(s\)?` -> `\,(if \\1 \"films\" \"film\")`\n;; Another common use case is to transform numbers in the matches using the format function.\n\n;; C-; dabbrev\n;; M-\\ hippie-expand (on trial)\n\n;; REMEMBER YOUR REGEXPS\n;;")
   (save-interprogram-paste-before-kill t)
   (visible-bell nil) ;; macOS change
   ;; from https://gitlab.com/jessieh/dot-emacs
@@ -1201,7 +1211,6 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
 (put 'pop-to-mark-push-if-first 'repeat-map 'mark-keymap-repeat-map)
 (put 'unpop-to-mark-command 'repeat-map 'mark-keymap-repeat-map)
 (define-key hoagie-keymap (kbd "SPC") #'mark-keymap)
-
 
 (use-package modus-themes
   :demand t
