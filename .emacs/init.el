@@ -2,7 +2,7 @@
 
 ;; Author: Sebastian Monia <smonia@outlook.com>
 ;; URL: https://github.com/sebasmonia/dotfiles
-;; Version: 28.5
+;; Version: 28.6
 ;; Keywords: .emacs dotemacs
 
 ;; This file is not part of GNU Emacs.
@@ -739,10 +739,17 @@ Meant to be added to `occur-hook'."
 
 (use-package shell
   :ensure nil
+  :config
+  (defun hoagie-shell-mode-setup ()
+    "My personal shell mode setup."
+    (toggle-truncate-lines t)
+    (setf comint-process-echoes t)
+    ;; From https://emacs.stackexchange.com/a/62420
+    (when (and (fboundp 'company-mode)
+               (file-remote-p default-directory))
+      (company-mode -1)))
   :hook
-  (shell-mode-hook . (lambda ()
-                       (toggle-truncate-lines t)
-                       (setf comint-process-echoes t))))
+  (shell-mode-hook . hoagie-shell-mode-setup))
 
 (use-package sly
   :commands sly
@@ -792,8 +799,21 @@ Meant to be added to `occur-hook'."
         ("o" . hoagie-vc-git-current-branch-upstream-origin)
         ("e" . vc-ediff)
         ("k" . vc-revert)
-        ("d" . hoagie-vc-dir-delete))
+        ("r" . hoagie-vc-dir-reset)
+        ("d" . hoagie-vc-dir-delete)
+        ("b L" . hoagie-vc-git-show-branches))
   :config
+  (defun hoagie-vc-dir-reset (&optional arg)
+    "Runs \"git reset\" to unstage all changes.
+With prefix arg, does a hard reset (thus it asks for confirmation)."
+    (interactive "P")
+    (if arg
+        (when (y-or-n-p "Perform a hard reset? ")
+          (vc-git-command nil 0 nil "reset" "--hard")
+          (message "Completed. All pending changes are lost."))
+      (vc-git-command nil 0 nil "reset")
+      (message "All changes are unstaged."))
+    (vc-dir-refresh))
   (defun hoagie-vc-dir-delete ()
     "Delete files directly in the vc-dir buffer."
     (interactive)
@@ -834,15 +854,37 @@ branch remains local-only."
     (let ((current-branch (car (vc-git-branches))))
       (when (y-or-n-p (format "Set the upstream of %s to origin?" current-branch))
         (vc-git-command nil 0 nil "push" "--set-upstream" "origin" current-branch)
-        (message "Upstream of %s is now ORIGIN." current-branch)))))
+        (message "Upstream of %s is now ORIGIN." current-branch))))
+  (defun hoagie-vc-git-show-branches (&optional arg)
+    "Show in a buffer the list of branches in the current repository.
+With prefix ARG show the remote branches."
+    (interactive "P")
+    ;; TODO: this is a mix of vc-git stuff and project.el stuff...
+    (let* ((default-directory (project-root (project-current t)))
+           (buffer-name (project-prefixed-buffer-name (if arg
+                                                          "git remote branches"
+                                                        "git branches"))))
+      (vc-git-command buffer-name 
+                      0
+                      nil
+                      "branch"
+                      (when arg "-r"))
+      (pop-to-buffer buffer-name)
+      (goto-char (point-min)))))
 
 (use-package vc-hooks
   :ensure nil
   :after (vc vc-git)
+  :custom
+  ;; from https://emacs.stackexchange.com/a/37855, which links to TRAMP's manual
+  (vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
+                                vc-ignore-dir-regexp
+                                tramp-file-name-regexp))
   :bind
   (:map vc-prefix-map
         ("f" . hoagie-vc-git-fetch-all) ;; vc-dir-find-file, but I use project-find-file instead
         ("o" . hoagie-vc-git-current-branch-upstream-origin)
+        ("b L" . hoagie-vc-git-show-branches) ;; l is used for branch-log
         ("e" . vc-ediff)))
 
 (use-package visible-mark
@@ -1027,7 +1069,7 @@ With ARG, do this that many times."
   (inhibit-startup-screen t)
   (initial-buffer-choice t)
   (initial-scratch-message
-   ";; Il semble que la perfection soit atteinte non quand il n’y a plus rien à ajouter, mais quand il n’y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n;; Setting the region:\n;; M-h - Paragraph\n;; C-x h - Buffer\n;; C-M-h - Next defun\n;; M-@ - Next word\n;; C-M-<SPC> or C-M-@ - Mark next sexp --- C-M-k kill it\n\n;; imenu: M-i\n;; Transpose word M-t sexp C-M-t\n;; C-x C-k e edit kmacro\n;; C-z zap-up-to-char\n\n;; SHELL:\n;; C-c C-[p|n] prev/next input\n;; C-c C-o clear last output (prefix to kill)\n\n;; Search\n;; C-s C-w search word at point, each C-w adds next word\n;; Replace \"movie\" with \"film\" and \"movies\" with \"films\": `movie\(s\)?` -> `\,(if \\1 \"films\" \"film\")`\n;; Another common use case is to transform numbers in the matches using the format function.\n\n;; C-; dabbrev\n;; M-\\ hippie-expand (on trial)\n\n;; REMEMBER YOUR REGEXPS\n;;")
+   ";; Il semble que la perfection soit atteinte non quand il n’y a plus rien à ajouter, mais quand il n’y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n;; Setting the region:\n;; M-h - Paragraph\n;; C-x h - Buffer\n;; C-M-h - Next defun\n;; M-@ - Next word\n;; C-M-<SPC> or C-M-@ - Mark next sexp --- C-M-k kill it\n\n;; imenu: M-i\n;; Transpose word M-t sexp C-M-t\n;; C-x C-k e edit kmacro\n;; C-z zap-up-to-char\n\n;; SHELL:\n;; C-c C-[p|n] prev/next input\n;; C-c C-o clear last output (prefix to kill)\n\n;; Search\n;; C-s C-w search word at point, each C-w adds next word\n;; Replace \"movie\" with \"film\" and \"movies\" with \"films\": `movie\(s\)?` -> `\,(if \\1 \"films\" \"film\")`\n;; Another common use case is to transform numbers in the matches using the format function.\n\n;; C-; dabbrev\n;; M-\\ hippie-expand (on trial)\n\n;; REMEMBER YOUR REGEXPS\n")
   (save-interprogram-paste-before-kill t)
   (visible-bell nil) ;; macOS change
   ;; from https://gitlab.com/jessieh/dot-emacs
