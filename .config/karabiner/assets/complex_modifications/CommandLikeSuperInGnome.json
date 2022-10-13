@@ -4,6 +4,7 @@
       "description": "Command is Command+space if tapped, Command if held down",
       "manipulators": [
         {
+          "type": "basic",
           "from": {
             "key_code": "left_command",
             "modifiers": {
@@ -12,28 +13,20 @@
               ]
             }
           },
-          "to_delayed_action": {
-            "to_if_canceled": [
-              {
-                "key_code": "left_command"
-              }
-            ]
-          },
+          "to": [
+            {
+              "key_code": "left_command",
+              "lazy": true
+            }
+          ],
           "to_if_alone": [
             {
               "key_code": "spacebar",
               "modifiers": [
-                "command"
-              ],
-              "halt": true
+                "left_command"
+              ]
             }
-          ],
-          "to_if_held_down": [
-            {
-              "key_code": "left_command"
-            }
-          ],
-          "type": "basic"
+          ]
         }
       ]
     }
@@ -41,4 +34,4 @@
   "title": "Command like Super key in Gnome"
 }
 
-  
+
