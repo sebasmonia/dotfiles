@@ -58,7 +58,6 @@
 (define-key key-translation-map (kbd "<apps>") (kbd "<menu>")) ;; compat Linux-Windows
 (define-key key-translation-map (kbd "<print>") (kbd "<menu>")) ;; curse you, thinkpad keyboard!!!
 (global-set-key (kbd "<menu>") 'hoagie-keymap)
-(global-set-key (kbd "C-'") 'hoagie-keymap)
 
 ;; In case the config is not running on Silverblue, or if I ever layer Emacs on the base system...
 (defvar hoagie-toolbox-name (if (file-exists-p "/run/.containerenv")
@@ -74,9 +73,10 @@
 
 ;; experimenting with new types of keybindings/entry keys for keymaps
 (global-set-key (kbd "<f6>") 'hoagie-keymap)
-(define-key key-translation-map (kbd "<f7>") (kbd "ESC")) ;; esc-map ~= alt
-
-(global-set-key (kbd "<f8>") mode-specific-map)  ;; C-c
+;; (global-set-key (kbd "<f7>") ctl-x-map)  ;; C-x
+;; (global-set-key (kbd "<f8>") mode-specific-map)  ;; C-c
+(define-key key-translation-map (kbd "<f7>") (kbd "C-x"))
+(define-key key-translation-map (kbd "<f8>") (kbd "C-c"))
 
 (use-package better-shell
   :after shell
@@ -201,9 +201,9 @@ Initial version from EmacsWiki, added macOS & Silverblue toolbox support."
   (display-line-numbers-major-tick 10)
   (display-line-numbers-type 'relative)
   :hook
-  ;; add more modes here as needed
-  (prog-mode-hook . display-line-numbers-mode)
-  (markdown-mode-hook . display-line-numbers-mode))
+  (after-init-hook . global-display-line-numbers-mode))
+  ;; (prog-mode-hook . display-line-numbers-mode)
+  ;; (markdown-mode-hook . display-line-numbers-mode))
 
 (use-package docker
   :bind
@@ -282,6 +282,7 @@ Initial version from EmacsWiki, added macOS & Silverblue toolbox support."
 
 (use-package eww
   :ensure nil
+  :demand t
   :hook
   (eww-mode-hook . toggle-word-wrap)
   (eww-mode-hook . visual-line-mode)
@@ -414,22 +415,20 @@ Open the URL at point in EWW, use external browser with prefix arg."
   :custom
   (icomplete-hide-common-prefix nil)
   (icomplete-show-matches-on-no-input t)
-  (icomplete-prospects-height 12)
-  (icomplete-delay-completions-threshold 1000)
+  (icomplete-prospects-height 15)
   (icomplete-max-delay-chars 1)
   ;; The following are minibuffer/C customizations
   ;; but it makes sense to have them here:
-  (completion-styles '(flex))
+  (completion-styles '(flex basic)) ;; added basic to get host completion in TRAMP
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
-  (completion-cycle-threshold t)
+  ;; (completion-cycle-threshold t)
   (completions-detailed t)
   :init
   ;; Not the best place for this, but since icomplete displaced amx/smex...
   (define-key hoagie-keymap (kbd "<f6>") #'execute-extended-command)
   (define-key hoagie-keymap (kbd "<menu>") #'execute-extended-command)
-  (define-key hoagie-keymap (kbd "C-'") #'execute-extended-command)
   :config
   (fido-vertical-mode t)
   ;; Non-custom configuration:
