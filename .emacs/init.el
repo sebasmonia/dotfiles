@@ -50,6 +50,8 @@
 (setf use-package-always-ensure t)
 (setf use-package-hook-name-suffix nil)
 (setf package-native-compile t)
+;; (custom-set-faces
+;;  '(default ((t (:family "Consolas" :foundry "MS  " :slant normal :weight regular :height 160 :width normal)))))
 (custom-set-faces
  '(default ((t (:family "Consolas" :foundry "MS  " :slant normal :weight regular :height 160 :width normal)))))
 
@@ -77,6 +79,15 @@
 ;; (global-set-key (kbd "<f8>") mode-specific-map)  ;; C-c
 (define-key key-translation-map (kbd "<f7>") (kbd "C-x"))
 (define-key key-translation-map (kbd "<f8>") (kbd "C-c"))
+
+(use-package ansi-color
+  :ensure nil
+  :commands (ansi-color-apply-buffer)
+  :init
+  (defun ansi-color-apply-buffer ()
+    "Colorize the entire buffer using `ansi-color-apply-on-region'."
+    (interactive)
+    (ansi-color-apply-on-region (point-min) (point-max))))
 
 (use-package better-shell
   :after shell
@@ -842,6 +853,9 @@ No validations, so better be in a git repo when calling this :)."
   (defun hoagie-vc-git-clone (repository-url directory)
     "Run \"git clone REPOSITORY-URL\" into DIRECTORY."
     (interactive "sRepository URL: \nsTarget directory (empty for default): ")
+    (when (string= directory "")
+      ;; "clone" needs nil to 
+      (setf directory nil))
     (vc-git-command nil 0 nil "clone" repository-url directory)
     (message "Repository cloned!"))
   (defun hoagie-vc-git-current-branch-upstream-origin ()
