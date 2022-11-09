@@ -53,7 +53,7 @@
 ;; (custom-set-faces
 ;;  '(default ((t (:family "Consolas" :foundry "MS  " :slant normal :weight regular :height 160 :width normal)))))
 (custom-set-faces
- '(default ((t (:family "Consolas" :foundry "MS  " :slant normal :weight regular :height 160 :width normal)))))
+ '(default ((t (:family "Iosevka Comfy Wide Fixed" :slant normal :weight regular :height 160 :width normal)))))
 
 ;; based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html
 (defvar hoagie-keymap (define-prefix-command 'hoagie-keymap) "My custom bindings.")
@@ -99,32 +99,32 @@
   :config
   (browse-kill-ring-default-keybindings))
 
-(use-package company
-  :hook
-  (after-init-hook . global-company-mode)
-  :bind
-  ("C-<tab>" . company-indent-or-complete-common)
-  (:map company-active-map
-        ("C-<RET>" . company-abort)
-        ("<tab>" . company-complete-selection))
-  :custom
-  (company-idle-delay 0.25)
-  (company-minimum-prefix-length 2)
-  (company-selection-wrap-around t))
+;; (use-package company
+;;   :hook
+;;   (after-init-hook . global-company-mode)
+;;   :bind
+;;   ("C-<tab>" . company-indent-or-complete-common)
+;;   (:map company-active-map
+;;         ("C-<RET>" . company-abort)
+;;         ("<tab>" . company-complete-selection))
+;;   :custom
+;;   (company-idle-delay 0.25)
+;;   (company-minimum-prefix-length 2)
+;;   (company-selection-wrap-around t))
 
-(use-package company-dabbrev
-  :after company
-  :ensure nil
-  :custom
-  (company-dabbrev-ignore-case nil)
-  (company-dabbrev-downcase nil))
+;; (use-package company-dabbrev
+;;   :after company
+;;   :ensure nil
+;;   :custom
+;;   (company-dabbrev-ignore-case nil)
+;;   (company-dabbrev-downcase nil))
 
-(use-package company-dabbrev-code
-  :after company
-  :ensure nil
-  :custom
-  (company-dabbrev-code-modes t)
-  (company-dabbrev-code-ignore-case nil))
+;; (use-package company-dabbrev-code
+;;   :after company
+;;   :ensure nil
+;;   :custom
+;;   (company-dabbrev-code-modes t)
+;;   (company-dabbrev-code-ignore-case nil))
 
 (use-package csharp-mode
   :mode "\\.cs$"
@@ -266,6 +266,16 @@ Initial version from EmacsWiki, added macOS & Silverblue toolbox support."
   ;; the window config is restored but then _stuff happens_, so:
   (add-hook 'ediff-after-quit-hook-internal #'hoagie-ediff-restore-windows))
 
+(use-package eldoc
+  :ensure nil
+  :demand t
+  :config
+  (global-eldoc-mode)
+  )
+  ;;:custom
+  ;;(eldoc-echo-area-prefer-doc-buffer 'maybe)
+  ;;(eldoc-echo-area-use-multiline-p nil))
+
 (use-package elec-pair
   :ensure nil
   :custom
@@ -279,17 +289,17 @@ Initial version from EmacsWiki, added macOS & Silverblue toolbox support."
   :config
   (exec-path-from-shell-initialize))
 
-(use-package eldoc-box
-  :hook
-  (prog-mode-hook . eldoc-box-hover-mode)
-  (comint-mode-hook . eldoc-box-hover-mode)
-  :custom
-  (eldoc-box-max-pixel-width 800)
-  (eldoc-box-max-pixel-height 600)
-  (eldoc-idle-delay 0.1)
-  :config
-  ;; set the child frame face as 1.0 relative to the default font
-  (set-face-attribute 'eldoc-box-body nil :inherit 'default :height 1.0))
+;; (use-package eldoc-box
+;;   :hook
+;;   (prog-mode-hook . eldoc-box-hover-mode)
+;;   (comint-mode-hook . eldoc-box-hover-mode)
+;;   :custom
+;;   (eldoc-box-max-pixel-width 800)
+;;   (eldoc-box-max-pixel-height 600)
+;;   (eldoc-idle-delay 0.1)
+;;   :config
+;;   ;; set the child frame face as 1.0 relative to the default font
+;;   (set-face-attribute 'eldoc-box-body nil :inherit 'default :height 1.0))
 
 (use-package eww
   :ensure nil
@@ -434,21 +444,42 @@ Open the URL at point in EWW, use external browser with prefix arg."
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
-  ;; (completion-cycle-threshold t)
   (completions-detailed t)
   :init
   ;; Not the best place for this, but since icomplete displaced amx/smex...
   (define-key hoagie-keymap (kbd "<f6>") #'execute-extended-command)
-  (define-key hoagie-keymap (kbd "<menu>") #'execute-extended-command)
   :config
   (fido-vertical-mode t)
   ;; Non-custom configuration:
   (setf icomplete-in-buffer t)
   :bind
-  (:map icomplete-minibuffer-map
+  (:map icomplete-fido-mode-map
         ("C-j" . icomplete-fido-exit) ;; from the IDO days...
         ("C-n" . icomplete-forward-completions)
         ("C-p" . icomplete-backward-completions)))
+
+;; (use-package minibuffer
+;;   :ensure nil
+;;   :demand t
+;;   :custom
+;;   (completions-format 'one-column)
+;;   (completions-header-format nil)
+;;   (completions-max-height nil)
+;;   (completion-auto-select 'second-tab)
+;;   :config
+;;   (define-key minibuffer-mode-map (kbd "C-n") 'minibuffer-next-completion)
+;;   (define-key minibuffer-mode-map (kbd "C-n") 'minibuffer-next-completion)
+;;   (define-key minibuffer-mode-map (kbd "C-p") 'minibuffer-previous-completion)
+;;   (define-key minibuffer-mode-map (kbd "C-SPC") 'minibuffer-complete)
+;;   (define-key completion-in-region-mode-map (kbd "C-n") 'minibuffer-next-completion)
+;;   (define-key completion-in-region-mode-map (kbd "C-p") 'minibuffer-previous-completion)
+;;   (setq completion-styles '(flex basic)) ;; added basic to get host completion in TRAMP
+;;   (setq read-buffer-completion-ignore-case t)
+;;   (setq read-file-name-completion-ignore-case t)
+;;   (setq completion-ignore-case t)
+;;   (setq completions-detailed t)
+;;   (setq completion-auto-help 'visible)
+;;   (define-key hoagie-keymap (kbd "<f6>") #'execute-extended-command))
 
 (use-package imenu
   :ensure nil
@@ -1199,8 +1230,9 @@ With ARG, do this that many times."
       (when (eq (length (display-monitor-attributes-list)) 1)
         (setf size 143))
       (set-face-attribute 'default (selected-frame) :height size)
-      (set-face-font 'eldoc-box-body
-                     (frame-parameter nil 'font))))
+      ;; (set-face-font 'eldoc-box-body
+      ;;                (frame-parameter nil 'font)))
+    ))
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
 
 ;; MARK PUSH AND POP - maybe I should make a package out of this
