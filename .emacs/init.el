@@ -1,8 +1,8 @@
 ;; .emacs --- My dot emacs file  -*- lexical-binding: t; -*-
 
-;; Author: Sebastian Monia <smonia@outlook.com>
+;; Author: Sebastian Monia <code@sebasmonia.com>
 ;; URL: https://github.com/sebasmonia/dotfiles
-;; Version: 28.6
+;; Version: 28.7
 ;; Keywords: .emacs dotemacs
 
 ;; This file is not part of GNU Emacs.
@@ -430,56 +430,58 @@ Open the URL at point in EWW, use external browser with prefix arg."
     (howm-set-mode)
     (goto-char (point-max))))
 
-(use-package icomplete
-  :ensure nil
-  :demand t
-  :custom
-  (icomplete-hide-common-prefix nil)
-  (icomplete-show-matches-on-no-input t)
-  (icomplete-prospects-height 15)
-  (icomplete-max-delay-chars 1)
-  ;; The following are minibuffer/C customizations
-  ;; but it makes sense to have them here:
-  (completion-styles '(flex basic)) ;; added basic to get host completion in TRAMP
-  (read-buffer-completion-ignore-case t)
-  (read-file-name-completion-ignore-case t)
-  (completion-ignore-case t)
-  (completions-detailed t)
-  :init
-  ;; Not the best place for this, but since icomplete displaced amx/smex...
-  (define-key hoagie-keymap (kbd "<f6>") #'execute-extended-command)
-  :config
-  (fido-vertical-mode t)
-  ;; Non-custom configuration:
-  (setf icomplete-in-buffer t)
-  :bind
-  (:map icomplete-fido-mode-map
-        ("C-j" . icomplete-fido-exit) ;; from the IDO days...
-        ("C-n" . icomplete-forward-completions)
-        ("C-p" . icomplete-backward-completions)))
-
-;; (use-package minibuffer
+;; (use-package icomplete
 ;;   :ensure nil
 ;;   :demand t
 ;;   :custom
+;;   (icomplete-hide-common-prefix nil)
+;;   (icomplete-show-matches-on-no-input t)
+;;   (icomplete-prospects-height 15)
+;;   (icomplete-max-delay-chars 1)
+;;   ;; The following are minibuffer/C customizations
+;;   ;; but it makes sense to have them here:
+;;   (completion-styles '(flex basic)) ;; added basic to get host completion in TRAMP
+;;   (read-buffer-completion-ignore-case t)
+;;   (read-file-name-completion-ignore-case t)
+;;   (completion-ignore-case t)
+;;   (completions-detailed t)
 ;;   (completions-format 'one-column)
-;;   (completions-header-format nil)
-;;   (completions-max-height nil)
 ;;   (completion-auto-select 'second-tab)
+;;   :init
+;;   ;; Not the best place for this, but since icomplete displaced amx/smex...
+;;   (define-key hoagie-keymap (kbd "<f6>") #'execute-extended-command)
 ;;   :config
-;;   (define-key minibuffer-mode-map (kbd "C-n") 'minibuffer-next-completion)
-;;   (define-key minibuffer-mode-map (kbd "C-n") 'minibuffer-next-completion)
-;;   (define-key minibuffer-mode-map (kbd "C-p") 'minibuffer-previous-completion)
-;;   (define-key minibuffer-mode-map (kbd "C-SPC") 'minibuffer-complete)
-;;   (define-key completion-in-region-mode-map (kbd "C-n") 'minibuffer-next-completion)
-;;   (define-key completion-in-region-mode-map (kbd "C-p") 'minibuffer-previous-completion)
-;;   (setq completion-styles '(flex basic)) ;; added basic to get host completion in TRAMP
-;;   (setq read-buffer-completion-ignore-case t)
-;;   (setq read-file-name-completion-ignore-case t)
-;;   (setq completion-ignore-case t)
-;;   (setq completions-detailed t)
-;;   (setq completion-auto-help 'visible)
-;;   (define-key hoagie-keymap (kbd "<f6>") #'execute-extended-command))
+;;   (fido-vertical-mode t)
+;;   ;; Non-custom configuration:
+;;   (setf icomplete-in-buffer t)
+;;   :bind
+;;   (:map icomplete-fido-mode-map
+;;         ("C-j" . icomplete-fido-exit) ;; from the IDO days...
+;;         ("C-n" . icomplete-forward-completions)
+;;         ("C-p" . icomplete-backward-completions)))
+
+(use-package minibuffer
+  :ensure nil
+  :demand t
+  :custom
+  (completions-format 'one-column)
+  (completions-header-format nil)
+  (completions-max-height nil)
+  (completion-auto-select 'second-tab)
+  :config
+  (define-key minibuffer-mode-map (kbd "C-n") 'minibuffer-next-completion)
+  (define-key minibuffer-mode-map (kbd "C-n") 'minibuffer-next-completion)
+  (define-key minibuffer-mode-map (kbd "C-p") 'minibuffer-previous-completion)
+  (define-key minibuffer-mode-map (kbd "C-SPC") 'minibuffer-complete)
+  (define-key completion-in-region-mode-map (kbd "C-n") 'minibuffer-next-completion)
+  (define-key completion-in-region-mode-map (kbd "C-p") 'minibuffer-previous-completion)
+  (setq completion-styles '(flex basic)) ;; added basic to get host completion in TRAMP
+  (setq read-buffer-completion-ignore-case t)
+  (setq read-file-name-completion-ignore-case t)
+  (setq completion-ignore-case t)
+  (setq completions-detailed t)
+  (setq completion-auto-help 'visible)
+  (define-key hoagie-keymap (kbd "<f6>") #'execute-extended-command))
 
 (use-package imenu
   :ensure nil
@@ -585,8 +587,6 @@ From https://www.reddit.com/r/emacs/comments/gf64oq/comment/fprm9nn/."
   (lsp-ui-peek-enable nil)
   (lsp-ui-sideline-enable nil)
   :bind
-  (:map hoagie-keymap
-        ("C-i" . lsp-ui-imenu))
   (:map hoagie-lsp-keymap
         ("i" . lsp-ui-imenu))
   (:map lsp-ui-imenu-mode-map
@@ -720,14 +720,12 @@ From https://www.reddit.com/r/emacs/comments/gf64oq/comment/fprm9nn/."
         ("o" . hoagie-occur-dwim)
         ("O" . multi-occur-in-matching-buffers))
   :config
-  ;; TIL that I should have used (interactive "r") instead
-  ;; of calling (region-beginning) and (region-end)
-  (defun hoagie-occur-dwim (region-start region-end)
+  (defun hoagie-occur-dwim ()
     "Run occur, if there's a region selected use that as input.
 By default, occur _limits the search to the region_ if it is active."
-    (interactive "r")
+    (interactive)
     (if (use-region-p)
-        (occur (buffer-substring-no-properties region-start region-end))
+        (occur (buffer-substring-no-properties (region-beginning) (region-end)))
       (command-execute 'occur)))
   (defun hoagie-rename-and-select-occur-buffer ()
     "Renames the current buffer to *Occur: [term] [buffer]*.
@@ -1338,7 +1336,7 @@ Unlike the original, it also adds keyboard macro recording status."
 
 ;;; Experimental features - from reading Mastering Emacs
 
-;; TODO: rely on C-M-SPC for mark-sexp and change M-h to mark-defun
+;; TODO: rely on C-M-SPC/C-M-@ for mark-sexp and change M-h to mark-defun
 
 ;; Follow up to previous: C-M-SPC to select, C-M-k to kill by sexp.
 ;; I should be using these two a lot more
@@ -1349,5 +1347,38 @@ Unlike the original, it also adds keyboard macro recording status."
 
 ;; Keeping C-; for dabbrev but trying hippie-expand too
 (global-set-key (kbd "M-/") #'hippie-expand)
+
+;;; Load Paramount+ config
+
+(use-package ini :load-path "~/github/paramount-scripts/emacs/")
+(use-package gcloud-tools :load-path "~/github/paramount-scripts/emacs/")
+(use-package aws-tools :load-path "~/github/paramount-scripts/emacs/")
+(use-package kubernetes-tools :load-path "~/github/paramount-scripts/emacs/")
+(use-package okta-tools :load-path "~/github/paramount-scripts/emacs/")
+(use-package gh-tools :load-path "~/github/paramount-scripts/emacs/")
+(use-package misc-scripts :load-path "~/github/paramount-scripts/emacs/")
+(use-package remote-servers :load-path "~/github/paramount-scripts/emacs/")
+(use-package jira-tools :load-path "~/github/paramount-scripts/emacs/")
+(defvar-keymap paramount-keymap
+  :doc "Keymap used for Paramount modules."
+  ;; AWS Commands
+  "a c" #'aws-cli-service-reference
+  "a l" #'hoagie-login-okta-awscli-eks
+  ;; GCloud
+  "g c" #'gcloud-cli-reference
+  ;; Code PRs list/details
+  "c p l" #'gh-list-prs
+  "c p d" #'gh-pr-show-details
+  ;; JIRA
+  "j m" #'jira-my-tickets
+  "j i" #'jira-show-issue
+  ;; Video Robot
+  "v c" #'hoagie-vr-clone-new
+  "v p" #'hoagie-vr-pull-podman
+  "v r g" #'gcloud-vr-reboot-master-instance ;; VR Reboot GCP
+  "v r a" #'aws-vr-reboot-master-instance ;; VR Reboot AWS
+  ;; SSH
+  "s" #'remote-servers-shell)
+(define-key hoagie-keymap (kbd "q") paramount-keymap)
 
 ;;; init.el ends here
