@@ -467,27 +467,31 @@ Open the URL at point in EWW, use external browser with prefix arg."
   (completions-format 'one-column)
   (completions-header-format nil)
   (completions-max-height nil)
-  (completion-auto-select 'second-tab)
-  :config
-  (define-key minibuffer-mode-map (kbd "C-n") 'minibuffer-next-completion)
-  (define-key minibuffer-mode-map (kbd "C-n") 'minibuffer-next-completion)
-  (define-key minibuffer-mode-map (kbd "C-p") 'minibuffer-previous-completion)
-  (define-key minibuffer-mode-map (kbd "C-SPC") 'minibuffer-complete)
-  (define-key completion-in-region-mode-map (kbd "C-n") 'minibuffer-next-completion)
-  (define-key completion-in-region-mode-map (kbd "C-p") 'minibuffer-previous-completion)
-  (setq completion-styles '(flex basic)) ;; added basic to get host completion in TRAMP
-  (setq read-buffer-completion-ignore-case t)
-  (setq read-file-name-completion-ignore-case t)
-  (setq completion-ignore-case t)
-  (setq completions-detailed t)
-  (setq completion-auto-help 'visible)
-  (define-key hoagie-keymap (kbd "<f6>") #'execute-extended-command))
+  (completion-auto-select nil)
+  (completion-styles '(flex basic)) ;; added basic to get host completion in TRAMP
+  (read-buffer-completion-ignore-case t)
+  (read-file-name-completion-ignore-case t)
+  (completion-ignore-case t)
+  (completions-detailed t)
+  (completion-auto-help 'always)
+  :bind
+  ;; Default is M-v, but that doesn't work when completing text in a buffer and
+  ;; M-i has a nice symmetry with C-i (TAB) that is used to trigger completion
+  ("M-i" . switch-to-completions)
+  (:map minibuffer-mode-map
+        ;; ("C-SPC" . minibuffer-complete)
+        ("C-n" . minibuffer-next-completion)
+        ("C-p" . minibuffer-previous-completion))
+  (:map completion-in-region-mode-map
+        ("C-n" . minibuffer-next-completion)
+        ("C-p" . minibuffer-previous-completion))
+  (:map hoagie-keymap
+        ("<f6>" . execute-extended-command)))
 
 (use-package imenu
   :ensure nil
   :demand t
   :bind
-  ("M-i" . imenu) ;; TODO - on probation
   (:map hoagie-keymap
         ("i" . imenu)))
 
