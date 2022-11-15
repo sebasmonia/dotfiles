@@ -99,33 +99,6 @@
   :config
   (browse-kill-ring-default-keybindings))
 
-;; (use-package company
-;;   :hook
-;;   (after-init-hook . global-company-mode)
-;;   :bind
-;;   ("C-<tab>" . company-indent-or-complete-common)
-;;   (:map company-active-map
-;;         ("C-<RET>" . company-abort)
-;;         ("<tab>" . company-complete-selection))
-;;   :custom
-;;   (company-idle-delay 0.25)
-;;   (company-minimum-prefix-length 2)
-;;   (company-selection-wrap-around t))
-
-;; (use-package company-dabbrev
-;;   :after company
-;;   :ensure nil
-;;   :custom
-;;   (company-dabbrev-ignore-case nil)
-;;   (company-dabbrev-downcase nil))
-
-;; (use-package company-dabbrev-code
-;;   :after company
-;;   :ensure nil
-;;   :custom
-;;   (company-dabbrev-code-modes t)
-;;   (company-dabbrev-code-ignore-case nil))
-
 (use-package csharp-mode
   :mode "\\.cs$"
   :hook
@@ -213,8 +186,6 @@ Initial version from EmacsWiki, added macOS & Silverblue toolbox support."
   (display-line-numbers-type 'relative)
   :hook
   (after-init-hook . global-display-line-numbers-mode))
-  ;; (prog-mode-hook . display-line-numbers-mode)
-  ;; (markdown-mode-hook . display-line-numbers-mode))
 
 (use-package docker
   :bind
@@ -429,36 +400,6 @@ Open the URL at point in EWW, use external browser with prefix arg."
     (find-file "~/howm/tasks.md")
     (howm-set-mode)
     (goto-char (point-max))))
-
-;; (use-package icomplete
-;;   :ensure nil
-;;   :demand t
-;;   :custom
-;;   (icomplete-hide-common-prefix nil)
-;;   (icomplete-show-matches-on-no-input t)
-;;   (icomplete-prospects-height 15)
-;;   (icomplete-max-delay-chars 1)
-;;   ;; The following are minibuffer/C customizations
-;;   ;; but it makes sense to have them here:
-;;   (completion-styles '(flex basic)) ;; added basic to get host completion in TRAMP
-;;   (read-buffer-completion-ignore-case t)
-;;   (read-file-name-completion-ignore-case t)
-;;   (completion-ignore-case t)
-;;   (completions-detailed t)
-;;   (completions-format 'one-column)
-;;   (completion-auto-select 'second-tab)
-;;   :init
-;;   ;; Not the best place for this, but since icomplete displaced amx/smex...
-;;   (define-key hoagie-keymap (kbd "<f6>") #'execute-extended-command)
-;;   :config
-;;   (fido-vertical-mode t)
-;;   ;; Non-custom configuration:
-;;   (setf icomplete-in-buffer t)
-;;   :bind
-;;   (:map icomplete-fido-mode-map
-;;         ("C-j" . icomplete-fido-exit) ;; from the IDO days...
-;;         ("C-n" . icomplete-forward-completions)
-;;         ("C-p" . icomplete-backward-completions)))
 
 (use-package minibuffer
   :ensure nil
@@ -832,8 +773,8 @@ Meant to be added to `occur-hook'."
   :ensure nil
   :after (vc project vc-git)
   :bind
-  ;; taking over the usual Magit binding for vc-dir
-  ("C-x g" . project-vc-dir)
+  ;; ;; taking over the usual Magit binding for vc-dir
+  ;; ("C-x g" . project-vc-dir)
   ;; shadows `vc-dir'
   ("C-x v d" . vc-dir-root)
   (:map vc-dir-mode-map
@@ -1093,6 +1034,8 @@ With ARG, do this that many times."
         ;; UPDATE: I was wrong :)
         ("u" . delete-pair))
   :custom
+  ;; experimental, I don't think I have a need for this...  
+  (create-lockfiles nil)
   (sentence-end-double-space nil)
   (tab-width 4) ;; make golang code nicer to read
   (tab-always-indent 'complete)
@@ -1108,7 +1051,6 @@ With ARG, do this that many times."
   (custom-safe-themes t)
   (indent-tabs-mode nil)
   (delete-by-moving-to-trash t)
-  ;; (enable-recursive-minibuffers t)
   (global-mark-ring-max 64)
   (mark-ring-max 64)
   (grep-command "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
@@ -1132,7 +1074,6 @@ With ARG, do this that many times."
   (use-short-answers t)
   ;; this works for compile but also occur, grep etc
   (next-error-message-highlight t)
-  (read-minibuffer-restore-windows nil)
   :config
   ;; see https://emacs.stackexchange.com/a/28746/17066
   ;; https://blog.danielgempesaw.com/post/129841682030/fixing-a-laggy-compilation-buffer
