@@ -275,6 +275,8 @@ Initial version from EmacsWiki, added macOS & Silverblue toolbox support."
 (use-package eww
   :ensure nil
   :demand t
+  :custom
+  (eww-auto-rename-buffer 'title)
   :hook
   (eww-mode-hook . toggle-word-wrap)
   (eww-mode-hook . visual-line-mode)
