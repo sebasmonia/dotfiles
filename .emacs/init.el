@@ -191,12 +191,6 @@ Initial version from EmacsWiki, added macOS & Silverblue toolbox support."
   :bind
   ("C-c d" . docker))
 
-(use-package docker-tramp
-  :ensure t
-  :custom
-  (docker-tramp-docker-executable "podman")
-  (docker-tramp-use-names t))
-
 (use-package dockerfile-mode
   :mode "Dockerfile\\'")
 
@@ -254,23 +248,6 @@ Initial version from EmacsWiki, added macOS & Silverblue toolbox support."
   (electric-pair-inhibit-predicate 'electric-pair-inhibit-if-helps-balance)
   :config
   (electric-pair-mode))
-
-(use-package exec-path-from-shell
-  :ensure t
-  :config
-  (exec-path-from-shell-initialize))
-
-;; (use-package eldoc-box
-;;   :hook
-;;   (prog-mode-hook . eldoc-box-hover-mode)
-;;   (comint-mode-hook . eldoc-box-hover-mode)
-;;   :custom
-;;   (eldoc-box-max-pixel-width 800)
-;;   (eldoc-box-max-pixel-height 600)
-;;   (eldoc-idle-delay 0.1)
-;;   :config
-;;   ;; set the child frame face as 1.0 relative to the default font
-;;   (set-face-attribute 'eldoc-box-body nil :inherit 'default :height 1.0))
 
 (use-package eww
   :ensure nil
@@ -410,7 +387,7 @@ Open the URL at point in EWW, use external browser with prefix arg."
   (completions-format 'one-column)
   (completions-header-format nil)
   (completions-max-height nil)
-  (completion-auto-select nil)
+  (completion-auto-select 'second-tab)
   (completion-styles '(flex basic)) ;; added basic to get host completion in TRAMP
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
