@@ -2,7 +2,7 @@
 
 ;; Author: Sebastian Monia <code@sebasmonia.com>
 ;; URL: https://github.com/sebasmonia/dotfiles
-;; Version: 28.7
+;; Version: 29.1
 ;; Keywords: .emacs dotemacs
 
 ;; This file is not part of GNU Emacs.
@@ -24,7 +24,10 @@
 ;;                    bumping the minor version more often, too).
 ;; Update 2022-06-09: Finished reading Mastering Emacs, added some notes and bindings
 ;;                    Cleaned up some functions, removed some values.
-;;
+;; Update 2022-12-01: Moved to depend on Emacs 29 (some customizations are 29-only)
+;;                    After a brief experiment with default "bare" completion, revisit
+;;                    my icomplete/minibuffer setup. 
+;; 
 ;;; Code:
 
 (setf custom-file (expand-file-name (concat user-emacs-directory "custom.el")))
@@ -50,8 +53,6 @@
 (setf use-package-always-ensure t)
 (setf use-package-hook-name-suffix nil)
 (setf package-native-compile t)
-;; (custom-set-faces
-;;  '(default ((t (:family "Consolas" :foundry "MS  " :slant normal :weight regular :height 160 :width normal)))))
 (custom-set-faces
  '(default ((t (:family "Iosevka Comfy Wide Fixed" :slant normal :weight regular :height 160 :width normal)))))
 
@@ -73,10 +74,7 @@
                               "host")
   "Stores the name of the current container, if present.")
 
-;; experimenting with new types of keybindings/entry keys for keymaps
 (global-set-key (kbd "<f6>") 'hoagie-keymap)
-;; (global-set-key (kbd "<f7>") ctl-x-map)  ;; C-x
-;; (global-set-key (kbd "<f8>") mode-specific-map)  ;; C-c
 (define-key key-translation-map (kbd "<f7>") (kbd "C-x"))
 (define-key key-translation-map (kbd "<f8>") (kbd "C-c"))
 
@@ -191,12 +189,6 @@ Initial version from EmacsWiki, added macOS & Silverblue toolbox support."
   :bind
   ("C-c d" . docker))
 
-(use-package docker-tramp
-  :ensure t
-  :custom
-  (docker-tramp-docker-executable "podman")
-  (docker-tramp-use-names t))
-
 (use-package dockerfile-mode
   :mode "Dockerfile\\'")
 
@@ -250,27 +242,9 @@ Initial version from EmacsWiki, added macOS & Silverblue toolbox support."
 (use-package elec-pair
   :ensure nil
   :custom
-  ;; (electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
   (electric-pair-inhibit-predicate 'electric-pair-inhibit-if-helps-balance)
   :config
   (electric-pair-mode))
-
-(use-package exec-path-from-shell
-  :ensure t
-  :config
-  (exec-path-from-shell-initialize))
-
-;; (use-package eldoc-box
-;;   :hook
-;;   (prog-mode-hook . eldoc-box-hover-mode)
-;;   (comint-mode-hook . eldoc-box-hover-mode)
-;;   :custom
-;;   (eldoc-box-max-pixel-width 800)
-;;   (eldoc-box-max-pixel-height 600)
-;;   (eldoc-idle-delay 0.1)
-;;   :config
-;;   ;; set the child frame face as 1.0 relative to the default font
-;;   (set-face-attribute 'eldoc-box-body nil :inherit 'default :height 1.0))
 
 (use-package eww
   :ensure nil
@@ -368,6 +342,16 @@ Open the URL at point in EWW, use external browser with prefix arg."
 
 (use-package grep
   :ensure nil
+  :custom
+  (grep-command "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
+  (grep-use-null-device nil)
+  ;; :config
+  ;; ;; from https://www.emacswiki.org/emacs/NTEmacsWithCygwin
+  ;; (defadvice grep-compute-defaults (around grep-compute-defaults-advice-null-device)
+  ;;   "Use cygwin's /dev/null as the null-device."
+  ;;   (let ((null-device "/dev/null"))
+  ;;     ad-do-it))
+  ;; (ad-activate 'grep-compute-defaults)
   :bind
   (:map hoagie-keymap
         ("G" . rgrep)))
@@ -410,7 +394,7 @@ Open the URL at point in EWW, use external browser with prefix arg."
   (completions-format 'one-column)
   (completions-header-format nil)
   (completions-max-height nil)
-  (completion-auto-select nil)
+  (completion-auto-select 'second-tab)
   (completion-styles '(flex basic)) ;; added basic to get host completion in TRAMP
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
@@ -422,14 +406,48 @@ Open the URL at point in EWW, use external browser with prefix arg."
   ;; M-i has a nice symmetry with C-i (TAB) that is used to trigger completion
   ("M-i" . switch-to-completions)
   (:map minibuffer-mode-map
-        ;; ("C-SPC" . minibuffer-complete)
         ("C-n" . minibuffer-next-completion)
         ("C-p" . minibuffer-previous-completion))
   (:map completion-in-region-mode-map
+        ("RET" . minibuffer-choose-completion)
         ("C-n" . minibuffer-next-completion)
         ("C-p" . minibuffer-previous-completion))
   (:map hoagie-keymap
         ("<f6>" . execute-extended-command)))
+
+(use-package icomplete
+  :ensure nil
+  :demand t
+  :custom
+  (icomplete-hide-common-prefix nil)
+  (icomplete-show-matches-on-no-input t)
+  (icomplete-prospects-height 15)
+  (icomplete-max-delay-chars 1)
+  :config
+  (icomplete-vertical-mode t)
+  ;; Non-custom configuration:
+  (setf icomplete-in-buffer t)
+  :bind
+  (:map icomplete-minibuffer-map
+        ("RET" . icomplete-force-complete-and-exit)
+        ("C-j" . icomplete-ret)))
+
+(use-package icomplete
+  :ensure nil
+  :demand t
+  :custom
+  (icomplete-hide-common-prefix nil)
+  (icomplete-show-matches-on-no-input t)
+  (icomplete-prospects-height 15)
+  :config
+  (fido-vertical-mode t)
+  ;; Non-custom configuration:
+  (setf icomplete-in-buffer t)
+  :bind
+  (:map icomplete-fido-mode-map
+        ("C-j" . icomplete-fido-exit) ;; from the IDO days...
+        ("C-n" . icomplete-forward-completions)
+        ("C-p" . icomplete-backward-completions)))
 
 (use-package imenu
   :ensure nil
@@ -448,17 +466,7 @@ Open the URL at point in EWW, use external browser with prefix arg."
   (isearch-repeat-on-direction-change t)
   (lazy-highlight-initial-delay 0.1)
   (regexp-search-ring-max 64)
-  (search-ring-max 64)
-  :config
-  (defun isearch-mark-and-exit+ ()
-    "Exit `isearch', but keep the region active.
-From https://www.reddit.com/r/emacs/comments/gf64oq/comment/fprm9nn/."
-    (interactive)
-    (isearch-done)
-    (push-mark isearch-other-end 'no-message 'activate))
-  :bind
-  (:map isearch-mode-map
-        ("M-RET" . 'isearch-mark-and-exit+)))
+  (search-ring-max 64))
 
 (use-package java-mode
   :ensure nil
@@ -775,8 +783,6 @@ Meant to be added to `occur-hook'."
   :ensure nil
   :after (vc project vc-git)
   :bind
-  ;; ;; taking over the usual Magit binding for vc-dir
-  ;; ("C-x g" . project-vc-dir)
   ;; shadows `vc-dir'
   ("C-x v d" . vc-dir-root)
   (:map vc-dir-mode-map
@@ -1030,10 +1036,7 @@ With ARG, do this that many times."
   ;; it's back...
   ("<remap> <list-buffers>" . ibuffer)
   (:map hoagie-keymap
-        ;; u for "unwrap"...
-        ;; I think this plus the new mark commands I'm using,
-        ;; can make expand-region obsolete
-        ;; UPDATE: I was wrong :)
+        ;; need to keep this one more present...
         ("u" . delete-pair))
   :custom
   ;; experimental, I don't think I have a need for this...  
@@ -1055,7 +1058,6 @@ With ARG, do this that many times."
   (delete-by-moving-to-trash t)
   (global-mark-ring-max 64)
   (mark-ring-max 64)
-  (grep-command "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
   (inhibit-startup-screen t)
   (initial-buffer-choice t)
   (initial-scratch-message
@@ -1068,18 +1070,14 @@ With ARG, do this that many times."
   (delete-old-versions t) ; Do not keep old backups
   (kept-new-versions 5)   ; Keep 5 new versions
   (kept-old-versions 5)   ; Keep 3 old versions
-  ;; Experimental - from LSP perf suggestions
-  ;; (gc-cons-threshold 100000000)
-  ;; (read-process-output-max (* 1024 1024))
   ;; from https://depp.brause.cc/dotemacs/
   (echo-keystrokes 0.25)
   (use-short-answers t)
   ;; this works for compile but also occur, grep etc
   (next-error-message-highlight t)
   :config
-  ;; see https://emacs.stackexchange.com/a/28746/17066
+  ;; see https://emacs.stackexchange.com/a/28746/17066 and
   ;; https://blog.danielgempesaw.com/post/129841682030/fixing-a-laggy-compilation-buffer
-  ;;
   (setf disabled-command-function nil
         w32-use-native-image-API t
         inhibit-compacting-font-caches t
@@ -1175,8 +1173,6 @@ With ARG, do this that many times."
       (when (eq (length (display-monitor-attributes-list)) 1)
         (setf size 143))
       (set-face-attribute 'default (selected-frame) :height size)
-      ;; (set-face-font 'eldoc-box-body
-      ;;                (frame-parameter nil 'font)))
     ))
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
 
@@ -1278,8 +1274,7 @@ Unlike the original, it also adds keyboard macro recording status."
                                (format-mode-line mode-line-defining-kbd-macro
                                                  'mood-line-major-mode)))))
       (unless (string= (mood-line--string-trim misc-info) "")
-        (concat (mood-line--string-trim misc-info) "  "))))
-  )
+        (concat (mood-line--string-trim misc-info) "  ")))))
 
 ;;; Experimental features - from reading Mastering Emacs
 
@@ -1291,41 +1286,5 @@ Unlike the original, it also adds keyboard macro recording status."
 ;; See M-i for imenu
 
 ;; Transpose word M-t sexp C-M-t
-
-;; Keeping C-; for dabbrev but trying hippie-expand too
-(global-set-key (kbd "M-/") #'hippie-expand)
-
-;;; Load Paramount+ config
-
-(use-package ini :load-path "~/github/paramount-scripts/emacs/")
-(use-package gcloud-tools :load-path "~/github/paramount-scripts/emacs/")
-(use-package aws-tools :load-path "~/github/paramount-scripts/emacs/")
-(use-package kubernetes-tools :load-path "~/github/paramount-scripts/emacs/")
-(use-package okta-tools :load-path "~/github/paramount-scripts/emacs/")
-(use-package gh-tools :load-path "~/github/paramount-scripts/emacs/")
-(use-package misc-scripts :load-path "~/github/paramount-scripts/emacs/")
-(use-package remote-servers :load-path "~/github/paramount-scripts/emacs/")
-(use-package jira-tools :load-path "~/github/paramount-scripts/emacs/")
-(defvar-keymap paramount-keymap
-  :doc "Keymap used for Paramount modules."
-  ;; AWS Commands
-  "a c" #'aws-cli-service-reference
-  "a l" #'hoagie-login-okta-awscli-eks
-  ;; GCloud
-  "g c" #'gcloud-cli-reference
-  ;; Code PRs list/details
-  "c p l" #'gh-list-prs
-  "c p d" #'gh-pr-show-details
-  ;; JIRA
-  "j m" #'jira-my-tickets
-  "j i" #'jira-show-issue
-  ;; Video Robot
-  "v c" #'hoagie-vr-clone-new
-  "v p" #'hoagie-vr-pull-podman
-  "v r g" #'gcloud-vr-reboot-master-instance ;; VR Reboot GCP
-  "v r a" #'aws-vr-reboot-master-instance ;; VR Reboot AWS
-  ;; SSH
-  "s" #'remote-servers-shell)
-(define-key hoagie-keymap (kbd "q") paramount-keymap)
 
 ;;; init.el ends here
