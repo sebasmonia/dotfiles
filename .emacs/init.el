@@ -97,6 +97,33 @@
   :config
   (browse-kill-ring-default-keybindings))
 
+(use-package company
+  :hook
+  (after-init-hook . global-company-mode)
+  :bind
+  ("C-<tab>" . company-indent-or-complete-common)
+  (:map company-active-map
+        ("C-<RET>" . company-abort)
+        ("<tab>" . company-complete-selection))
+  :custom
+  (company-idle-delay 0.25)
+  (company-minimum-prefix-length 2)
+  (company-selection-wrap-around t))
+
+(use-package company-dabbrev
+  :after company
+  :ensure nil
+  :custom
+  (company-dabbrev-ignore-case nil)
+  (company-dabbrev-downcase nil))
+
+(use-package company-dabbrev-code
+  :after company
+  :ensure nil
+  :custom
+  (company-dabbrev-code-modes t)
+  (company-dabbrev-code-ignore-case nil))
+
 (use-package csharp-mode
   :mode "\\.cs$"
   :hook
