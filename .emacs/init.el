@@ -414,34 +414,6 @@ Open the URL at point in EWW, use external browser with prefix arg."
     (howm-set-mode)
     (goto-char (point-max))))
 
-(use-package minibuffer
-  :ensure nil
-  :demand t
-  :custom
-  (completions-format 'one-column)
-  (completions-header-format nil)
-  (completions-max-height nil)
-  (completion-auto-select 'second-tab)
-  (completion-styles '(flex basic)) ;; added basic to get host completion in TRAMP
-  (read-buffer-completion-ignore-case t)
-  (read-file-name-completion-ignore-case t)
-  (completion-ignore-case t)
-  (completions-detailed t)
-  (completion-auto-help 'always)
-  :bind
-  ;; Default is M-v, but that doesn't work when completing text in a buffer and
-  ;; M-i has a nice symmetry with C-i (TAB) that is used to trigger completion
-  ("M-i" . switch-to-completions)
-  (:map minibuffer-mode-map
-        ("C-n" . minibuffer-next-completion)
-        ("C-p" . minibuffer-previous-completion))
-  (:map completion-in-region-mode-map
-        ("RET" . minibuffer-choose-completion)
-        ("C-n" . minibuffer-next-completion)
-        ("C-p" . minibuffer-previous-completion))
-  (:map hoagie-keymap
-        ("<f6>" . execute-extended-command)))
-
 (use-package icomplete
   :ensure nil
   :demand t
@@ -449,32 +421,17 @@ Open the URL at point in EWW, use external browser with prefix arg."
   (icomplete-hide-common-prefix nil)
   (icomplete-show-matches-on-no-input t)
   (icomplete-prospects-height 15)
-  (icomplete-max-delay-chars 1)
   :config
-  (icomplete-vertical-mode t)
-  ;; Non-custom configuration:
-  (setf icomplete-in-buffer t)
+  ;; Non-custom configuration. Temporarily disabled, but could replace company...
+  (setf icomplete-in-buffer nil)
+  (icomplete-vertical-mode)
   :bind
+  ;; change bindings to a more IDO-like format:
   (:map icomplete-minibuffer-map
-        ("RET" . icomplete-force-complete-and-exit)
+        ;; when there's no exact match, accept the first one under cursor with RET
+        ("RET" . icomplete-force-complete-and-exit) 
+        ;; C-j to force-accept current input even if it's not in the candidate list
         ("C-j" . icomplete-ret)))
-
-(use-package icomplete
-  :ensure nil
-  :demand t
-  :custom
-  (icomplete-hide-common-prefix nil)
-  (icomplete-show-matches-on-no-input t)
-  (icomplete-prospects-height 15)
-  :config
-  (fido-vertical-mode t)
-  ;; Non-custom configuration:
-  (setf icomplete-in-buffer t)
-  :bind
-  (:map icomplete-fido-mode-map
-        ("C-j" . icomplete-fido-exit) ;; from the IDO days...
-        ("C-n" . icomplete-forward-completions)
-        ("C-p" . icomplete-backward-completions)))
 
 (use-package imenu
   :ensure nil
@@ -624,6 +581,34 @@ Open the URL at point in EWW, use external browser with prefix arg."
   ;; my current `display-buffer-alist' configuration
   (magit-commit-diff-inhibit-same-window t)
   (magit-display-buffer-function 'display-buffer))
+
+(use-package minibuffer
+  :ensure nil
+  :demand t
+  :custom
+  (completions-format 'one-column)
+  (completions-header-format nil)
+  (completions-max-height nil)
+  (completion-auto-select 'second-tab)
+  (completion-styles '(flex basic)) ;; added basic to get host completion in TRAMP
+  (read-buffer-completion-ignore-case t)
+  (read-file-name-completion-ignore-case t)
+  (completion-ignore-case t)
+  (completions-detailed t)
+  (completion-auto-help 'always)
+  :bind
+  ;; Default is M-v, but that doesn't work when completing text in a buffer and
+  ;; M-i has a nice symmetry with C-i (TAB) that is used to trigger completion
+  ("M-i" . switch-to-completions)
+  (:map minibuffer-mode-map
+        ("C-n" . minibuffer-next-completion)
+        ("C-p" . minibuffer-previous-completion))
+  (:map completion-in-region-mode-map
+        ("RET" . minibuffer-choose-completion)
+        ("C-n" . minibuffer-next-completion)
+        ("C-p" . minibuffer-previous-completion))
+  (:map hoagie-keymap
+        ("<f6>" . execute-extended-command)))
 
 (use-package package-lint
   :commands package-lint-current-buffer)
