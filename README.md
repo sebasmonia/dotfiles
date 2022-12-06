@@ -18,7 +18,7 @@ Starting with Emacs 28, my config file version number will match the minimum Ema
 
 ## Keyboard config
 
-I have a pair of [Mistel MD770 Bluetooth](https://mistelkeyboard.com/products/94f05206cb24bbeeb103e664e89d7b98) keyboards (blue & brown switches). The most important configuration set directly in thekeyboards is remapping the right spacebar to control.  
+I have a pair of [Mistel MD770 Bluetooth](https://mistelkeyboard.com/products/94f05206cb24bbeeb103e664e89d7b98) keyboards (blue & brown switches). The most important configuration set directly in the keyboards is remapping the right spacebar to control.  
 
 The rest of the configuration is handled by [KMonad](https://github.com/kmonad/kmonad):  
 
