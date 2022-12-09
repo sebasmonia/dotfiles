@@ -626,6 +626,14 @@ Open the URL at point in EWW, use external browser with prefix arg."
   :ensure t
   )
 
+(use-package plantuml-mode
+  :commands plantuml-mode
+  :mode (("\\.puml$" . plantuml-mode)
+	 ("\\.plantuml$" . plantuml-mode))
+  :custom
+  (plantuml-jar-path "c:/home/plantuml/plantuml.jar")
+  (plantuml-default-exec-mode 'jar))
+
 (use-package proced
   :ensure nil
   :custom
