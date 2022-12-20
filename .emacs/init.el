@@ -87,12 +87,6 @@
     (interactive)
     (ansi-color-apply-on-region (point-min) (point-max))))
 
-(use-package better-shell
-  :after shell
-  :bind (:map hoagie-keymap
-              ("`" . better-shell-for-current-dir)
-              ("~" . better-shell-remote-open)))
-
 (use-package browse-kill-ring
   :config
   (browse-kill-ring-default-keybindings))
@@ -169,21 +163,30 @@
   :config
   (defun dired-open-file ()
     "Open a file with the default OS program.
-Initial version from EmacsWiki, added macOS & Silverblue toolbox support."
+Initial version from EmacsWiki, added macOS & Silverblue toolbox support.
+This could also use `w32-shell-execute' on Windows.
+Also, the binding W `browse-url-of-dired-file' is a valid replacement, but not sure
+about toolboxes..."
     (interactive)
-    (let ((program-name (if (eq system-type 'darwin)
-                            "open"
-                          ;; For Linux, change based on toolbox vs non-toolbox
-                          (if (string= hoagie-toolbox-name "host")
-                              "xdg-open"
-                            "flatpak-spawn"))))
+    (let ((program-name (cond ((eq system-type 'darwin) "open")
+                              ;; Used to use start "" {path}, but this one works too
+                              ((eq system-type 'windows-nt) "explorer")
+                              ;; For Linux, change based on toolbox vs non-toolbox
+                              (t (if (string= hoagie-toolbox-name "host")
+                                     "xdg-open"
+                                   "flatpak-spawn"))))
+          (target-filename (dired-get-filename nil t)))
+      ;; for Windows, replace the slashes in the name for "explorer" to work
+      (when (eq system-type 'windows-nt)
+        ;; see https://stackoverflow.com/a/9910097
+        (setf target-filename (subst-char-in-string ?/ ?\\ target-filename)))
       (apply #'call-process
              program-name
              ;; arguments to `call-process' + args for toolbox when required + target filename
              `(nil 0 nil
                    ,@(unless (string= hoagie-toolbox-name "host")
                        '("--host" "xdg-open"))
-                   ,(dired-get-filename nil t)))))
+                   ,target-filename))))
   (defun hoagie-kill-buffer-filename ()
     "Sends the current buffer's filename to the kill ring."
     (interactive)
@@ -272,6 +275,27 @@ Initial version from EmacsWiki, added macOS & Silverblue toolbox support."
   (electric-pair-inhibit-predicate 'electric-pair-inhibit-if-helps-balance)
   :config
   (electric-pair-mode))
+
+(use-package eshell
+  :ensure nil
+  :custom
+  ;; TODO: check all customizations
+  (eshell-prefer-lisp-functions nil)
+  (eshell-prefer-lisp-variables nil)
+  :bind
+  (:map hoagie-keymap
+        ("`" . hoagie-eshell-here))
+  :config
+  (defun hoagie-eshell-here (&optional arg)
+    "Pops eshell and switches to `default-directory' when the command was invoked.
+With prefix arg, create a new instance even if there was one running."
+    (interactive "P")
+    ;; pass-through of the argument, will return an existing eshell or create a new one
+    (let ((new-dir default-directory))
+      (with-current-buffer (eshell arg)
+        (goto-char (point-max))
+        (eshell/cd new-dir)
+        (eshell-send-input "")))))
 
 (use-package eww
   :ensure nil
@@ -628,11 +652,34 @@ Open the URL at point in EWW, use external browser with prefix arg."
 
 (use-package plantuml-mode
   :commands plantuml-mode
-  :mode (("\\.puml$" . plantuml-mode)
-	 ("\\.plantuml$" . plantuml-mode))
+  :mode
+  (("\\.puml$" . plantuml-mode)
+   ("\\.plantuml$" . plantuml-mode))
   :custom
-  (plantuml-jar-path "c:/home/plantuml/plantuml.jar")
-  (plantuml-default-exec-mode 'jar))
+  (plantuml-jar-path "~/plantuml/plantuml.jar")
+  (plantuml-default-exec-mode 'jar)
+  :bind
+  (:map plantuml-mode-map
+        ("C-c C-p" . hoagie-plantuml-generate-png))
+  :config
+  (defun hoagie-plantuml-generate-png ()
+    (interactive)
+    (when (buffer-modified-p)
+      (error "There are unsaved changes..."))
+    (let* ((input (expand-file-name (buffer-file-name)))
+           (output (concat (file-name-sans-extension input) ".png"))
+           (output-buffer (get-file-buffer output)))
+    (call-process "java" nil t nil 
+                  ;; the jar file...
+                  "-jar"
+                  (expand-file-name plantuml-jar-path)
+                  input
+                  "-tpng")
+    (if output-buffer
+        (with-current-buffer output-buffer
+          (revert-buffer-quick)
+          (pop-to-buffer output-buffer))
+      (find-file-other-window output)))))
 
 (use-package proced
   :ensure nil
@@ -1037,6 +1084,7 @@ With ARG, do this that many times."
   ("C-M-+" . (lambda () (interactive)(shrink-window -5)))
   ("M-o" . other-window)
   ("M-O" . other-frame)
+  ("M-`" . other-frame) ;; for Windows - behave like Gnome
   ("M-N" . next-buffer)
   ("M-P" . previous-buffer)
   ("C-S-k" . kill-whole-line) ;; more convenient than default C-S-<backspace>
