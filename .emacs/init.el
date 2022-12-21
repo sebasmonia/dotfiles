@@ -422,6 +422,7 @@ Open the URL at point in EWW, use external browser with prefix arg."
   ("S-<f3>" . howm-list-todo)
   ("C-S-<f3>" . howm-list-schedule)
   (:map hoagie-howm-keymap
+        ("c" . howm-create)
         ("<f3>" . howm-menu)
         ("s" . howm-list-grep-fixed)
         ("t" . howm-insert-date))
@@ -1129,7 +1130,7 @@ With ARG, do this that many times."
   (inhibit-startup-screen t)
   (initial-buffer-choice t)
   (initial-scratch-message
-   ";; Il semble que la perfection soit atteinte non quand il n’y a plus rien à ajouter, mais quand il n’y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n;; Setting the region:\n;; M-h - Paragraph\n;; C-x h - Buffer\n;; C-M-h - Next defun\n;; M-@ - Next word\n;; C-M-<SPC> or C-M-@ - Mark next sexp --- C-M-k kill it\n\n;; imenu: M-i\n;; Transpose word M-t sexp C-M-t\n;; C-x C-k e edit kmacro\n;; C-z zap-up-to-char\n\n;; SHELL:\n;; C-c C-[p|n] prev/next input\n;; C-c C-o clear last output (prefix to kill)\n\n;; Search\n;; C-s C-w search word at point, each C-w adds next word\n;; Replace \"movie\" with \"film\" and \"movies\" with \"films\": `movie\(s\)?` -> `\,(if \\1 \"films\" \"film\")`\n;; Another common use case is to transform numbers in the matches using the format function.\n\n;; C-; dabbrev\n;; M-\\ hippie-expand (on trial)\n\n;; REMEMBER YOUR REGEXPS\n")
+   ";; Il semble que la perfection soit atteinte non quand il n’y a plus rien à ajouter, mais quand il n’y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n;; Setting the region:\n;; M-h - Paragraph  C-x h - Buffer\n;; C-M-h - Next defun ;; M-@ - Next word\n;; C-M-<SPC> or C-M-@ - Mark next sexp --- C-M-k kill it\n\n;; imenu: M-i\n;; Transpose: word M-t sexp C-M-t\n;; C-x C-k e edit kmacro\n;; C-z zap-up-to-char\n\n;; (e)SHELL:\n;; C-c C-[p|n] prev/next input\n;; C-c C-o clear last output\n\n;; Search\n;; C-s C-w search word at point, each C-w adds next word\n;; Replace \"movie\" with \"film\" and \"movies\" with \"films\": `movie\(s\)?` -> `\,(if \\1 \"films\" \"film\")`\n;; Another common use case is to transform numbers in the matches using the format function.\n\n;; C-; dabbrev\n\n;; howm:\n;; C-<f3> - inbox\n;; S-<f3> - show TODO\n;; C-S-<f3> - show scheduled\n\n;; REMEMBER YOUR REGEXPS")
   (save-interprogram-paste-before-kill t)
   (visible-bell nil) ;; macOS change
   ;; from https://gitlab.com/jessieh/dot-emacs
