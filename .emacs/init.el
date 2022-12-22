@@ -1,7 +1,7 @@
 ;; .emacs --- My dot emacs file  -*- lexical-binding: t; -*-
 
 ;; Author: Sebastian Monia <code@sebasmonia.com>
-;; URL: https://github.com/sebasmonia/dotfiles
+;; URL: https://git.sr.ht/~sebasmonia/dotfiles
 ;; Version: 29.2
 ;; Keywords: .emacs dotemacs
 
@@ -27,7 +27,9 @@
 ;; Update 2022-12-01: Moved to depend on Emacs 29 (some customizations are 29-only)
 ;;                    After a brief experiment with default "bare" completion, revisit
 ;;                    my icomplete/minibuffer setup. 
-;; 
+;; Update 2022-12-22: Hosting some of my personal repos in Source Hut, mirroring setting
+;;                    multiple remotes in "origin", see https://stackoverflow.com/a/58465641
+;;
 ;;; Code:
 
 (setf custom-file (expand-file-name (concat user-emacs-directory "custom.el")))
@@ -615,12 +617,12 @@ Open the URL at point in EWW, use external browser with prefix arg."
   (completions-header-format nil)
   (completions-max-height nil)
   (completion-auto-select 'second-tab)
-  (completion-styles '(flex basic)) ;; added basic to get host completion in TRAMP
+  (completion-styles '(basic partial-completion substring))
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
   (completions-detailed t)
-  (completion-auto-help 'always)
+  (completion-auto-help 'lazy)
   :bind
   ;; Default is M-v, but that doesn't work when completing text in a buffer and
   ;; M-i has a nice symmetry with C-i (TAB) that is used to trigger completion
