@@ -2,7 +2,7 @@
 
 ;; Author: Sebastian Monia <code@sebasmonia.com>
 ;; URL: https://github.com/sebasmonia/dotfiles
-;; Version: 29.1
+;; Version: 29.2
 ;; Keywords: .emacs dotemacs
 
 ;; This file is not part of GNU Emacs.
