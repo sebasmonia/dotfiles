@@ -2,7 +2,7 @@
 
 ;; Author: Sebastian Monia <code@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
-;; Version: 29.2
+;; Version: 29.3
 ;; Keywords: .emacs dotemacs
 
 ;; This file is not part of GNU Emacs.
@@ -151,6 +151,8 @@
         '(("\\.7z\\'" . "7za a -r %o %i")
           ("\\.zip\\'" . "7za a -r %o  %i")))
   (dired-do-revert-buffer t)
+  ;; use external 'ls' even on Windows
+  (ls-lisp-use-insert-directory-program t)
   :bind
   ("<C-f1>" . 'hoagie-kill-buffer-filename)
   (:map hoagie-keymap
@@ -617,7 +619,7 @@ Open the URL at point in EWW, use external browser with prefix arg."
   (completions-header-format nil)
   (completions-max-height nil)
   (completion-auto-select 'second-tab)
-  (completion-styles '(basic partial-completion substring))
+  (completion-styles '(basic partial-completion substring flex))
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
@@ -1323,28 +1325,60 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
 
 (use-package mood-line
   :demand t
+  :custom
+  (mood-line-glyph-alist '((:checker-info . ?i)
+                           (:checker-issues . ?!)
+                           (:checker-good . ?+)
+                           (:checker-checking . ?-)
+                           (:checker-errored . ?x)
+                           (:checker-interrupted . ?=)
+                           (:vc-added . ?+)
+                           (:vc-needs-merge . ?m)
+                           (:vc-needs-update . ?u)
+                           (:vc-conflict . ?c)
+                           (:vc-good . ?-)
+                           (:buffer-narrowed . ?N)
+                           (:buffer-modified . ?!)
+                           (:buffer-read-only . ?R)
+                           (:count-separator . ?*)))
+  :custom-face
+  (mood-line-modified ((t (:inherit (error) :weight bold))))
   :init
   (mood-line-mode)
-  (defun mood-line-segment-position ()
-    "Display the current cursor position in the mode-line, with region size if applicable."
+  (defun mood-line-segment-cursor-position ()
+    "Display the current cursor position.
+This modified version shows the region size if applicable."
     (let ((region-size (when (use-region-p)
                          (propertize (format " (%sL:%sC)"
                                              (count-lines (region-beginning)
                                                           (region-end))
                                              (- (region-end) (region-beginning)))
                                      'face 'mood-line-unimportant)))
-          (narrowed (when (buffer-narrowed-p)
-                        "[N]"))
           (position (propertize " %p%% " 'face 'mood-line-unimportant)))
-      (list "%l:%c" position region-size narrowed)))
+      (list "%l:%c" position region-size)))
+  (defun mood-line-segment-buffer-status ()
+    "Return an indicator for buffer status.
+Addresses the problem reported in https://gitlab.com/jessieh/mood-line/-/issues/20,
+and also propertizes the whole segment with `mood-line-modified'."
+    (propertize (concat (if (buffer-modified-p)
+                            (mood-line--get-glyph :buffer-modified)
+                          " ")
+                        (if (buffer-narrowed-p)
+                            (mood-line--get-glyph :buffer-narrowed)
+                          " ")
+                        (if buffer-read-only
+                            (mood-line--get-glyph :buffer-read-only)
+                          " ")
+                        " ")
+                'face 'mood-line-modified))
   (defun mood-line-segment-misc-info ()
-    "Displays the current value of `mode-line-misc-info' in the mode-line.
-Unlike the original, it also adds keyboard macro recording status."
+    "Display the current value of `mode-line-misc-info'.
+This modified version adds a keyboard macro recording status."
     (let ((misc-info (concat (format-mode-line mode-line-misc-info 'mood-line-unimportant)
                              (when defining-kbd-macro
                                (format-mode-line mode-line-defining-kbd-macro
                                                  'mood-line-major-mode)))))
-      (unless (string= (mood-line--string-trim misc-info) "")
+      (unless (string-blank-p (mood-line--string-trim misc-info))
         (concat (mood-line--string-trim misc-info) "  ")))))
 
 ;;; Experimental features - from reading Mastering Emacs
@@ -1359,3 +1393,4 @@ Unlike the original, it also adds keyboard macro recording status."
 ;; Transpose word M-t sexp C-M-t
 
 ;;; init.el ends here
+ 
