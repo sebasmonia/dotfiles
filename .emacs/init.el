@@ -26,7 +26,7 @@
 ;;                    Cleaned up some functions, removed some values.
 ;; Update 2022-12-01: Moved to depend on Emacs 29 (some customizations are 29-only)
 ;;                    After a brief experiment with default "bare" completion, revisit
-;;                    my icomplete/minibuffer setup. 
+;;                    my icomplete/minibuffer setup.
 ;; Update 2022-12-22: Hosting some of my personal repos in Source Hut, mirroring setting
 ;;                    multiple remotes in "origin", see https://stackoverflow.com/a/58465641
 ;;
@@ -458,7 +458,7 @@ Open the URL at point in EWW, use external browser with prefix arg."
   ;; change bindings to a more IDO-like format:
   (:map icomplete-minibuffer-map
         ;; when there's no exact match, accept the first one under cursor with RET
-        ("RET" . icomplete-force-complete-and-exit) 
+        ("RET" . icomplete-force-complete-and-exit)
         ;; C-j to force-accept current input even if it's not in the candidate list
         ("C-j" . icomplete-ret)))
 
@@ -547,7 +547,7 @@ Open the URL at point in EWW, use external browser with prefix arg."
 (use-package lsp-ui
   :custom
   ;; matches "font-lock-builtin-face", "font-lock-keyword-face"
-  ;; and "font-lock-string-face" from the modus-vivendi theme
+  ;; and "font-lock-string-face" from the modus-operandi theme
   (lsp-ui-imenu-colors '("#8f0075" "#2544bb" "#5317ac"))
   (lsp-ui-doc-enable nil)
   (lsp-ui-doc-position 'top)
@@ -674,7 +674,7 @@ Open the URL at point in EWW, use external browser with prefix arg."
     (let* ((input (expand-file-name (buffer-file-name)))
            (output (concat (file-name-sans-extension input) ".png"))
            (output-buffer (get-file-buffer output)))
-    (call-process "java" nil t nil 
+    (call-process "java" nil t nil
                   ;; the jar file...
                   "-jar"
                   (expand-file-name plantuml-jar-path)
@@ -908,7 +908,7 @@ No validations, so better be in a git repo when calling this :)."
     "Run \"git clone REPOSITORY-URL\" into DIRECTORY."
     (interactive "sRepository URL: \nsTarget directory (empty for default): ")
     (when (string= directory "")
-      ;; "clone" needs nil to 
+      ;; "clone" needs nil to
       (setf directory nil))
     (vc-git-command nil 0 nil "clone" repository-url directory)
     (message "Repository cloned!"))
@@ -931,7 +931,7 @@ With prefix ARG show the remote branches."
            (buffer-name (project-prefixed-buffer-name (if arg
                                                           "git remote branches"
                                                         "git branches"))))
-      (vc-git-command buffer-name 
+      (vc-git-command buffer-name
                       0
                       nil
                       "branch"
@@ -1112,7 +1112,7 @@ With ARG, do this that many times."
         ;; need to keep this one more present...
         ("u" . delete-pair))
   :custom
-  ;; experimental, I don't think I have a need for this...  
+  ;; experimental, I don't think I have a need for this...
   (create-lockfiles nil)
   (sentence-end-double-space nil)
   (tab-width 4) ;; make golang code nicer to read
@@ -1315,11 +1315,6 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
 
 (use-package modus-themes
   :demand t
-  :custom
-  (modus-themes-completions '((selection . (accented intense))
-                              (popup . (accented))))
-  (modus-themes-box-buttons '(flat))
-  (modus-themes-hl-line '(accented intense))
   :config
   (load-theme 'modus-operandi t))
 
@@ -1337,12 +1332,13 @@ Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
                            (:vc-needs-update . ?u)
                            (:vc-conflict . ?c)
                            (:vc-good . ?-)
-                           (:buffer-narrowed . ?N)
+                           (:buffer-narrowed . ?n)
                            (:buffer-modified . ?!)
-                           (:buffer-read-only . ?R)
+                           (:buffer-read-only . ?-)
                            (:count-separator . ?*)))
   :custom-face
-  (mood-line-modified ((t (:inherit (error) :weight bold))))
+  ;; same as the original one, but **make it bold**!
+  (mood-line-buffer-status-modified ((t (:inherit (error) :weight bold))))
   :init
   (mood-line-mode)
   (defun mood-line-segment-cursor-position ()
@@ -1358,19 +1354,22 @@ This modified version shows the region size if applicable."
       (list "%l:%c" position region-size)))
   (defun mood-line-segment-buffer-status ()
     "Return an indicator for buffer status.
-Addresses the problem reported in https://gitlab.com/jessieh/mood-line/-/issues/20,
-and also propertizes the whole segment with `mood-line-modified'."
-    (propertize (concat (if (buffer-modified-p)
+This version makes the narrowing indicator independent, and shows
+modified only when the buffer isn't read-only.
+The whole segment is decorated with `mood-line-buffer-status-modified'.
+See https://gitlab.com/jessieh/mood-line/-/issues/20."
+    (propertize (concat (if buffer-read-only
+                            (mood-line--get-glyph :buffer-read-only)
+                          ;; since it's not read-only, show the
+                          ;; modified flag
+                          (if (buffer-modified-p)
                             (mood-line--get-glyph :buffer-modified)
-                          " ")
+                            " "))
                         (if (buffer-narrowed-p)
                             (mood-line--get-glyph :buffer-narrowed)
                           " ")
-                        (if buffer-read-only
-                            (mood-line--get-glyph :buffer-read-only)
-                          " ")
                         " ")
-                'face 'mood-line-modified))
+                'face 'mood-line-buffer-status-modified))
   (defun mood-line-segment-misc-info ()
     "Display the current value of `mode-line-misc-info'.
 This modified version adds a keyboard macro recording status."
@@ -1379,7 +1378,7 @@ This modified version adds a keyboard macro recording status."
                                (format-mode-line mode-line-defining-kbd-macro
                                                  'mood-line-major-mode)))))
       (unless (string-blank-p (mood-line--string-trim misc-info))
-        (concat (mood-line--string-trim misc-info) "  ")))))
+          (concat (mood-line--string-trim misc-info) "  ")))))
 
 ;;; Experimental features - from reading Mastering Emacs
 
