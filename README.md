@@ -18,17 +18,10 @@ Starting with Emacs 28, my config file version number will match the minimum Ema
 
 ## Keyboard config
 
-I have a pair of [Mistel MD770 Bluetooth](https://mistelkeyboard.com/products/94f05206cb24bbeeb103e664e89d7b98) keyboards (blue & brown switches). The most important configuration set directly in the keyboards is remapping the right spacebar to control.  
-
-The rest of the configuration is handled by [KMonad](https://github.com/kmonad/kmonad):  
-
-* CapsLock is Control
-* Tapping the spacebar inserts a space, holding it down is Control  
-* Tapping control produces ESC, holding (for chording) is Control  
-
-In Emacs, ESC ~= meta/alt. For example C-M-SPC `mark-sexp` is input only with thumbs by tapping the right spacebar (ESC), then holding it (C), and pressing space on the left side (SPC).  
-
-There's a legacy setup using [Karabiner](https://karabiner-elements.pqrs.org/) for macOS, from when I used that at work.
+I have a Dygma Raise. There's a README with notes about the config, and exported JSON of my current layers, in the corresponding sub-directory.  
+&nbsp;  
+There's a legacy setup using [Karabiner](https://karabiner-elements.pqrs.org/) for macOS, from when I used that at work.  
+And another legacy setup with [KMonad](https://github.com/kmonad/kmonad) from before I had the Raise and used a Mistel MD770 instead.
 
 ## Where this runs
 
