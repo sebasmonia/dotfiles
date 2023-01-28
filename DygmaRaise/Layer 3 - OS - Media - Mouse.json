@@ -59,6 +59,11 @@
       "extraLabel": "G+"
     },
     {
+      "keyCode": 4128,
+      "label": "3",
+      "extraLabel": "G+"
+    },
+    {
       "keyCode": 4129,
       "label": "4",
       "extraLabel": "G+"
@@ -74,21 +79,21 @@
       "extraLabel": "G+"
     },
     {
+      "keyCode": 0,
+      "label": "KEY",
+      "extraLabel": "NO",
+      "verbose": "Disabled"
+    },
+    {
+      "keyCode": 0,
+      "label": "KEY",
+      "extraLabel": "NO",
+      "verbose": "Disabled"
+    },
+    {
       "keyCode": 4132,
       "label": "7",
       "extraLabel": "G+"
-    },
-    {
-      "keyCode": 0,
-      "label": "KEY",
-      "extraLabel": "NO",
-      "verbose": "Disabled"
-    },
-    {
-      "keyCode": 0,
-      "label": "KEY",
-      "extraLabel": "NO",
-      "verbose": "Disabled"
     },
     {
       "keyCode": 4133,
@@ -98,11 +103,6 @@
     {
       "keyCode": 4134,
       "label": "9",
-      "extraLabel": "G+"
-    },
-    {
-      "keyCode": 4135,
-      "label": "0",
       "extraLabel": "G+"
     },
     {
