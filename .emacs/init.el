@@ -267,18 +267,7 @@ about toolboxes..."
   :ensure nil
   :demand t
   :config
-  (global-eldoc-mode)
-  )
-  ;;:custom
-  ;;(eldoc-echo-area-prefer-doc-buffer 'maybe)
-  ;;(eldoc-echo-area-use-multiline-p nil))
-
-(use-package elec-pair
-  :ensure nil
-  :custom
-  (electric-pair-inhibit-predicate 'electric-pair-inhibit-if-helps-balance)
-  :config
-  (electric-pair-mode))
+  (global-eldoc-mode))
 
 (use-package eshell
   :ensure nil
