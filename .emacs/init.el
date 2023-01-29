@@ -444,12 +444,11 @@ Open the URL at point in EWW, use external browser with prefix arg."
   (setf icomplete-in-buffer nil)
   (icomplete-vertical-mode)
   :bind
-  ;; change bindings to a more IDO-like format:
   (:map icomplete-minibuffer-map
         ;; when there's no exact match, accept the first one under cursor with RET
         ("RET" . icomplete-force-complete-and-exit)
         ;; C-j to force-accept current input even if it's not in the candidate list
-        ("C-j" . icomplete-ret)))
+        ("C-j" . icomplete-fido-exit)))
 
 (use-package imenu
   :ensure nil
@@ -605,7 +604,6 @@ Open the URL at point in EWW, use external browser with prefix arg."
   :demand t
   :custom
   (completions-format 'one-column)
-  (completions-header-format nil)
   (completions-max-height nil)
   (completion-auto-select 'second-tab)
   (completion-styles '(basic partial-completion substring flex))
