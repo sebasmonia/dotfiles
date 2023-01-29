@@ -684,8 +684,8 @@ Open the URL at point in EWW, use external browser with prefix arg."
   (:map hoagie-keymap
         ("g" . project-find-regexp)
         ("f" . project-find-file))
-  :config
-  (add-to-list 'project-switch-commands '(?s "Shell" project-shell)))
+  :custom
+  (project-vc-extra-root-markers '(".subproject")))
 
 (use-package python
   :ensure nil
