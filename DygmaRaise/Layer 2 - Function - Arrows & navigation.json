@@ -10,15 +10,15 @@
     },
     {
       "id": 2,
-      "name": "OS/Media/Mouse"
+      "name": "Window Manager/Media"
     },
     {
       "id": 3,
-      "name": "L4"
+      "name": "Symbols"
     },
     {
       "id": 4,
-      "name": "L5"
+      "name": "Base + Shift"
     },
     {
       "id": 5,
@@ -43,10 +43,8 @@
   ],
   "keymap": [
     {
-      "keyCode": 0,
-      "label": "KEY",
-      "extraLabel": "NO",
-      "verbose": "Disabled"
+      "keyCode": 41,
+      "label": "ESC"
     },
     {
       "keyCode": 58,
@@ -115,10 +113,8 @@
       "verbose": "Transparent"
     },
     {
-      "keyCode": 0,
-      "label": "KEY",
-      "extraLabel": "NO",
-      "verbose": "Disabled"
+      "keyCode": 43,
+      "label": "TAB"
     },
     {
       "keyCode": 0,
@@ -161,16 +157,16 @@
       "verbose": "Page Up"
     },
     {
-      "keyCode": 77,
-      "label": "END"
+      "keyCode": 74,
+      "label": "HOME"
     },
     {
       "keyCode": 82,
       "label": "↑"
     },
     {
-      "keyCode": 74,
-      "label": "HOME"
+      "keyCode": 77,
+      "label": "END"
     },
     {
       "keyCode": 0,
@@ -389,9 +385,10 @@
       "verbose": "Left Alt"
     },
     {
-      "keyCode": 736,
-      "label": "CTRL",
-      "extraLabel": "A+"
+      "keyCode": 65535,
+      "label": "",
+      "extraLabel": "TRANS",
+      "verbose": "Transparent"
     },
     {
       "keyCode": 49213,
@@ -423,10 +420,9 @@
       "verbose": "Transparent"
     },
     {
-      "keyCode": 0,
-      "label": "KEY",
-      "extraLabel": "NO",
-      "verbose": "Disabled"
+      "keyCode": 227,
+      "label": "LEFT LINUX",
+      "verbose": "Left Linux"
     },
     {
       "keyCode": 49210,
@@ -434,15 +430,15 @@
       "extraLabel": "CTRL/"
     },
     {
-      "keyCode": 736,
-      "label": "CTRL",
-      "extraLabel": "A+"
+      "keyCode": 65535,
+      "label": "",
+      "extraLabel": "TRANS",
+      "verbose": "Transparent"
     },
     {
-      "keyCode": 230,
-      "label": "RIGHT ALT",
-      "extraLabel": "",
-      "verbose": "AltGr"
+      "keyCode": 226,
+      "label": "LEFT ALT",
+      "verbose": "Left Alt"
     },
     {
       "keyCode": 227,
@@ -461,14 +457,14 @@
     }
   ],
   "colormap": [
-    12,
+    4,
     8,
     8,
     8,
     8,
     8,
     8,
-    12,
+    1,
     15,
     2,
     3,
@@ -490,10 +486,10 @@
     11,
     1,
     11,
-    11,
+    12,
     0,
     12,
-    14,
+    12,
     12,
     8,
     8,
@@ -516,7 +512,7 @@
     3,
     3,
     2,
-    15,
+    11,
     12,
     12,
     12,
@@ -524,12 +520,12 @@
     12,
     11,
     1,
-    1,
-    11,
-    11,
+    12,
+    12,
+    12,
     0,
+    11,
     12,
-    14,
     11,
     11,
     11,
@@ -680,10 +676,10 @@
       "rgb": "rgb(189, 0, 25)"
     },
     {
-      "r": 195,
-      "g": 255,
-      "b": 255,
-      "rgb": "rgb(195, 255, 255)"
+      "r": 48,
+      "g": 148,
+      "b": 0,
+      "rgb": "rgb(48, 148, 0)"
     },
     {
       "r": 0,

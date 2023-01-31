@@ -43,38 +43,32 @@
   ],
   "keymap": [
     {
-      "keyCode": 53,
-      "label": "`"
+      "keyCode": 2101,
+      "label": "~"
     },
     {
-      "keyCode": 30,
-      "label": "1"
+      "keyCode": 2078,
+      "label": "!"
     },
     {
-      "keyCode": 31,
-      "label": "2"
+      "keyCode": 2079,
+      "label": "@"
     },
     {
-      "keyCode": 32,
-      "label": "3"
+      "keyCode": 2080,
+      "label": "#"
     },
     {
-      "keyCode": 33,
-      "label": "4"
+      "keyCode": 2081,
+      "label": "$"
     },
     {
-      "keyCode": 34,
-      "label": "5"
+      "keyCode": 2082,
+      "label": "%"
     },
     {
-      "keyCode": 35,
-      "label": "6"
-    },
-    {
-      "keyCode": 0,
-      "label": "KEY",
-      "extraLabel": "NO",
-      "verbose": "Disabled"
+      "keyCode": 2083,
+      "label": "^"
     },
     {
       "keyCode": 0,
@@ -83,57 +77,69 @@
       "verbose": "Disabled"
     },
     {
-      "keyCode": 36,
-      "label": "7"
+      "keyCode": 0,
+      "label": "KEY",
+      "extraLabel": "NO",
+      "verbose": "Disabled"
     },
     {
-      "keyCode": 37,
-      "label": "8"
+      "keyCode": 2084,
+      "label": "&"
     },
     {
-      "keyCode": 38,
-      "label": "9"
+      "keyCode": 2085,
+      "label": "*"
     },
     {
-      "keyCode": 39,
-      "label": "0"
+      "keyCode": 2086,
+      "label": "("
     },
     {
-      "keyCode": 45,
-      "label": "-"
+      "keyCode": 2087,
+      "label": ")"
     },
     {
-      "keyCode": 46,
-      "label": "="
+      "keyCode": 2093,
+      "label": "_"
     },
     {
-      "keyCode": 42,
+      "keyCode": 2094,
+      "label": "+"
+    },
+    {
+      "keyCode": 2090,
       "label": "BACKSPACE",
-      "verbose": "Backspace"
+      "extraLabel": "S+"
     },
     {
-      "keyCode": 43,
-      "label": "TAB"
+      "keyCode": 2091,
+      "label": "TAB",
+      "extraLabel": "S+"
     },
     {
-      "keyCode": 20,
-      "label": "Q"
+      "keyCode": 2068,
+      "label": "Q",
+      "extraLabel": "S+"
     },
     {
-      "keyCode": 26,
-      "label": "W"
+      "keyCode": 2074,
+      "label": "W",
+      "extraLabel": "S+"
     },
     {
-      "keyCode": 8,
-      "label": "E"
+      "keyCode": 2056,
+      "label": "E",
+      "extraLabel": "S+"
     },
     {
-      "keyCode": 21,
-      "label": "R"
+      "keyCode": 2069,
+      "label": "R",
+      "extraLabel": "S+"
     },
     {
-      "keyCode": 23,
-      "label": "T"
+      "keyCode": 2071,
+      "label": "T",
+      "extraLabel": "S+"
     },
     {
       "keyCode": 0,
@@ -148,36 +154,42 @@
       "verbose": "Disabled"
     },
     {
-      "keyCode": 28,
-      "label": "Y"
+      "keyCode": 2076,
+      "label": "Y",
+      "extraLabel": "S+"
     },
     {
-      "keyCode": 24,
-      "label": "U"
+      "keyCode": 2072,
+      "label": "U",
+      "extraLabel": "S+"
     },
     {
-      "keyCode": 12,
-      "label": "I"
+      "keyCode": 2060,
+      "label": "I",
+      "extraLabel": "S+"
     },
     {
-      "keyCode": 18,
-      "label": "O"
+      "keyCode": 2066,
+      "label": "O",
+      "extraLabel": "S+"
     },
     {
-      "keyCode": 19,
-      "label": "P"
+      "keyCode": 2067,
+      "label": "P",
+      "extraLabel": "S+"
     },
     {
-      "keyCode": 47,
-      "label": "["
+      "keyCode": 2095,
+      "label": "{"
     },
     {
-      "keyCode": 48,
-      "label": "]"
+      "keyCode": 2096,
+      "label": "}"
     },
     {
-      "keyCode": 40,
-      "label": "ENTER"
+      "keyCode": 2088,
+      "label": "ENTER",
+      "extraLabel": "S+"
     },
     {
       "keyCode": 53852,
@@ -185,24 +197,35 @@
       "extraLabel": "MACRO"
     },
     {
-      "keyCode": 4,
-      "label": "A"
+      "keyCode": 2052,
+      "label": "A",
+      "extraLabel": "S+"
     },
     {
-      "keyCode": 22,
-      "label": "S"
+      "keyCode": 2070,
+      "label": "S",
+      "extraLabel": "S+"
     },
     {
-      "keyCode": 7,
-      "label": "D"
+      "keyCode": 2055,
+      "label": "D",
+      "extraLabel": "S+"
     },
     {
-      "keyCode": 9,
-      "label": "F"
+      "keyCode": 2057,
+      "label": "F",
+      "extraLabel": "S+"
     },
     {
-      "keyCode": 10,
-      "label": "G"
+      "keyCode": 2058,
+      "label": "G",
+      "extraLabel": "S+"
+    },
+    {
+      "keyCode": 0,
+      "label": "KEY",
+      "extraLabel": "NO",
+      "verbose": "Disabled"
     },
     {
       "keyCode": 0,
@@ -217,43 +240,42 @@
       "verbose": "Disabled"
     },
     {
+      "keyCode": 2059,
+      "label": "H",
+      "extraLabel": "S+"
+    },
+    {
+      "keyCode": 2061,
+      "label": "J",
+      "extraLabel": "S+"
+    },
+    {
+      "keyCode": 2062,
+      "label": "K",
+      "extraLabel": "S+"
+    },
+    {
+      "keyCode": 2063,
+      "label": "L",
+      "extraLabel": "S+"
+    },
+    {
+      "keyCode": 2099,
+      "label": ":"
+    },
+    {
+      "keyCode": 2100,
+      "label": "\""
+    },
+    {
+      "keyCode": 2097,
+      "label": "|"
+    },
+    {
       "keyCode": 0,
       "label": "KEY",
       "extraLabel": "NO",
       "verbose": "Disabled"
-    },
-    {
-      "keyCode": 11,
-      "label": "H"
-    },
-    {
-      "keyCode": 13,
-      "label": "J"
-    },
-    {
-      "keyCode": 14,
-      "label": "K"
-    },
-    {
-      "keyCode": 15,
-      "label": "L"
-    },
-    {
-      "keyCode": 51,
-      "label": ";"
-    },
-    {
-      "keyCode": 52,
-      "label": "'"
-    },
-    {
-      "keyCode": 49,
-      "label": "\\"
-    },
-    {
-      "keyCode": 280,
-      "label": "U",
-      "extraLabel": "C+"
     },
     {
       "keyCode": 100,
@@ -261,24 +283,35 @@
       "verbose": "ISO <>"
     },
     {
-      "keyCode": 29,
-      "label": "Z"
+      "keyCode": 2077,
+      "label": "Z",
+      "extraLabel": "S+"
     },
     {
-      "keyCode": 27,
-      "label": "X"
+      "keyCode": 2075,
+      "label": "X",
+      "extraLabel": "S+"
     },
     {
-      "keyCode": 6,
-      "label": "C"
+      "keyCode": 2054,
+      "label": "C",
+      "extraLabel": "S+"
     },
     {
-      "keyCode": 25,
-      "label": "V"
+      "keyCode": 2073,
+      "label": "V",
+      "extraLabel": "S+"
     },
     {
-      "keyCode": 5,
-      "label": "B"
+      "keyCode": 2053,
+      "label": "B",
+      "extraLabel": "S+"
+    },
+    {
+      "keyCode": 0,
+      "label": "KEY",
+      "extraLabel": "NO",
+      "verbose": "Disabled"
     },
     {
       "keyCode": 0,
@@ -293,40 +326,38 @@
       "verbose": "Disabled"
     },
     {
+      "keyCode": 2065,
+      "label": "N",
+      "extraLabel": "S+"
+    },
+    {
+      "keyCode": 2064,
+      "label": "M",
+      "extraLabel": "S+"
+    },
+    {
+      "keyCode": 2102,
+      "label": "<"
+    },
+    {
+      "keyCode": 2103,
+      "label": ">"
+    },
+    {
+      "keyCode": 2104,
+      "label": "?"
+    },
+    {
       "keyCode": 0,
       "label": "KEY",
       "extraLabel": "NO",
       "verbose": "Disabled"
     },
     {
-      "keyCode": 17,
-      "label": "N"
-    },
-    {
-      "keyCode": 16,
-      "label": "M"
-    },
-    {
-      "keyCode": 54,
-      "label": ","
-    },
-    {
-      "keyCode": 55,
-      "label": "."
-    },
-    {
-      "keyCode": 56,
-      "label": "/"
-    },
-    {
-      "keyCode": 301,
-      "label": "-",
-      "extraLabel": "C+"
-    },
-    {
-      "keyCode": 70,
-      "label": "PRINT SCRN",
-      "verbose": "Print Screen"
+      "keyCode": 0,
+      "label": "KEY",
+      "extraLabel": "NO",
+      "verbose": "Disabled"
     },
     {
       "keyCode": 227,
@@ -339,13 +370,15 @@
       "verbose": "Left Alt"
     },
     {
-      "keyCode": 63,
-      "label": "F6"
+      "keyCode": 0,
+      "label": "KEY",
+      "extraLabel": "NO",
+      "verbose": "Disabled"
     },
     {
-      "keyCode": 49213,
+      "keyCode": 2092,
       "label": "SPACE",
-      "extraLabel": "CTRL/"
+      "extraLabel": "S+"
     },
     {
       "keyCode": 0,
@@ -354,19 +387,22 @@
       "verbose": "Disabled"
     },
     {
-      "keyCode": 49163,
-      "label": "3",
-      "extraLabel": "OSL"
+      "keyCode": 0,
+      "label": "KEY",
+      "extraLabel": "NO",
+      "verbose": "Disabled"
     },
     {
-      "keyCode": 49164,
-      "label": "4",
-      "extraLabel": "OSL"
+      "keyCode": 0,
+      "label": "KEY",
+      "extraLabel": "NO",
+      "verbose": "Disabled"
     },
     {
-      "keyCode": 49162,
-      "label": "2",
-      "extraLabel": "OSL"
+      "keyCode": 0,
+      "label": "KEY",
+      "extraLabel": "NO",
+      "verbose": "Disabled"
     },
     {
       "keyCode": 76,
@@ -378,9 +414,10 @@
       "extraLabel": "CTRL/"
     },
     {
-      "keyCode": 49165,
-      "label": "5",
-      "extraLabel": "OSL"
+      "keyCode": 65535,
+      "label": "",
+      "extraLabel": "TRANS",
+      "verbose": "Transparent"
     },
     {
       "keyCode": 230,
@@ -423,20 +460,20 @@
     1,
     1,
     1,
-    6,
+    12,
     1,
     1,
     1,
     1,
     1,
     1,
-    5,
+    12,
     1,
     11,
-    5,
-    0,
-    2,
-    2,
+    12,
+    1,
+    12,
+    14,
     1,
     1,
     1,
@@ -459,7 +496,7 @@
     1,
     1,
     1,
-    6,
+    12,
     1,
     1,
     1,
@@ -469,73 +506,73 @@
     1,
     12,
     11,
-    2,
+    12,
     0,
     5,
+    12,
     2,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2
   ],
   "palette": [
     {
