@@ -2,7 +2,7 @@
 
 ;; Author: Sebastian Monia <code@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
-;; Version: 29.3
+;; Version: 29.4
 ;; Keywords: .emacs dotemacs
 
 ;; This file is not part of GNU Emacs.
@@ -12,23 +12,26 @@
 ;; My dot Emacs file
 ;; In theory I should be able to just drop the file in any computer and have
 ;; the config synced without merging/adapting anything
-;; Update 2019-05-06: V3 means I moved to use-package
-;; Update 2020-06-14: Arbitrarily bumping the version number
-;; Update 2021-09-02: Used https://www.manueluberti.eu/emacs/2021/09/01/package-report/
-;;                    to remove some dead packages and things I didn't use that much.
-;; Update 2022-01-01: Make init file use lexical binding, update mark and point bindings.
-;;                    Bumping minor version (!) so 4.1 it is :)
-;; Update 2022-04-06: Starting today, the major version of this file will match the minimum
-;;                    Emacs version targeted.  Since yesterday I added variables and settings
-;;                    that are new in Emacs 28, the new init version is 28.1 (I plan to start
-;;                    bumping the minor version more often, too).
-;; Update 2022-06-09: Finished reading Mastering Emacs, added some notes and bindings
-;;                    Cleaned up some functions, removed some values.
-;; Update 2022-12-01: Moved to depend on Emacs 29 (some customizations are 29-only)
-;;                    After a brief experiment with default "bare" completion, revisit
-;;                    my icomplete/minibuffer setup.
-;; Update 2022-12-22: Hosting some of my personal repos in Source Hut, mirroring setting
-;;                    multiple remotes in "origin", see https://stackoverflow.com/a/58465641
+;; 2019-05-06: V3 means I moved to use-package
+;; 2020-06-14: Arbitrarily bumping the version number
+;; 2021-09-02: Used https://www.manueluberti.eu/emacs/2021/09/01/package-report/
+;;             to remove some dead packages and things I didn't use that much.
+;; 2022-01-01: Make init file use lexical binding, update mark and point bindings.
+;;             Bumping minor version (!) so 4.1 it is :)
+;; 2022-04-06: Starting today, the major version of this file will match the minimum
+;;             Emacs version targeted.  Since yesterday I added variables and settings
+;;             that are new in Emacs 28, the new init version is 28.1 (I plan to start
+;;             bumping the minor version more often, too).
+;; 2022-06-09: Finished reading Mastering Emacs, added some notes and bindings
+;;             Cleaned up some functions, removed some values.
+;; 2022-12-01: Moved to depend on Emacs 29 (some customizations are 29-only)
+;;             After a brief experiment with default "bare" completion, revisit
+;;             my icomplete/minibuffer setup.
+;; 2022-12-22: Hosting some of my personal repos in Source Hut, mirroring setting
+;;             multiple remotes in "origin", see https://stackoverflow.com/a/58465641
+;; 2023-02-18: Adding register bindings, jump-to-char, occur integration to project.el,
+;;             new window size bindings, move back to Eglot again (better for
+;;             remote/slow environments like VDIs...
 ;;
 ;;; Code:
 
@@ -262,6 +265,22 @@ about toolboxes..."
   ;; Welp, don't like using internals but, the regular hook doesn't quite work
   ;; the window config is restored but then _stuff happens_, so:
   (add-hook 'ediff-after-quit-hook-internal #'hoagie-ediff-restore-windows))
+
+(use-package eglot
+  :commands (eglot eglot-ensure)
+  :hook
+  ((python-mode-hook . eglot-ensure)
+   (go-mode-hook . eglot-ensure))
+  :bind
+  (:map hoagie-keymap
+        (("l r" . eglot-rename)
+         ("l f" . eglot-format)
+         ("l h" . eldoc)
+         ("l a" . eglot-code-actions)))
+  (:map eglot-mode-map
+        (("C-c C-e r" . eglot-rename)
+         ("C-c C-e f" . eglot-format)
+         ("C-c C-e h" . eldoc))))
 
 (use-package eldoc
   :ensure nil
@@ -501,93 +520,6 @@ Open the URL at point in EWW, use external browser with prefix arg."
                       (setf fill-column 100)
                       (display-fill-column-indicator-mode))))
 
-(defvar hoagie-lsp-keymap (define-prefix-command 'hoagie-lsp-keymap) "Custom bindings for LSP mode.")
-(use-package lsp-mode
-  :hook
-  (python-mode-hook . lsp)
-  (csharp-mode-hook . lsp)
-  (go-mode-hook . lsp)
-  (php-mode-hook . lsp)
-  :commands
-  (lsp lsp-signature-active)
-  :bind
-  (:map hoagie-lsp-keymap
-        ("d" . lsp-find-declaration)
-        ("." . lsp-find-definition)
-        ("?" . lsp-find-references)
-        ("o" . lsp-signature-activate) ;; o for "overloads"
-        ("r" . lsp-rename))
-  (:map hoagie-keymap
-        ("l" . hoagie-lsp-keymap))
-  :custom
-  (lsp-keymap-prefix "C-c C-l")
-  (lsp-enable-snippet nil)
-  (lsp-enable-folding nil)
-  (lsp-lens-enable nil)
-  (lsp-headerline-breadcrumb-enable nil)
-  (lsp-auto-guess-root t)
-  (lsp-file-watch-threshold nil)
-  (lsp-eldoc-render-all t)
-  (lsp-signature-auto-activate nil)
-  (lsp-enable-symbol-highlighting nil)
-  (lsp-modeline-code-actions-enable nil))
-
-(use-package lsp-ui
-  :custom
-  ;; matches "font-lock-builtin-face", "font-lock-keyword-face"
-  ;; and "font-lock-string-face" from the modus-operandi theme
-  (lsp-ui-imenu-colors '("#8f0075" "#2544bb" "#5317ac"))
-  (lsp-ui-doc-enable nil)
-  (lsp-ui-doc-position 'top)
-  (lsp-ui-doc-use-childframe nil)
-  (lsp-ui-peek-enable nil)
-  (lsp-ui-sideline-enable nil)
-  :bind
-  (:map hoagie-lsp-keymap
-        ("i" . lsp-ui-imenu))
-  (:map lsp-ui-imenu-mode-map
-        ;; Use bindings that are closer to occur-mode...
-        ("n" . next-line)
-        ("p" . previous-line)
-        ("o" . lsp-ui-imenu--view)
-        ("g" . lsp-ui-imenu--refresh)
-        ("<return>" . lsp-ui-imenu--visit)))
-
-;; (use-package dap-mode
-;;   :commands (dap-debug dap-breakpoints-add)
-;;   :init
-;;   (dap-mode 1)
-;;   (dap-ui-mode 1)
-;;   (dap-auto-configure-mode)
-;;   (require 'dap-python)
-;;   (require 'dap-pwsh)
-;;   (require 'dap-netcore)
-;;   (defvar hoagie-dap-run-keymap (define-prefix-command 'hoagie-dap-run-keymap))
-;;   (defvar hoagie-dap-bpoints-keymap (define-prefix-command 'hoagie-dap-bpoints-keymap))
-;;   (global-set-key (kbd "<f5>") hoagie-dap-run-keymap)
-;;   (global-set-key (kbd "<f9>") hoagie-dap-bpoints-keymap)
-;;   :bind
-;;   (:map hoagie-dap-run-keymap
-;;         ("<f5>" . dap-debug)
-;;         ("<f6>" . dap-next)
-;;         ("<f7>" . dap-step-in)
-;;         ("<f8>" . dap-step-out)
-;;         ("<f9>" . dap-continue)
-;;         ("<f1>" . dap-eval-thing-at-point)
-;;         ("C-<f1>" . dap-eval)
-;;         ("<f2>" . dap-ui-expressions)
-;;         ("C-<f2>" . dap-ui-expressions-add)
-;;         ("M-<f2>" . dap-ui-expressions-remove)
-;;         ("<f3>" . dap-ui-repl)
-;;         ("C-c" . dap-disconnect)) ;; "Stop"
-;;   (:map hoagie-dap-bpoints-keymap
-;;         ("<f10>" . dap-ui-breakpoints-list)
-;;         ("<f9>" . dap-breakpoint-toggle) ;; f9 twice -> toggle
-;;         ("<f11>" . dap-breakpoint-log-message)
-;;         ("<f12>" . dap-breakpoint-condition))
-;;   :custom
-;;   (dap-netcore-install-dir "/home/hoagie/.omnisharp/netcoredbg/1.2.0-825/"))
-
 ;; Trying to use more integrated vc-mode, but leave Magit for the "power stuff"
 (use-package magit
   :init
@@ -657,7 +589,7 @@ Open the URL at point in EWW, use external browser with prefix arg."
   (defun hoagie-plantuml-generate-png ()
     (interactive)
     (when (buffer-modified-p)
-      (error "There are unsaved changes..."))
+      (error "There are unsaved changes"))
     (let* ((input (expand-file-name (buffer-file-name)))
            (output (concat (file-name-sans-extension input) ".png"))
            (output-buffer (get-file-buffer output)))
@@ -682,10 +614,23 @@ Open the URL at point in EWW, use external browser with prefix arg."
   :ensure nil
   :bind
   (:map hoagie-keymap
-        ("g" . project-find-regexp)
+        ;; ("g" . project-find-regexp)
+        ;; Try replace `grep' usages for better
+        ;; Windows compatibility
+        ("g" . hoagie-project-multi-occur)
         ("f" . project-find-file))
   :custom
-  (project-vc-extra-root-markers '(".subproject")))
+  (project-vc-extra-root-markers '(".subproject"))
+  :config
+  (defun hoagie-project-multi-occur (regexp &optional nlines)
+    "Run `multi-occur' in all the files in the current project."
+    ;; very much inspired by https://github.com/NicolasPetton/noccur.el
+    ;; By using `project-files' instead of "git ls", it works in subprojects
+    (interactive (occur-read-primary-args))
+    (let* ((the-project (project-current t))
+           (default-directory (project-root the-project ))
+           (files (mapcar #'find-file-noselect (project-files the-project))))
+      (multi-occur files regexp nlines))))
 
 (use-package python
   :ensure nil
@@ -703,6 +648,19 @@ Open the URL at point in EWW, use external browser with prefix arg."
   :ensure nil
   :custom
   (reb-re-syntax 'string))
+
+(defvar hoagie-register-keymap (define-prefix-command 'hoagie-register-keymap) "Sligthly more accessible register keybindings.")
+(use-package register
+  :ensure nil
+  :demand t
+  :config
+  :bind
+  ("<f5>" . hoagie-register-keymap)
+  (:map hoagie-register-keymap
+        ("s" . copy-to-register)
+        ("i" . insert-register)
+        ("SPC" . point-to-register)
+        ("j" . jump-to-register)))
 
 (use-package repeat
   :ensure nil
@@ -1054,14 +1012,41 @@ With ARG, do this that many times."
     (interactive "p")
     (delete-word (- arg)))
   ;; from https://demonastery.org/2013/04/emacs-narrow-to-region-indirect/
-  (defun narrow-to-region-indirect (start end)
-    "Restrict editing in this buffer to the current region, indirectly."
-    (interactive "r")
-    (deactivate-mark)
-    (let ((buf (clone-indirect-buffer nil t)))
+  ;; modified to DWIM: if there's no active region, just clone the entire
+  ;; buffer. Also use `pop-to-buffer' instead of `switch-to-buffer'
+  (defun hoagie-clone-indirect-dwim ()
+    "Create an indirect buffer, narrow it to the current region if active."
+    (interactive)
+    (let ((start (use-region-beginning))
+          (end (use-region-end))
+          ;; we'll pop the buffer manually
+          ;; to clear the region
+          (buf (clone-indirect-buffer nil nil)))
+      (deactivate-mark)
       (with-current-buffer buf
-        (narrow-to-region start end)
-        (switch-to-buffer buf))))
+        (when (and start end)
+          (narrow-to-region start end)
+          (deactivate-mark))
+        (pop-to-buffer buf))))
+  (defun jump-to-char (arg char &optional interactive)
+    "A copy of `zap-up-to-char' that doesn't kill the text.
+It also drops a marker before jumping, using `push-mark-no-activate'."
+    (interactive (list (prefix-numeric-value current-prefix-arg)
+                                               (read-char-from-minibuffer "Jump to char: "
+                                                                                                                          nil 'read-char-history)
+                       t))
+    (let ((direction (if (>= arg 0) 1 -1))
+          (case-fold-search (if (and interactive (char-uppercase-p char))
+                                nil
+                              case-fold-search)))
+      (push-mark-no-activate)
+      (goto-char
+                   (progn
+                                (forward-char direction)
+                                (unwind-protect
+                                     (search-forward (char-to-string char) nil nil arg)
+                                   (backward-char direction))
+                                (point)))))
   :bind
   ("<S-f1>" . (lambda () (interactive) (find-file user-init-file)))
   ("<f1>" . hoagie-go-home)
@@ -1070,10 +1055,10 @@ With ARG, do this that many times."
   ("C-x 3" . (lambda () (interactive)(split-window-right) (other-window 1)))
   ("C-x 2" . (lambda () (interactive)(split-window-below) (other-window 1)))
   ;; Window management
-  ("C-M-}" . (lambda () (interactive)(shrink-window-horizontally 5)))
-  ("C-M-{" . (lambda () (interactive)(enlarge-window-horizontally 5)))
-  ("C-M-_" . (lambda () (interactive)(shrink-window 5)))
-  ("C-M-+" . (lambda () (interactive)(shrink-window -5)))
+  ("S-<left>" . (lambda () (interactive)(shrink-window-horizontally 5)))
+  ("S-<right>" . (lambda () (interactive)(enlarge-window-horizontally 5)))
+  ("S-<up>" . (lambda () (interactive)(shrink-window 5)))
+  ("S-<down>" . (lambda () (interactive)(shrink-window -5)))
   ("M-o" . other-window)
   ("M-O" . other-frame)
   ("M-`" . other-frame) ;; for Windows - behave like Gnome
@@ -1089,10 +1074,11 @@ With ARG, do this that many times."
   ("M-c" . capitalize-dwim)
   ("M-u" . upcase-dwim)
   ("M-l" . downcase-dwim)
-  ("C-z" . zap-up-to-char)
+  ("C-z" . jump-to-char)
+  ("M-z" . zap-up-to-char)
   ;; like flycheck's C-c ! l
   ("C-c !" . flymake-show-buffer-diagnostics)
-  ("C-x n i" . narrow-to-region-indirect)
+  ("C-x n i" . hoagie-clone-indirect-dwim)
   ;; it's back...
   ("<remap> <list-buffers>" . ibuffer)
   (:map hoagie-keymap
