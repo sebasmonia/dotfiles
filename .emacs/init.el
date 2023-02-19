@@ -589,7 +589,7 @@ Open the URL at point in EWW, use external browser with prefix arg."
   (defun hoagie-plantuml-generate-png ()
     (interactive)
     (when (buffer-modified-p)
-      (error "There are unsaved changes"))
+      (error "There are unsaved changes..."))
     (let* ((input (expand-file-name (buffer-file-name)))
            (output (concat (file-name-sans-extension input) ".png"))
            (output-buffer (get-file-buffer output)))
@@ -654,11 +654,27 @@ Open the URL at point in EWW, use external browser with prefix arg."
   :ensure nil
   :demand t
   :config
+  (defun hoagie-current-file-to-register (register &optional _arg)
+    "Stored the currently visited file in REGISTER."
+    ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/File-Registers.html
+    (interactive (list (register-read-with-preview
+		                "Current file to register: ")
+		               current-prefix-arg))
+    (set-register register (cons 'file (buffer-file-name))))
   :bind
+  ;; trying to find a good binding
+  ;; to make registers more comfortable
   ("<f5>" . hoagie-register-keymap)
+  ("C-<f6>" . hoagie-register-keymap)
+  ;; moving point like this seems useful but I haven't used it so far
+  ;; and this seems like a good mnemonic binding 
+  ("M-r" . hoagie-register-keymap)
+  ;; none of the above are _that much_ shorter than "C-x r", to be honest
   (:map hoagie-register-keymap
         ("s" . copy-to-register)
         ("i" . insert-register)
+        ("f" . hoagie-current-file-to-register)
+        ("j" . list-registers)
         ("SPC" . point-to-register)
         ("j" . jump-to-register)))
 
@@ -1074,7 +1090,7 @@ It also drops a marker before jumping, using `push-mark-no-activate'."
   ("M-c" . capitalize-dwim)
   ("M-u" . upcase-dwim)
   ("M-l" . downcase-dwim)
-  ("C-z" . jump-to-char)
+  ("C-z" . jump-to-char)   
   ("M-z" . zap-up-to-char)
   ;; like flycheck's C-c ! l
   ("C-c !" . flymake-show-buffer-diagnostics)
