@@ -24,7 +24,7 @@ I still need proper Alt modifiers for other applications, but since I can trigge
 * Left shift: Prefix argument (C-u) on tap, C-0 on double tab.
 * Right shift: Negative argument (C--). Now using `cycle-spacing` to collapse empty lines is a breeze.
 
-![Layer 1](pictures/Layer 1 Base.png)
+![Layer 1](pictures/Layer-1-Base.png)
 
 ## Layer 2 - "F-keys/Browse/Mouse"
 
@@ -32,7 +32,7 @@ Since I activate this layer on the right side, it has arrows on left side, but w
 The right side has mouse keys, which I would use locking the layer (so having both activation and keys on the same side is not as uncomfortable). Mouse buttons to click are on the sides of "up", middle click below, the scrool wheel on the side. After adjusting the settings for mouse speed and acceleration, this setup has been convenient here and there.  
 Finally, the number row is for F-keys, so this layer has the same modifiers as Layer 1 plus Shift keys on their usually positions, to allow for Ctrl+F1, Shift+F1, etc.  
 
-![Layer 2](pictures/Layer 2 Fkeys-Browser-Mouse.png)
+![Layer 2](pictures/Layer-2-Fkeys-Browser-Mouse.png)
 
 ## Layer 3 - "Windows/Arrows/Media"
 
@@ -43,16 +43,16 @@ On the right side there are arrow keys mapped to IJKL, surrounded by Home/End/Pa
 Finally since I used the media keys on my MD770 a lot, I am mapping playback and volume in (and around) the T1~4 keys in the top row.  
 I also added Alt+F4 in T8, and Win/Super in T6 and T7, as quick shortcuts.
 
-![Layer 3](pictures/Layer 3 OS-Windows-Arrows-Media.png)
+![Layer 3](pictures/Layer-3-OS-Windows-Arrows-Media.png)
 
 ## Layer 4 - "Symbols"
 
 Here I mapped symbols that are useful for programming and moved them to keys close to the home row. Braces, parenthesis (obviously), math symbols, all types of quotes, etc.
 
-![Layer 4](pictures/Layer 4 Symbols.png)
+![Layer 4](pictures/Layer-4-Symbols.png)
 
 ## Layer 5 - "Base + Shift"
 
 This is mostly the same as layer 1 but all the main keys have the shift modifier applied. I haven't had a CapsLock key available for years now (replaced by Ctrl) and don't need one in Emacs since I can M-u my way out of that. But if I lock this layer the effect is very similar to having Caps applied, for other applications.
 
-![Layer 5](pictures/Layer 5 Base w Shift.png)
+![Layer 5](pictures/Layer-5-Base-w-Shift.png)
