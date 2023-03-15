@@ -679,11 +679,11 @@ Open the URL at point in EWW, use external browser with prefix arg."
         ;; push things semi-constantly
         ("<f5>" . hoagie-push-to-register-dwim)
         ("s" . copy-to-register)
-        ("i" . insert-register)
+        ("i" . hoagie-insert-register)
         ("f" . hoagie-current-file-to-register)
         ("l" . list-registers)
         ("SPC" . point-to-register)
-        ("j" . jump-to-register))
+        ("j" . hoagie-jump-to-register))
   :config
   (defun hoagie-current-file-to-register (register &optional _arg)
     "Stored the currently visited file in REGISTER."
@@ -694,7 +694,7 @@ Open the URL at point in EWW, use external browser with prefix arg."
     (set-register register (cons 'file (buffer-file-name))))
   ;; There are a bunch of packages that do this or similar things,
   ;; but I have an interest on developing my own clunky, bug ridden,
-  ;; and I hope flexible system
+  ;; and, I can only hope, flexible system
   (defun hoagie-push-to-register-dwim ()
     "If the region is active, store it in the next register. Else push point.
 See `hoagie-get-next-register' for \"next register\" selection."
@@ -734,21 +734,28 @@ The values passed to `point-to-register' are based on its interactive declaratio
     (let ((register (hoagie-next-register)))
       (point-to-register (hoagie-next-register) nil)
       (message "Point to register: %c" register)))
-  (defun hoagie-register-dwim-text-marker (&optional arg)
-    "Read REGISTER and then insert it if it's a string, else jump.
-The behaviour is undefined for any other register type.
-Finally, delete the register after using it, unless prefix ARG is used."
+  (defun hoagie-jump-to-register (&optional arg)
+    "Almost like `jump-to-register' but filters the alist for better preview.
+It also deletes the register unless called with prefix ARG."
     (interactive "P")
-    (let* ((register-name (register-read-with-preview "Register: "))
-           (register-value (get-register register-name)))
-      (if (not register-value)
-          (message "Register %c is empty" register-name)
-        ;; else, dwim...
-        (if (markerp register-value)
-            (jump-to-register register-name nil)
-          (insert-register register-name arg))
-        (unless arg
-          (set-register register-name nil))))))
+    (let* ((register-alist (cl-loop for reg in register-alist
+                                    when (markerp (cdr reg))
+                                    collect reg))
+           (reg (register-read-with-preview "Jump to: ")))
+      (jump-to-register reg)
+      (unless arg
+        (set-register reg nil))))
+  (defun hoagie-insert-register (&optional arg)
+    "Almost like `insert-register' but filters the alist for better preview.
+It also deletes the register unless called with prefix ARG."
+    (interactive "P")
+    (let* ((register-alist (cl-loop for reg in register-alist
+                                    when (stringp (cdr reg))
+                                    collect reg))
+           (reg (register-read-with-preview "Insert text: ")))
+      (insert-register reg)
+      (unless arg
+        (set-register reg nil)))))
 
 (use-package repeat
   :ensure nil
