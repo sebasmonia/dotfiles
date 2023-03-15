@@ -670,10 +670,8 @@ Open the URL at point in EWW, use external browser with prefix arg."
   :custom
   (register-preview-delay 0.1)
   :bind
-  ;; in the keyboard, f5 is now in Enter
+  ;; in the keyboard, F5 is now in Enter
   ("<f5>" . hoagie-register-keymap)
-  ("C-<f5>" . hoagie-register-dwim-text-marker)
-  ;; none of the above are _that much_ shorter than "C-x r", to be honest
   (:map hoagie-register-keymap
         ;; hitting F5 twice to jump sounds like a good shortcut to
         ;; push things semi-constantly
@@ -683,8 +681,31 @@ Open the URL at point in EWW, use external browser with prefix arg."
         ("f" . hoagie-current-file-to-register)
         ("l" . list-registers)
         ("SPC" . point-to-register)
+        ;; this won't jump to files, remains to be seen if I need that
         ("j" . hoagie-jump-to-register))
   :config
+  ;; BRITTLENESS WARNING: this re-defines a built-in method, there's
+  ;; a high risk it breaks when moving Emacs versions
+  (cl-defmethod register-val-describe ((val marker) _verbose)
+    (let ((buf (marker-buffer val)))
+      (if (null buf)
+	      (princ "a marker in no buffer")
+        (princ (hoagie--text-around-marker val))
+        (princ " -- buffer ")
+        (princ (buffer-name buf))
+        (princ ", pos")
+        (princ (marker-position val)))))
+  (defun hoagie--text-around-marker (marker)
+    "Get the line around MARKER.
+Some inspiration from the package Consult."
+  (with-current-buffer (marker-buffer marker)
+    (save-excursion
+      (save-restriction
+        (widen)
+        (goto-char marker)
+        (beginning-of-line)
+        (string-trim (thing-at-point 'line))))))
+
   (defun hoagie-current-file-to-register (register &optional _arg)
     "Stored the currently visited file in REGISTER."
     ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/File-Registers.html
