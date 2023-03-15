@@ -32,6 +32,9 @@
 ;; 2023-02-18: Adding register bindings, jump-to-char, occur integration to project.el,
 ;;             new window size bindings, move back to Eglot again (better for
 ;;             remote/slow environments like VDIs...
+;; 2023-03-15: Rework my old push mark + visible-mark system into something based on
+;;             registers and maybe advices. Revisit some bindings to take advantage
+;;             of the Dygma Raise configuration
 ;;
 ;;; Code:
 
@@ -105,8 +108,8 @@
         ("C-<RET>" . company-abort)
         ("<tab>" . company-complete-selection))
   :custom
-  (company-idle-delay 0.25)
-  (company-minimum-prefix-length 2)
+  (company-idle-delay 0.2)
+  (company-minimum-prefix-length 3)
   (company-selection-wrap-around t))
 
 (use-package company-dabbrev
@@ -202,6 +205,10 @@ about toolboxes..."
         (kill-new name))
       (message (format "Filename: %s" (or name "-No file for this buffer-"))))))
 
+;; use ls-dired in VDI?
+(setq ls-lisp-use-insert-directory-program nil)
+(require 'ls-lisp)
+
 (use-package dired-narrow
   :after dired
   :bind
@@ -288,6 +295,13 @@ about toolboxes..."
   :config
   (global-eldoc-mode))
 
+(use-package elec-pair
+  :ensure nil
+  :custom
+  (electric-pair-inhibit-predicate 'electric-pair-inhibit-if-helps-balance)
+  :config
+  (electric-pair-mode))
+
 (use-package eshell
   :ensure nil
   :custom
@@ -358,6 +372,9 @@ Open the URL at point in EWW, use external browser with prefix arg."
   ;; moving expand-region to C-c SPC which in turns moves it from
   ;; F7 SPC to F8 SPC
   ("C-c <SPC>" . er/expand-region)
+  ;; replacing mark commands with registers frees F6 spc
+  (:map hoagie-keymap
+        ("SPC" . er/expand-region))
   :config
   (er/enable-mode-expansions 'csharp-mode 'er/add-cc-mode-expansions))
 
@@ -400,8 +417,7 @@ Open the URL at point in EWW, use external browser with prefix arg."
   ;; need a better binding for this, but haven't used it yet
   ("C-c G d" . godoc-at-point)
   :hook
-  (before-save-hook . lsp-format-buffer)
-  (before-save-hook . lsp-organize-imports))
+  (go-mode-hook . subword-mode))
 
 (use-package grep
   :ensure nil
@@ -496,20 +512,20 @@ Open the URL at point in EWW, use external browser with prefix arg."
 (use-package json-mode
   :mode "\\.json$")
 
-(use-package kubernetes
-  :ensure t
-  :commands (kubernetes-overview)
-  :bind
-  ("C-c K" . kubernetes-overview)
-  ;; experimental alternative
-  (:map hoagie-keymap
-        ("K" . kubernetes-overview))
-  :custom
-  ;; setting these means I have to manually
-  ;; refresh the "main" screen
-  (kubernetes-poll-frequency 3600)
-  (kubernetes-redraw-frequency 3600)
-  (kubernetes-pods-display-completed t))
+;; (use-package kubernetes
+;;   :ensure t
+;;   :commands (kubernetes-overview)
+;;   :bind
+;;   ("C-c K" . kubernetes-overview)
+;;   ;; experimental alternative
+;;   (:map hoagie-keymap
+;;         ("K" . kubernetes-overview))
+;;   :custom
+;;   ;; setting these means I have to manually
+;;   ;; refresh the "main" screen
+;;   (kubernetes-poll-frequency 3600)
+;;   (kubernetes-redraw-frequency 3600)
+;;   (kubernetes-pods-display-completed t))
 
 (use-package lisp-mode
   :ensure nil
@@ -536,9 +552,10 @@ Open the URL at point in EWW, use external browser with prefix arg."
   :demand t
   :custom
   (completions-format 'one-column)
-  (completions-max-height nil)
+  ;; (completions-header-format nil)
+  (completions-max-height 15)
   (completion-auto-select 'second-tab)
-  (completion-styles '(basic partial-completion substring flex))
+  (completion-styles '(flex basic partial-completion))
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
@@ -614,10 +631,7 @@ Open the URL at point in EWW, use external browser with prefix arg."
   :ensure nil
   :bind
   (:map hoagie-keymap
-        ;; ("g" . project-find-regexp)
-        ;; Try replace `grep' usages for better
-        ;; Windows compatibility
-        ("g" . hoagie-project-multi-occur)
+        ("g" . project-find-regexp)
         ("f" . project-find-file))
   :custom
   (project-vc-extra-root-markers '(".subproject"))
@@ -653,6 +667,23 @@ Open the URL at point in EWW, use external browser with prefix arg."
 (use-package register
   :ensure nil
   :demand t
+  :custom
+  (register-preview-delay 0.1)
+  :bind
+  ;; in the keyboard, f5 is now in Enter
+  ("<f5>" . hoagie-register-keymap)
+  ("C-<f5>" . hoagie-register-dwim-text-marker)
+  ;; none of the above are _that much_ shorter than "C-x r", to be honest
+  (:map hoagie-register-keymap
+        ;; hitting F5 twice to jump sounds like a good shortcut to
+        ;; push things semi-constantly
+        ("<f5>" . hoagie-push-to-register-dwim)
+        ("s" . copy-to-register)
+        ("i" . insert-register)
+        ("f" . hoagie-current-file-to-register)
+        ("l" . list-registers)
+        ("SPC" . point-to-register)
+        ("j" . jump-to-register))
   :config
   (defun hoagie-current-file-to-register (register &optional _arg)
     "Stored the currently visited file in REGISTER."
@@ -661,22 +692,63 @@ Open the URL at point in EWW, use external browser with prefix arg."
 		                "Current file to register: ")
 		               current-prefix-arg))
     (set-register register (cons 'file (buffer-file-name))))
-  :bind
-  ;; trying to find a good binding
-  ;; to make registers more comfortable
-  ("<f5>" . hoagie-register-keymap)
-  ("C-<f6>" . hoagie-register-keymap)
-  ;; moving point like this seems useful but I haven't used it so far
-  ;; and this seems like a good mnemonic binding 
-  ("M-r" . hoagie-register-keymap)
-  ;; none of the above are _that much_ shorter than "C-x r", to be honest
-  (:map hoagie-register-keymap
-        ("s" . copy-to-register)
-        ("i" . insert-register)
-        ("f" . hoagie-current-file-to-register)
-        ("j" . list-registers)
-        ("SPC" . point-to-register)
-        ("j" . jump-to-register)))
+  ;; There are a bunch of packages that do this or similar things,
+  ;; but I have an interest on developing my own clunky, bug ridden,
+  ;; and I hope flexible system
+  (defun hoagie-push-to-register-dwim ()
+    "If the region is active, store it in the next register. Else push point.
+See `hoagie-get-next-register' for \"next register\" selection."
+    (interactive)
+    (if (use-region-p)
+        (hoagie-copy-to-next-register)
+      (hoagie-point-to-next-register)))
+  (defvar hoagie-registers-order
+    "qwertasdfgzxcvbyuiophjklnm[];',./-=`?\"[](){}"
+    "The order in which to walk the registers in `hoagie-next-register'")
+  (defvar hoagie-last-register-index -1)
+  (defun hoagie-next-register ()
+    "Return the next char from `hoagie-registers-order'.
+Silently starts over if needed."
+    (cl-incf hoagie-last-register-index)
+    (setf hoagie-last-register-index (mod hoagie-last-register-index
+                                          (length hoagie-registers-order)))
+    (elt hoagie-registers-order hoagie-last-register-index))
+  (defun hoagie-copy-to-next-register ()
+    "Copies the region to the register returned by `hoagie-next-register'.
+The values passed to `copy-to-register' are based on its interactive declaration."
+    (interactive)
+    (let ((register (hoagie-next-register)))
+      (copy-to-register register
+                        (region-beginning)
+                        (region-end)
+                        current-prefix-arg
+                        t)
+      (message "Text to register: %c" register)))
+  (defun hoagie-point-to-next-register ()
+    "Stores point in the register returned by `hoagie-next-register'.
+The values passed to `point-to-register' are based on its interactive declaration."
+    (interactive)
+    ;; I never want to store frame configurations...but in a future version
+    ;; I could do window configurations? My current setup for windows stores
+    ;; ONE window config and that seems to be enough, though.
+    (let ((register (hoagie-next-register)))
+      (point-to-register (hoagie-next-register) nil)
+      (message "Point to register: %c" register)))
+  (defun hoagie-register-dwim-text-marker (&optional arg)
+    "Read REGISTER and then insert it if it's a string, else jump.
+The behaviour is undefined for any other register type.
+Finally, delete the register after using it, unless prefix ARG is used."
+    (interactive "P")
+    (let* ((register-name (register-read-with-preview "Register: "))
+           (register-value (get-register register-name)))
+      (if (not register-value)
+          (message "Register %c is empty" register-name)
+        ;; else, dwim...
+        (if (markerp register-value)
+            (jump-to-register register-name nil)
+          (insert-register register-name arg))
+        (unless arg
+          (set-register register-name nil))))))
 
 (use-package repeat
   :ensure nil
@@ -689,17 +761,24 @@ Open the URL at point in EWW, use external browser with prefix arg."
 (use-package restclient
   :custom
   (restclient-same-buffer-response . nil)
+  (restclient-response-body-only t)
   :mode
   ("\\.http\\'" . restclient-mode)
   :bind
   ("<f4>" . hoagie-open-restclient)
+  :hook
+  (restclient-mode-hook . hoagie-restclient-imenu-index)
   :config
   (defun hoagie-open-restclient (arg)
+    "Open a file from the restclient \"collection\"."
     (interactive "P")
     (let ((restclient-file (read-file-name "Open restclient file:" "~/restclient/")))
       (if arg
           (find-file-other-window restclient-file)
-        (find-file restclient-file)))))
+        (find-file restclient-file))))
+  (defun hoagie-restclient-imenu-index ()
+    "Configure imenu on the convention \"### Title ###\"."
+    (setq-local imenu-generic-expression '((nil "^### \\(.*\\) ###$" 1)))))
 
 (use-package replace
   :ensure nil
@@ -915,21 +994,6 @@ With prefix ARG show the remote branches."
         ("b L" . hoagie-vc-git-show-branches) ;; l is used for branch-log
         ("e" . vc-ediff)))
 
-(use-package visible-mark
-  :demand t ;; has to be loaded, no command
-  :config
-  (global-visible-mark-mode t)
-  :custom-face
-  (visible-mark-face1 ((t (:box "tomato"))))
-  (visible-mark-face2 ((t (:box "gold"))))
-  (visible-mark-forward-face1 ((t (:box "sea green"))))
-  (visible-mark-forward-face2 ((t (:box "pale green"))))
-  :custom
-  (visible-mark-max 2)
-  (visible-mark-faces '(visible-mark-face1 visible-mark-face2))
-  (visible-mark-forward-max 2)
-  (visible-mark-forward-faces '(visible-mark-forward-face1 visible-mark-forward-face2)))
-
 (use-package vundo
   :demand t
   :bind
@@ -1045,24 +1109,22 @@ With ARG, do this that many times."
           (deactivate-mark))
         (pop-to-buffer buf))))
   (defun jump-to-char (arg char &optional interactive)
-    "A copy of `zap-up-to-char' that doesn't kill the text.
-It also drops a marker before jumping, using `push-mark-no-activate'."
+    "A copy of `zap-up-to-char' that doesn't kill the text."
     (interactive (list (prefix-numeric-value current-prefix-arg)
-                                               (read-char-from-minibuffer "Jump to char: "
-                                                                                                                          nil 'read-char-history)
+		               (read-char-from-minibuffer "Jump to char: "
+						                          nil 'read-char-history)
                        t))
     (let ((direction (if (>= arg 0) 1 -1))
           (case-fold-search (if (and interactive (char-uppercase-p char))
                                 nil
                               case-fold-search)))
-      (push-mark-no-activate)
       (goto-char
-                   (progn
-                                (forward-char direction)
-                                (unwind-protect
-                                     (search-forward (char-to-string char) nil nil arg)
-                                   (backward-char direction))
-                                (point)))))
+	   (progn
+		 (forward-char direction)
+		 (unwind-protect
+		     (search-forward (char-to-string char) nil nil arg)
+		   (backward-char direction))
+		 (point)))))
   :bind
   ("<S-f1>" . (lambda () (interactive) (find-file user-init-file)))
   ("<f1>" . hoagie-go-home)
@@ -1078,8 +1140,8 @@ It also drops a marker before jumping, using `push-mark-no-activate'."
   ("M-o" . other-window)
   ("M-O" . other-frame)
   ("M-`" . other-frame) ;; for Windows - behave like Gnome
-  ("M-N" . next-buffer)
-  ("M-P" . previous-buffer)
+  ("M-n" . next-buffer)
+  ("M-p" . previous-buffer)
   ("C-S-k" . kill-whole-line) ;; more convenient than default C-S-<backspace>
   ;; from https://karthinks.com/software/batteries-included-with-emacs/#cycle-spacing--m-spc
   ("M-SPC" . cycle-spacing)
@@ -1090,7 +1152,7 @@ It also drops a marker before jumping, using `push-mark-no-activate'."
   ("M-c" . capitalize-dwim)
   ("M-u" . upcase-dwim)
   ("M-l" . downcase-dwim)
-  ("C-z" . jump-to-char)   
+  ("C-z" . jump-to-char)
   ("M-z" . zap-up-to-char)
   ;; like flycheck's C-c ! l
   ("C-c !" . flymake-show-buffer-diagnostics)
@@ -1238,70 +1300,6 @@ It also drops a marker before jumping, using `push-mark-no-activate'."
     ))
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
 
-;; MARK PUSH AND POP - maybe I should make a package out of this
-;; For a long time I longed for the VS navigation commands as described in
-;; https://blogs.msdn.microsoft.com/zainnab/2010/03/01/navigate-backward-and-navigate-forward/
-;; By the time I finally found a way to implement them using the package back-button,
-;; I started running into problems integrating with existing commands, and also I was too
-;; used to navigating locations within the same buffer rather than globally.
-;; So, rolling back :)
-
-(defun push-mark-no-activate ()
-  "Pushes `point' to `mark-ring' and does not activate the region.
-Equivalent to `set-mark-command' when `transient-mark-mode' is disabled.
-Source: https://masteringemacs.org/article/fixing-mark-commands-transient-mark-mode"
-  (interactive)
-  ;; removed the message, visible-mark takes care of this
-  (push-mark (point) t nil))
-
-(defun unpop-to-mark-command ()
-  "Unpop off mark ring.  Does nothing if mark ring is empty.
-Source: from https://www.emacswiki.org/emacs/MarkCommands#toc4"
-  (interactive)
-  (when mark-ring
-    (let ((pos (marker-position (car (last mark-ring)))))
-      (if (not (= (point) pos))
-          (goto-char pos)
-        (setf mark-ring (cons (copy-marker (mark-marker)) mark-ring))
-        (set-marker (mark-marker) pos)
-        (setf mark-ring (nbutlast mark-ring))
-        (goto-char (marker-position (car (last mark-ring)))))
-      (message "Mark unpopped"))))
-
-;; TODO: try re-implementing using `push-mark-if-not-repeat'
-(defun pop-to-mark-push-if-first ()
-  "Pop the mark ring, but push a mark if this is a first invocation."
-  (interactive)
-  (unless (equal last-command 'pop-to-mark-push-if-first)
-    (push-mark-no-activate)
-    (pop-to-mark-command))
-  (pop-to-mark-command))
-
-(defun push-mark-if-not-repeat (command &rest _)
-  "Push a mark if this is not a repeat invocation of COMMAND."
-  (unless (equal last-command this-command)
-    (push-mark-no-activate)))
-
-;; Manually setting the mark bindings
-;; 2022-01-01: After one too many collisions with existing bindings (Powershell-mode in the past,
-;; org-mode, markdown mode) and considering this for quite some time, I am changing these bindings,
-;; which are an evolution of the ones recommended in Mickey Petersen's post, to something using
-;; my own keymap.
-(defvar mark-keymap (define-prefix-command 'mark-keymap) "Custom bindings to push the mark and cycle the mark ring.")
-;; My first use of repeat-maps!!!
-(defvar mark-keymap-repeat-map (make-sparse-keymap) "Repeat map for commands in variable `mark-keymap'.")
-;; I am using "l" and "r" rather than "n" and "p" thinking of help/info using the former to move navigate pages
-(define-key mark-keymap (kbd "SPC") #'push-mark-no-activate)
-(define-key mark-keymap (kbd "l") #'pop-to-mark-push-if-first)
-(define-key mark-keymap (kbd "r") #'unpop-to-mark-command)
-;; setup "repeat keys"" to navigate the mark ring
-(define-key mark-keymap-repeat-map (kbd "l") #'pop-to-mark-push-if-first)
-(define-key mark-keymap-repeat-map (kbd "r") #'unpop-to-mark-command)
-;; set the "repeat-map" symbol property
-(put 'pop-to-mark-push-if-first 'repeat-map 'mark-keymap-repeat-map)
-(put 'unpop-to-mark-command 'repeat-map 'mark-keymap-repeat-map)
-(define-key hoagie-keymap (kbd "SPC") #'mark-keymap)
-
 (use-package modus-themes
   :demand t
   :config
@@ -1366,8 +1364,8 @@ This modified version adds a keyboard macro recording status."
                              (when defining-kbd-macro
                                (format-mode-line mode-line-defining-kbd-macro
                                                  'mood-line-major-mode)))))
-      (unless (string-blank-p (mood-line--string-trim misc-info))
-          (concat (mood-line--string-trim misc-info) "  ")))))
+      (unless (string-blank-p (string-trim misc-info))
+          (concat (string-trim misc-info) "  ")))))
 
 ;;; Experimental features - from reading Mastering Emacs
 
