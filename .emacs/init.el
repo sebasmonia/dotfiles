@@ -35,6 +35,8 @@
 ;; 2023-03-15: Rework my old push mark + visible-mark system into something based on
 ;;             registers and maybe advices. Revisit some bindings to take advantage
 ;;             of the Dygma Raise configuration
+;; 2023-03-25: Adjust more bindings for the Raise, try _yet again_ switching away from
+;;             company and icomplete/fido to "pure" built-in completion
 ;;
 ;;; Code:
 
@@ -99,32 +101,32 @@
   :config
   (browse-kill-ring-default-keybindings))
 
-(use-package company
-  :hook
-  (after-init-hook . global-company-mode)
-  :bind
-  ("C-<tab>" . company-indent-or-complete-common)
-  (:map company-active-map
-        ("C-<RET>" . company-abort)
-        ("<tab>" . company-complete-selection))
-  :custom
-  (company-idle-delay 0.2)
-  (company-minimum-prefix-length 3)
-  (company-selection-wrap-around t))
+;; (use-package company
+;;   :hook
+;;   (after-init-hook . global-company-mode)
+;;   :bind
+;;   ("C-<tab>" . company-indent-or-complete-common)
+;;   (:map company-active-map
+;;         ("C-<RET>" . company-abort)
+;;         ("<tab>" . company-complete-selection))
+;;   :custom
+;;   (company-idle-delay 0.2)
+;;   (company-minimum-prefix-length 3)
+;;   (company-selection-wrap-around t))
 
-(use-package company-dabbrev
-  :after company
-  :ensure nil
-  :custom
-  (company-dabbrev-ignore-case nil)
-  (company-dabbrev-downcase nil))
+;; (use-package company-dabbrev
+;;   :after company
+;;   :ensure nil
+;;   :custom
+;;   (company-dabbrev-ignore-case nil)
+;;   (company-dabbrev-downcase nil))
 
-(use-package company-dabbrev-code
-  :after company
-  :ensure nil
-  :custom
-  (company-dabbrev-code-modes t)
-  (company-dabbrev-code-ignore-case nil))
+;; (use-package company-dabbrev-code
+;;   :after company
+;;   :ensure nil
+;;   :custom
+;;   (company-dabbrev-code-modes t)
+;;   (company-dabbrev-code-ignore-case nil))
 
 (use-package csharp-mode
   :mode "\\.cs$"
@@ -160,14 +162,14 @@
   ;; use external 'ls' even on Windows
   (ls-lisp-use-insert-directory-program t)
   :bind
-  ("<C-f1>" . 'hoagie-kill-buffer-filename)
   (:map hoagie-keymap
-        (("F" . find-name-dired)
+        (("ESC f" . find-name-dired)
          ("J" . dired-jump)
-         ("j" . dired-jump-other-window)))
+         ("j" . dired-jump-other-window)
+         ;; n for "name"
+         ("n" . hoagie-kill-buffer-filename)))
   (:map dired-mode-map
-        ("C-<return>" . dired-open-file)
-        ("<C-f1>" . (lambda () (interactive) (dired-copy-filename-as-kill 0))))
+        ("C-<return>" . dired-open-file))
   :hook
   (dired-mode-hook . dired-hide-details-mode)
   :config
@@ -200,10 +202,12 @@ about toolboxes..."
   (defun hoagie-kill-buffer-filename ()
     "Sends the current buffer's filename to the kill ring."
     (interactive)
-    (let ((name (buffer-file-name)))
-      (when name
-        (kill-new name))
-      (message (format "Filename: %s" (or name "-No file for this buffer-"))))))
+    (if (derived-mode-p 'dired-mode)
+        (dired-copy-filename-as-kill 0)
+      (let ((name (buffer-file-name)))
+        (when name
+          (kill-new name))
+        (message (format "Filename: %s" (or name "-No file for this buffer-")))))))
 
 ;; use ls-dired in VDI?
 (setq ls-lisp-use-insert-directory-program nil)
@@ -220,14 +224,6 @@ about toolboxes..."
   :bind
   (:map dired-mode-map
         (")" . dired-git-info-mode)))
-
-(use-package display-line-numbers
-  :ensure nil
-  :custom
-  (display-line-numbers-major-tick 10)
-  (display-line-numbers-type 'relative)
-  :hook
-  (after-init-hook . global-display-line-numbers-mode))
 
 (use-package docker
   :bind
@@ -287,7 +283,8 @@ about toolboxes..."
   (:map eglot-mode-map
         (("C-c C-e r" . eglot-rename)
          ("C-c C-e f" . eglot-format)
-         ("C-c C-e h" . eldoc))))
+         ("C-c C-e h" . eldoc)
+         ("C-c C-e a" . eglot-code-actions))))
 
 (use-package eldoc
   :ensure nil
@@ -366,12 +363,9 @@ Open the URL at point in EWW, use external browser with prefix arg."
   (:map eww-mode-map
         ("C-c SPC" . eww-lnum-follow)))
 
+;; TODO: evaluate how often I really use this package...
 (use-package expand-region
   :bind
-  ;; I want to keep cycle-spacing in its default binding, so
-  ;; moving expand-region to C-c SPC which in turns moves it from
-  ;; F7 SPC to F8 SPC
-  ("C-c <SPC>" . er/expand-region)
   ;; replacing mark commands with registers frees F6 spc
   (:map hoagie-keymap
         ("SPC" . er/expand-region))
@@ -408,14 +402,15 @@ Open the URL at point in EWW, use external browser with prefix arg."
 
 (use-package git-timemachine
   :bind
-  ("C-x M-G" . git-timemachine))
+  ;; simplified binding since I'm using Magit so little
+  ("C-x g" . git-timemachine))
 
 (use-package go-mode
-  :custom
-  (godoc-at-point-function 'godoc-gogetdoc)
-  :bind
-  ;; need a better binding for this, but haven't used it yet
-  ("C-c G d" . godoc-at-point)
+  ;; :custom
+  ;; (godoc-at-point-function 'godoc-gogetdoc)
+  ;; :bind
+  ;; ;; need a better binding for this, but haven't used it yet
+  ;; ("C-c G d" . godoc-at-point)
   :hook
   (go-mode-hook . subword-mode))
 
@@ -433,7 +428,7 @@ Open the URL at point in EWW, use external browser with prefix arg."
   ;; (ad-activate 'grep-compute-defaults)
   :bind
   (:map hoagie-keymap
-        ("G" . rgrep)))
+        ("ESC g" . rgrep)))
 
 (use-package hl-line
   :ensure nil
@@ -449,6 +444,10 @@ Open the URL at point in EWW, use external browser with prefix arg."
   ("C-<f3>" . hoagie-howm-inbox)
   ("S-<f3>" . howm-list-todo)
   ("C-S-<f3>" . howm-list-schedule)
+  (:map hoagie-keymap
+        ("3" . hoagie-howm-inbox)
+        ("C-3" . howm-list-todo)
+        ("ESC 3" . howm-list-schedule))
   (:map hoagie-howm-keymap
         ("c" . howm-create)
         ("<f3>" . howm-menu)
@@ -467,23 +466,23 @@ Open the URL at point in EWW, use external browser with prefix arg."
     (howm-set-mode)
     (goto-char (point-max))))
 
-(use-package icomplete
-  :ensure nil
-  :demand t
-  :custom
-  (icomplete-hide-common-prefix nil)
-  (icomplete-show-matches-on-no-input t)
-  (icomplete-prospects-height 15)
-  :config
-  ;; Non-custom configuration. Temporarily disabled, but could replace company...
-  (setf icomplete-in-buffer nil)
-  (icomplete-vertical-mode)
-  :bind
-  (:map icomplete-minibuffer-map
-        ;; when there's no exact match, accept the first one under cursor with RET
-        ("RET" . icomplete-force-complete-and-exit)
-        ;; C-j to force-accept current input even if it's not in the candidate list
-        ("C-j" . icomplete-fido-exit)))
+;; (use-package icomplete
+;;   :ensure nil
+;;   :demand t
+;;   :custom
+;;   (icomplete-hide-common-prefix nil)
+;;   (icomplete-show-matches-on-no-input t)
+;;   (icomplete-prospects-height 15)
+;;   :config
+;;   ;; Non-custom configuration. Temporarily disabled, but could replace company...
+;;   (setf icomplete-in-buffer nil)
+;;   (icomplete-vertical-mode)
+;;   :bind
+;;   (:map icomplete-minibuffer-map
+;;         ;; when there's no exact match, accept the first one under cursor with RET
+;;         ("RET" . icomplete-force-complete-and-exit)
+;;         ;; C-j to force-accept current input even if it's not in the candidate list
+;;         ("C-j" . icomplete-fido-exit)))
 
 (use-package imenu
   :ensure nil
@@ -539,8 +538,9 @@ Open the URL at point in EWW, use external browser with prefix arg."
 ;; Trying to use more integrated vc-mode, but leave Magit for the "power stuff"
 (use-package magit
   :init
-  :bind
-  ("C-x G" . magit-status)
+  ;; no Magit binding...
+  ;; :bind
+  ;; ("C-x G" . magit-status)
   :custom
   ;; this option solves the problems with Magit commits & diffs with
   ;; my current `display-buffer-alist' configuration
@@ -553,14 +553,14 @@ Open the URL at point in EWW, use external browser with prefix arg."
   :custom
   (completions-format 'one-column)
   ;; (completions-header-format nil)
-  (completions-max-height 15)
-  (completion-auto-select 'second-tab)
-  (completion-styles '(flex basic partial-completion))
+  (completions-max-height 20)
+  (completion-styles '(flex))
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
   (completions-detailed t)
-  (completion-auto-help 'lazy)
+  (completion-auto-help 'alwyays)
+  (completion-auto-select 'second-tab)
   :bind
   ;; Default is M-v, but that doesn't work when completing text in a buffer and
   ;; M-i has a nice symmetry with C-i (TAB) that is used to trigger completion
@@ -670,7 +670,7 @@ Open the URL at point in EWW, use external browser with prefix arg."
   :custom
   (register-preview-delay 0.1)
   :bind
-  ;; in the keyboard, F5 is now in Enter
+  ;; in the Raise, F5 is now in Enter
   ("<f5>" . hoagie-register-keymap)
   (:map hoagie-register-keymap
         ;; hitting F5 twice to jump sounds like a good shortcut to
@@ -705,7 +705,6 @@ Some inspiration from the package Consult."
         (goto-char marker)
         (beginning-of-line)
         (string-trim (thing-at-point 'line))))))
-
   (defun hoagie-current-file-to-register (register &optional _arg)
     "Stored the currently visited file in REGISTER."
     ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/File-Registers.html
@@ -724,16 +723,14 @@ See `hoagie-get-next-register' for \"next register\" selection."
         (hoagie-copy-to-next-register)
       (hoagie-point-to-next-register)))
   (defvar hoagie-registers-order
-    "qwertasdfgzxcvbyuiophjklnm[];',./-=`?\"[](){}"
+    "asdfgqwertzxcvbyuiophjklnm;',./-=`?\"[](){}"
     "The order in which to walk the registers in `hoagie-next-register'")
-  (defvar hoagie-last-register-index -1)
   (defun hoagie-next-register ()
-    "Return the next char from `hoagie-registers-order'.
-Silently starts over if needed."
-    (cl-incf hoagie-last-register-index)
-    (setf hoagie-last-register-index (mod hoagie-last-register-index
-                                          (length hoagie-registers-order)))
-    (elt hoagie-registers-order hoagie-last-register-index))
+    "Return the next char from `hoagie-registers-order' that is empty.
+Silently returns nil if none is available."
+    (cl-loop for reg-key across hoagie-registers-order
+             unless (get-register reg-key)
+             return reg-key))
   (defun hoagie-copy-to-next-register ()
     "Copies the region to the register returned by `hoagie-next-register'.
 The values passed to `copy-to-register' are based on its interactive declaration."
@@ -757,34 +754,30 @@ The values passed to `point-to-register' are based on its interactive declaratio
       (message "Point to register: %c" register)))
   (defun hoagie-jump-to-register (&optional arg)
     "Almost like `jump-to-register' but filters the alist for better preview.
-It also deletes the register unless called with prefix ARG."
+It also deletes the register if called with prefix ARG."
     (interactive "P")
     (let* ((register-alist (cl-loop for reg in register-alist
                                     when (markerp (cdr reg))
                                     collect reg))
            (reg (register-read-with-preview "Jump to: ")))
       (jump-to-register reg)
-      (unless arg
+      (when arg
         (set-register reg nil))))
   (defun hoagie-insert-register (&optional arg)
     "Almost like `insert-register' but filters the alist for better preview.
-It also deletes the register unless called with prefix ARG."
+It also deletes the register when called with prefix ARG."
     (interactive "P")
     (let* ((register-alist (cl-loop for reg in register-alist
                                     when (stringp (cdr reg))
                                     collect reg))
            (reg (register-read-with-preview "Insert text: ")))
+      (when (use-region-p)
+        ;; when there's an active region, delete it first
+        ;; NOTE: maybe I want to consider _killing_ instead of _deleting_?
+        (delete-region (region-beginning) (region-end)))
       (insert-register reg)
-      (unless arg
+      (when arg
         (set-register reg nil)))))
-
-(use-package repeat
-  :ensure nil
-  :demand t
-  :custom
-  (repeat-exit-key (kbd "RET"))
-  :config
-  (repeat-mode))
 
 (use-package restclient
   :custom
@@ -800,7 +793,13 @@ It also deletes the register unless called with prefix ARG."
   (defun hoagie-open-restclient (arg)
     "Open a file from the restclient \"collection\"."
     (interactive "P")
-    (let ((restclient-file (read-file-name "Open restclient file:" "~/restclient/")))
+    (let ((restclient-file (read-file-name "Open restclient file:"
+                                           "~/restclient/"
+                                           nil
+                                           nil
+                                           nil
+                                           (lambda (name)
+                                             (string-equal (file-name-extension name) "http")))))
       (if arg
           (find-file-other-window restclient-file)
         (find-file restclient-file))))
@@ -933,7 +932,7 @@ Meant to be added to `occur-hook'."
         ("k" . vc-revert)
         ("r" . hoagie-vc-dir-reset)
         ("d" . hoagie-vc-dir-delete)
-        ("b L" . hoagie-vc-git-show-branches))
+        ("b b" . hoagie-vc-git-show-branches))
   :config
   (defun hoagie-vc-dir-reset (&optional arg)
     "Runs \"git reset\" to unstage all changes.
@@ -1017,9 +1016,11 @@ With prefix ARG show the remote branches."
                                 tramp-file-name-regexp))
   :bind
   (:map vc-prefix-map
-        ("f" . hoagie-vc-git-fetch-all) ;; vc-dir-find-file, but I use project-find-file instead
+        ;; vc-dir-find-file, but I use project-find-file instead
+        ("f" . hoagie-vc-git-fetch-all)
         ("o" . hoagie-vc-git-current-branch-upstream-origin)
-        ("b L" . hoagie-vc-git-show-branches) ;; l is used for branch-log
+        ;; "l"ist is used for branch-log, use "b"ranches
+        ("b b" . hoagie-vc-git-show-branches)
         ("e" . vc-ediff)))
 
 (use-package vundo
@@ -1153,6 +1154,12 @@ With ARG, do this that many times."
 		     (search-forward (char-to-string char) nil nil arg)
 		   (backward-char direction))
 		 (point)))))
+  (defun hoagie-kill-buffer (&optional prefix-arg)
+    "Kill the current buffer, with PREFIX-ARG defer to `kill-buffer'."
+    (interactive "P")
+    (if current-prefix-arg
+        (call-interactively #'kill-buffer)
+      (kill-buffer (current-buffer))))
   :bind
   ("<S-f1>" . (lambda () (interactive) (find-file user-init-file)))
   ("<f1>" . hoagie-go-home)
@@ -1170,26 +1177,35 @@ With ARG, do this that many times."
   ("M-`" . other-frame) ;; for Windows - behave like Gnome
   ("M-n" . next-buffer)
   ("M-p" . previous-buffer)
-  ("C-S-k" . kill-whole-line) ;; more convenient than default C-S-<backspace>
   ;; from https://karthinks.com/software/batteries-included-with-emacs/#cycle-spacing--m-spc
   ("M-SPC" . cycle-spacing)
   ;; from https://emacsredux.com/blog/2020/06/10/comment-commands-redux/
   ("<remap> <comment-dwim>" . comment-line)
-  ("C-d" . delete-forward-char) ;; replace delete-char, as recommended in the docs
+  ;; replace delete-char, as recommended in the docs
+  ("C-d" . delete-forward-char)
   ("C-<backspace>" . backward-delete-word)
   ("M-c" . capitalize-dwim)
   ("M-u" . upcase-dwim)
   ("M-l" . downcase-dwim)
   ("C-z" . jump-to-char)
   ("M-z" . zap-up-to-char)
-  ;; like flycheck's C-c ! l
+  ;; like flycheck's C-c ! l, alternative below with my prefix
   ("C-c !" . flymake-show-buffer-diagnostics)
   ("C-x n i" . hoagie-clone-indirect-dwim)
+  ("C-x k" . hoagie-kill-buffer)
   ;; it's back...
   ("<remap> <list-buffers>" . ibuffer)
   (:map hoagie-keymap
+        ;; this is much easier to type than C-S-backspace
+        ;; and mirrors C-k nicely.
+        ;; C-k kill rest of the line
+        ;; <f6>-k kill the whole thing
+        ;; (F6 and C are next to each other in the Raise)
+        ("k" . kill-whole-line)
         ;; need to keep this one more present...
-        ("u" . delete-pair))
+        ("u" . delete-pair)
+        ;; flymake command alternative binding
+        ("!" . flymake-show-buffer-diagnostics))
   :custom
   ;; experimental, I don't think I have a need for this...
   (create-lockfiles nil)
@@ -1394,17 +1410,6 @@ This modified version adds a keyboard macro recording status."
                                                  'mood-line-major-mode)))))
       (unless (string-blank-p (string-trim misc-info))
           (concat (string-trim misc-info) "  ")))))
-
-;;; Experimental features - from reading Mastering Emacs
-
-;; TODO: rely on C-M-SPC/C-M-@ for mark-sexp and change M-h to mark-defun
-
-;; Follow up to previous: C-M-SPC to select, C-M-k to kill by sexp.
-;; I should be using these two a lot more
-
-;; See M-i for imenu
-
-;; Transpose word M-t sexp C-M-t
 
 ;;; init.el ends here
  
