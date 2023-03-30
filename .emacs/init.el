@@ -101,32 +101,32 @@
   :config
   (browse-kill-ring-default-keybindings))
 
-;; (use-package company
-;;   :hook
-;;   (after-init-hook . global-company-mode)
-;;   :bind
-;;   ("C-<tab>" . company-indent-or-complete-common)
-;;   (:map company-active-map
-;;         ("C-<RET>" . company-abort)
-;;         ("<tab>" . company-complete-selection))
-;;   :custom
-;;   (company-idle-delay 0.2)
-;;   (company-minimum-prefix-length 3)
-;;   (company-selection-wrap-around t))
+(use-package company
+  :hook
+  (after-init-hook . global-company-mode)
+  :bind
+  ("C-<tab>" . company-indent-or-complete-common)
+  (:map company-active-map
+        ("C-<RET>" . company-abort)
+        ("<tab>" . company-complete-selection))
+  :custom
+  (company-idle-delay 0.2)
+  (company-minimum-prefix-length 3)
+  (company-selection-wrap-around t))
 
-;; (use-package company-dabbrev
-;;   :after company
-;;   :ensure nil
-;;   :custom
-;;   (company-dabbrev-ignore-case nil)
-;;   (company-dabbrev-downcase nil))
+(use-package company-dabbrev
+  :after company
+  :ensure nil
+  :custom
+  (company-dabbrev-ignore-case nil)
+  (company-dabbrev-downcase nil))
 
-;; (use-package company-dabbrev-code
-;;   :after company
-;;   :ensure nil
-;;   :custom
-;;   (company-dabbrev-code-modes t)
-;;   (company-dabbrev-code-ignore-case nil))
+(use-package company-dabbrev-code
+  :after company
+  :ensure nil
+  :custom
+  (company-dabbrev-code-modes t)
+  (company-dabbrev-code-ignore-case nil))
 
 (use-package csharp-mode
   :mode "\\.cs$"
@@ -164,8 +164,7 @@
   :bind
   (:map hoagie-keymap
         (("ESC f" . find-name-dired)
-         ("J" . dired-jump)
-         ("j" . dired-jump-other-window)
+         ("j" . hoagie-dired-jump)
          ;; n for "name"
          ("n" . hoagie-kill-buffer-filename)))
   (:map dired-mode-map
@@ -173,6 +172,13 @@
   :hook
   (dired-mode-hook . dired-hide-details-mode)
   :config
+  (defun hoagie-dired-jump (&optional arg)
+    "Combined version of `dired-jump' & `dired-jump-other-window'.
+Use prefix ARG to open in the same window."
+    (interactive "P")
+    (if current-prefix-arg
+        (dired-jump)
+      (dired-jump-other-window)))
   (defun dired-open-file ()
     "Open a file with the default OS program.
 Initial version from EmacsWiki, added macOS & Silverblue toolbox support.
@@ -208,10 +214,6 @@ about toolboxes..."
         (when name
           (kill-new name))
         (message (format "Filename: %s" (or name "-No file for this buffer-")))))))
-
-;; use ls-dired in VDI?
-(setq ls-lisp-use-insert-directory-program nil)
-(require 'ls-lisp)
 
 (use-package dired-narrow
   :after dired
@@ -295,6 +297,7 @@ about toolboxes..."
 (use-package elec-pair
   :ensure nil
   :custom
+  (electric-pair-delete-adjacent-pairs nil)
   (electric-pair-inhibit-predicate 'electric-pair-inhibit-if-helps-balance)
   :config
   (electric-pair-mode))
@@ -441,9 +444,6 @@ Open the URL at point in EWW, use external browser with prefix arg."
   :bind-keymap
   ("<f3>" . hoagie-howm-keymap)
   :bind
-  ("C-<f3>" . hoagie-howm-inbox)
-  ("S-<f3>" . howm-list-todo)
-  ("C-S-<f3>" . howm-list-schedule)
   (:map hoagie-keymap
         ("3" . hoagie-howm-inbox)
         ("C-3" . howm-list-todo)
@@ -466,23 +466,23 @@ Open the URL at point in EWW, use external browser with prefix arg."
     (howm-set-mode)
     (goto-char (point-max))))
 
-;; (use-package icomplete
-;;   :ensure nil
-;;   :demand t
-;;   :custom
-;;   (icomplete-hide-common-prefix nil)
-;;   (icomplete-show-matches-on-no-input t)
-;;   (icomplete-prospects-height 15)
-;;   :config
-;;   ;; Non-custom configuration. Temporarily disabled, but could replace company...
-;;   (setf icomplete-in-buffer nil)
-;;   (icomplete-vertical-mode)
-;;   :bind
-;;   (:map icomplete-minibuffer-map
-;;         ;; when there's no exact match, accept the first one under cursor with RET
-;;         ("RET" . icomplete-force-complete-and-exit)
-;;         ;; C-j to force-accept current input even if it's not in the candidate list
-;;         ("C-j" . icomplete-fido-exit)))
+(use-package icomplete
+  :ensure nil
+  :demand t
+  :custom
+  (icomplete-hide-common-prefix nil)
+  (icomplete-show-matches-on-no-input t)
+  (icomplete-prospects-height 15)
+  :config
+  (fido-vertical-mode t)
+  ;; Non-custom configuration. Temporarily disabled, but could replace company...
+  (setf icomplete-in-buffer nil)
+  :bind
+  (:map icomplete-minibuffer-map
+        ;; when there's no exact match, accept the first one under cursor with RET
+        ("RET" . icomplete-force-complete-and-exit)
+        ;; C-j to force-accept current input even if it's not in the candidate list
+        ("C-j" . icomplete-fido-exit)))
 
 (use-package imenu
   :ensure nil
@@ -537,7 +537,7 @@ Open the URL at point in EWW, use external browser with prefix arg."
 
 ;; Trying to use more integrated vc-mode, but leave Magit for the "power stuff"
 (use-package magit
-  :init
+  ;; :init
   ;; no Magit binding...
   ;; :bind
   ;; ("C-x G" . magit-status)
@@ -552,9 +552,8 @@ Open the URL at point in EWW, use external browser with prefix arg."
   :demand t
   :custom
   (completions-format 'one-column)
-  ;; (completions-header-format nil)
   (completions-max-height 20)
-  (completion-styles '(flex))
+  (completion-styles '(substring partial-completion flex))
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
@@ -1138,7 +1137,7 @@ With ARG, do this that many times."
           (deactivate-mark))
         (pop-to-buffer buf))))
   (defun jump-to-char (arg char &optional interactive)
-    "A copy of `zap-up-to-char' that doesn't kill the text."
+    "A copy of `zap-to-char' that doesn't kill the text."
     (interactive (list (prefix-numeric-value current-prefix-arg)
 		               (read-char-from-minibuffer "Jump to char: "
 						                          nil 'read-char-history)
@@ -1229,7 +1228,7 @@ With ARG, do this that many times."
   (inhibit-startup-screen t)
   (initial-buffer-choice t)
   (initial-scratch-message
-   ";; Il semble que la perfection soit atteinte non quand il n’y a plus rien à ajouter, mais quand il n’y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n;; Setting the region:\n;; M-h - Paragraph  C-x h - Buffer\n;; C-M-h - Next defun ;; M-@ - Next word\n;; C-M-<SPC> or C-M-@ - Mark next sexp --- C-M-k kill it\n\n;; imenu: M-i\n;; Transpose: word M-t sexp C-M-t\n;; C-x C-k e edit kmacro\n;; C-z zap-up-to-char\n\n;; (e)SHELL:\n;; C-c C-[p|n] prev/next input\n;; C-c C-o clear last output\n\n;; Search\n;; C-s C-w search word at point, each C-w adds next word\n;; Replace \"movie\" with \"film\" and \"movies\" with \"films\": `movie\(s\)?` -> `\,(if \\1 \"films\" \"film\")`\n;; Another common use case is to transform numbers in the matches using the format function.\n\n;; C-; dabbrev\n\n;; howm:\n;; C-<f3> - inbox\n;; S-<f3> - show TODO\n;; C-S-<f3> - show scheduled\n\n;; REMEMBER YOUR REGEXPS")
+   ";; Il semble que la perfection soit atteinte non quand il n’y a plus rien à ajouter, mais quand il n’y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n;; Marking:                             ;; Killing\n;; M-@ Next word C-M-<SPC> Next sexp    ;; C-M-k next sexp\n;; M-h Paragraph C-x h Buffer           ;; C-k rest of line\n;; C-M-h Next defun                     ;; <f6> k whole line\n\n;; Misc:                                   ;; (e)SHELL C-c then...\n;; <f6> i imenu C-x C-k e edit kmacro      ;; C-[p|n] prev/next input\n;; M-t Transpose word C-M-t Tranpose sexp  ;; C-o clear last output\n;; C-x / vundo\n\n;; During search\n;; C-w add word at point, repeat to add more\n;; M-r toggle regex\n\n;; Replace (regexp + elisp):\n;; \"movie\" -> \"film\" and \"movies\" -> \"films\":\n;; ‘movie(s)?‘ -> ‘,(if \\1 \"films\" \"film\")‘\n\n;; howm:\n;; <f6> 3 - inbox\n;; <f6> C-3 - show TODO\n;; <f6> ESC 3 - show scheduled\n;; <f3> howm keymap (hit twice for menu)\n\n;; REMEMBER YOUR REGEXPS\n")
   (save-interprogram-paste-before-kill t)
   (visible-bell nil) ;; macOS change
   ;; from https://gitlab.com/jessieh/dot-emacs
@@ -1305,10 +1304,13 @@ With ARG, do this that many times."
 (setf user-full-name "Sebastián Monía"
       user-mail-address "sebastian@sebasmonia.com")
 
+(when (string= system-type "windows-nt")
+  (require 'ls-lisp)
+  (setq ls-lisp-use-insert-directory-program nil))
+
 (when (string= system-type "darwin")
   ;; use `ls` from coreutils, installed with homebrew
-  (customize-set-value 'insert-directory-program "gls")
-  )
+  (customize-set-value 'insert-directory-program "gls"))
 
 (when (string= system-type "gnu/linux")
   (defun find-alternative-file-with-sudo ()
