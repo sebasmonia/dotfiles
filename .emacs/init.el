@@ -34,10 +34,11 @@
 ;;             remote/slow environments like VDIs...
 ;; 2023-03-15: Rework my old push mark + visible-mark system into something based on
 ;;             registers and maybe advices. Revisit some bindings to take advantage
-;;             of the Dygma Raise configuration
+;;             of the Dygma Raise configuration.
 ;; 2023-03-25: Adjust more bindings for the Raise, try _yet again_ switching away from
-;;             company and icomplete/fido to "pure" built-in completion
-;;
+;;             company and icomplete/fido to "pure" built-in completion.
+;; 2023-05-18: Minor binding adjustments, occur w/region and sexp, remove unused or
+;;             superseeded packages.
 ;;; Code:
 
 (setf custom-file (expand-file-name (concat user-emacs-directory "custom.el")))
@@ -63,11 +64,13 @@
 (setf use-package-always-ensure t)
 (setf use-package-hook-name-suffix nil)
 (setf package-native-compile t)
+;; (custom-set-faces
+;;  '(default ((t (:family "Iosevka Comfy Wide Fixed" :slant normal :weight regular :height 160 :width normal)))))
 (custom-set-faces
- '(default ((t (:family "Iosevka Comfy Wide Fixed" :slant normal :weight regular :height 160 :width normal)))))
-
+ '(default ((t (:family "Consolas" :foundry "MS  " :slant normal :weight regular :height 160 :width normal)))))
 ;; based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html
 (defvar hoagie-keymap (define-prefix-command 'hoagie-keymap) "My custom bindings.")
+(defvar hoagie-second-keymap (define-prefix-command 'hoagie-second-keymap) "Originally a register keymap, now used for other stuff too.")
 (define-key key-translation-map (kbd "<apps>") (kbd "<menu>")) ;; compat Linux-Windows
 (define-key key-translation-map (kbd "<print>") (kbd "<menu>")) ;; curse you, thinkpad keyboard!!!
 (global-set-key (kbd "<menu>") 'hoagie-keymap)
@@ -85,6 +88,7 @@
   "Stores the name of the current container, if present.")
 
 (global-set-key (kbd "<f6>") 'hoagie-keymap)
+(global-set-key (kbd "<f5>") 'hoagie-second-keymap)
 (define-key key-translation-map (kbd "<f7>") (kbd "C-x"))
 (define-key key-translation-map (kbd "<f8>") (kbd "C-c"))
 
@@ -110,7 +114,7 @@
         ("C-<RET>" . company-abort)
         ("<tab>" . company-complete-selection))
   :custom
-  (company-idle-delay 0.2)
+  (company-idle-delay nil)
   (company-minimum-prefix-length 3)
   (company-selection-wrap-around t))
 
@@ -159,12 +163,13 @@
         '(("\\.7z\\'" . "7za a -r %o %i")
           ("\\.zip\\'" . "7za a -r %o  %i")))
   (dired-do-revert-buffer t)
-  ;; use external 'ls' even on Windows
-  (ls-lisp-use-insert-directory-program t)
   :bind
   (:map hoagie-keymap
         (("ESC f" . find-name-dired)
-         ("j" . hoagie-dired-jump)
+         ;; for some cases where I used prefix args or shifted keys
+         ;; I am now trying this alternative of adding ESC to the binding
+         ("ESC j" . dired-jump)
+         ("j" . dired-jump-other-window)
          ;; n for "name"
          ("n" . hoagie-kill-buffer-filename)))
   (:map dired-mode-map
@@ -172,13 +177,6 @@
   :hook
   (dired-mode-hook . dired-hide-details-mode)
   :config
-  (defun hoagie-dired-jump (&optional arg)
-    "Combined version of `dired-jump' & `dired-jump-other-window'.
-Use prefix ARG to open in the same window."
-    (interactive "P")
-    (if current-prefix-arg
-        (dired-jump)
-      (dired-jump-other-window)))
   (defun dired-open-file ()
     "Open a file with the default OS program.
 Initial version from EmacsWiki, added macOS & Silverblue toolbox support.
@@ -221,12 +219,6 @@ about toolboxes..."
   (:map dired-mode-map
         ("/" . dired-narrow)))
 
-(use-package dired-git-info
-  :after dired
-  :bind
-  (:map dired-mode-map
-        (")" . dired-git-info-mode)))
-
 (use-package docker
   :bind
   ("C-c d" . docker))
@@ -246,6 +238,10 @@ about toolboxes..."
   (ediff-window-setup-function 'ediff-setup-windows-plain)
   :hook
   (ediff-keymap-setup-hook . add-d-to-ediff-mode-map)
+  (ediff-before-setup-hook . hoagie-ediff-store-windows)
+  ;; Welp, don't like using internals but, the regular hook doesn't quite work
+  ;; the window config is restored but then _stuff happens_, so:
+  (ediff-after-quit-hook-internal . hoagie-ediff-restore-windows)
   :config
   ;; from https://stackoverflow.com/a/29757750
   (defun ediff-copy-both-to-C ()
@@ -265,11 +261,8 @@ about toolboxes..."
     (setf hoagie-pre-ediff-windows (current-window-configuration)))
   (defun hoagie-ediff-restore-windows ()
     "Use `hoagie-pre-ediff-windows' to restore the window setup."
-    (set-window-configuration hoagie-pre-ediff-windows))
-  (add-hook 'ediff-before-setup-hook #'hoagie-ediff-store-windows)
-  ;; Welp, don't like using internals but, the regular hook doesn't quite work
-  ;; the window config is restored but then _stuff happens_, so:
-  (add-hook 'ediff-after-quit-hook-internal #'hoagie-ediff-restore-windows))
+    (set-window-configuration hoagie-pre-ediff-windows)))
+
 
 (use-package eglot
   :commands (eglot eglot-ensure)
@@ -278,6 +271,7 @@ about toolboxes..."
    (go-mode-hook . eglot-ensure))
   :bind
   (:map hoagie-keymap
+        ;; "l" for LSP
         (("l r" . eglot-rename)
          ("l f" . eglot-format)
          ("l h" . eldoc)
@@ -286,21 +280,71 @@ about toolboxes..."
         (("C-c C-e r" . eglot-rename)
          ("C-c C-e f" . eglot-format)
          ("C-c C-e h" . eldoc)
-         ("C-c C-e a" . eglot-code-actions))))
+         ("C-c C-e a" . eglot-code-actions)))
+  :config
+  ;; from https://dawranliou.com/blog/xref-with-eglot-and-project/
+  (defun xref-find-references-with-eglot (orig-fun &rest args)
+    "An advice function that gives xref-find-definitions a unique
+buffer name when eglot is enabled."
+    (if (bound-and-true-p eglot--managed-mode)
+        (let ((xref-buffer-name (format "*xref %s*"
+                                        (symbol-at-point))))
+          (apply orig-fun args))
+      (apply orig-fun args)))
+  (advice-add 'xref-find-references :around
+              #'xref-find-references-with-eglot))
 
 (use-package eldoc
   :ensure nil
   :demand t
-  :config
-  (global-eldoc-mode))
-
-(use-package elec-pair
-  :ensure nil
   :custom
-  (electric-pair-delete-adjacent-pairs nil)
-  (electric-pair-inhibit-predicate 'electric-pair-inhibit-if-helps-balance)
+  (eldoc-echo-area-use-multiline-p nil)
+  :bind
+  (:map hoagie-second-keymap
+        ;; "h" for "help"
+        ("h" . hoagie-toggle-eldoc-buffer))
   :config
-  (electric-pair-mode))
+  (global-eldoc-mode)
+  (defun hoagie-toggle-eldoc-buffer ()
+    "Toggle the eldoc help buffer."
+    (interactive)
+    (let ((eldoc-window (get-buffer-window eldoc--doc-buffer)))
+      (if eldoc-window
+          (quit-window nil eldoc-window)
+        (eldoc-doc-buffer t)))))
+
+(use-package elfeed
+  :ensure t
+  :custom
+  (elfeed-db-directory (expand-file-name "elfeed" user-emacs-directory))
+  (elfeed-feeds '("http://nullprogram.com/feed/"
+                  "https://irreal.org/blog/?feed=rss2"
+                  "https://lars.ingebrigtsen.no/feed/"
+                  "https://feeds.npr.org/1001/rss.xml"
+                  "https://batsov.com/atom.xml"
+                  "https://manueluberti.eu/feed.xml"
+                  "https://metaredux.com/feed.xml"
+                  "https://lisp-journey.gitlab.io/index.xml"
+                  "https://www.n16f.net/blog/index.xml"
+                  "https://borretti.me/feed.xml"
+                  "https://www.n16f.net/blog/index.xml"))
+  ;;                  "https://feeds.npr.org/1002/rss.xml"))
+  :bind
+  ;; match eww/help bindings
+  (:map elfeed-show-mode-map
+        ("r" . elfeed-show-next)
+        ("l" . elfeed-show-prev))
+  (:map hoagie-keymap
+        ("r" . elfeed)))
+
+(use-package elpher
+  :ensure t
+  :bind
+  ;; match eww/help bindings
+  (:map elpher-mode-map
+        ("l" . elpher-back)
+        ;; no match for "next" yet?
+        ))
 
 (use-package eshell
   :ensure nil
@@ -360,21 +404,6 @@ Open the URL at point in EWW, use external browser with prefix arg."
                'eww-browse-url)
              (browse-url-url-at-point))))
 
-(use-package eww-lnum
-  :after eww
-  :bind
-  (:map eww-mode-map
-        ("C-c SPC" . eww-lnum-follow)))
-
-;; TODO: evaluate how often I really use this package...
-(use-package expand-region
-  :bind
-  ;; replacing mark commands with registers frees F6 spc
-  (:map hoagie-keymap
-        ("SPC" . er/expand-region))
-  :config
-  (er/enable-mode-expansions 'csharp-mode 'er/add-cc-mode-expansions))
-
 (use-package fill-function-arguments
   :commands (fill-function-arguments-dwim)
   :custom
@@ -403,32 +432,34 @@ Open the URL at point in EWW, use external browser with prefix arg."
                                       (let ((indent-region-function #'c-indent-region))
                                         (indent-region start end)))))))
 
-(use-package git-timemachine
+(defvar hoagie-flymake-keymap (define-prefix-command 'hoagie-flymake-keymap) "Custom bindings for `flymake-mode'.")
+(use-package flymake
+  :ensure nil
+  :config
   :bind
-  ;; simplified binding since I'm using Magit so little
-  ("C-x g" . git-timemachine))
+  (:map hoagie-flymake-keymap
+        ;; flymake command alternative binding
+        ("l" . flymake-show-buffer-diagnostics)
+        ("n" . flymake-goto-next-error)
+        ("p" . flymake-goto-prev-error)
+        ("s" . flymake-start))
+  (:map hoagie-second-keymap
+        ("f" . hoagie-flymake-keymap)))
 
 (use-package go-mode
-  ;; :custom
-  ;; (godoc-at-point-function 'godoc-gogetdoc)
-  ;; :bind
-  ;; ;; need a better binding for this, but haven't used it yet
-  ;; ("C-c G d" . godoc-at-point)
   :hook
-  (go-mode-hook . subword-mode))
+  (go-mode-hook . subword-mode)
+  :config
+  (defun hoagie-golang-stdlib-reference ()
+    "Open the Go stdlib reference in EWW."
+    (interactive)
+    (hoagie-eww-readable (format "https://pkg.go.dev/%s" (read-string "Package: ")))))
 
 (use-package grep
   :ensure nil
   :custom
   (grep-command "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
   (grep-use-null-device nil)
-  ;; :config
-  ;; ;; from https://www.emacswiki.org/emacs/NTEmacsWithCygwin
-  ;; (defadvice grep-compute-defaults (around grep-compute-defaults-advice-null-device)
-  ;;   "Use cygwin's /dev/null as the null-device."
-  ;;   (let ((null-device "/dev/null"))
-  ;;     ad-do-it))
-  ;; (ad-activate 'grep-compute-defaults)
   :bind
   (:map hoagie-keymap
         ("ESC g" . rgrep)))
@@ -474,9 +505,10 @@ Open the URL at point in EWW, use external browser with prefix arg."
   (icomplete-show-matches-on-no-input t)
   (icomplete-prospects-height 15)
   :config
-  (fido-vertical-mode t)
   ;; Non-custom configuration. Temporarily disabled, but could replace company...
-  (setf icomplete-in-buffer nil)
+  ;; (setf icomplete-in-buffer nil)
+  ;; (icomplete-vertical-mode t)
+  (fido-vertical-mode t)
   :bind
   (:map icomplete-minibuffer-map
         ;; when there's no exact match, accept the first one under cursor with RET
@@ -535,18 +567,6 @@ Open the URL at point in EWW, use external browser with prefix arg."
                       (setf fill-column 100)
                       (display-fill-column-indicator-mode))))
 
-;; Trying to use more integrated vc-mode, but leave Magit for the "power stuff"
-(use-package magit
-  ;; :init
-  ;; no Magit binding...
-  ;; :bind
-  ;; ("C-x G" . magit-status)
-  :custom
-  ;; this option solves the problems with Magit commits & diffs with
-  ;; my current `display-buffer-alist' configuration
-  (magit-commit-diff-inhibit-same-window t)
-  (magit-display-buffer-function 'display-buffer))
-
 (use-package minibuffer
   :ensure nil
   :demand t
@@ -558,7 +578,7 @@ Open the URL at point in EWW, use external browser with prefix arg."
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
   (completions-detailed t)
-  (completion-auto-help 'alwyays)
+  (completion-auto-help t)
   (completion-auto-select 'second-tab)
   :bind
   ;; Default is M-v, but that doesn't work when completing text in a buffer and
@@ -580,8 +600,8 @@ Open the URL at point in EWW, use external browser with prefix arg."
 (use-package paren
   :ensure nil
   :config
-  ;; apparently it is now enabled by default?
-  (show-paren-mode)
+  ;; ;; apparently it is now enabled by default?
+  ;; (show-paren-mode)
   :custom
   (show-paren-style 'mixed)
   (show-paren-when-point-inside-paren t))
@@ -634,6 +654,13 @@ Open the URL at point in EWW, use external browser with prefix arg."
         ("f" . project-find-file))
   :custom
   (project-vc-extra-root-markers '(".subproject"))
+  ;; go back to old default of "d" for "dired at root"
+  (project-switch-commands
+   '((project-find-file "Find file" nil)
+     (project-find-regexp "Find regexp" nil)
+     (project-dired "Find directory" ?d)
+     (project-vc-dir "VC-Dir" nil)
+     (project-eshell "Eshell" nil)))
   :config
   (defun hoagie-project-multi-occur (regexp &optional nlines)
     "Run `multi-occur' in all the files in the current project."
@@ -643,7 +670,15 @@ Open the URL at point in EWW, use external browser with prefix arg."
     (let* ((the-project (project-current t))
            (default-directory (project-root the-project ))
            (files (mapcar #'find-file-noselect (project-files the-project))))
-      (multi-occur files regexp nlines))))
+      (multi-occur files regexp nlines)))
+    ;; from https://dawranliou.com/blog/xref-with-eglot-and-project/
+    (defun project-find-regexp-with-unique-buffer (orig-fun &rest args)
+      "An advice function that gives project-find-regexp a unique buffer name"
+      (require 'xref)
+      (let ((xref-buffer-name (format "*xref %s*" (car args))))
+        (apply orig-fun args)))
+    (advice-add 'project-find-regexp :around
+                #'project-find-regexp-with-unique-buffer))
 
 (use-package python
   :ensure nil
@@ -662,55 +697,44 @@ Open the URL at point in EWW, use external browser with prefix arg."
   :custom
   (reb-re-syntax 'string))
 
-(defvar hoagie-register-keymap (define-prefix-command 'hoagie-register-keymap) "Sligthly more accessible register keybindings.")
 (use-package register
   :ensure nil
   :demand t
   :custom
   (register-preview-delay 0.1)
   :bind
-  ;; in the Raise, F5 is now in Enter
-  ("<f5>" . hoagie-register-keymap)
-  (:map hoagie-register-keymap
-        ;; hitting F5 twice to jump sounds like a good shortcut to
-        ;; push things semi-constantly
+  (:map hoagie-second-keymap
+        ;; hitting F5 twice to store something sounds like a good
+        ;; shortcut to push things semi-constantly
         ("<f5>" . hoagie-push-to-register-dwim)
         ("s" . copy-to-register)
         ("i" . hoagie-insert-register)
-        ("f" . hoagie-current-file-to-register)
         ("l" . list-registers)
         ("SPC" . point-to-register)
-        ;; this won't jump to files, remains to be seen if I need that
+        ("d" . hoagie-clean-registers)
         ("j" . hoagie-jump-to-register))
   :config
-  ;; BRITTLENESS WARNING: this re-defines a built-in method, there's
-  ;; a high risk it breaks when moving Emacs versions
-  (cl-defmethod register-val-describe ((val marker) _verbose)
-    (let ((buf (marker-buffer val)))
-      (if (null buf)
-	      (princ "a marker in no buffer")
-        (princ (hoagie--text-around-marker val))
-        (princ " -- buffer ")
-        (princ (buffer-name buf))
-        (princ ", pos")
-        (princ (marker-position val)))))
-  (defun hoagie--text-around-marker (marker)
-    "Get the line around MARKER.
-Some inspiration from the package Consult."
-  (with-current-buffer (marker-buffer marker)
-    (save-excursion
-      (save-restriction
-        (widen)
-        (goto-char marker)
-        (beginning-of-line)
-        (string-trim (thing-at-point 'line))))))
-  (defun hoagie-current-file-to-register (register &optional _arg)
-    "Stored the currently visited file in REGISTER."
-    ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/File-Registers.html
-    (interactive (list (register-read-with-preview
-		                "Current file to register: ")
-		               current-prefix-arg))
-    (set-register register (cons 'file (buffer-file-name))))
+;;   ;; BRITTLENESS WARNING: this re-defines a built-in method, there's
+;;   ;; a high risk it breaks when moving Emacs versions
+;;   (cl-defmethod register-val-describe ((val marker) _verbose)
+;;     (let ((buf (marker-buffer val)))
+;;       (if (null buf)
+;; 	      (princ "a marker in no buffer")
+;;         (princ (hoagie--text-around-marker val))
+;;         (princ " -- buffer ")
+;;         (princ (buffer-name buf))
+;;         (princ ", pos")
+;;         (princ (marker-position val)))))
+;;   (defun hoagie--text-around-marker (marker)
+;;     "Get the line around MARKER.
+;; Some inspiration from the package Consult."
+;;   (with-current-buffer (marker-buffer marker)
+;;     (save-excursion
+;;       (save-restriction
+;;         (widen)
+;;         (goto-char marker)
+;;         (beginning-of-line)
+;;         (string-trim (thing-at-point 'line))))))
   ;; There are a bunch of packages that do this or similar things,
   ;; but I have an interest on developing my own clunky, bug ridden,
   ;; and, I can only hope, flexible system
@@ -776,19 +800,31 @@ It also deletes the register when called with prefix ARG."
         (delete-region (region-beginning) (region-end)))
       (insert-register reg)
       (when arg
-        (set-register reg nil)))))
+        (set-register reg nil))))
+  (defun hoagie-clean-registers ()
+    (interactive)
+    (while t
+      (set-register (register-read-with-preview "Register to clear (quit to exit): ")
+                    nil))))
 
 (use-package restclient
   :custom
-  (restclient-same-buffer-response . nil)
-  (restclient-response-body-only t)
+  (restclient-same-buffer-response t)
+  (restclient-response-body-only nil)
   :mode
   ("\\.http\\'" . restclient-mode)
   :bind
   ("<f4>" . hoagie-open-restclient)
+  (:map restclient-mode-map
+        ("C-c r" . rename-buffer)
+        ("C-c h" . restclient-toggle-headers))
   :hook
   (restclient-mode-hook . hoagie-restclient-imenu-index)
   :config
+  (defun restclient-toggle-headers ()
+    (interactive)
+    (message "restclient-response-body-only=%s"
+             (setf restclient-response-body-only (not restclient-response-body-only))))
   (defun hoagie-open-restclient (arg)
     "Open a file from the restclient \"collection\"."
     (interactive "P")
@@ -810,23 +846,24 @@ It also deletes the register when called with prefix ARG."
   :ensure nil
   :bind
   (:map hoagie-keymap
-        ("o" . hoagie-occur-dwim)
-        ("O" . multi-occur-in-matching-buffers))
+        ("o" . hoagie-occur-sexp-or-region)
+        ("ESC o" . multi-occur-in-matching-buffers))
+  :hook
+  (occur-hook . hoagie-rename-and-select-occur-buffer)
   :config
-  (defun hoagie-occur-dwim ()
-    "Run occur, if there's a region selected use that as input.
+  (defun hoagie-occur-sexp-or-region ()
+    "Run occur for the sexp at point, or the active region.
 By default, occur _limits the search to the region_ if it is active."
     (interactive)
     (if (use-region-p)
         (occur (buffer-substring-no-properties (region-beginning) (region-end)))
-      (command-execute 'occur)))
+      (occur (thing-at-point 'sexp t))))
   (defun hoagie-rename-and-select-occur-buffer ()
     "Renames the current buffer to *Occur: [term] [buffer]*.
 Meant to be added to `occur-hook'."
     (cl-destructuring-bind (search-term _ (buffer-name &rest _)) occur-revert-arguments
       (pop-to-buffer
-       (rename-buffer (format "*Occur: %s %s*" search-term buffer-name) t))))
-  (add-hook 'occur-hook #'hoagie-rename-and-select-occur-buffer))
+       (rename-buffer (format "*Occur: %s %s*" search-term buffer-name) t)))))
 
 (use-package rcirc
   :ensure nil
@@ -856,7 +893,9 @@ Meant to be added to `occur-hook'."
 (use-package sharper :load-path "~/github/sharper"
   :bind
   (:map hoagie-keymap
-        ("n" . sharper-main-transient))
+        ;; using "n" for another command now, moving
+        ;; this to "c" for C#
+        ("c" . sharper-main-transient))
   :custom
   (sharper-run-only-one t))
 
@@ -899,7 +938,36 @@ Meant to be added to `occur-hook'."
   :hook
   (sql-interactive-mode-hook . (lambda () (setf truncate-lines t))))
 
-(use-package sql-datum :load-path "~/github/datum")
+(use-package sql-datum :load-path "~/github/datum"
+  :after sql
+  :custom
+  (sql-datum-program "/var/home/hoagie/.local/bin/datum.sh")
+  :config
+  (setf sql-connection-alist nil)
+  (add-to-list 'sql-connection-alist
+               '("Container - user SA"
+                 (sql-product 'datum)
+                 (sql-server "127.0.0.1,1433")
+                 (sql-user "sa")
+                 (sql-password "LeSecurity!1")
+                 (sql-datum-options '("--driver" "FreeTDS" ))
+                 (sql-database "tp11")))
+  (add-to-list 'sql-connection-alist
+               '("Container - user TP11"
+                 (sql-product 'datum)
+                 (sql-server "127.0.0.1,1433")
+                 (sql-user "tp_ProgAvanzada")
+                 (sql-password "H0l4Mund0")
+                 (sql-datum-options '("--driver" "FreeTDS" ))
+                 (sql-database "tp11")))
+  (add-to-list 'sql-connection-alist
+               '("Chinook"
+                 (sql-product 'datum)
+                 (sql-server "")
+                 (sql-user "")
+                 (sql-password "")
+                 (sql-datum-options '("--driver" "SQLITE3" ))
+                 (sql-database "/var/home/hoagie/github/datum/chinook.db"))))
 
 (use-package terraform-mode
   :mode "\\.tf$")
@@ -925,8 +993,6 @@ Meant to be added to `occur-hook'."
   ("C-x v d" . vc-dir-root)
   (:map vc-dir-mode-map
         ("f" . hoagie-vc-git-fetch-all)
-        ;; vc-dir-find-file-other-window, but I use project-find-file instead
-        ("o" . hoagie-vc-git-current-branch-upstream-origin)
         ("e" . vc-ediff)
         ("k" . vc-revert)
         ("r" . hoagie-vc-dir-reset)
@@ -956,7 +1022,7 @@ With prefix arg, does a hard reset (thus it asks for confirmation)."
                                       (string-join files ", " ))))
         (unwind-protect
             (mapcar (lambda (path) (delete-file path t)) files)
-            (revert-buffer))))))
+          (revert-buffer))))))
 
 (use-package vc-git
   :ensure nil
@@ -974,20 +1040,10 @@ No validations, so better be in a git repo when calling this :)."
     "Run \"git clone REPOSITORY-URL\" into DIRECTORY."
     (interactive "sRepository URL: \nsTarget directory (empty for default): ")
     (when (string= directory "")
-      ;; "clone" needs nil to
+      ;; "clone" needs nil to use the default directory
       (setf directory nil))
     (vc-git-command nil 0 nil "clone" repository-url directory)
     (message "Repository cloned!"))
-  (defun hoagie-vc-git-current-branch-upstream-origin ()
-    "Set the upstream of the current git branch to \"origin\".
-This is meant to be called after creating a new branch with `vc-create-tag' (do
-not forget the prefix arg, else you get a new TAG not BRANCH). Else the new
-branch remains local-only."
-    (interactive)
-    (let ((current-branch (car (vc-git-branches))))
-      (when (y-or-n-p (format "Set the upstream of %s to origin?" current-branch))
-        (vc-git-command nil 0 nil "push" "--set-upstream" "origin" current-branch)
-        (message "Upstream of %s is now ORIGIN." current-branch))))
   (defun hoagie-vc-git-show-branches (&optional arg)
     "Show in a buffer the list of branches in the current repository.
 With prefix ARG show the remote branches."
@@ -1017,7 +1073,6 @@ With prefix ARG show the remote branches."
   (:map vc-prefix-map
         ;; vc-dir-find-file, but I use project-find-file instead
         ("f" . hoagie-vc-git-fetch-all)
-        ("o" . hoagie-vc-git-current-branch-upstream-origin)
         ;; "l"ist is used for branch-log, use "b"ranches
         ("b b" . hoagie-vc-git-show-branches)
         ("e" . vc-ediff)))
@@ -1188,8 +1243,6 @@ With ARG, do this that many times."
   ("M-l" . downcase-dwim)
   ("C-z" . jump-to-char)
   ("M-z" . zap-up-to-char)
-  ;; like flycheck's C-c ! l, alternative below with my prefix
-  ("C-c !" . flymake-show-buffer-diagnostics)
   ("C-x n i" . hoagie-clone-indirect-dwim)
   ("C-x k" . hoagie-kill-buffer)
   ;; it's back...
@@ -1202,9 +1255,7 @@ With ARG, do this that many times."
         ;; (F6 and C are next to each other in the Raise)
         ("k" . kill-whole-line)
         ;; need to keep this one more present...
-        ("u" . delete-pair)
-        ;; flymake command alternative binding
-        ("!" . flymake-show-buffer-diagnostics))
+        ("u" . delete-pair))
   :custom
   ;; experimental, I don't think I have a need for this...
   (create-lockfiles nil)
@@ -1306,7 +1357,7 @@ With ARG, do this that many times."
 
 (when (string= system-type "windows-nt")
   (require 'ls-lisp)
-  (setq ls-lisp-use-insert-directory-program nil))
+  (customize-set-value 'ls-lisp-use-insert-directory-program nil))
 
 (when (string= system-type "darwin")
   ;; use `ls` from coreutils, installed with homebrew
@@ -1414,4 +1465,3 @@ This modified version adds a keyboard macro recording status."
           (concat (string-trim misc-info) "  ")))))
 
 ;;; init.el ends here
- 
