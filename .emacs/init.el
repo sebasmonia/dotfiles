@@ -2,7 +2,7 @@
 
 ;; Author: Sebastian Monia <code@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
-;; Version: 29.4
+;; Version: 29.5
 ;; Keywords: .emacs dotemacs
 
 ;; This file is not part of GNU Emacs.
@@ -31,14 +31,17 @@
 ;;             multiple remotes in "origin", see https://stackoverflow.com/a/58465641
 ;; 2023-02-18: Adding register bindings, jump-to-char, occur integration to project.el,
 ;;             new window size bindings, move back to Eglot again (better for
-;;             remote/slow environments like VDIs...
+;;             remote/slow environments like VDIs...)
 ;; 2023-03-15: Rework my old push mark + visible-mark system into something based on
 ;;             registers and maybe advices. Revisit some bindings to take advantage
 ;;             of the Dygma Raise configuration.
-;; 2023-03-25: Adjust more bindings for the Raise, try _yet again_ switching away from
-;;             company and icomplete/fido to "pure" built-in completion.
 ;; 2023-05-18: Minor binding adjustments, occur w/region and sexp, remove unused or
 ;;             superseeded packages.
+;; 2023-03-25: Adjust more bindings for the Raise, try _yet again_ switching away from
+;;             company and icomplete/fido to "pure" built-in completion
+;; 2023-05-18: Minor binding adjustments, occur w/region and sexp.
+;; 2023-06-14: No company...yet again...
+;; 2023-08-02: Some minor clean up. Add Gnus to handle my email
 ;;; Code:
 
 (setf custom-file (expand-file-name (concat user-emacs-directory "custom.el")))
@@ -64,10 +67,8 @@
 (setf use-package-always-ensure t)
 (setf use-package-hook-name-suffix nil)
 (setf package-native-compile t)
-;; (custom-set-faces
-;;  '(default ((t (:family "Iosevka Comfy Wide Fixed" :slant normal :weight regular :height 160 :width normal)))))
 (custom-set-faces
- '(default ((t (:family "Consolas" :foundry "MS  " :slant normal :weight regular :height 160 :width normal)))))
+ '(default ((t (:family "Iosevka Comfy Wide Fixed" :slant normal :weight regular :height 160 :width normal)))))
 ;; based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html
 (defvar hoagie-keymap (define-prefix-command 'hoagie-keymap) "My custom bindings.")
 (defvar hoagie-second-keymap (define-prefix-command 'hoagie-second-keymap) "Originally a register keymap, now used for other stuff too.")
@@ -87,9 +88,12 @@
                               "host")
   "Stores the name of the current container, if present.")
 
-(global-set-key (kbd "<f6>") 'hoagie-keymap)
-(global-set-key (kbd "<f5>") 'hoagie-second-keymap)
-(define-key key-translation-map (kbd "<f7>") (kbd "C-x"))
+;; these keys are mapped on particular positions in my Dygma Raise
+(global-set-key (kbd "<f6>") 'hoagie-keymap) ;; T1 (next to SPC/Control)
+(global-set-key (kbd "<f5>") 'hoagie-second-keymap) ;; Enter
+(define-key key-translation-map (kbd "<f7>") (kbd "C-x")) ;; CapsLock
+;; This one is for the benefit of the laptop keyboard, which
+;; I'm barely using nowadays, TBH
 (define-key key-translation-map (kbd "<f8>") (kbd "C-c"))
 
 (use-package ansi-color
@@ -100,37 +104,6 @@
     "Colorize the entire buffer using `ansi-color-apply-on-region'."
     (interactive)
     (ansi-color-apply-on-region (point-min) (point-max))))
-
-(use-package browse-kill-ring
-  :config
-  (browse-kill-ring-default-keybindings))
-
-(use-package company
-  :hook
-  (after-init-hook . global-company-mode)
-  :bind
-  ("C-<tab>" . company-indent-or-complete-common)
-  (:map company-active-map
-        ("C-<RET>" . company-abort)
-        ("<tab>" . company-complete-selection))
-  :custom
-  (company-idle-delay nil)
-  (company-minimum-prefix-length 3)
-  (company-selection-wrap-around t))
-
-(use-package company-dabbrev
-  :after company
-  :ensure nil
-  :custom
-  (company-dabbrev-ignore-case nil)
-  (company-dabbrev-downcase nil))
-
-(use-package company-dabbrev-code
-  :after company
-  :ensure nil
-  :custom
-  (company-dabbrev-code-modes t)
-  (company-dabbrev-code-ignore-case nil))
 
 (use-package csharp-mode
   :mode "\\.cs$"
@@ -173,11 +146,14 @@
          ;; n for "name"
          ("n" . hoagie-kill-buffer-filename)))
   (:map dired-mode-map
-        ("C-<return>" . dired-open-file))
+        ("C-<return>" . hoagie-dired-open-file))
   :hook
   (dired-mode-hook . dired-hide-details-mode)
+  ;; Enables "C-c C-m a" (yeah, really :) lol) to attach
+  ;; all files marked in dired to the current/a new email
+  (dired-mode-hook . turn-on-gnus-dired-mode)
   :config
-  (defun dired-open-file ()
+  (defun hoagie-dired-open-file ()
     "Open a file with the default OS program.
 Initial version from EmacsWiki, added macOS & Silverblue toolbox support.
 This could also use `w32-shell-execute' on Windows.
@@ -230,9 +206,11 @@ about toolboxes..."
   :ensure nil
   :bind
   (:map hoagie-keymap
-        ("e" . ediff-buffers))
+        ("e" . ediff-buffers)
+        ("ESC e" . ediff-current-file))
   :custom
-  (ediff-forward-word-function 'forward-char) ;; from https://emacs.stackexchange.com/a/9411/17066
+  ;; from https://emacs.stackexchange.com/a/9411/17066
+  (ediff-forward-word-function 'forward-char)
   (ediff-highlight-all-diffs t)
   (ediff-keep-variants nil)
   (ediff-window-setup-function 'ediff-setup-windows-plain)
@@ -340,6 +318,9 @@ buffer name when eglot is enabled."
 (use-package elpher
   :ensure t
   :bind
+  (:map hoagie-second-keymap
+        ;; "g" for Gemini
+        ("g" . elpher))
   ;; match eww/help bindings
   (:map elpher-mode-map
         ("l" . elpher-back)
@@ -354,6 +335,9 @@ buffer name when eglot is enabled."
   (eshell-prefer-lisp-variables nil)
   :bind
   (:map hoagie-keymap
+        ("`" . hoagie-eshell-here))
+  ;; experimental - better on separate halves of the keyboard
+  (:map hoagie-second-keymap
         ("`" . hoagie-eshell-here))
   :config
   (defun hoagie-eshell-here (&optional arg)
@@ -404,6 +388,8 @@ Open the URL at point in EWW, use external browser with prefix arg."
                'eww-browse-url)
              (browse-url-url-at-point))))
 
+;; TODO: as I write less C#, should I stil keep this around?
+;; haven't used it much lately
 (use-package fill-function-arguments
   :commands (fill-function-arguments-dwim)
   :custom
@@ -438,13 +424,85 @@ Open the URL at point in EWW, use external browser with prefix arg."
   :config
   :bind
   (:map hoagie-flymake-keymap
-        ;; flymake command alternative binding
+        ;; flymake command alternative bindings
         ("l" . flymake-show-buffer-diagnostics)
         ("n" . flymake-goto-next-error)
         ("p" . flymake-goto-prev-error)
         ("s" . flymake-start))
   (:map hoagie-second-keymap
         ("f" . hoagie-flymake-keymap)))
+
+(use-package gnus
+  :ensure nil
+  :init
+  ;; let's do our best to keep Gnus files/dir outside of ~
+  ;; some of these are not really Gnus vars, but declared in
+  ;; nndraft, message, etc.
+  (setq gnus-home-directory "~/.gnus.d/"
+        gnus-directory "~/.gnus.d/News/"
+        nndraft-directory "~/.gnus.d/News/drafts/"
+        nnmh-directory "~/.gnus.d/News/drafts/"
+        nnfolder-directory "~/.gnus.d/Mail/archive"
+        nnml-directory "~/.gnus.d/Mail/"
+        message-directory "~/.gnus.d/Mail/"
+        gnus-article-save-directory "~/.gnus.d/News/"
+        gnus-read-newsrc-file nil
+        gnus-save-newsrc-file nil
+        ;; the two values above mean I don't need this.
+        ;; But, just in case:
+        gnus-startup-file "~/.gnus.d/.newsrc"
+        gnus-dribble-directory "~/.gnus.d/")
+  :custom
+  ;; these two are not really Gnus values, but a sensible place to set them
+  (user-full-name "Sebastián Monía")
+  (user-mail-address "sebastian@sebasmonia.com")
+  (gnus-select-method '(nnnil ""))
+  (gnus-secondary-select-methods '((nnimap "fastmail"
+                                   (nnimap-address "imap.fastmail.com")
+                                   (nnimap-server-port 993)
+                                   (nnimap-stream ssl)
+                                   (nnir-search-engine imap))))
+  ;; see below for address listing
+  (message-alternative-emails (regexp-opt hoagie-gnus-from-emails))
+  ;; Archive outgoing email in Sent folder:
+  (gnus-message-archive-method '(nnimap "imap.fastmail.com"))
+  (gnus-message-archive-group "Sent")
+  ;; http://groups.google.com/group/gnu.emacs.gnus/browse_thread/thread/a673a74356e7141f
+  (gnus-sum-thread-tree-indent "  ")
+  (gnus-sum-thread-tree-root "● ")
+  (gnus-sum-thread-tree-false-root "◯ ")
+  (gnus-sum-thread-tree-single-indent "◎ ")
+  (gnus-sum-thread-tree-vertical        "│")
+  (gnus-sum-thread-tree-leaf-with-other "├─► ")
+  (gnus-sum-thread-tree-single-leaf     "╰─► ")
+  (gnus-summary-line-format (concat
+                             "%0{%U%R%z%}"
+                             "%3{│%}" "%1{%d%}" "%3{│%}" ;; date
+                             "  "
+                             "%4{%-20,20f%}"             ;; name
+                             "  "
+                             "%3{│%}"
+                             " "
+                             "%1{%B%}"
+                             "%s\n"))
+  :config
+  ;; From https://www.emacswiki.org/emacs/GnusTutorial#h5o-40
+  (defvar hoagie-gnus-from-emails '("sebastian@sebasmonia.com"
+                                    "code@sebasmonia.com"
+                                    "mailing@sebasmonia.com"
+                                    "subscriptions@sebasmonia.com"
+                                    "thingstopay@sebasmonia.com"
+                                    "work@sebasmonia.com")
+    "The list of aliases in my email setup.")
+  (defun hoagie-gnus-change-from ()
+    (interactive)
+    (let* ((selected-address (completing-read "From: " hoagie-gnus-from-emails))
+           (from-text (concat "From: " user-full-name " <" selected-address ">")))
+      (setq gnus-article-current-point (point))
+      (goto-char (point-min))
+      (while (re-search-forward "^From:.*$" nil t)
+        (replace-match from-text))
+      (goto-char gnus-article-current-point))))
 
 (use-package go-mode
   :hook
@@ -481,7 +539,7 @@ Open the URL at point in EWW, use external browser with prefix arg."
         ("ESC 3" . howm-list-schedule))
   (:map hoagie-howm-keymap
         ("c" . howm-create)
-        ("<f3>" . howm-menu)
+        ("3" . howm-menu)
         ("s" . howm-list-grep-fixed)
         ("t" . howm-insert-date))
   :config
@@ -507,8 +565,8 @@ Open the URL at point in EWW, use external browser with prefix arg."
   :config
   ;; Non-custom configuration. Temporarily disabled, but could replace company...
   ;; (setf icomplete-in-buffer nil)
-  ;; (icomplete-vertical-mode t)
-  (fido-vertical-mode t)
+  (icomplete-vertical-mode t)
+  ;; (fido-vertical-mode t)
   :bind
   (:map icomplete-minibuffer-map
         ;; when there's no exact match, accept the first one under cursor with RET
@@ -563,7 +621,7 @@ Open the URL at point in EWW, use external browser with prefix arg."
   :hook
   (lisp-mode-hook . (lambda ()
                       (set (make-local-variable lisp-indent-function)
-		           'common-lisp-indent-function)
+		                   'common-lisp-indent-function)
                       (setf fill-column 100)
                       (display-fill-column-indicator-mode))))
 
@@ -582,7 +640,7 @@ Open the URL at point in EWW, use external browser with prefix arg."
   (completion-auto-select 'second-tab)
   :bind
   ;; Default is M-v, but that doesn't work when completing text in a buffer and
-  ;; M-i has a nice symmetry with C-i (TAB) that is used to trigger completion
+  ;; M-i has a nice symmetry with C-M-i (used to trigger completion)
   ("M-i" . switch-to-completions)
   (:map minibuffer-mode-map
         ("C-n" . minibuffer-next-completion)
@@ -599,9 +657,6 @@ Open the URL at point in EWW, use external browser with prefix arg."
 
 (use-package paren
   :ensure nil
-  :config
-  ;; ;; apparently it is now enabled by default?
-  ;; (show-paren-mode)
   :custom
   (show-paren-style 'mixed)
   (show-paren-when-point-inside-paren t))
@@ -906,7 +961,14 @@ Meant to be added to `occur-hook'."
   (shr-use-colors t)
   (shr-bullet "• ")
   (shr-indentation 2)
-  (shr-discard-aria-hidden t))
+  (shr-discard-aria-hidden t)
+  :bind
+  (:map hoagie-keymap
+        ("ESC b" . hoagie-shr-kill-link-target))
+  :config
+  (defun hoagie-shr-kill-link-target ()
+    (interactive)
+    (kill-new (get-text-property (point) 'shr-url))))
 
 (use-package shell
   :ensure nil
@@ -914,11 +976,7 @@ Meant to be added to `occur-hook'."
   (defun hoagie-shell-mode-setup ()
     "My personal shell mode setup."
     (toggle-truncate-lines t)
-    (setf comint-process-echoes t)
-    ;; From https://emacs.stackexchange.com/a/62420
-    (when (and (fboundp 'company-mode)
-               (file-remote-p default-directory))
-      (company-mode -1)))
+    (setf comint-process-echoes t))
   :hook
   (shell-mode-hook . hoagie-shell-mode-setup))
 
@@ -929,6 +987,15 @@ Meant to be added to `occur-hook'."
 
 (use-package sly-quicklisp
   :after sly)
+
+;; Send email via Fastmail's SMTP:
+(use-package smtpmail
+  :ensure nil
+  :custom
+  (send-mail-function 'smtpmail-send-it)
+  (smtpmail-default-smtp-server "smtp.fastmail.com")
+  (smtpmail-stream-type  'starttls)
+  (smtpmail-smtp-service 587))
 
 (use-package sql
   :ensure nil
@@ -971,6 +1038,17 @@ Meant to be added to `occur-hook'."
 
 (use-package terraform-mode
   :mode "\\.tf$")
+
+(use-package time
+  :ensure nil
+  :custom
+  (world-clock-time-format "%r - %F (%A)")
+  (world-clock-list '(("America/Denver" "Denver")
+                      ("America/Buenos_Aires" "Buenos Aires")
+                      ("America/Mexico_City" "CDMX")
+                      ("America/Chicago" "Central")
+                      ("America/New_York" "Eastern")))
+  :commands (world-clock))
 
 (use-package tramp
   :ensure nil
@@ -1229,10 +1307,12 @@ With ARG, do this that many times."
   ("M-o" . other-window)
   ("M-O" . other-frame)
   ("M-`" . other-frame) ;; for Windows - behave like Gnome
-  ("M-n" . next-buffer)
-  ("M-p" . previous-buffer)
+  ;; TODO: should I remove this binding? it is sometimes shadowed by other
+  ;; modes, and it clashes with some new Emacs 29 commands
+  ;; ("M-N" . next-buffer)
+  ;; ("M-P" . previous-buffer)
   ;; from https://karthinks.com/software/batteries-included-with-emacs/#cycle-spacing--m-spc
-  ("M-SPC" . cycle-spacing)
+  ;; ("M-SPC" . cycle-spacing) default in 29 apparently? confirm
   ;; from https://emacsredux.com/blog/2020/06/10/comment-commands-redux/
   ("<remap> <comment-dwim>" . comment-line)
   ;; replace delete-char, as recommended in the docs
@@ -1257,11 +1337,13 @@ With ARG, do this that many times."
         ;; need to keep this one more present...
         ("u" . delete-pair))
   :custom
-  ;; experimental, I don't think I have a need for this...
+  ;; experimental, I don't think I have a need for lockfiles...
   (create-lockfiles nil)
   (sentence-end-double-space nil)
   (tab-width 4) ;; make golang code nicer to read
-  (tab-always-indent 'complete)
+  ;; TODO: so far I'm liking being explicit when I request completion
+  ;; vs triggering when trying to indent. But it is an extra key... :shrug:
+  ;; (tab-always-indent 'complete)
   (delete-pair-blink-delay 0.1)
   (recenter-positions '(1 middle -2)) ;; behaviour for C-l
   (comint-prompt-read-only t)
@@ -1352,8 +1434,6 @@ With ARG, do this that many times."
 (define-key hoagie-keymap (kbd "t") #'hoagie-convert-timestamp)
 
 ;; Per-OS configuration
-(setf user-full-name "Sebastián Monía"
-      user-mail-address "sebastian@sebasmonia.com")
 
 (when (string= system-type "windows-nt")
   (require 'ls-lisp)
