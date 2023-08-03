@@ -482,9 +482,9 @@ Open the URL at point in EWW, use external browser with prefix arg."
                              " "
                              "%1{%B%}"
                              "%s\n"))
- (gnus-user-date-format-alist '((t . "%Y-%m-%d (%a) %H:%M")
-                                gnus-thread-sort-functions '(gnus-thread-sort-by-date)
-                                ))
+  (gnus-user-date-format-alist '((t . "%Y-%m-%d (%a) %H:%M")
+                                 gnus-thread-sort-functions '(gnus-thread-sort-by-date)
+                                 ))
   (gnus-user-date-format-alist '((t . "%Y-%m-%d %I:%M%p")))
   (gnus-thread-sort-functions '(gnus-thread-sort-by-date))
   (gnus-sum-thread-tree-false-root "")
@@ -493,6 +493,8 @@ Open the URL at point in EWW, use external browser with prefix arg."
   (gnus-sum-thread-tree-vertical        "│")
   (gnus-sum-thread-tree-leaf-with-other "├─► ")
   (gnus-sum-thread-tree-single-leaf     "╰─► ")
+  :hook
+  (message-setup-hook . hoagie-gnus-change-from)
   :config
   ;; From https://www.emacswiki.org/emacs/GnusTutorial#h5o-40
   (defvar hoagie-gnus-from-emails '("sebastian@sebasmonia.com"
