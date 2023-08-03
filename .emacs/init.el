@@ -635,6 +635,13 @@ Open the URL at point in EWW, use external browser with prefix arg."
                       (setf fill-column 100)
                       (display-fill-column-indicator-mode))))
 
+(use-package markdown-mode
+  :init
+  (setq markdown-command "pandoc")
+  :bind
+  (:map markdown-mode-map
+        ("C-c C-e" . markdown-do)))
+
 (use-package minibuffer
   :ensure nil
   :demand t
@@ -1473,16 +1480,12 @@ With ARG, do this that many times."
     ;; 2021-05-22: now I use the pgtk branch everywhere, and the monitor name has
     ;; a meaningul value in all cases, so:
     (let* ((monitor-name (alist-get 'name (frame-monitor-attributes)))
-           (monitor-font '(("S240HL" . 143) ;; 24"
-                           ("2757" . 128) ;; 27"
-                           ("LG HDR 4K" . 188))) ;; 27" office - was 181
+           (monitor-font '(("0x0536" . 151) ;; laptop
+                           ("2757" . 128) ) ;; external monitor
            (size (alist-get monitor-name monitor-font
                             180 ;; default size, "big just in case"
                             nil
                             'equal)))
-      ;; override for "laptop screen only"
-      (when (eq (length (display-monitor-attributes-list)) 1)
-        (setf size 143))
       (set-face-attribute 'default (selected-frame) :height size)
     ))
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
