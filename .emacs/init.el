@@ -465,26 +465,34 @@ Open the URL at point in EWW, use external browser with prefix arg."
   ;; see below for address listing
   (message-alternative-emails (regexp-opt hoagie-gnus-from-emails))
   ;; Archive outgoing email in Sent folder:
-  (gnus-message-archive-method '(nnimap "imap.fastmail.com"))
+  (gnus-message-archive-method '(nnimap "fastmail"
+                                (nnimap-address "imap.fastmail.com")
+                                (nnimap-server-port 993)
+                                (nnimap-stream ssl)
+                                (nnir-search-engine imap)))
   (gnus-message-archive-group "Sent")
   ;; http://groups.google.com/group/gnu.emacs.gnus/browse_thread/thread/a673a74356e7141f
-  (gnus-sum-thread-tree-indent "  ")
-  (gnus-sum-thread-tree-root "● ")
-  (gnus-sum-thread-tree-false-root "◯ ")
-  (gnus-sum-thread-tree-single-indent "◎ ")
-  (gnus-sum-thread-tree-vertical        "│")
-  (gnus-sum-thread-tree-leaf-with-other "├─► ")
-  (gnus-sum-thread-tree-single-leaf     "╰─► ")
   (gnus-summary-line-format (concat
                              "%0{%U%R%z%}"
-                             "%3{│%}" "%1{%d%}" "%3{│%}" ;; date
-                             "  "
-                             "%4{%-20,20f%}"             ;; name
-                             "  "
+                             "%3{│%}%1{%&user-date;%}%3{│%}" ;; date
+                             " "
+                             "%4{%-25,25f%}" ;; name
+                             " "
                              "%3{│%}"
                              " "
                              "%1{%B%}"
                              "%s\n"))
+ (gnus-user-date-format-alist '((t . "%Y-%m-%d (%a) %H:%M")
+                                gnus-thread-sort-functions '(gnus-thread-sort-by-date)
+                                ))
+  (gnus-user-date-format-alist '((t . "%Y-%m-%d %I:%M%p")))
+  (gnus-thread-sort-functions '(gnus-thread-sort-by-date))
+  (gnus-sum-thread-tree-false-root "")
+  (gnus-sum-thread-tree-root "")
+  (gnus-sum-thread-tree-indent " ")
+  (gnus-sum-thread-tree-vertical        "│")
+  (gnus-sum-thread-tree-leaf-with-other "├─► ")
+  (gnus-sum-thread-tree-single-leaf     "╰─► ")
   :config
   ;; From https://www.emacswiki.org/emacs/GnusTutorial#h5o-40
   (defvar hoagie-gnus-from-emails '("sebastian@sebasmonia.com"
