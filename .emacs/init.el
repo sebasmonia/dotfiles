@@ -105,6 +105,25 @@
     (interactive)
     (ansi-color-apply-on-region (point-min) (point-max))))
 
+(use-package browse-url
+  :ensure nil
+  :custom
+  (browse-url-secondary-browser-function #'hoagie-browse-url)
+  :config
+  (defun hoagie-browse-url (url &rest args)
+    "Open Firefox, changing invocation if running in a toolbox.
+Running in a toolbox is actually the \"common\" case. :)"
+    (message "Let's see =%s= -%s-" url args)
+    (if (string= hoagie-toolbox-name "host")
+        (browse-url-firefox url args)
+      (call-process "flatpak-spawn"
+                    nil
+                    0
+                    nil
+                    "--host"
+                    "firefox"
+                    url))))
+
 (use-package csharp-mode
   :mode "\\.cs$"
   :hook
@@ -291,30 +310,6 @@ buffer name when eglot is enabled."
           (quit-window nil eldoc-window)
         (eldoc-doc-buffer t)))))
 
-(use-package elfeed
-  :ensure t
-  :custom
-  (elfeed-db-directory (expand-file-name "elfeed" user-emacs-directory))
-  (elfeed-feeds '("http://nullprogram.com/feed/"
-                  "https://irreal.org/blog/?feed=rss2"
-                  "https://lars.ingebrigtsen.no/feed/"
-                  "https://feeds.npr.org/1001/rss.xml"
-                  "https://batsov.com/atom.xml"
-                  "https://manueluberti.eu/feed.xml"
-                  "https://metaredux.com/feed.xml"
-                  "https://lisp-journey.gitlab.io/index.xml"
-                  "https://www.n16f.net/blog/index.xml"
-                  "https://borretti.me/feed.xml"
-                  "https://www.n16f.net/blog/index.xml"))
-  ;;                  "https://feeds.npr.org/1002/rss.xml"))
-  :bind
-  ;; match eww/help bindings
-  (:map elfeed-show-mode-map
-        ("r" . elfeed-show-next)
-        ("l" . elfeed-show-prev))
-  (:map hoagie-keymap
-        ("r" . elfeed)))
-
 (use-package elpher
   :ensure t
   :bind
@@ -363,8 +358,6 @@ With prefix arg, create a new instance even if there was one running."
   (:map eww-mode-map
         ("o" . eww)
         ("O" . eww-browse-with-external-browser))
-  (:map hoagie-keymap
-        ("b" . hoagie-browse-url-at-point))
   :config
   ;; from https://emacs.stackexchange.com/a/36287 I want this for a
   ;; function to open the gcloud docs but I think it is useful as a
@@ -378,15 +371,7 @@ Optional argument NEW-BUFFER is passed to `eww' as prefix arg."
                           (eww-readable)
                         (remove-hook 'eww-after-render-hook nonce)))))
       (add-hook 'eww-after-render-hook nonce))
-    (eww url new-buffer))
-  (defun hoagie-browse-url-at-point (&optional arg)
-    "A mix of `browse-url-button-open-url' and `browse-url-at-point'.
-Open the URL at point in EWW, use external browser with prefix arg."
-    (interactive "P")
-    (funcall (if arg
-                 'browse-url
-               'eww-browse-url)
-             (browse-url-url-at-point))))
+    (eww url new-buffer)))
 
 ;; TODO: as I write less C#, should I stil keep this around?
 ;; haven't used it much lately
@@ -458,10 +443,14 @@ Open the URL at point in EWW, use external browser with prefix arg."
   (user-mail-address "sebastian@sebasmonia.com")
   (gnus-select-method '(nnnil ""))
   (gnus-secondary-select-methods '((nnimap "fastmail"
-                                   (nnimap-address "imap.fastmail.com")
-                                   (nnimap-server-port 993)
-                                   (nnimap-stream ssl)
-                                   (nnir-search-engine imap))))
+                                     (nnimap-address "imap.fastmail.com")
+                                     (nnimap-server-port 993)
+                                     (nnimap-stream ssl)
+                                     (nnir-search-engine imap))
+                                   (nntp "feedbase"
+                                     (nntp-open-connection-function nntp-open-tls-stream) ; feedbase does not do STARTTLS (yet?)
+                                     (nntp-port-number 563) ; nntps
+                                     (nntp-address "feedbase.org"))))
   ;; see below for address listing
   (message-alternative-emails (regexp-opt hoagie-gnus-from-emails))
   ;; Archive outgoing email in Sent folder:
@@ -985,7 +974,10 @@ Meant to be added to `occur-hook'."
   :config
   (defun hoagie-shr-kill-link-target ()
     (interactive)
-    (kill-new (get-text-property (point) 'shr-url))))
+    (let ((target-url (get-text-property (point) 'shr-url)))
+      (when target-url
+        (kill-new target-url)
+        (message "URL: %s" target-url)))))
 
 (use-package shell
   :ensure nil
@@ -1486,8 +1478,7 @@ With ARG, do this that many times."
                             180 ;; default size, "big just in case"
                             nil
                             'equal)))
-      (set-face-attribute 'default (selected-frame) :height size)
-    ))
+      (set-face-attribute 'default (selected-frame) :height size))))
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
 
 (use-package modus-themes
