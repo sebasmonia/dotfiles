@@ -113,7 +113,6 @@
   (defun hoagie-browse-url (url &rest args)
     "Open Firefox, changing invocation if running in a toolbox.
 Running in a toolbox is actually the \"common\" case. :)"
-    (message "Let's see =%s= -%s-" url args)
     (if (string= hoagie-toolbox-name "host")
         (browse-url-firefox url args)
       (call-process "flatpak-spawn"
@@ -356,6 +355,7 @@ With prefix arg, create a new instance even if there was one running."
   (eww-mode-hook . visual-line-mode)
   :bind
   (:map eww-mode-map
+        ("m" . hoagie-eww-jump)
         ("o" . eww)
         ("O" . eww-browse-with-external-browser))
   :config
@@ -371,7 +371,17 @@ Optional argument NEW-BUFFER is passed to `eww' as prefix arg."
                           (eww-readable)
                         (remove-hook 'eww-after-render-hook nonce)))))
       (add-hook 'eww-after-render-hook nonce))
-    (eww url new-buffer)))
+    (eww url new-buffer))
+  (defun hoagie-eww-jump ()
+    "Like `elpher-jump', but for EWW.
+Based on the elpher code."
+    (interactive)
+    (let ((all-links (hoagie--collect-shr-links)))
+      (eww (alist-get (completing-read "Link: "
+                                       all-links nil)
+                      all-links
+                      nil nil #'string=)))))
+
 
 ;; TODO: as I write less C#, should I stil keep this around?
 ;; haven't used it much lately
@@ -450,7 +460,10 @@ Optional argument NEW-BUFFER is passed to `eww' as prefix arg."
                                    (nntp "feedbase"
                                      (nntp-open-connection-function nntp-open-tls-stream) ; feedbase does not do STARTTLS (yet?)
                                      (nntp-port-number 563) ; nntps
-                                     (nntp-address "feedbase.org"))))
+                                     (nntp-address "feedbase.org"))
+                                   (nntp "gmane"
+                                     (nntp-open-connection-function nntp-open-plain-stream)
+                                     (nntp-address "news.gmane.io"))))
   ;; see below for address listing
   (message-alternative-emails (regexp-opt hoagie-gnus-from-emails))
   ;; Archive outgoing email in Sent folder:
@@ -487,6 +500,7 @@ Optional argument NEW-BUFFER is passed to `eww' as prefix arg."
   :config
   ;; From https://www.emacswiki.org/emacs/GnusTutorial#h5o-40
   (defvar hoagie-gnus-from-emails '("sebastian@sebasmonia.com"
+                                    "capsule@sebasmonia.com"
                                     "code@sebasmonia.com"
                                     "mailing@sebasmonia.com"
                                     "subscriptions@sebasmonia.com"
@@ -564,8 +578,8 @@ Optional argument NEW-BUFFER is passed to `eww' as prefix arg."
   :config
   ;; Non-custom configuration. Temporarily disabled, but could replace company...
   ;; (setf icomplete-in-buffer nil)
-  (icomplete-vertical-mode t)
-  ;; (fido-vertical-mode t)
+  ;; NOTE to future self: fido uses flex by default, and it is exactly what I want
+  (fido-vertical-mode t)
   :bind
   (:map icomplete-minibuffer-map
         ;; when there's no exact match, accept the first one under cursor with RET
@@ -647,7 +661,10 @@ Optional argument NEW-BUFFER is passed to `eww' as prefix arg."
   :bind
   ;; Default is M-v, but that doesn't work when completing text in a buffer and
   ;; M-i has a nice symmetry with C-M-i (used to trigger completion)
-  ("M-i" . switch-to-completions)
+  ;; UPDATE 2023-08-07: maybe I don't need this binding...at all?
+  ;; can switch with "second tab" - not 100% sure since now I trigger
+  ;; with C-M-i
+  ;; ("M-i" . switch-to-completions)
   (:map minibuffer-mode-map
         ("C-n" . minibuffer-next-completion)
         ("C-p" . minibuffer-previous-completion))
@@ -973,11 +990,26 @@ Meant to be added to `occur-hook'."
         ("ESC b" . hoagie-shr-kill-link-target))
   :config
   (defun hoagie-shr-kill-link-target ()
+    "Kill (and show in echo area) the target of the link at point."
     (interactive)
     (let ((target-url (get-text-property (point) 'shr-url)))
       (when target-url
         (kill-new target-url)
-        (message "URL: %s" target-url)))))
+        (message "URL: %s" target-url))))
+  (defun hoagie--collect-shr-links ()
+    "Get an alist of all link targets in the current buffer.
+Inspired by a similar function in Elpher."
+    (let ((link-template "%s (%s)"))
+      (save-excursion
+        (goto-char (point-min))
+        (cl-loop for link = (text-property-search-forward 'shr-url nil nil t)
+                 while link
+                 for text = (buffer-substring (prop-match-beginning link)
+                                              (prop-match-end link))
+                 for target = (prop-match-value link)
+                 collect
+                 (cons (format link-template text target)
+                       target))))))
 
 (use-package shell
   :ensure nil
@@ -1473,12 +1505,12 @@ With ARG, do this that many times."
     ;; a meaningul value in all cases, so:
     (let* ((monitor-name (alist-get 'name (frame-monitor-attributes)))
            (monitor-font '(("0x0536" . 151) ;; laptop
-                           ("2757" . 128) ) ;; external monitor
+                           ("2757" . 128))) ;; external monitor
            (size (alist-get monitor-name monitor-font
                             180 ;; default size, "big just in case"
                             nil
                             'equal)))
-      (set-face-attribute 'default (selected-frame) :height size))))
+      (set-face-attribute 'default (selected-frame) :height size)))
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
 
 (use-package modus-themes
