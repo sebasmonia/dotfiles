@@ -311,15 +311,22 @@ buffer name when eglot is enabled."
 
 (use-package elpher
   :ensure t
+  :custom
+  ;; from gemini://sporiff.dev/2023/08/08/elpher/
+  ;; so Station works with Elpher :)
+  (elpher-certificate-map '(("gemini://station.martinrue.com" "sebhoagie")))
   :bind
   (:map hoagie-second-keymap
         ;; "g" for Gemini
         ("g" . elpher))
   ;; match eww/help bindings
   (:map elpher-mode-map
+        ;; go to previous page
         ("l" . elpher-back)
-        ;; no match for "next" yet?
-        ))
+        ;; TODO: no match for "next"?
+        ;; rebind O to u, which makes
+        ;; more sense to me :shrug:
+        ("u" . elpher-root-dir)))
 
 (use-package eshell
   :ensure nil
