@@ -42,6 +42,10 @@
 ;; 2023-05-18: Minor binding adjustments, occur w/region and sexp.
 ;; 2023-06-14: No company...yet again...
 ;; 2023-08-02: Some minor clean up. Add Gnus to handle my email
+;; 2023-08-09: Update config to use PGP for authinfo and sending emails, minor
+;;             improvements on Gnus and message modes, add emoji font (for some
+;;             Gemini sites, this is a must!)
+;;
 ;;; Code:
 
 (setf custom-file (expand-file-name (concat user-emacs-directory "custom.el")))
@@ -69,6 +73,7 @@
 (setf package-native-compile t)
 (custom-set-faces
  '(default ((t (:family "Iosevka Comfy Wide Fixed" :slant normal :weight regular :height 160 :width normal)))))
+(set-fontset-font t 'emoji "Noto Emoji" nil 'append)
 ;; based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html
 (defvar hoagie-keymap (define-prefix-command 'hoagie-keymap) "My custom bindings.")
 (defvar hoagie-second-keymap (define-prefix-command 'hoagie-second-keymap) "Originally a register keymap, now used for other stuff too.")
@@ -259,7 +264,6 @@ about toolboxes..."
     "Use `hoagie-pre-ediff-windows' to restore the window setup."
     (set-window-configuration hoagie-pre-ediff-windows)))
 
-
 (use-package eglot
   :commands (eglot eglot-ensure)
   :hook
@@ -327,6 +331,11 @@ buffer name when eglot is enabled."
         ;; rebind O to u, which makes
         ;; more sense to me :shrug:
         ("u" . elpher-root-dir)))
+
+(use-package epg-config
+  :ensure nil
+  :custom
+  (epg-pinentry-mode 'loopback))
 
 (use-package eshell
   :ensure nil
@@ -436,6 +445,16 @@ Based on the elpher code."
 
 (use-package gnus
   :ensure nil
+  :bind
+  (:map hoagie-second-keymap
+        ;; for "email"
+        ("e" . gnus))
+  (:map gnus-summary-mode-map
+        ("v t" . hoagie-summary-trash)
+        ("v a" . hoagie-summary-archive)
+        ;; "b" for Basura. Using "s" is risky, as it is
+        ;; next to "a"rchive :)
+        ("v b" . hoagie-summary-spam))
   :init
   ;; let's do our best to keep Gnus files/dir outside of ~
   ;; some of these are not really Gnus vars, but declared in
@@ -453,11 +472,14 @@ Based on the elpher code."
         ;; the two values above mean I don't need this.
         ;; But, just in case:
         gnus-startup-file "~/.gnus.d/.newsrc"
-        gnus-dribble-directory "~/.gnus.d/")
+        gnus-dribble-directory "~/.gnus.d/"
+        gnus-always-read-dribble-file t)
   :custom
   ;; these two are not really Gnus values, but a sensible place to set them
   (user-full-name "Sebastián Monía")
   (user-mail-address "sebastian@sebasmonia.com")
+  (mml-secure-openpgp-signers '("A65927B22A60F72A53D77CD7EF7DAC84163D7A83"))
+  (mml-secure-openpgp-encrypt-to-self t)
   (gnus-select-method '(nnnil ""))
   (gnus-secondary-select-methods '((nnimap "fastmail"
                                      (nnimap-address "imap.fastmail.com")
@@ -480,6 +502,7 @@ Based on the elpher code."
                                 (nnimap-stream ssl)
                                 (nnir-search-engine imap)))
   (gnus-message-archive-group "Sent")
+  (gnus-search-use-parsed-queries t)
   ;; http://groups.google.com/group/gnu.emacs.gnus/browse_thread/thread/a673a74356e7141f
   (gnus-summary-line-format (concat
                              "%0{%U%R%z%}"
@@ -515,6 +538,7 @@ Based on the elpher code."
                                     "work@sebasmonia.com")
     "The list of aliases in my email setup.")
   (defun hoagie-gnus-change-from ()
+    "Select the \"From:\" address when composing a new email."
     (interactive)
     (let* ((selected-address (completing-read "From: " hoagie-gnus-from-emails))
            (from-text (concat "From: " user-full-name " <" selected-address ">")))
@@ -522,7 +546,22 @@ Based on the elpher code."
       (goto-char (point-min))
       (while (re-search-forward "^From:.*$" nil t)
         (replace-match from-text))
-      (goto-char gnus-article-current-point))))
+      (goto-char gnus-article-current-point)))
+  ;; Inspired by https://github.com/kensanata/ggg, add shortcuts to
+  ;; Archive, Trash and Spam, but bind to keymap directly
+  (defun hoagie-summary-spam ()
+    "Move the current or marked mails to Spam in Fastmail."
+    (interactive)
+    (gnus-summary-move-article nil "nnimap+fastmail:Spam"))
+  (defun hoagie-summary-archive ()
+    "Move the current or marked mails to the Archive in Fastmail."
+    (interactive)
+    (gnus-summary-move-article nil "nnimap+fastmail:Archive"))
+  (defun hoagie-summary-trash ()
+    "Move the current or marked mails to Trash in Fastmail."
+    (interactive)
+    (gnus-summary-move-article nil "nnimap+fastmail:Trash"))
+  )
 
 (use-package go-mode
   :hook
@@ -651,6 +690,19 @@ Based on the elpher code."
   :bind
   (:map markdown-mode-map
         ("C-c C-e" . markdown-do)))
+
+(use-package message
+  :ensure nil
+  :bind
+  (:map message-mode-map
+        ;; shadows `message-elide-region' :shrug:
+        ("C-c C-e" . hoagie-confirm-encrypt))
+  :config
+  (defun hoagie-confirm-encrypt ()
+    "Answer y/n to whether to send the message encrypted."
+    (interactive)
+    (when (y-or-n-p "Encrypt message?")
+      (mml-secure-message-encrypt))))
 
 (use-package minibuffer
   :ensure nil
