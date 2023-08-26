@@ -2,7 +2,7 @@
 
 ;; Author: Sebastian Monia <code@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
-;; Version: 29.5
+;; Version: 29.6
 ;; Keywords: .emacs dotemacs
 
 ;; This file is not part of GNU Emacs.
@@ -10,42 +10,13 @@
 ;;; Commentary:
 
 ;; My dot Emacs file
-;; In theory I should be able to just drop the file in any computer and have
-;; the config synced without merging/adapting anything
-;; 2019-05-06: V3 means I moved to use-package
-;; 2020-06-14: Arbitrarily bumping the version number
-;; 2021-09-02: Used https://www.manueluberti.eu/emacs/2021/09/01/package-report/
-;;             to remove some dead packages and things I didn't use that much.
-;; 2022-01-01: Make init file use lexical binding, update mark and point bindings.
-;;             Bumping minor version (!) so 4.1 it is :)
-;; 2022-04-06: Starting today, the major version of this file will match the minimum
-;;             Emacs version targeted.  Since yesterday I added variables and settings
-;;             that are new in Emacs 28, the new init version is 28.1 (I plan to start
-;;             bumping the minor version more often, too).
-;; 2022-06-09: Finished reading Mastering Emacs, added some notes and bindings
-;;             Cleaned up some functions, removed some values.
-;; 2022-12-01: Moved to depend on Emacs 29 (some customizations are 29-only)
-;;             After a brief experiment with default "bare" completion, revisit
-;;             my icomplete/minibuffer setup.
-;; 2022-12-22: Hosting some of my personal repos in Source Hut, mirroring setting
-;;             multiple remotes in "origin", see https://stackoverflow.com/a/58465641
-;; 2023-02-18: Adding register bindings, jump-to-char, occur integration to project.el,
-;;             new window size bindings, move back to Eglot again (better for
-;;             remote/slow environments like VDIs...)
-;; 2023-03-15: Rework my old push mark + visible-mark system into something based on
-;;             registers and maybe advices. Revisit some bindings to take advantage
-;;             of the Dygma Raise configuration.
-;; 2023-05-18: Minor binding adjustments, occur w/region and sexp, remove unused or
-;;             superseeded packages.
-;; 2023-03-25: Adjust more bindings for the Raise, try _yet again_ switching away from
-;;             company and icomplete/fido to "pure" built-in completion
-;; 2023-05-18: Minor binding adjustments, occur w/region and sexp.
+;; Recent changes:
 ;; 2023-06-14: No company...yet again...
 ;; 2023-08-02: Some minor clean up. Add Gnus to handle my email
 ;; 2023-08-09: Update config to use PGP for authinfo and sending emails, minor
 ;;             improvements on Gnus and message modes, add emoji font (for some
 ;;             Gemini sites, this is a must!)
-;;
+;; 2023-08-25: Manage email contacts with ecomplete
 ;;; Code:
 
 (setf custom-file (expand-file-name (concat user-emacs-directory "custom.el")))
@@ -73,7 +44,7 @@
 (setf package-native-compile t)
 (custom-set-faces
  '(default ((t (:family "Iosevka Comfy Wide Fixed" :slant normal :weight regular :height 160 :width normal)))))
-(set-fontset-font t 'emoji "Noto Emoji" nil 'append)
+(set-fontset-font t 'emoji "Noto Emoji" nil)
 ;; based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html
 (defvar hoagie-keymap (define-prefix-command 'hoagie-keymap) "My custom bindings.")
 (defvar hoagie-second-keymap (define-prefix-command 'hoagie-second-keymap) "Originally a register keymap, now used for other stuff too.")
@@ -225,6 +196,21 @@ about toolboxes..."
 (use-package dockerfile-mode
   :mode "Dockerfile\\'")
 
+(use-package ecomplete
+  :ensure nil
+  :config
+  (ecomplete-setup)
+  (defun ecomplete-add-email ()
+    "Add email address to ecomplete's database.
+Inspired by oantolin's ecomplete-extras."
+    (interactive)
+    (let ((email (read-string "Email: "))
+          (name (read-string "Name: ")))
+      (ecomplete-add-item 'mail
+                          email
+                          (concat name " <" email ">"))
+      (ecomplete-save))))
+
 (use-package ediff
   :ensure nil
   :bind
@@ -318,7 +304,7 @@ buffer name when eglot is enabled."
   :custom
   ;; from gemini://sporiff.dev/2023/08/08/elpher/
   ;; so Station works with Elpher :)
-  (elpher-certificate-map '(("gemini://station.martinrue.com" "sebhoagie")))
+  (elpher-certificate-map '(("gemini://station.martinrue.com/" "sebhoagie")))
   :bind
   (:map hoagie-second-keymap
         ;; "g" for Gemini
@@ -370,6 +356,10 @@ With prefix arg, create a new instance even if there was one running."
   (eww-mode-hook . toggle-word-wrap)
   (eww-mode-hook . visual-line-mode)
   :bind
+  (:map hoagie-second-keymap
+        ;; already have "g" for Gemini on this keymap
+        ;; might as well use "w" for web.
+        ("w" . eww))
   (:map eww-mode-map
         ("m" . hoagie-eww-jump)
         ("o" . eww)
@@ -493,15 +483,10 @@ Based on the elpher code."
                                    (nntp "gmane"
                                      (nntp-open-connection-function nntp-open-plain-stream)
                                      (nntp-address "news.gmane.io"))))
-  ;; see below for address listing
-  (message-alternative-emails (regexp-opt hoagie-gnus-from-emails))
-  ;; Archive outgoing email in Sent folder:
-  (gnus-message-archive-method '(nnimap "fastmail"
-                                (nnimap-address "imap.fastmail.com")
-                                (nnimap-server-port 993)
-                                (nnimap-stream ssl)
-                                (nnir-search-engine imap)))
-  (gnus-message-archive-group "Sent")
+   ;; Archive outgoing email in Sent folder, mark it as read
+  (gnus-message-archive-method '(nnimap "imap.fastmail.com"))
+  (gnus-message-archive-group "nnimap+fastmail:Sent")
+  (gnus-gcc-mark-as-read t)
   (gnus-search-use-parsed-queries t)
   ;; http://groups.google.com/group/gnu.emacs.gnus/browse_thread/thread/a673a74356e7141f
   (gnus-summary-line-format (concat
@@ -525,28 +510,7 @@ Based on the elpher code."
   (gnus-sum-thread-tree-vertical        "│")
   (gnus-sum-thread-tree-leaf-with-other "├─► ")
   (gnus-sum-thread-tree-single-leaf     "╰─► ")
-  :hook
-  (message-setup-hook . hoagie-gnus-change-from)
   :config
-  ;; From https://www.emacswiki.org/emacs/GnusTutorial#h5o-40
-  (defvar hoagie-gnus-from-emails '("sebastian@sebasmonia.com"
-                                    "capsule@sebasmonia.com"
-                                    "code@sebasmonia.com"
-                                    "mailing@sebasmonia.com"
-                                    "subscriptions@sebasmonia.com"
-                                    "thingstopay@sebasmonia.com"
-                                    "work@sebasmonia.com")
-    "The list of aliases in my email setup.")
-  (defun hoagie-gnus-change-from ()
-    "Select the \"From:\" address when composing a new email."
-    (interactive)
-    (let* ((selected-address (completing-read "From: " hoagie-gnus-from-emails))
-           (from-text (concat "From: " user-full-name " <" selected-address ">")))
-      (setq gnus-article-current-point (point))
-      (goto-char (point-min))
-      (while (re-search-forward "^From:.*$" nil t)
-        (replace-match from-text))
-      (goto-char gnus-article-current-point)))
   ;; Inspired by https://github.com/kensanata/ggg, add shortcuts to
   ;; Archive, Trash and Spam, but bind to keymap directly
   (defun hoagie-summary-spam ()
@@ -696,8 +660,42 @@ Based on the elpher code."
   :bind
   (:map message-mode-map
         ;; shadows `message-elide-region' :shrug:
-        ("C-c C-e" . hoagie-confirm-encrypt))
+        ("C-c C-e" . hoagie-confirm-encrypt)
+        ;; As seen in oantolin's config, by default TAB works?
+        ;; ("C-<tab>" . expand-mail-aliases)
+        )
+  :hook
+  (message-setup-hook . hoagie-message-change-from)
+  :custom
+  ;; actually part of simple.el, but putting it here because
+  ;; it is relevant to message.el behaviour for C-x m
+  (mail-user-agent 'gnus-user-agent)
+  ;; integrate with ecomplete. Press TAB to get email completion
+  (message-mail-alias-type 'ecomplete)
+  (message-self-insert-commands nil)
+  (message-expand-name-standard-ui t)
   :config
+  ;; From https://www.emacswiki.org/emacs/GnusTutorial#h5o-40
+  (defvar hoagie-email-addresses '("sebastian@sebasmonia.com"
+                                   "capsule@sebasmonia.com"
+                                   "code@sebasmonia.com"
+                                   "mailing@sebasmonia.com"
+                                   "subscriptions@sebasmonia.com"
+                                   "thingstopay@sebasmonia.com"
+                                   "work@sebasmonia.com")
+    "The list of aliases in my email setup.")
+  (defun hoagie-message-change-from ()
+    "Select the \"From:\" address when composing a new email.
+Also adds a BCC header to keep a copy of the message"
+    (interactive)
+    (let* ((selected-address (completing-read "From: " hoagie-email-addresses))
+           (address (concat user-full-name " <" selected-address ">"))
+           (from-text (concat "From: " address)))
+      (setq gnus-article-current-point (point))
+      (goto-char (point-min))
+      (while (re-search-forward "^From:.*$" nil t)
+        (replace-match from-text))
+      (goto-char gnus-article-current-point)))
   (defun hoagie-confirm-encrypt ()
     "Answer y/n to whether to send the message encrypted."
     (interactive)
@@ -1564,7 +1562,8 @@ With ARG, do this that many times."
     ;; a meaningul value in all cases, so:
     (let* ((monitor-name (alist-get 'name (frame-monitor-attributes)))
            (monitor-font '(("0x0536" . 151) ;; laptop
-                           ("2757" . 128))) ;; external monitor
+                           ("2757" . 120))) ;; external monitor
+                         ;;("2757" . 128))) ;; external monitor
            (size (alist-get monitor-name monitor-font
                             180 ;; default size, "big just in case"
                             nil
