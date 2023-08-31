@@ -2,7 +2,7 @@
 
 ;; Author: Sebastian Monia <code@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
-;; Version: 29.6
+;; Version: 29.7
 ;; Keywords: .emacs dotemacs
 
 ;; This file is not part of GNU Emacs.
@@ -17,6 +17,7 @@
 ;;             improvements on Gnus and message modes, add emoji font (for some
 ;;             Gemini sites, this is a must!)
 ;; 2023-08-25: Manage email contacts with ecomplete
+;; 2023-08-31: Notifications and appointments setup
 ;;; Code:
 
 (setf custom-file (expand-file-name (concat user-emacs-directory "custom.el")))
@@ -39,7 +40,9 @@
 
 (require 'use-package)
 (setf use-package-verbose t)
-(setf use-package-always-ensure t)
+;; turns out I use more built ins than externals...
+;; let's see how this change goes :)
+;; (setf use-package-always-ensure t)
 (setf use-package-hook-name-suffix nil)
 (setf package-native-compile t)
 (custom-set-faces
@@ -73,7 +76,6 @@
 (define-key key-translation-map (kbd "<f8>") (kbd "C-c"))
 
 (use-package ansi-color
-  :ensure nil
   :commands (ansi-color-apply-buffer)
   :init
   (defun ansi-color-apply-buffer ()
@@ -81,8 +83,43 @@
     (interactive)
     (ansi-color-apply-on-region (point-min) (point-max))))
 
+;; inspired by https://gitlab.com/jabranham/emacs/blob/master/init.el
+(use-package appt
+  :defer 2 ;; NEW! for me at least. Delay # seconds
+  :custom
+  (appt-delete-window-function (lambda () t))
+  (appt-disp-window-function #'hoagie-appt-notify)
+  ;; next two are default values - might not need to customize
+  (appt-display-interval 3)
+  (appt-message-warning-time 12)
+  (appt-audible nil)
+  ;; (appt-display-mode-line nil)
+  :config
+  (appt-activate)
+  (defun hoagie-appt-notify (minutes-until _current-time appointment-text)
+    "Show appointment reminders in the desktop.
+See the documentation of appt.el for details on MINUTES-UNTIL, _CURRENT-TIME
+and APPOINTMENT-TEXT."
+    ;; args can be lists if multiple appointments are due at the same time
+    (if (listp minutes-until)
+        (notifications-notify :title "Appointments"
+                              :body (format "Multiple appointments in %s minutes!!!"
+                                            (car minutes-until))
+                              :app-name "Emacs"
+                              ;; never expire
+                              :timeout 0
+                              ;; use 'low to add a notification without toast
+                              :urgency 'normal)
+      ;; single notification
+      (notifications-notify :title "Appointments"
+                              :body (format "In %s minutes: %s"
+                                            minutes-until
+                                            appointment-text)
+                              :app-name "Emacs"
+                              :timeout 0
+                              :urgency 'normal))))
+
 (use-package browse-url
-  :ensure nil
   :custom
   (browse-url-secondary-browser-function #'hoagie-browse-url)
   :config
@@ -100,12 +137,12 @@ Running in a toolbox is actually the \"common\" case. :)"
                     url))))
 
 (use-package csharp-mode
+  :ensure t
   :mode "\\.cs$"
   :hook
   (csharp-mode-hook . subword-mode))
 
 (use-package dabbrev
-  :ensure nil
   :custom
   (dabbrev-case-distinction nil)
   (dabbrev-case-fold-search t)
@@ -113,8 +150,26 @@ Running in a toolbox is actually the \"common\" case. :)"
   :bind
   ("C-;" . dabbrev-expand))
 
+(use-package calendar
+  :custom
+  (calendar-date-style 'iso)
+  (calendar-view-diary-initially-flag t)
+  :hook
+  (calendar-today-visible-hook . calendar-mark-today)
+  ;; (calendar-mode-hook . diary-mark-entries)
+  )
+
+(use-package diary-lib
+  :custom
+  (diary-display-function 'diary-fancy-display)
+  :hook
+  (diary-list-entries-hook . diary-include-other-diary-files)
+  (diary-mark-entries-hook . diary-mark-included-diary-files)
+  (diary-mark-entries-hook . diary-sort-entries)
+  )
+
+
 (use-package dired
-  :ensure nil
   :custom
   (dired-listing-switches "-laogGhvD")
   (dired-compress-file-suffixes
@@ -184,20 +239,22 @@ about toolboxes..."
         (message (format "Filename: %s" (or name "-No file for this buffer-")))))))
 
 (use-package dired-narrow
+  :ensure t
   :after dired
   :bind
   (:map dired-mode-map
         ("/" . dired-narrow)))
 
 (use-package docker
+  :ensure t
   :bind
   ("C-c d" . docker))
 
 (use-package dockerfile-mode
+  :ensure t
   :mode "Dockerfile\\'")
 
 (use-package ecomplete
-  :ensure nil
   :config
   (ecomplete-setup)
   (defun ecomplete-add-email ()
@@ -212,7 +269,6 @@ Inspired by oantolin's ecomplete-extras."
       (ecomplete-save))))
 
 (use-package ediff
-  :ensure nil
   :bind
   (:map hoagie-keymap
         ("e" . ediff-buffers)
@@ -281,7 +337,6 @@ buffer name when eglot is enabled."
               #'xref-find-references-with-eglot))
 
 (use-package eldoc
-  :ensure nil
   :demand t
   :custom
   (eldoc-echo-area-use-multiline-p nil)
@@ -319,12 +374,10 @@ buffer name when eglot is enabled."
         ("u" . elpher-root-dir)))
 
 (use-package epg-config
-  :ensure nil
   :custom
   (epg-pinentry-mode 'loopback))
 
 (use-package eshell
-  :ensure nil
   :custom
   ;; TODO: check all customizations
   (eshell-prefer-lisp-functions nil)
@@ -348,7 +401,6 @@ With prefix arg, create a new instance even if there was one running."
         (eshell-send-input "")))))
 
 (use-package eww
-  :ensure nil
   :demand t
   :custom
   (eww-auto-rename-buffer 'title)
@@ -392,6 +444,7 @@ Based on the elpher code."
 ;; TODO: as I write less C#, should I stil keep this around?
 ;; haven't used it much lately
 (use-package fill-function-arguments
+  :ensure t
   :commands (fill-function-arguments-dwim)
   :custom
   (fill-function-arguments-indent-after-fill t)
@@ -421,7 +474,6 @@ Based on the elpher code."
 
 (defvar hoagie-flymake-keymap (define-prefix-command 'hoagie-flymake-keymap) "Custom bindings for `flymake-mode'.")
 (use-package flymake
-  :ensure nil
   :config
   :bind
   (:map hoagie-flymake-keymap
@@ -434,7 +486,6 @@ Based on the elpher code."
         ("f" . hoagie-flymake-keymap)))
 
 (use-package gnus
-  :ensure nil
   :bind
   (:map hoagie-second-keymap
         ;; for "email"
@@ -528,6 +579,7 @@ Based on the elpher code."
   )
 
 (use-package go-mode
+  :ensure t
   :hook
   (go-mode-hook . subword-mode)
   :config
@@ -537,7 +589,6 @@ Based on the elpher code."
     (hoagie-eww-readable (format "https://pkg.go.dev/%s" (read-string "Package: ")))))
 
 (use-package grep
-  :ensure nil
   :custom
   (grep-command "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
   (grep-use-null-device nil)
@@ -546,7 +597,6 @@ Based on the elpher code."
         ("ESC g" . rgrep)))
 
 (use-package hl-line
-  :ensure nil
   :hook
   (after-init-hook . global-hl-line-mode))
 
@@ -579,7 +629,6 @@ Based on the elpher code."
     (goto-char (point-max))))
 
 (use-package icomplete
-  :ensure nil
   :demand t
   :custom
   (icomplete-hide-common-prefix nil)
@@ -598,14 +647,12 @@ Based on the elpher code."
         ("C-j" . icomplete-fido-exit)))
 
 (use-package imenu
-  :ensure nil
   :demand t
   :bind
   (:map hoagie-keymap
         ("i" . imenu)))
 
 (use-package isearch
-  :ensure nil
   :custom
   (search-exit-option 'edit)
   (isearch-lazy-count t)
@@ -617,11 +664,11 @@ Based on the elpher code."
   (search-ring-max 64))
 
 (use-package java-mode
-  :ensure nil
   :hook
   (java-mode-hook . subword-mode))
 
 (use-package json-mode
+  :ensure t
   :mode "\\.json$")
 
 ;; (use-package kubernetes
@@ -640,7 +687,6 @@ Based on the elpher code."
 ;;   (kubernetes-pods-display-completed t))
 
 (use-package lisp-mode
-  :ensure nil
   :hook
   (lisp-mode-hook . (lambda ()
                       (set (make-local-variable lisp-indent-function)
@@ -649,6 +695,7 @@ Based on the elpher code."
                       (display-fill-column-indicator-mode))))
 
 (use-package markdown-mode
+  :ensure t
   :init
   (setq markdown-command "pandoc")
   :bind
@@ -656,7 +703,6 @@ Based on the elpher code."
         ("C-c C-e" . markdown-do)))
 
 (use-package message
-  :ensure nil
   :bind
   (:map message-mode-map
         ;; shadows `message-elide-region' :shrug:
@@ -703,7 +749,6 @@ Also adds a BCC header to keep a copy of the message"
       (mml-secure-message-encrypt))))
 
 (use-package minibuffer
-  :ensure nil
   :demand t
   :custom
   (completions-format 'one-column)
@@ -732,11 +777,16 @@ Also adds a BCC header to keep a copy of the message"
   (:map hoagie-keymap
         ("<f6>" . execute-extended-command)))
 
+(use-package notifications
+  ;; this package is used by appt to display
+  ;; notifications in the desktop
+  :demand t)
+
 (use-package package-lint
+  :ensure t
   :commands package-lint-current-buffer)
 
 (use-package paren
-  :ensure nil
   :custom
   (show-paren-style 'mixed)
   (show-paren-when-point-inside-paren t))
@@ -746,6 +796,7 @@ Also adds a BCC header to keep a copy of the message"
   )
 
 (use-package plantuml-mode
+  :ensure t
   :commands plantuml-mode
   :mode
   (("\\.puml$" . plantuml-mode)
@@ -777,12 +828,10 @@ Also adds a BCC header to keep a copy of the message"
       (find-file-other-window output)))))
 
 (use-package proced
-  :ensure nil
   :custom
   (proced-filter 'all))
 
 (use-package project
-  :ensure nil
   :bind
   (:map hoagie-keymap
         ("g" . project-find-regexp)
@@ -816,7 +865,6 @@ Also adds a BCC header to keep a copy of the message"
                 #'project-find-regexp-with-unique-buffer))
 
 (use-package python
-  :ensure nil
   :mode ("\\.py\\'" . python-mode)
   :hook
   (python-mode-hook . (lambda ()
@@ -828,12 +876,11 @@ Also adds a BCC header to keep a copy of the message"
   (python-shell-interpreter-args "--pprint --simple-prompt"))
 
 (use-package re-builder
-  :ensure nil
   :custom
-  (reb-re-syntax 'string))
+  ;; let's try this thing...
+  (reb-re-syntax 'rx))
 
 (use-package register
-  :ensure nil
   :demand t
   :custom
   (register-preview-delay 0.1)
@@ -943,6 +990,7 @@ It also deletes the register when called with prefix ARG."
                     nil))))
 
 (use-package restclient
+  :ensure t
   :custom
   (restclient-same-buffer-response t)
   (restclient-response-body-only nil)
@@ -978,7 +1026,6 @@ It also deletes the register when called with prefix ARG."
     (setq-local imenu-generic-expression '((nil "^### \\(.*\\) ###$" 1)))))
 
 (use-package replace
-  :ensure nil
   :bind
   (:map hoagie-keymap
         ("o" . hoagie-occur-sexp-or-region)
@@ -1001,7 +1048,6 @@ Meant to be added to `occur-hook'."
        (rename-buffer (format "*Occur: %s %s*" search-term buffer-name) t)))))
 
 (use-package rcirc
-  :ensure nil
   :commands rcirc
   :custom
   (rcirc-server-alist '(("irc.libera.chat"
@@ -1016,7 +1062,6 @@ Meant to be added to `occur-hook'."
   (rcirc-mode-hook . (lambda () (rcirc-track-minor-mode 1))))
 
 (use-package savehist
-  :ensure nil
   :custom
   (savehist-additional-variables '(kill-ring
                                    search-ring
@@ -1026,6 +1071,7 @@ Meant to be added to `occur-hook'."
   (savehist-mode))
 
 (use-package sharper :load-path "~/github/sharper"
+  :ensure t
   :bind
   (:map hoagie-keymap
         ;; using "n" for another command now, moving
@@ -1035,7 +1081,6 @@ Meant to be added to `occur-hook'."
   (sharper-run-only-one t))
 
 (use-package shr
-  :ensure nil
   :custom
   (shr-use-fonts t)
   (shr-use-colors t)
@@ -1069,7 +1114,6 @@ Inspired by a similar function in Elpher."
                        target))))))
 
 (use-package shell
-  :ensure nil
   :config
   (defun hoagie-shell-mode-setup ()
     "My personal shell mode setup."
@@ -1079,16 +1123,17 @@ Inspired by a similar function in Elpher."
   (shell-mode-hook . hoagie-shell-mode-setup))
 
 (use-package sly
+  :ensure t
   :commands sly
   :custom
   (inferior-lisp-program "sbcl --dynamic-space-size 10240"))
 
 (use-package sly-quicklisp
+  :ensure t
   :after sly)
 
 ;; Send email via Fastmail's SMTP:
 (use-package smtpmail
-  :ensure nil
   :custom
   (send-mail-function 'smtpmail-send-it)
   (smtpmail-default-smtp-server "smtp.fastmail.com")
@@ -1096,7 +1141,6 @@ Inspired by a similar function in Elpher."
   (smtpmail-smtp-service 587))
 
 (use-package sql
-  :ensure nil
   :custom
   (sql-ms-options '("--driver" "ODBC Driver 17 for SQL Server"))
   (sql-ms-program "/var/home/hoagie/github/sqlcmdline/sqlcmdline.py")
@@ -1104,6 +1148,7 @@ Inspired by a similar function in Elpher."
   (sql-interactive-mode-hook . (lambda () (setf truncate-lines t))))
 
 (use-package sql-datum :load-path "~/github/datum"
+  :ensure t
   :after sql
   :custom
   (sql-datum-program "/var/home/hoagie/.local/bin/datum.sh")
@@ -1135,10 +1180,10 @@ Inspired by a similar function in Elpher."
                  (sql-database "/var/home/hoagie/github/datum/chinook.db"))))
 
 (use-package terraform-mode
+  :ensure t
   :mode "\\.tf$")
 
 (use-package time
-  :ensure nil
   :custom
   (world-clock-time-format "%r - %F (%A)")
   (world-clock-list '(("America/Denver" "Denver")
@@ -1149,12 +1194,10 @@ Inspired by a similar function in Elpher."
   :commands (world-clock))
 
 (use-package tramp
-  :ensure nil
   :custom
   (tramp-default-method "sshx"))
 
 (use-package vc
-  :ensure nil
   :demand t
   :bind
   (:map vc-prefix-map
@@ -1162,7 +1205,6 @@ Inspired by a similar function in Elpher."
         ("k" . vc-revert)))
 
 (use-package vc-dir
-  :ensure nil
   :after (vc project vc-git)
   :bind
   ;; shadows `vc-dir'
@@ -1201,7 +1243,6 @@ With prefix arg, does a hard reset (thus it asks for confirmation)."
           (revert-buffer))))))
 
 (use-package vc-git
-  :ensure nil
   :after vc
   :custom
   (vc-git-revision-complete-only-branches t)
@@ -1238,7 +1279,6 @@ With prefix ARG show the remote branches."
       (goto-char (point-min)))))
 
 (use-package vc-hooks
-  :ensure nil
   :after (vc vc-git)
   :custom
   ;; from https://emacs.stackexchange.com/a/37855, which links to TRAMP's manual
@@ -1259,7 +1299,6 @@ With prefix ARG show the remote branches."
   ("C-x /" . vundo))
 
 (use-package window
-  :ensure nil
   :config
   ;; Stores the window setup before focusing on a single window, and restore it
   ;; on a "mirror" binding: C-x 1 vs F6 1. Simplified version of the
@@ -1299,6 +1338,7 @@ spin of the first two in the page."
         ("|" . hoagie-toggle-frame-split)))
 
 (use-package web-mode
+  :ensure t
   :mode
   (("\\.html$" . web-mode)
    ("\\.phtml\\'" . web-mode)
@@ -1319,15 +1359,16 @@ spin of the first two in the page."
   (web-mode-markup-indent-offset 2))
 
 (use-package ws-butler
+  :ensure t
   :hook
   (prog-mode-hook . ws-butler-mode))
 
 (use-package yaml-mode
+  :ensure t
   :mode "\\.yml$")
 
 ;; Everything that is not part of a particular feature to require
 (use-package emacs
-  :ensure nil
   :init
   (defun hoagie-go-home (arg)
     (interactive "P")
