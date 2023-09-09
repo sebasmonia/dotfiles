@@ -20,7 +20,7 @@
 ;; 2023-08-31: Notifications and appointments setup
 ;;; Code:
 
-(setf custom-file (expand-file-name (concat user-emacs-directory "custom.el")))
+(setf custom-file (locate-user-emacs-file "custom.el"))
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -47,7 +47,8 @@
 (setf package-native-compile t)
 (custom-set-faces
  '(default ((t (:family "Iosevka Comfy Wide Fixed" :slant normal :weight regular :height 160 :width normal)))))
-(set-fontset-font t 'emoji "Noto Emoji" nil)
+(set-fontset-font t 'emoji (font-spec :family "Noto Emoji"))
+
 ;; based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html
 (defvar hoagie-keymap (define-prefix-command 'hoagie-keymap) "My custom bindings.")
 (defvar hoagie-second-keymap (define-prefix-command 'hoagie-second-keymap) "Originally a register keymap, now used for other stuff too.")
@@ -89,20 +90,30 @@
   :custom
   (appt-delete-window-function (lambda () t))
   (appt-disp-window-function #'hoagie-appt-notify)
-  ;; next two are default values - might not need to customize
-  (appt-display-interval 3)
-  (appt-message-warning-time 12)
   (appt-audible nil)
+  (appt-display-diary nil)
   ;; (appt-display-mode-line nil)
+  ;; next two are default values - might not need to customize
+  (appt-display-interval 5)
+  (appt-message-warning-time 15)
   :config
   (appt-activate)
+  ;; override the built in function, as there is not way to customize this
+  (defun appt-mode-line (min-to-app &optional _abbrev)
+    "Return an appointment string for the mode-line. Hoagie version.
+MIN-TO-APP is a list of minutes, as strings. _ABBREV is ignored, always
+abbreviate text."
+    (let ((smaller-min (car (sort min-to-app #'<))))
+      (format "Appt(s): %s"
+              (if (equal smaller-min "0") "NOW"
+                (format "%sm" smaller-min)))))
   (defun hoagie-appt-notify (minutes-until _current-time appointment-text)
     "Show appointment reminders in the desktop.
 See the documentation of appt.el for details on MINUTES-UNTIL, _CURRENT-TIME
 and APPOINTMENT-TEXT."
     ;; args can be lists if multiple appointments are due at the same time
     (if (listp minutes-until)
-        (notifications-notify :title "Appointments"
+        (notifications-notify :title "Emacs - Appointments"
                               :body (format "Multiple appointments in %s minutes!!!"
                                             (car minutes-until))
                               :app-name "Emacs"
@@ -111,13 +122,22 @@ and APPOINTMENT-TEXT."
                               ;; use 'low to add a notification without toast
                               :urgency 'normal)
       ;; single notification
-      (notifications-notify :title "Appointments"
+      (notifications-notify :title "Emacs - Appointment"
                               :body (format "In %s minutes: %s"
                                             minutes-until
                                             appointment-text)
                               :app-name "Emacs"
                               :timeout 0
                               :urgency 'normal))))
+
+(use-package bookmark
+  :bind
+  ;; trying to make these more memorable than C-x r m/b/l
+  ;; I associate C-x r with registers, not bookmarks
+  (:map hoagie-second-keymap
+        ("b b" . bookmark-set)
+        ("b j" . bookmark-jump)
+        ("b l" . bookmark-bmenu-list)))
 
 (use-package browse-url
   :custom
@@ -156,16 +176,18 @@ Running in a toolbox is actually the \"common\" case. :)"
   (calendar-view-diary-initially-flag t)
   :hook
   (calendar-today-visible-hook . calendar-mark-today)
-  ;; (calendar-mode-hook . diary-mark-entries)
+  (calendar-mode-hook . diary-mark-entries)
   )
 
 (use-package diary-lib
   :custom
   (diary-display-function 'diary-fancy-display)
   :hook
-  (diary-list-entries-hook . diary-include-other-diary-files)
   (diary-mark-entries-hook . diary-mark-included-diary-files)
-  (diary-mark-entries-hook . diary-sort-entries)
+  ;; `diary-sort-entries' should be added last, curiously for
+  ;; use-package to do that I have to add it _first_
+  (diary-list-entries-hook . diary-sort-entries)
+  (diary-list-entries-hook . diary-include-other-diary-files)
   )
 
 
@@ -403,7 +425,7 @@ With prefix arg, create a new instance even if there was one running."
 (use-package eww
   :demand t
   :custom
-  (eww-auto-rename-buffer 'title)
+  (eww-auto-rename-buffer #'hoagie-eww-rename-buffer)
   :hook
   (eww-mode-hook . toggle-word-wrap)
   (eww-mode-hook . visual-line-mode)
@@ -417,6 +439,13 @@ With prefix arg, create a new instance even if there was one running."
         ("o" . eww)
         ("O" . eww-browse-with-external-browser))
   :config
+  (defun hoagie-eww-rename-buffer ()
+    "Rename EWW buffers like \"title\", but put title last.
+Function based on the same from the docstring for `eww-auto-rename-buffer'."
+    (when (eq major-mode 'eww-mode)
+      (when-let ((string (or (plist-get eww-data :title)
+                             (plist-get eww-data :url))))
+        (format "*eww: %s*" string))))
   ;; from https://emacs.stackexchange.com/a/36287 I want this for a
   ;; function to open the gcloud docs but I think it is useful as a
   ;; general tool to have around
@@ -539,6 +568,9 @@ Based on the elpher code."
   (gnus-message-archive-group "nnimap+fastmail:Sent")
   (gnus-gcc-mark-as-read t)
   (gnus-search-use-parsed-queries t)
+  (gnus-auto-select-next nil)
+  (gnus-paging-select-next nil)
+  (gnus-summary-stop-at-end-of-message t)
   ;; http://groups.google.com/group/gnu.emacs.gnus/browse_thread/thread/a673a74356e7141f
   (gnus-summary-line-format (concat
                              "%0{%U%R%z%}"
@@ -652,6 +684,12 @@ Based on the elpher code."
   (:map hoagie-keymap
         ("i" . imenu)))
 
+(use-package info
+  :config
+  (add-to-list 'Info-directory-list
+               (expand-file-name "~/.local/share/info/")))
+
+
 (use-package isearch
   :custom
   (search-exit-option 'edit)
@@ -753,7 +791,9 @@ Also adds a BCC header to keep a copy of the message"
   :custom
   (completions-format 'one-column)
   (completions-max-height 20)
-  (completion-styles '(substring partial-completion flex))
+  ;; (completion-styles '(substring partial-completion flex))
+  ;; default: (basic partial-completion emacs22)
+  ;; and it is overriden by fido-mode anyway? :shrug:
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
@@ -894,7 +934,8 @@ Also adds a BCC header to keep a copy of the message"
         ("l" . list-registers)
         ("SPC" . point-to-register)
         ("d" . hoagie-clean-registers)
-        ("j" . hoagie-jump-to-register))
+        ("j" . hoagie-jump-to-register)
+        ("4 j" . hoagie-jump-to-register-other-window))
   :config
 ;;   ;; BRITTLENESS WARNING: this re-defines a built-in method, there's
 ;;   ;; a high risk it breaks when moving Emacs versions
@@ -965,6 +1006,19 @@ It also deletes the register if called with prefix ARG."
                                     when (markerp (cdr reg))
                                     collect reg))
            (reg (register-read-with-preview "Jump to: ")))
+      (jump-to-register reg)
+      (when arg
+        (set-register reg nil))))
+  (defun hoagie-jump-to-register-other-window (&optional arg)
+    (interactive)
+    "Variant of `hoagie-jump-to-register' that jumps in other window.
+It also deletes the register if called with prefix ARG."
+    (interactive "P")
+    (let* ((register-alist (cl-loop for reg in register-alist
+                                    when (markerp (cdr reg))
+                                    collect reg))
+           (reg (register-read-with-preview "Jump to: ")))
+      (pop-to-buffer (current-buffer) t t)
       (jump-to-register reg)
       (when arg
         (set-register reg nil))))
@@ -1071,7 +1125,6 @@ Meant to be added to `occur-hook'."
   (savehist-mode))
 
 (use-package sharper :load-path "~/github/sharper"
-  :ensure t
   :bind
   (:map hoagie-keymap
         ;; using "n" for another command now, moving
@@ -1148,7 +1201,6 @@ Inspired by a similar function in Elpher."
   (sql-interactive-mode-hook . (lambda () (setf truncate-lines t))))
 
 (use-package sql-datum :load-path "~/github/datum"
-  :ensure t
   :after sql
   :custom
   (sql-datum-program "/var/home/hoagie/.local/bin/datum.sh")
@@ -1192,6 +1244,20 @@ Inspired by a similar function in Elpher."
                       ("America/Chicago" "Central")
                       ("America/New_York" "Eastern")))
   :commands (world-clock))
+
+(use-package timer
+  :commands (run-at-time)
+  :config
+  ;; inspired by this code
+  ;; https://www.reddit.com/r/emacs/comments/7wsnoi/comment/du3h11l/
+  (defun hoagie-notify-timer (message minutes)
+    "Show MESSAGE after MINUTES, in a desktop notification."
+    (interactive "sMessage (default: \"Timer Elapsed\"): \nnMinutes: ")
+    (when (string-empty-p message)
+      (setf message "Timer elapsed"))
+    (run-at-time (* 60 minutes) nil #'notifications-notify
+                 :title "Emacs - Timer" :body message
+                 :app-name "Emacs" :timeout 0 :urgency 'normal)))
 
 (use-package tramp
   :custom
@@ -1500,7 +1566,7 @@ With ARG, do this that many times."
   (inhibit-startup-screen t)
   (initial-buffer-choice t)
   (initial-scratch-message
-   ";; Il semble que la perfection soit atteinte non quand il n’y a plus rien à ajouter, mais quand il n’y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n;; Marking:                             ;; Killing\n;; M-@ Next word C-M-<SPC> Next sexp    ;; C-M-k next sexp\n;; M-h Paragraph C-x h Buffer           ;; C-k rest of line\n;; C-M-h Next defun                     ;; <f6> k whole line\n\n;; Misc:                                   ;; (e)SHELL C-c then...\n;; <f6> i imenu C-x C-k e edit kmacro      ;; C-[p|n] prev/next input\n;; M-t Transpose word C-M-t Tranpose sexp  ;; C-o clear last output\n;; C-x / vundo\n\n;; During search\n;; C-w add word at point, repeat to add more\n;; M-r toggle regex\n\n;; Replace (regexp + elisp):\n;; \"movie\" -> \"film\" and \"movies\" -> \"films\":\n;; ‘movie(s)?‘ -> ‘,(if \\1 \"films\" \"film\")‘\n\n;; howm:\n;; <f6> 3 - inbox\n;; <f6> C-3 - show TODO\n;; <f6> ESC 3 - show scheduled\n;; <f3> howm keymap (hit twice for menu)\n\n;; REMEMBER YOUR REGEXPS\n")
+   ";; Il semble que la perfection soit atteinte non quand il n’y a plus rien à ajouter, mais quand il n’y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n;; Marking:                             ;; Killing\n;; M-@ Next word C-M-<SPC> Next sexp    ;; C-M-k next sexp\n;; M-h Paragraph C-x h Buffer           ;; C-k rest of line\n;; C-M-h Next defun                     ;; <f6> k whole line\n\n;; Misc:                                   ;; (e)SHELL C-c then...\n;; <f6> i imenu C-x C-k e edit kmacro      ;; C-[p|n] prev/next input\n;; M-t Transpose word C-M-t Tranpose sexp  ;; C-o clear last output\n;; C-x / vundo\n\n;; During search\n;; C-w add word at point, repeat to add more\n;; M-r toggle regex\n\n;; Replace (regexp + elisp):\n;; \"movie\" -> \"film\" and \"movies\" -> \"films\":\n;; ‘movie(s)?‘ -> ‘,(if \\1 \"films\" \"film\")‘\n\n;; howm:\n;; <f6> 3 - inbox\n;; <f6> C-3 - show TODO\n;; <f6> ESC 3 - show scheduled\n;; <f3> howm keymap (hit twice for menu)\n\n;; REMEMBER: REGEXPS - INFO\n\n")
   (save-interprogram-paste-before-kill t)
   (visible-bell nil) ;; macOS change
   ;; from https://gitlab.com/jessieh/dot-emacs
