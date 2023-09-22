@@ -288,7 +288,31 @@ Inspired by oantolin's ecomplete-extras."
       (ecomplete-add-item 'mail
                           email
                           (concat name " <" email ">"))
-      (ecomplete-save))))
+      (ecomplete-save)))
+  (defun ecomplete-list-emails (&optional regexp)
+    "Pretty print the ecomplete emails that match REGEXP.
+If REGEXP is not provided, then all emails are printed."
+    (interactive "sMatch text (empty for no filter): ")
+    ;; since splitting the name isn't exactly precise,
+    ;; and we already have the keys available, let's extract
+    ;; only the name from the display text
+    (with-current-buffer (get-buffer-create "*ecomplete emails*")
+      (erase-buffer)
+      (make-vtable
+       :columns '("Name" "Email")
+       :objects (cl-loop for (email _count _time display) in (alist-get 'mail ecomplete-database)
+		                 when (or (null regexp)
+                                  (string-match regexp email)
+                                  (string-match regexp display))
+		                 collect (list
+                                  (car (split-string display
+                                                     " <"))
+                                  email))
+       ;; force fixed width face
+       :face 'default
+       ;; sort by display text (or, name)
+       :sort-by '((0 . ascend))))
+    (pop-to-buffer "*ecomplete emails*")))
 
 (use-package ediff
   :bind
@@ -362,6 +386,7 @@ buffer name when eglot is enabled."
   :demand t
   :custom
   (eldoc-echo-area-use-multiline-p nil)
+  (eldoc-documentation-function 'eldoc-documentation-compose-eagerly)
   :bind
   (:map hoagie-second-keymap
         ;; "h" for "help"
@@ -375,6 +400,45 @@ buffer name when eglot is enabled."
       (if eldoc-window
           (quit-window nil eldoc-window)
         (eldoc-doc-buffer t)))))
+
+(use-package elisp-mode
+  :config
+  (defun hoagie-elisp-eldoc-value (callback &rest _)
+    "Show the value variable at point by calling CALLBACK.
+One portion of `elisp-eldoc-var-docstring-with-value', it only prints
+the value, docstrings are handled by `hoagie-elisp-eldoc-fulldoc'."
+    (when-let ((cs (elisp--current-symbol)))
+      (when (and (boundp cs)
+                 (not (null cs))
+                 (not (eq cs t)))
+        (funcall callback
+                 (format "Variable value:\n%s"
+		                 (prin1-to-string (symbol-value cs))))
+        :thing cs
+        :face 'font-lock-variable-name-face)))
+  (defun hoagie-elisp-eldoc-fulldoc (callback &rest _)
+    "Show the complete docs for the symbol at point by calling CALLBACK.
+Based on `elisp-eldoc-var-docstring-with-value' and the SO post at
+https://emacs.stackexchange.com/a/55914."
+    (when-let ((cs (elisp--current-symbol)))
+      (funcall callback
+               (format "(full doc)\n%s"
+                       (if (and (boundp cs)
+                                (not (null cs))
+                                (not (eq cs t)))
+                           (or (documentation-property cs
+                                                       'variable-documentation
+                                                       t)
+                               "Undocumented")
+                         (documentation cs t)))
+               :thing cs
+               :face 'font-lock-variable-name-face)))
+  ;; add last to the hook, the value for variables and the complete docstring
+  ;; for variables and functions. This is displayed when invoking
+  ;; `hoagie-toggle-eldoc-buffer', and good to have samples of how to add
+  ;; more eldoc sources :D
+  (add-hook 'eldoc-documentation-functions #'hoagie-elisp-eldoc-value 90 t)
+  (add-hook 'eldoc-documentation-functions #'hoagie-elisp-eldoc-fulldoc 91 t))
 
 (use-package elpher
   :ensure t
@@ -524,7 +588,8 @@ Based on the elpher code."
         ("v a" . hoagie-summary-archive)
         ;; "b" for Basura. Using "s" is risky, as it is
         ;; next to "a"rchive :)
-        ("v b" . hoagie-summary-spam))
+        ("v b" . hoagie-summary-spam)
+        ("v g" . hoagie-summary-show-all))
   :init
   ;; let's do our best to keep Gnus files/dir outside of ~
   ;; some of these are not really Gnus vars, but declared in
@@ -587,6 +652,8 @@ Based on the elpher code."
                                  ))
   (gnus-user-date-format-alist '((t . "%Y-%m-%d %I:%M%p")))
   (gnus-thread-sort-functions '(gnus-thread-sort-by-date))
+  ;; let's experiment disabling threads...
+  (gnus-show-threads nil)
   (gnus-sum-thread-tree-false-root "")
   (gnus-sum-thread-tree-root "")
   (gnus-sum-thread-tree-indent " ")
@@ -608,6 +675,11 @@ Based on the elpher code."
     "Move the current or marked mails to Trash in Fastmail."
     (interactive)
     (gnus-summary-move-article nil "nnimap+fastmail:Trash"))
+  (defun hoagie-summary-show-all ()
+    "Show all messages, even the ones read.
+This is C-u M-g but I figured I would put it in a simpler binding."
+    (interactive)
+    (gnus-summary-rescan-group t))
   )
 
 (use-package go-mode
@@ -758,6 +830,10 @@ Based on the elpher code."
   (message-mail-alias-type 'ecomplete)
   (message-self-insert-commands nil)
   (message-expand-name-standard-ui t)
+  ;; This causes problems when Cc: is already present.
+  ;; Need to either add a func to add a header, or internalize the
+  ;; existing commands to "go to header" which add them
+  ;; (message-default-mail-headers "Cc: \nBcc: \n")
   :config
   ;; From https://www.emacswiki.org/emacs/GnusTutorial#h5o-40
   (defvar hoagie-email-addresses '("sebastian@sebasmonia.com"
@@ -769,8 +845,7 @@ Based on the elpher code."
                                    "work@sebasmonia.com")
     "The list of aliases in my email setup.")
   (defun hoagie-message-change-from ()
-    "Select the \"From:\" address when composing a new email.
-Also adds a BCC header to keep a copy of the message"
+    "Select the \"From:\" address when composing a new email."
     (interactive)
     (let* ((selected-address (completing-read "From: " hoagie-email-addresses))
            (address (concat user-full-name " <" selected-address ">"))
@@ -798,7 +873,7 @@ Also adds a BCC header to keep a copy of the message"
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
   (completions-detailed t)
-  (completion-auto-help t)
+  (completion-auto-help 'visible)
   (completion-auto-select 'second-tab)
   :bind
   ;; Default is M-v, but that doesn't work when completing text in a buffer and
@@ -851,7 +926,7 @@ Also adds a BCC header to keep a copy of the message"
   (defun hoagie-plantuml-generate-png ()
     (interactive)
     (when (buffer-modified-p)
-      (error "There are unsaved changes..."))
+      (error "There are unsaved changes!!!"))
     (let* ((input (expand-file-name (buffer-file-name)))
            (output (concat (file-name-sans-extension input) ".png"))
            (output-buffer (get-file-buffer output)))
@@ -937,27 +1012,25 @@ Also adds a BCC header to keep a copy of the message"
         ("j" . hoagie-jump-to-register)
         ("4 j" . hoagie-jump-to-register-other-window))
   :config
-;;   ;; BRITTLENESS WARNING: this re-defines a built-in method, there's
-;;   ;; a high risk it breaks when moving Emacs versions
-;;   (cl-defmethod register-val-describe ((val marker) _verbose)
-;;     (let ((buf (marker-buffer val)))
-;;       (if (null buf)
-;; 	      (princ "a marker in no buffer")
-;;         (princ (hoagie--text-around-marker val))
-;;         (princ " -- buffer ")
-;;         (princ (buffer-name buf))
-;;         (princ ", pos")
-;;         (princ (marker-position val)))))
-;;   (defun hoagie--text-around-marker (marker)
-;;     "Get the line around MARKER.
-;; Some inspiration from the package Consult."
-;;   (with-current-buffer (marker-buffer marker)
-;;     (save-excursion
-;;       (save-restriction
-;;         (widen)
-;;         (goto-char marker)
-;;         (beginning-of-line)
-;;         (string-trim (thing-at-point 'line))))))
+  ;; BRITTLENESS WARNING: this re-defines a built-in method, there's
+  ;; a high risk it breaks when moving Emacs versions
+  (cl-defmethod register-val-describe ((val marker) _verbose)
+    (let ((buf (marker-buffer val)))
+      (if (null buf)
+	      (princ "a marker in no buffer")
+        (princ (hoagie--text-around-marker val))
+        (princ " -- buffer ")
+        (princ (buffer-name buf))
+        (princ ", pos ")
+        (princ (marker-position val)))))
+  (defun hoagie--text-around-marker (marker-val)
+    "Get the line around MARKER.
+Some inspiration from the package Consult."
+    (with-current-buffer (marker-buffer marker-val)
+      (save-excursion
+        (without-restriction
+          (goto-char marker-val)
+          (string-trim (thing-at-point 'line))))))
   ;; There are a bunch of packages that do this or similar things,
   ;; but I have an interest on developing my own clunky, bug ridden,
   ;; and, I can only hope, flexible system
@@ -1240,6 +1313,7 @@ Inspired by a similar function in Elpher."
   (world-clock-time-format "%r - %F (%A)")
   (world-clock-list '(("America/Denver" "Denver")
                       ("America/Buenos_Aires" "Buenos Aires")
+                      ("Europe/Madrid" "España")
                       ("America/Mexico_City" "CDMX")
                       ("America/Chicago" "Central")
                       ("America/New_York" "Eastern")))
@@ -1369,17 +1443,24 @@ With prefix ARG show the remote branches."
   ;; Stores the window setup before focusing on a single window, and restore it
   ;; on a "mirror" binding: C-x 1 vs F6 1. Simplified version of the
   ;; idea at https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
-  (defvar hoagie-window-configuration nil "Window configuration saved before deleting other windows.")
+  ;; Update: made it so I can manually push a config too. Maybe the alternative command
+  ;; is superflous? or maybe I will need multiple window configuration slots.
+  (defvar hoagie-window-configuration nil
+    "Window configuration saved either manually, or before deleting other windows.")
+  (defun hoagie-store-window-configuration ()
+    (interactive)
+    (setf hoagie-window-configuration (current-window-configuration)))
   (defun hoagie-restore-window-configuration ()
     "Use `hoagie-window-configuration' to restore the window setup."
     (interactive)
     (when hoagie-window-configuration
-      (set-window-configuration hoagie-window-configuration)))
+      (set-window-configuration hoagie-window-configuration)
+      (setf hoagie-window-configuration nil)))
   (defun hoagie-delete-other-windows ()
     "Custom `delete-other-windows' that stores the current setup in `hoagie-window-configuration'.
 Adding an advice to the existing command was finicky."
     (interactive)
-    (setf hoagie-window-configuration (current-window-configuration))
+    (hoagie-store-window-configuration)
     (delete-other-windows))
   (defun hoagie-toggle-frame-split ()
     "Toggle orientation, just like ediff's |.
@@ -1400,6 +1481,10 @@ spin of the first two in the page."
         ("1" . hoagie-delete-other-windows)
         ("|" . hoagie-toggle-frame-split))
   (:map hoagie-keymap
+        ;; experimental: store window setup manually, use case:
+        ;; I'm reading email in Gnus, and want to look at the calendar
+        ;; or world clock or diary
+        ("ESC 1" . hoagie-store-window-configuration)
         ("1" . hoagie-restore-window-configuration)
         ("|" . hoagie-toggle-frame-split)))
 
@@ -1668,7 +1753,7 @@ With ARG, do this that many times."
     ;; 2021-05-22: now I use the pgtk branch everywhere, and the monitor name has
     ;; a meaningul value in all cases, so:
     (let* ((monitor-name (alist-get 'name (frame-monitor-attributes)))
-           (monitor-font '(("0x0536" . 151) ;; laptop
+           (monitor-font '(("0x0536" . 143) ;; laptop -- was 151
                            ("2757" . 120))) ;; external monitor
                          ;;("2757" . 128))) ;; external monitor
            (size (alist-get monitor-name monitor-font
