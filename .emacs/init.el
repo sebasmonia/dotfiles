@@ -33,8 +33,6 @@
 (when (eq window-system 'pgtk)
   (pgtk-use-im-context t))
 
-;; Remember: emacs -Q then eval (native-compile-async "~/.emacs.d" 3 t)
-;; Solves problem "(setf seq-elt) is already defined as something else than a generic function"
 (setf comp-deferred-compilation t
       warning-minimum-level :error)
 
@@ -46,26 +44,41 @@
 (setf use-package-hook-name-suffix nil)
 (setf package-native-compile t)
 (custom-set-faces
- '(default ((t (:family "Iosevka Comfy Wide Fixed" :slant normal :weight regular :height 160 :width normal)))))
+ '(default ((t (:family "Iosevka Comfy Wide Fixed"
+                        :slant
+                        normal
+                        :weight
+                        regular
+                        :height
+                        160
+                        :width
+                        normal)))))
 (set-fontset-font t 'emoji (font-spec :family "Noto Emoji"))
 
 ;; based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html
-(defvar hoagie-keymap (define-prefix-command 'hoagie-keymap) "My custom bindings.")
-(defvar hoagie-second-keymap (define-prefix-command 'hoagie-second-keymap) "Originally a register keymap, now used for other stuff too.")
-(define-key key-translation-map (kbd "<apps>") (kbd "<menu>")) ;; compat Linux-Windows
-(define-key key-translation-map (kbd "<print>") (kbd "<menu>")) ;; curse you, thinkpad keyboard!!!
+(defvar hoagie-keymap
+  (define-prefix-command 'hoagie-keymap)
+  "My custom bindings.")
+(defvar hoagie-second-keymap
+  (define-prefix-command 'hoagie-second-keymap)
+  "Originally a register keymap, now used for other stuff too.")
+;; compat Linux-Windows
+(define-key key-translation-map (kbd "<apps>") (kbd "<menu>"))
+(define-key key-translation-map (kbd "<print>") (kbd "<menu>"))
 (global-set-key (kbd "<menu>") 'hoagie-keymap)
 
-;; In case the config is not running on Silverblue, or if I ever layer Emacs on the base system...
-(defvar hoagie-toolbox-name (if (file-exists-p "/run/.containerenv")
-                                ;; from http://ergoemacs.org/emacs/elisp_read_file_content.html
-                                ;; insert content in temp buffer rather than open a file
-                                (with-temp-buffer
-                                  (insert-file-contents "/run/.containerenv")
-                                  (search-forward "name=") ;; move point to the line with the name
-                                  (setf hoagie-container-name
-                                        (cl-subseq (thing-at-point 'line) 6 -2)))
-                              "host")
+;; In case the config is not running on Silverblue, or if I ever layer Emacs on
+;; the base system...
+(defvar hoagie-toolbox-name
+  (if (file-exists-p "/run/.containerenv")
+      ;; from http://ergoemacs.org/emacs/elisp_read_file_content.html
+      ;; insert content in temp buffer rather than open a file
+      (with-temp-buffer
+        (insert-file-contents "/run/.containerenv")
+        (search-forward "name=") ;; move point to the line with the name
+        (setf hoagie-container-name
+              (cl-subseq (thing-at-point 'line) 6 -2)))
+    "host")
   "Stores the name of the current container, if present.")
 
 ;; these keys are mapped on particular positions in my Dygma Raise
@@ -114,7 +127,7 @@ and APPOINTMENT-TEXT."
     ;; args can be lists if multiple appointments are due at the same time
     (if (listp minutes-until)
         (notifications-notify :title "Emacs - Appointments"
-                              :body (format "Multiple appointments in %s minutes!!!"
+                              :body (format "Multiple appts in %s minutes!!!"
                                             (car minutes-until))
                               :app-name "Emacs"
                               ;; never expire
@@ -226,15 +239,17 @@ Running in a toolbox is actually the \"common\" case. :)"
   :config
   (defun hoagie-dired-open-file ()
     "Open a file with the default OS program.
-Initial version from EmacsWiki, added macOS & Silverblue toolbox support.
-This could also use `w32-shell-execute' on Windows.
-Also, the binding W `browse-url-of-dired-file' is a valid replacement, but not sure
-about toolboxes..."
+Initial version from EmacsWiki, added macOS & Silverblue toolbox
+support. This could also use `w32-shell-execute' on Windows.
+Also, the binding W `browse-url-of-dired-file' is a valid
+replacement, but not sure about toolboxes..."
     (interactive)
     (let ((program-name (cond ((eq system-type 'darwin) "open")
-                              ;; Used to use start "" {path}, but this one works too
+                              ;; Used to use start "" {path}, but this
+                              ;; one works too
                               ((eq system-type 'windows-nt) "explorer")
-                              ;; For Linux, change based on toolbox vs non-toolbox
+                              ;; For Linux, change based on toolbox
+                              ;; vs non-toolbox
                               (t (if (string= hoagie-toolbox-name "host")
                                      "xdg-open"
                                    "flatpak-spawn"))))
@@ -245,7 +260,8 @@ about toolboxes..."
         (setf target-filename (subst-char-in-string ?/ ?\\ target-filename)))
       (apply #'call-process
              program-name
-             ;; arguments to `call-process' + args for toolbox when required + target filename
+             ;; arguments to `call-process' + args for toolbox when required +
+             ;; target filename
              `(nil 0 nil
                    ,@(unless (string= hoagie-toolbox-name "host")
                        '("--host" "xdg-open"))
@@ -258,7 +274,8 @@ about toolboxes..."
       (let ((name (buffer-file-name)))
         (when name
           (kill-new name))
-        (message (format "Filename: %s" (or name "-No file for this buffer-")))))))
+        (message (format "Filename: %s"
+                         (or name "-No file for this buffer-")))))))
 
 (use-package dired-narrow
   :ensure t
@@ -1242,7 +1259,7 @@ Inspired by a similar function in Elpher."
 (use-package shell
   :config
   (defun hoagie-shell-mode-setup ()
-    "My personal shell mode setup."
+    "Setup my `shell-mode' configuration."
     (toggle-truncate-lines t)
     (setf comint-process-echoes t))
   :hook
@@ -1441,12 +1458,13 @@ With prefix ARG show the remote branches."
 (use-package window
   :config
   ;; Stores the window setup before focusing on a single window, and restore it
-  ;; on a "mirror" binding: C-x 1 vs F6 1. Simplified version of the
-  ;; idea at https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
-  ;; Update: made it so I can manually push a config too. Maybe the alternative command
-  ;; is superflous? or maybe I will need multiple window configuration slots.
+  ;; on a "mirror" binding: C-x 1 vs F6 1. Simplified version of the idea at
+  ;; https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
+  ;; Update: made it so I can manually push a config too. Maybe the alternative
+  ;; command is superflous? or maybe I will need multiple window configuration
+  ;; slots.
   (defvar hoagie-window-configuration nil
-    "Window configuration saved either manually, or before deleting other windows.")
+    "Window configuration saved manually, or before deleting other windows.")
   (defun hoagie-store-window-configuration ()
     (interactive)
     (setf hoagie-window-configuration (current-window-configuration)))
@@ -1457,15 +1475,17 @@ With prefix ARG show the remote branches."
       (set-window-configuration hoagie-window-configuration)
       (setf hoagie-window-configuration nil)))
   (defun hoagie-delete-other-windows ()
-    "Custom `delete-other-windows' that stores the current setup in `hoagie-window-configuration'.
+    "Custom `delete-other-windows' that stores the current setup in
+`hoagie-window-configuration'.
 Adding an advice to the existing command was finicky."
     (interactive)
     (hoagie-store-window-configuration)
     (delete-other-windows))
   (defun hoagie-toggle-frame-split ()
     "Toggle orientation, just like ediff's |.
-See https://www.emacswiki.org/emacs/ToggleWindowSplit for sources, this version is my own
-spin of the first two in the page."
+See https://www.emacswiki.org/emacs/ToggleWindowSplit for
+sources, this version is my own spin of the first two in the
+page."
     (interactive)
     (unless (= (count-windows) 2)
       (error "Can only toggle a frame split in two"))
@@ -1542,12 +1562,15 @@ With ARG, do this that many times."
 With ARG, do this that many times."
     (interactive "p")
     (delete-word (- arg)))
-  ;; from https://demonastery.org/2013/04/emacs-narrow-to-region-indirect/
-  ;; modified to DWIM: if there's no active region, just clone the entire
-  ;; buffer. Also use `pop-to-buffer' instead of `switch-to-buffer'
-  (defun hoagie-clone-indirect-dwim ()
-    "Create an indirect buffer, narrow it to the current region if active."
-    (interactive)
+  ;; Inspired by https://demonastery.org/2013/04/emacs-narrow-to-region-indirect/
+  ;; and modified to DWIM. Also use `pop-to-buffer' instead of `switch-to-buffer'
+  (defun hoagie-clone-indirect-dwim (&optional arg)
+    "Create an indirect buffer, narrow it to defun or active region.
+If ARG, don't narrow."
+    (interactive "P")
+    (unless (or (use-region-p)
+                arg)
+      (mark-defun))
     (let ((start (use-region-beginning))
           (end (use-region-end))
           ;; we'll pop the buffer manually
@@ -1582,6 +1605,28 @@ With ARG, do this that many times."
     (if current-prefix-arg
         (call-interactively #'kill-buffer)
       (kill-buffer (current-buffer))))
+  (defvar hoagie-pair-chars
+    '((?\" . ?\")
+      (?\' . ?\')
+      (?\` . ?\')
+      (?\( . ?\))
+      (?\[ . ?\])
+      (?\{ . ?\}))
+    "Alist of pairs to insert for `hoagie-pair-region'.")
+  (defun hoagie-pair-region (start end)
+    "Wrap the active region in a pair from `hoagie-pair-chars'.
+This is my own counterpart to `delete-pair' (which see). Emacs
+has a built in mode for this, `electric-pair-mode', but it does
+more than I want, it is more intrusive, and I couldn't get around
+some of it's behaviours."
+    (interactive "r")
+    (when (use-region-p)
+      (let* ((opener (read-char "Opening char: "))
+             (closer (alist-get opener hoagie-pair-chars)))
+        (goto-char start)
+        (insert opener)
+        (goto-char (+ 1 end))
+        (insert closer))))
   :bind
   ("<S-f1>" . (lambda () (interactive) (find-file user-init-file)))
   ("<f1>" . hoagie-go-home)
@@ -1613,7 +1658,6 @@ With ARG, do this that many times."
   ("M-l" . downcase-dwim)
   ("C-z" . jump-to-char)
   ("M-z" . zap-up-to-char)
-  ("C-x n i" . hoagie-clone-indirect-dwim)
   ("C-x k" . hoagie-kill-buffer)
   ;; it's back...
   ("<remap> <list-buffers>" . ibuffer)
@@ -1626,6 +1670,10 @@ With ARG, do this that many times."
         ("k" . kill-whole-line)
         ;; need to keep this one more present...
         ("u" . delete-pair))
+  (:map hoagie-second-keymap
+        ;; Used to be C-x n i (narrow indirect) with the enhancement
+        ;; to narrow to defun, it gets a new and shorter binding
+        ("c" . hoagie-clone-indirect-dwim))
   :custom
   ;; experimental, I don't think I have a need for lockfiles...
   (create-lockfiles nil)
@@ -1672,14 +1720,8 @@ With ARG, do this that many times."
         w32-use-native-image-API t
         inhibit-compacting-font-caches t
         auto-window-vscroll nil
-        compilation-error-regexp-alist (delete 'maven compilation-error-regexp-alist))
-  ;; from http://www.jurta.org/en/emacs/dotemacs, set the major mode
-  ;; of buffers that are not visiting a file
-  (setq-default major-mode (lambda ()
-                             (if buffer-file-name
-                                 (fundamental-mode)
-                               (let ((buffer-file-name (buffer-name)))
-                                 (set-auto-mode)))))
+        compilation-error-regexp-alist
+        (delete 'maven compilation-error-regexp-alist))
   ;; https://200ok.ch/posts/2020-09-29_comprehensive_guide_on_handling_long_lines_in_emacs.html
   (setq-default bidi-paragraph-direction 'left-to-right
   ;; from https://github.com/SystemCrafters/rational-emacs/blob/master/modules/rational-defaults.el
@@ -1712,10 +1754,14 @@ With ARG, do this that many times."
 
 ;; Convenient to work with AWS timestamps
 (defun hoagie-convert-timestamp (&optional timestamp)
-  "Convert a Unix TIMESTAMP (as string) to date.  If the parameter is not provided use word at point."
+"Convert a Unix TIMESTAMP (as string) to date.
+If the parameter is not provided use word at point."
   (interactive (list (thing-at-point 'word t)))
-  (let ((to-convert (if (< 10 (length timestamp)) (substring timestamp 0 10) timestamp))
-        (millis (if (< 10 (length timestamp)) (substring timestamp 10 (length timestamp)) "000")))
+  (let ((to-convert (if (< 10 (length timestamp))
+                        (substring timestamp 0 10)
+                      timestamp))
+        (millis (if (< 10 (length timestamp))
+                  "000")))
     (message "%s.%s"
              (format-time-string "%Y-%m-%d %H:%M:%S"
                                  (seconds-to-time
@@ -1750,8 +1796,8 @@ With ARG, do this that many times."
   (require 'cl-lib)
   (defun hoagie-adjust-font-size (frame)
     "Inspired by https://emacs.stackexchange.com/a/44930/17066. FRAME is ignored."
-    ;; 2021-05-22: now I use the pgtk branch everywhere, and the monitor name has
-    ;; a meaningul value in all cases, so:
+    ;; 2021-05-22: now I use the pgtk branch everywhere, and the monitor name
+    ;; has a meaningul value in all cases, so:
     (let* ((monitor-name (alist-get 'name (frame-monitor-attributes)))
            (monitor-font '(("0x0536" . 143) ;; laptop -- was 151
                            ("2757" . 120))) ;; external monitor
