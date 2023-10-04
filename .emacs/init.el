@@ -314,10 +314,12 @@ If REGEXP is not provided, then all emails are printed."
     ;; and we already have the keys available, let's extract
     ;; only the name from the display text
     (with-current-buffer (get-buffer-create "*ecomplete emails*")
+      (require 'vtable)
       (erase-buffer)
       (make-vtable
        :columns '("Name" "Email")
-       :objects (cl-loop for (email _count _time display) in (alist-get 'mail ecomplete-database)
+       :objects (cl-loop for (email _count _time display) in
+                         (alist-get 'mail ecomplete-database)
 		                 when (or (null regexp)
                                   (string-match regexp email)
                                   (string-match regexp display))
@@ -355,13 +357,20 @@ If REGEXP is not provided, then all emails are printed."
     (interactive)
     (ediff-copy-diff ediff-current-difference nil 'C nil
                      (concat
-                      (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
-                      (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
+                      (ediff-get-region-contents ediff-current-difference
+                                                 'A
+                                                 ediff-control-buffer)
+                      (ediff-get-region-contents ediff-current-difference
+                                                 'B
+                                                 ediff-control-buffer))))
   (defun add-d-to-ediff-mode-map ()
     "Add key 'd' for 'copy both to C' functionality in ediff."
     (define-key ediff-mode-map "d" #'ediff-copy-both-to-C))
-  ;; One minor annoyance of using ediff with built-in vc was the window config being altered, so:
-  (defvar hoagie-pre-ediff-windows nil "Window configuration before starting ediff.")
+  ;; One minor annoyance of using ediff with built-in vc was
+  ;; the window config being altered, so:
+  (defvar hoagie-pre-ediff-windows
+    nil
+    "Window configuration before starting ediff.")
   (defun hoagie-ediff-store-windows ()
     "Store the pre-ediff window setup"
     (setf hoagie-pre-ediff-windows (current-window-configuration)))
@@ -419,6 +428,8 @@ buffer name when eglot is enabled."
         (eldoc-doc-buffer t)))))
 
 (use-package elisp-mode
+  :hook
+  (emacs-lisp-mode-hook . hoagie-elisp-mode-setup)
   :config
   (defun hoagie-elisp-eldoc-value (callback &rest _)
     "Show the value variable at point by calling CALLBACK.
@@ -447,15 +458,22 @@ https://emacs.stackexchange.com/a/55914."
                                                        'variable-documentation
                                                        t)
                                "Undocumented")
-                         (documentation cs t)))
+                         (condition-case nil
+                             (documentation cs t)
+                           ((error "Possibly undefined?")))))
                :thing cs
                :face 'font-lock-variable-name-face)))
-  ;; add last to the hook, the value for variables and the complete docstring
-  ;; for variables and functions. This is displayed when invoking
-  ;; `hoagie-toggle-eldoc-buffer', and good to have samples of how to add
-  ;; more eldoc sources :D
-  (add-hook 'eldoc-documentation-functions #'hoagie-elisp-eldoc-value 90 t)
-  (add-hook 'eldoc-documentation-functions #'hoagie-elisp-eldoc-fulldoc 91 t))
+  (defun hoagie-elisp-mode-setup ()
+    "Setup my `emacs-lisp-mode' configuration.
+Add hooks for `eldoc' customizations and set `fill-column'."
+    ;; add last to the hook, the value for variables and the complete docstring
+    ;; for variables and functions. This is displayed when invoking
+    ;; `hoagie-toggle-eldoc-buffer', and good to have samples of how to add
+    ;; more eldoc sources :D
+    (add-hook 'eldoc-documentation-functions #'hoagie-elisp-eldoc-value 90 t)
+    (add-hook 'eldoc-documentation-functions #'hoagie-elisp-eldoc-fulldoc 91 t)
+    (setf fill-column 79)
+    (display-fill-column-indicator-mode)))
 
 (use-package elpher
   :ensure t
@@ -493,10 +511,11 @@ https://emacs.stackexchange.com/a/55914."
         ("`" . hoagie-eshell-here))
   :config
   (defun hoagie-eshell-here (&optional arg)
-    "Pops eshell and switches to `default-directory' when the command was invoked.
+    "Pop eshell and switch to `default-directory' when the command was invoked.
 With prefix arg, create a new instance even if there was one running."
     (interactive "P")
-    ;; pass-through of the argument, will return an existing eshell or create a new one
+    ;; pass-through of the argument, will return an existing eshell or
+    ;; create a new one
     (let ((new-dir default-directory))
       (with-current-buffer (eshell arg)
         (goto-char (point-max))
@@ -582,7 +601,9 @@ Based on the elpher code."
                                       (let ((indent-region-function #'c-indent-region))
                                         (indent-region start end)))))))
 
-(defvar hoagie-flymake-keymap (define-prefix-command 'hoagie-flymake-keymap) "Custom bindings for `flymake-mode'.")
+(defvar hoagie-flymake-keymap
+  (define-prefix-command 'hoagie-flymake-keymap)
+  "Custom bindings for `flymake-mode'.")
 (use-package flymake
   :config
   :bind
@@ -639,7 +660,8 @@ Based on the elpher code."
                                      (nnimap-stream ssl)
                                      (nnir-search-engine imap))
                                    (nntp "feedbase"
-                                     (nntp-open-connection-function nntp-open-tls-stream) ; feedbase does not do STARTTLS (yet?)
+                                     ;; feedbase does not do STARTTLS (yet?)
+                                     (nntp-open-connection-function nntp-open-tls-stream)
                                      (nntp-port-number 563) ; nntps
                                      (nntp-address "feedbase.org"))
                                    (nntp "gmane"
@@ -707,7 +729,8 @@ This is C-u M-g but I figured I would put it in a simpler binding."
   (defun hoagie-golang-stdlib-reference ()
     "Open the Go stdlib reference in EWW."
     (interactive)
-    (hoagie-eww-readable (format "https://pkg.go.dev/%s" (read-string "Package: ")))))
+    (hoagie-eww-readable (format "https://pkg.go.dev/%s"
+                                 (read-string "Package: ")))))
 
 (use-package grep
   :custom
@@ -721,7 +744,9 @@ This is C-u M-g but I figured I would put it in a simpler binding."
   :hook
   (after-init-hook . global-hl-line-mode))
 
-(defvar hoagie-howm-keymap (define-prefix-command 'hoagie-howm-keymap) "Custom bindings for `howm-mode'.")
+(defvar hoagie-howm-keymap
+  (define-prefix-command 'hoagie-howm-keymap)
+  "Custom bindings for `howm-mode'.")
 (use-package howm
   :demand t
   :bind-keymap
@@ -756,22 +781,26 @@ This is C-u M-g but I figured I would put it in a simpler binding."
   (icomplete-show-matches-on-no-input t)
   (icomplete-prospects-height 15)
   :config
-  ;; Non-custom configuration. Temporarily disabled, but could replace company...
-  ;; (setf icomplete-in-buffer nil)
-  ;; NOTE to future self: fido uses flex by default, and it is exactly what I want
   (fido-vertical-mode t)
+  (defun hoagie-icomplete-styles ()
+    (setq-local completion-styles '(substring partial-completion flex)))
+  ;; experimental, override style so there isn't only flex, see
+  ;; https://www.reddit.com/r/emacs/comments/16f2t3u/comment/k013bk8/
+  :hook
+  (icomplete-minibuffer-setup-hook . hoagie-icomplete-styles)
   :bind
   (:map icomplete-minibuffer-map
-        ;; when there's no exact match, accept the first one under cursor with RET
+        ;; when there's no exact match, accept the first one
+        ;; under cursor with RET
         ("RET" . icomplete-force-complete-and-exit)
-        ;; C-j to force-accept current input even if it's not in the candidate list
+        ;; C-j to force-accept current input even if it's not
+        ;; in the candidate list
         ("C-j" . icomplete-fido-exit)))
 
 (use-package imenu
   :demand t
   :bind
-  (:map hoagie-keymap
-        ("i" . imenu)))
+  ("M-i" . imenu))
 
 (use-package info
   :config
@@ -883,7 +912,7 @@ This is C-u M-g but I figured I would put it in a simpler binding."
   :custom
   (completions-format 'one-column)
   (completions-max-height 20)
-  ;; (completion-styles '(substring partial-completion flex))
+  (completion-styles '(substring partial-completion flex))
   ;; default: (basic partial-completion emacs22)
   ;; and it is overriden by fido-mode anyway? :shrug:
   (read-buffer-completion-ignore-case t)
@@ -893,12 +922,6 @@ This is C-u M-g but I figured I would put it in a simpler binding."
   (completion-auto-help 'visible)
   (completion-auto-select 'second-tab)
   :bind
-  ;; Default is M-v, but that doesn't work when completing text in a buffer and
-  ;; M-i has a nice symmetry with C-M-i (used to trigger completion)
-  ;; UPDATE 2023-08-07: maybe I don't need this binding...at all?
-  ;; can switch with "second tab" - not 100% sure since now I trigger
-  ;; with C-M-i
-  ;; ("M-i" . switch-to-completions)
   (:map minibuffer-mode-map
         ("C-n" . minibuffer-next-completion)
         ("C-p" . minibuffer-previous-completion))
@@ -999,13 +1022,16 @@ This is C-u M-g but I figured I would put it in a simpler binding."
 (use-package python
   :mode ("\\.py\\'" . python-mode)
   :hook
-  (python-mode-hook . (lambda ()
-                        (setf fill-column 79)
-                        (display-fill-column-indicator-mode)))
+  (python-mode-hook . hoagie-python-mode-setup)
   :custom
   (python-shell-font-lock-enable nil)
   (python-shell-interpreter "ipython")
-  (python-shell-interpreter-args "--pprint --simple-prompt"))
+  (python-shell-interpreter-args "--pprint --simple-prompt")
+  :config
+  (defun hoagie-python-mode-setup ()
+    "Setup my `python-mode' configuration."
+    (setf fill-column 79)
+    (display-fill-column-indicator-mode)))
 
 (use-package re-builder
   :custom
@@ -1069,7 +1095,8 @@ Silently returns nil if none is available."
              return reg-key))
   (defun hoagie-copy-to-next-register ()
     "Copies the region to the register returned by `hoagie-next-register'.
-The values passed to `copy-to-register' are based on its interactive declaration."
+The values passed to `copy-to-register' are based on its
+interactive declaration."
     (interactive)
     (let ((register (hoagie-next-register)))
       (copy-to-register register
@@ -1080,7 +1107,8 @@ The values passed to `copy-to-register' are based on its interactive declaration
       (message "Text to register: %c" register)))
   (defun hoagie-point-to-next-register ()
     "Stores point in the register returned by `hoagie-next-register'.
-The values passed to `point-to-register' are based on its interactive declaration."
+The values passed to `point-to-register' are based on its
+interactive declaration."
     (interactive)
     ;; I never want to store frame configurations...but in a future version
     ;; I could do window configurations? My current setup for windows stores
@@ -1130,7 +1158,8 @@ It also deletes the register when called with prefix ARG."
   (defun hoagie-clean-registers ()
     (interactive)
     (while t
-      (set-register (register-read-with-preview "Register to clear (quit to exit): ")
+      (set-register (register-read-with-preview
+                     "Register to clear (quit to exit): ")
                     nil))))
 
 (use-package restclient
@@ -1151,7 +1180,8 @@ It also deletes the register when called with prefix ARG."
   (defun restclient-toggle-headers ()
     (interactive)
     (message "restclient-response-body-only=%s"
-             (setf restclient-response-body-only (not restclient-response-body-only))))
+             (setf restclient-response-body-only
+                   (not restclient-response-body-only))))
   (defun hoagie-open-restclient (arg)
     "Open a file from the restclient \"collection\"."
     (interactive "P")
@@ -1161,7 +1191,9 @@ It also deletes the register when called with prefix ARG."
                                            nil
                                            nil
                                            (lambda (name)
-                                             (string-equal (file-name-extension name) "http")))))
+                                             (string-equal
+                                              (file-name-extension name)
+                                              "http")))))
       (if arg
           (find-file-other-window restclient-file)
         (find-file restclient-file))))
@@ -1182,12 +1214,14 @@ It also deletes the register when called with prefix ARG."
 By default, occur _limits the search to the region_ if it is active."
     (interactive)
     (if (use-region-p)
-        (occur (buffer-substring-no-properties (region-beginning) (region-end)))
+        (occur (buffer-substring-no-properties (region-beginning)
+                                               (region-end)))
       (occur (thing-at-point 'sexp t))))
   (defun hoagie-rename-and-select-occur-buffer ()
     "Renames the current buffer to *Occur: [term] [buffer]*.
 Meant to be added to `occur-hook'."
-    (cl-destructuring-bind (search-term _ (buffer-name &rest _)) occur-revert-arguments
+    (cl-destructuring-bind (search-term _ (buffer-name &rest _))
+        occur-revert-arguments
       (pop-to-buffer
        (rename-buffer (format "*Occur: %s %s*" search-term buffer-name) t)))))
 
@@ -1614,15 +1648,23 @@ If ARG, don't narrow."
       (?\{ . ?\}))
     "Alist of pairs to insert for `hoagie-pair-region'.")
   (defun hoagie-pair-region (start end)
-    "Wrap the active region in a pair from `hoagie-pair-chars'.
+    "Wrap the region or symbol at point in a pair from `hoagie-pair-chars'.
 This is my own counterpart to `delete-pair' (which see). Emacs
 has a built in mode for this, `electric-pair-mode', but it does
 more than I want, it is more intrusive, and I couldn't get around
 some of it's behaviours."
     (interactive "r")
-    (when (use-region-p)
-      (let* ((opener (read-char "Opening char: "))
-             (closer (alist-get opener hoagie-pair-chars)))
+    (unless (use-region-p)
+      ;; if there's no active region, pick the bounds of the current symbol
+      (cl-destructuring-bind (a . b)
+          (bounds-of-thing-at-point 'symbol)
+        (setf start a
+              end b)))
+    (let* ((opener (read-char "Opening char: "))
+           (closer (alist-get opener hoagie-pair-chars)))
+      ;; if the opener isn't from our list of chars, message and do nothing
+      (if (not closer)
+          (message "\"%c\" is not in the pair list" opener)
         (goto-char start)
         (insert opener)
         (goto-char (+ 1 end))
