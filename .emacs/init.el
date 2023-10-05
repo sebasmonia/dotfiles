@@ -2,7 +2,7 @@
 
 ;; Author: Sebastian Monia <code@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
-;; Version: 29.7
+;; Version: 29.8
 ;; Keywords: .emacs dotemacs
 
 ;; This file is not part of GNU Emacs.
@@ -114,34 +114,30 @@
   ;; override the built in function, as there is not way to customize this
   (defun appt-mode-line (min-to-app &optional _abbrev)
     "Return an appointment string for the mode-line. Hoagie version.
-MIN-TO-APP is a list of minutes, as strings. _ABBREV is ignored, always
-abbreviate text."
+    MIN-TO-APP is a list of minutes, as strings. _ABBREV is ignored, always
+    abbreviate text."
     (let ((smaller-min (car (sort min-to-app #'<))))
       (format "Appt(s): %s"
               (if (equal smaller-min "0") "NOW"
                 (format "%sm" smaller-min)))))
   (defun hoagie-appt-notify (minutes-until _current-time appointment-text)
     "Show appointment reminders in the desktop.
-See the documentation of appt.el for details on MINUTES-UNTIL, _CURRENT-TIME
-and APPOINTMENT-TEXT."
+    See the documentation of appt.el for details on MINUTES-UNTIL, _CURRENT-TIME
+    and APPOINTMENT-TEXT."
     ;; args can be lists if multiple appointments are due at the same time
-    (if (listp minutes-until)
-        (notifications-notify :title "Emacs - Appointments"
-                              :body (format "Multiple appts in %s minutes!!!"
-                                            (car minutes-until))
-                              :app-name "Emacs"
-                              ;; never expire
-                              :timeout 0
-                              ;; use 'low to add a notification without toast
-                              :urgency 'normal)
-      ;; single notification
+    (let ((notification-body (if (listp minutes-until)
+                                 (format "Multiple appts in %s minutes!!!"
+                                         (car minutes-until))
+                               (format "In %s minutes: %s"
+                                       minutes-until
+                                       appointment-text))))
       (notifications-notify :title "Emacs - Appointment"
-                              :body (format "In %s minutes: %s"
-                                            minutes-until
-                                            appointment-text)
-                              :app-name "Emacs"
-                              :timeout 0
-                              :urgency 'normal))))
+                            :body notification-body
+                            :app-name "Emacs"
+                            ;; never expire
+                            :timeout 0
+                            ;; use 'low to add a notification without toast
+                            :urgency 'normal))))
 
 (use-package bookmark
   :bind
@@ -203,6 +199,14 @@ Running in a toolbox is actually the \"common\" case. :)"
   (diary-list-entries-hook . diary-include-other-diary-files)
   )
 
+(use-package cdsync :load-path "~/sourcehut/caldav-sync.el"
+  :demand t
+  :custom
+  (cdsync-auth-source-host "caldav-fastmail")
+  :commands
+  (cdsync-open-diary cdsync-track-calendar cdsync-list-calendars)
+  :config
+  (cdsync-setup-calendar-integration))
 
 (use-package dired
   :custom
