@@ -1,9 +1,9 @@
-;; .emacs --- My dot emacs file  -*- lexical-binding: t; -*-
+;;; .emacs --- My dot emacs file  -*- lexical-binding: t; -*-
 
 ;; Author: Sebastian Monia <code@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
-;; Version: 29.8
-;; Keywords: .emacs dotemacs
+;; Version: 29.9
+;; Keywords: tools maint
 
 ;; This file is not part of GNU Emacs.
 
@@ -11,13 +11,13 @@
 
 ;; My dot Emacs file
 ;; Recent changes:
-;; 2023-06-14: No company...yet again...
-;; 2023-08-02: Some minor clean up. Add Gnus to handle my email
 ;; 2023-08-09: Update config to use PGP for authinfo and sending emails, minor
 ;;             improvements on Gnus and message modes, add emoji font (for some
 ;;             Gemini sites, this is a must!)
 ;; 2023-08-25: Manage email contacts with ecomplete
 ;; 2023-08-31: Notifications and appointments setup
+;; 2023-10-09: Moved unused languages/tools to purgatory.el
+
 ;;; Code:
 
 (setf custom-file (locate-user-emacs-file "custom.el"))
@@ -180,15 +180,18 @@ Running in a toolbox is actually the \"common\" case. :)"
   ("C-;" . dabbrev-expand))
 
 (use-package calendar
+  :demand t
   :custom
   (calendar-date-style 'iso)
   (calendar-view-diary-initially-flag t)
+  ;; show events for the next 7 days when the calendar opens
+  (diary-number-of-entries 7)
   :hook
   (calendar-today-visible-hook . calendar-mark-today)
-  (calendar-mode-hook . diary-mark-entries)
-  )
+  (calendar-mode-hook . diary-mark-entries))
 
 (use-package diary-lib
+  :demand t
   :custom
   (diary-display-function 'diary-fancy-display)
   :hook
@@ -196,8 +199,7 @@ Running in a toolbox is actually the \"common\" case. :)"
   ;; `diary-sort-entries' should be added last, curiously for
   ;; use-package to do that I have to add it _first_
   (diary-list-entries-hook . diary-sort-entries)
-  (diary-list-entries-hook . diary-include-other-diary-files)
-  )
+  (diary-list-entries-hook . diary-include-other-diary-files))
 
 (use-package cdsync :load-path "~/sourcehut/caldav-sync.el"
   :demand t
@@ -287,15 +289,6 @@ replacement, but not sure about toolboxes..."
   :bind
   (:map dired-mode-map
         ("/" . dired-narrow)))
-
-(use-package docker
-  :ensure t
-  :bind
-  ("C-c d" . docker))
-
-(use-package dockerfile-mode
-  :ensure t
-  :mode "Dockerfile\\'")
 
 (use-package ecomplete
   :config
@@ -725,17 +718,6 @@ This is C-u M-g but I figured I would put it in a simpler binding."
     (gnus-summary-rescan-group t))
   )
 
-(use-package go-mode
-  :ensure t
-  :hook
-  (go-mode-hook . subword-mode)
-  :config
-  (defun hoagie-golang-stdlib-reference ()
-    "Open the Go stdlib reference in EWW."
-    (interactive)
-    (hoagie-eww-readable (format "https://pkg.go.dev/%s"
-                                 (read-string "Package: ")))))
-
 (use-package grep
   :custom
   (grep-command "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
@@ -811,7 +793,6 @@ This is C-u M-g but I figured I would put it in a simpler binding."
   (add-to-list 'Info-directory-list
                (expand-file-name "~/.local/share/info/")))
 
-
 (use-package isearch
   :custom
   (search-exit-option 'edit)
@@ -823,28 +804,9 @@ This is C-u M-g but I figured I would put it in a simpler binding."
   (regexp-search-ring-max 64)
   (search-ring-max 64))
 
-(use-package java-mode
-  :hook
-  (java-mode-hook . subword-mode))
-
 (use-package json-mode
   :ensure t
   :mode "\\.json$")
-
-;; (use-package kubernetes
-;;   :ensure t
-;;   :commands (kubernetes-overview)
-;;   :bind
-;;   ("C-c K" . kubernetes-overview)
-;;   ;; experimental alternative
-;;   (:map hoagie-keymap
-;;         ("K" . kubernetes-overview))
-;;   :custom
-;;   ;; setting these means I have to manually
-;;   ;; refresh the "main" screen
-;;   (kubernetes-poll-frequency 3600)
-;;   (kubernetes-redraw-frequency 3600)
-;;   (kubernetes-pods-display-completed t))
 
 (use-package lisp-mode
   :hook
@@ -866,10 +828,7 @@ This is C-u M-g but I figured I would put it in a simpler binding."
   :bind
   (:map message-mode-map
         ;; shadows `message-elide-region' :shrug:
-        ("C-c C-e" . hoagie-confirm-encrypt)
-        ;; As seen in oantolin's config, by default TAB works?
-        ;; ("C-<tab>" . expand-mail-aliases)
-        )
+        ("C-c C-e" . hoagie-confirm-encrypt))
   :hook
   (message-setup-hook . hoagie-message-change-from)
   :custom
@@ -949,42 +908,6 @@ This is C-u M-g but I figured I would put it in a simpler binding."
   :custom
   (show-paren-style 'mixed)
   (show-paren-when-point-inside-paren t))
-
-(use-package php-mode
-  :ensure t
-  )
-
-(use-package plantuml-mode
-  :ensure t
-  :commands plantuml-mode
-  :mode
-  (("\\.puml$" . plantuml-mode)
-   ("\\.plantuml$" . plantuml-mode))
-  :custom
-  (plantuml-jar-path "~/plantuml/plantuml.jar")
-  (plantuml-default-exec-mode 'jar)
-  :bind
-  (:map plantuml-mode-map
-        ("C-c C-p" . hoagie-plantuml-generate-png))
-  :config
-  (defun hoagie-plantuml-generate-png ()
-    (interactive)
-    (when (buffer-modified-p)
-      (error "There are unsaved changes!!!"))
-    (let* ((input (expand-file-name (buffer-file-name)))
-           (output (concat (file-name-sans-extension input) ".png"))
-           (output-buffer (get-file-buffer output)))
-    (call-process "java" nil t nil
-                  ;; the jar file...
-                  "-jar"
-                  (expand-file-name plantuml-jar-path)
-                  input
-                  "-tpng")
-    (if output-buffer
-        (with-current-buffer output-buffer
-          (revert-buffer-quick)
-          (pop-to-buffer output-buffer))
-      (find-file-other-window output)))))
 
 (use-package proced
   :custom
@@ -1166,45 +1089,6 @@ It also deletes the register when called with prefix ARG."
                      "Register to clear (quit to exit): ")
                     nil))))
 
-(use-package restclient
-  :ensure t
-  :custom
-  (restclient-same-buffer-response t)
-  (restclient-response-body-only nil)
-  :mode
-  ("\\.http\\'" . restclient-mode)
-  :bind
-  ("<f4>" . hoagie-open-restclient)
-  (:map restclient-mode-map
-        ("C-c r" . rename-buffer)
-        ("C-c h" . restclient-toggle-headers))
-  :hook
-  (restclient-mode-hook . hoagie-restclient-imenu-index)
-  :config
-  (defun restclient-toggle-headers ()
-    (interactive)
-    (message "restclient-response-body-only=%s"
-             (setf restclient-response-body-only
-                   (not restclient-response-body-only))))
-  (defun hoagie-open-restclient (arg)
-    "Open a file from the restclient \"collection\"."
-    (interactive "P")
-    (let ((restclient-file (read-file-name "Open restclient file:"
-                                           "~/restclient/"
-                                           nil
-                                           nil
-                                           nil
-                                           (lambda (name)
-                                             (string-equal
-                                              (file-name-extension name)
-                                              "http")))))
-      (if arg
-          (find-file-other-window restclient-file)
-        (find-file restclient-file))))
-  (defun hoagie-restclient-imenu-index ()
-    "Configure imenu on the convention \"### Title ###\"."
-    (setq-local imenu-generic-expression '((nil "^### \\(.*\\) ###$" 1)))))
-
 (use-package replace
   :bind
   (:map hoagie-keymap
@@ -1228,20 +1112,6 @@ Meant to be added to `occur-hook'."
         occur-revert-arguments
       (pop-to-buffer
        (rename-buffer (format "*Occur: %s %s*" search-term buffer-name) t)))))
-
-(use-package rcirc
-  :commands rcirc
-  :custom
-  (rcirc-server-alist '(("irc.libera.chat"
-                         :port 7000
-                         :encryption tls
-                         :server-alias "libera"
-                         :nick "hoagie"
-                         :full-name "Sebastián Monía"
-                         :user-name "seb.hoagie@outlook.com"
-                         :channels ("#emacs" "#emacs-es" "#argentina"))))
-  :hook
-  (rcirc-mode-hook . (lambda () (rcirc-track-minor-mode 1))))
 
 (use-package savehist
   :custom
@@ -1294,15 +1164,6 @@ Inspired by a similar function in Elpher."
                  (cons (format link-template text target)
                        target))))))
 
-(use-package shell
-  :config
-  (defun hoagie-shell-mode-setup ()
-    "Setup my `shell-mode' configuration."
-    (toggle-truncate-lines t)
-    (setf comint-process-echoes t))
-  :hook
-  (shell-mode-hook . hoagie-shell-mode-setup))
-
 (use-package sly
   :ensure t
   :commands sly
@@ -1322,9 +1183,6 @@ Inspired by a similar function in Elpher."
   (smtpmail-smtp-service 587))
 
 (use-package sql
-  :custom
-  (sql-ms-options '("--driver" "ODBC Driver 17 for SQL Server"))
-  (sql-ms-program "/var/home/hoagie/github/sqlcmdline/sqlcmdline.py")
   :hook
   (sql-interactive-mode-hook . (lambda () (setf truncate-lines t))))
 
@@ -1359,10 +1217,6 @@ Inspired by a similar function in Elpher."
                  (sql-datum-options '("--driver" "SQLITE3" ))
                  (sql-database "/var/home/hoagie/github/datum/chinook.db"))))
 
-(use-package terraform-mode
-  :ensure t
-  :mode "\\.tf$")
-
 (use-package time
   :custom
   (world-clock-time-format "%r - %F (%A)")
@@ -1387,10 +1241,6 @@ Inspired by a similar function in Elpher."
     (run-at-time (* 60 minutes) nil #'notifications-notify
                  :title "Emacs - Timer" :body message
                  :app-name "Emacs" :timeout 0 :urgency 'normal)))
-
-(use-package tramp
-  :custom
-  (tramp-default-method "sshx"))
 
 (use-package vc
   :demand t
@@ -1546,35 +1396,10 @@ page."
         ("1" . hoagie-restore-window-configuration)
         ("|" . hoagie-toggle-frame-split)))
 
-(use-package web-mode
-  :ensure t
-  :mode
-  (("\\.html$" . web-mode)
-   ("\\.phtml\\'" . web-mode)
-   ("\\.tpl\\.php\\'" . web-mode)
-   ("\\.[agj]sp\\'" . web-mode)
-   ("\\.as[cp]x\\'" . web-mode)
-   ("\\.cshtml\\'" . web-mode)
-   ("\\.erb\\'" . web-mode)
-   ("\\.mustache\\'" . web-mode)
-   ("\\.djhtml\\'" . web-mode)
-   ("\\.html?\\'" . web-mode)
-   ("\\.css\\'" . web-mode)
-   ("\\.xml?\\'" . web-mode))
-  :custom
-  (web-mode-enable-css-colorization t)
-  (web-mode-enable-sql-detection t)
-  (web-mode-enable-current-element-highlight t)
-  (web-mode-markup-indent-offset 2))
-
 (use-package ws-butler
   :ensure t
   :hook
   (prog-mode-hook . ws-butler-mode))
-
-(use-package yaml-mode
-  :ensure t
-  :mode "\\.yml$")
 
 ;; Everything that is not part of a particular feature to require
 (use-package emacs
