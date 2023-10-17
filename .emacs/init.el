@@ -151,6 +151,7 @@
 (use-package browse-url
   :custom
   (browse-url-secondary-browser-function #'hoagie-browse-url)
+  (browse-url-browser-function #'eww-browse-url)
   :config
   (defun hoagie-browse-url (url &rest args)
     "Open Firefox, changing invocation if running in a toolbox.
