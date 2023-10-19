@@ -1469,6 +1469,22 @@ If ARG, don't narrow."
     (if current-prefix-arg
         (call-interactively #'kill-buffer)
       (kill-buffer (current-buffer))))
+  (defun hoagie-region-escape-quotes (start end)
+    "Escape quotes in the region.
+It simply adds a \\ to each \" found."
+    (interactive "r")
+    (unless (use-region-p)
+      (error "No active region"))
+    ;; using replace in string vs replace in region because I need to
+    ;; insert the literal replacement
+    (let ((new-text
+           (replace-regexp-in-string "\\(\"\\)"
+                                     "\\\""
+                                     (buffer-substring-no-properties start end)
+                                     nil
+                                     t)))
+      (delete-region start end)
+      (insert new-text)))
   (defvar hoagie-pair-chars
     '((?\" . ?\")
       (?\' . ?\')
@@ -1514,12 +1530,6 @@ some of it's behaviours."
   ("M-o" . other-window)
   ("M-O" . other-frame)
   ("M-`" . other-frame) ;; for Windows - behave like Gnome
-  ;; TODO: should I remove this binding? it is sometimes shadowed by other
-  ;; modes, and it clashes with some new Emacs 29 commands
-  ;; ("M-N" . next-buffer)
-  ;; ("M-P" . previous-buffer)
-  ;; from https://karthinks.com/software/batteries-included-with-emacs/#cycle-spacing--m-spc
-  ;; ("M-SPC" . cycle-spacing) default in 29 apparently? confirm
   ;; from https://emacsredux.com/blog/2020/06/10/comment-commands-redux/
   ("<remap> <comment-dwim>" . comment-line)
   ;; replace delete-char, as recommended in the docs
@@ -1541,11 +1551,13 @@ some of it's behaviours."
         ;; (F6 and C are next to each other in the Raise)
         ("k" . kill-whole-line)
         ;; need to keep this one more present...
-        ("u" . delete-pair))
+        ("u" . delete-pair)
+        ("p" . hoagie-pair-region))
   (:map hoagie-second-keymap
         ;; Used to be C-x n i (narrow indirect) with the enhancement
         ;; to narrow to defun, it gets a new and shorter binding
-        ("c" . hoagie-clone-indirect-dwim))
+        ("c" . hoagie-clone-indirect-dwim)
+        ("q" . hoagie-region-escape-quotes))
   :custom
   ;; experimental, I don't think I have a need for lockfiles...
   (create-lockfiles nil)
