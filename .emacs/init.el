@@ -1102,10 +1102,12 @@ It also deletes the register when called with prefix ARG."
     "Run occur for the sexp at point, or the active region.
 By default, occur _limits the search to the region_ if it is active."
     (interactive)
-    (if (use-region-p)
-        (occur (buffer-substring-no-properties (region-beginning)
-                                               (region-end)))
-      (occur (thing-at-point 'sexp t))))
+    (occur (if (use-region-p)
+               (buffer-substring-no-properties (region-beginning)
+                                               (region-end))
+             (thing-at-point 'sexp t))
+           (when current-prefix-arg
+	         (prefix-numeric-value current-prefix-arg))))
   (defun hoagie-rename-and-select-occur-buffer ()
     "Renames the current buffer to *Occur: [term] [buffer]*.
 Meant to be added to `occur-hook'."
@@ -1446,7 +1448,7 @@ If ARG, don't narrow."
           (narrow-to-region start end)
           (deactivate-mark))
         (pop-to-buffer buf))))
-  (defun jump-to-char (arg char &optional interactive)
+  (defun hoagie-jump-to-char (arg char &optional interactive)
     "A copy of `zap-to-char' that doesn't kill the text."
     (interactive (list (prefix-numeric-value current-prefix-arg)
 		               (read-char-from-minibuffer "Jump to char: "
@@ -1492,8 +1494,8 @@ It simply adds a \\ to each \" found."
       (?\( . ?\))
       (?\[ . ?\])
       (?\{ . ?\}))
-    "Alist of pairs to insert for `hoagie-pair-region'.")
-  (defun hoagie-pair-region (start end)
+    "Alist of pairs to insert for `hoagie-insert-pair'.")
+  (defun hoagie-insert-pair (start end)
     "Wrap the region or symbol at point in a pair from `hoagie-pair-chars'.
 This is my own counterpart to `delete-pair' (which see). Emacs
 has a built in mode for this, `electric-pair-mode', but it does
@@ -1538,7 +1540,7 @@ some of it's behaviours."
   ("M-c" . capitalize-dwim)
   ("M-u" . upcase-dwim)
   ("M-l" . downcase-dwim)
-  ("C-z" . jump-to-char)
+  ("C-z" . hoagie-jump-to-char)
   ("M-z" . zap-up-to-char)
   ("C-x k" . hoagie-kill-buffer)
   ;; it's back...
@@ -1552,7 +1554,7 @@ some of it's behaviours."
         ("k" . kill-whole-line)
         ;; need to keep this one more present...
         ("u" . delete-pair)
-        ("p" . hoagie-pair-region))
+        ("p" . hoagie-insert-pair))
   (:map hoagie-second-keymap
         ;; Used to be C-x n i (narrow indirect) with the enhancement
         ;; to narrow to defun, it gets a new and shorter binding
