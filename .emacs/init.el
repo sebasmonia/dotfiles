@@ -2,7 +2,7 @@
 
 ;; Author: Sebastian Monia <code@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
-;; Version: 29.9
+;; Version: 29.10
 ;; Keywords: tools maint
 
 ;; This file is not part of GNU Emacs.
@@ -16,7 +16,8 @@
 ;;             Gemini sites, this is a must!)
 ;; 2023-08-25: Manage email contacts with ecomplete
 ;; 2023-08-31: Notifications and appointments setup
-;; 2023-10-09: Moved unused languages/tools to purgatory.el
+;; 2023-10-09: Move unused languages/tools to purgatory.el
+;; 2023-11-07: Move general editing commands to hoagie-editing.el
 
 ;;; Code:
 
@@ -88,6 +89,18 @@
 ;; This one is for the benefit of the laptop keyboard, which
 ;; I'm barely using nowadays, TBH
 (define-key key-translation-map (kbd "<f8>") (kbd "C-c"))
+
+;; this package declares commands and macros (!) that I use for general
+;; editing
+(use-package hoagie-editing :load-path "~/sourcehut/dotfiles/.emacs/"
+  :bind
+  ("C-<backspace>" . backward-delete-word)
+  ("C-z" . hoagie-region-to-char)
+  (:map hoagie-keymap
+        ("/" . hoagie-toggle-backslash)
+        ("p" . hoagie-insert-pair))
+  (:map hoagie-second-keymap
+        ("q" . hoagie-escape-quotes)))
 
 (use-package ansi-color
   :commands (ansi-color-apply-buffer)
@@ -927,6 +940,7 @@ This is C-u M-g but I figured I would put it in a simpler binding."
      (project-find-regexp "Find regexp" nil)
      (project-dired "Find directory" ?d)
      (project-vc-dir "VC-Dir" nil)
+     (project-shell "Shell" nil)
      (project-eshell "Eshell" nil)))
   :config
   (defun hoagie-project-multi-occur (regexp &optional nlines)
@@ -938,14 +952,14 @@ This is C-u M-g but I figured I would put it in a simpler binding."
            (default-directory (project-root the-project ))
            (files (mapcar #'find-file-noselect (project-files the-project))))
       (multi-occur files regexp nlines)))
-    ;; from https://dawranliou.com/blog/xref-with-eglot-and-project/
-    (defun project-find-regexp-with-unique-buffer (orig-fun &rest args)
-      "An advice function that gives project-find-regexp a unique buffer name"
-      (require 'xref)
-      (let ((xref-buffer-name (format "*xref %s*" (car args))))
-        (apply orig-fun args)))
-    (advice-add 'project-find-regexp :around
-                #'project-find-regexp-with-unique-buffer))
+  ;; from https://dawranliou.com/blog/xref-with-eglot-and-project/
+  (defun project-find-regexp-with-unique-buffer (orig-fun &rest args)
+    "An advice function that gives project-find-regexp a unique buffer name"
+    (require 'xref)
+    (let ((xref-buffer-name (format "*xref %s*" (car args))))
+      (apply orig-fun args)))
+  (advice-add 'project-find-regexp :around
+              #'project-find-regexp-with-unique-buffer))
 
 (use-package python
   :mode ("\\.py\\'" . python-mode)
@@ -1093,21 +1107,23 @@ It also deletes the register when called with prefix ARG."
 (use-package replace
   :bind
   (:map hoagie-keymap
-        ("o" . hoagie-occur-sexp-or-region)
-        ("ESC o" . multi-occur-in-matching-buffers))
+        ("o" . hoagie-occur-symbol-or-region)
+        ("ESC o" . multi-occur-in-matching-buffers)
+        ;; good mirror of occur -> occur-dwim, except
+        ;; this built in does have a default binding
+        ("s" . isearch-forward-thing-at-point))
   :hook
   (occur-hook . hoagie-rename-and-select-occur-buffer)
   :config
-  (defun hoagie-occur-sexp-or-region ()
-    "Run occur for the sexp at point, or the active region.
+  (defun hoagie-occur-symbol-or-region ()
+    "Run occur for the symbol at point, or the active region.
 By default, occur _limits the search to the region_ if it is active."
     (interactive)
-    (occur (if (use-region-p)
-               (buffer-substring-no-properties (region-beginning)
-                                               (region-end))
-             (thing-at-point 'sexp t))
-           (when current-prefix-arg
-	         (prefix-numeric-value current-prefix-arg))))
+    (with-region-or-thing 'symbol
+      (occur (buffer-substring-no-properties start
+                                             end)
+             (when current-prefix-arg
+	           (prefix-numeric-value current-prefix-arg)))))
   (defun hoagie-rename-and-select-occur-buffer ()
     "Renames the current buffer to *Occur: [term] [buffer]*.
 Meant to be added to `occur-hook'."
@@ -1194,31 +1210,8 @@ Inspired by a similar function in Elpher."
   :custom
   (sql-datum-program "/var/home/hoagie/.local/bin/datum.sh")
   :config
-  (setf sql-connection-alist nil)
-  (add-to-list 'sql-connection-alist
-               '("Container - user SA"
-                 (sql-product 'datum)
-                 (sql-server "127.0.0.1,1433")
-                 (sql-user "sa")
-                 (sql-password "LeSecurity!1")
-                 (sql-datum-options '("--driver" "FreeTDS" ))
-                 (sql-database "tp11")))
-  (add-to-list 'sql-connection-alist
-               '("Container - user TP11"
-                 (sql-product 'datum)
-                 (sql-server "127.0.0.1,1433")
-                 (sql-user "tp_ProgAvanzada")
-                 (sql-password "H0l4Mund0")
-                 (sql-datum-options '("--driver" "FreeTDS" ))
-                 (sql-database "tp11")))
-  (add-to-list 'sql-connection-alist
-               '("Chinook"
-                 (sql-product 'datum)
-                 (sql-server "")
-                 (sql-user "")
-                 (sql-password "")
-                 (sql-datum-options '("--driver" "SQLITE3" ))
-                 (sql-database "/var/home/hoagie/github/datum/chinook.db"))))
+  ;; these are defined separately in each computer I use
+  (setf sql-connection-alist nil))
 
 (use-package time
   :custom
@@ -1236,12 +1229,14 @@ Inspired by a similar function in Elpher."
   :config
   ;; inspired by this code
   ;; https://www.reddit.com/r/emacs/comments/7wsnoi/comment/du3h11l/
-  (defun hoagie-notify-timer (message minutes)
-    "Show MESSAGE after MINUTES, in a desktop notification."
-    (interactive "sMessage (default: \"Timer Elapsed\"): \nnMinutes: ")
+  (defun hoagie-notify-timer (message when)
+    "Show MESSAGE at TIME, in a desktop notification.
+Time can be anything accepted by `run-at-time'."
+    (interactive
+     "sMessage (default: \"Timer Elapsed\"): \nsSeconds (or \"#min\"): ")
     (when (string-empty-p message)
       (setf message "Timer elapsed"))
-    (run-at-time (* 60 minutes) nil #'notifications-notify
+    (run-at-time when nil #'notifications-notify
                  :title "Emacs - Timer" :body message
                  :app-name "Emacs" :timeout 0 :urgency 'normal)))
 
@@ -1294,6 +1289,7 @@ With prefix arg, does a hard reset (thus it asks for confirmation)."
   :after vc
   :custom
   (vc-git-revision-complete-only-branches t)
+  (vc-git-log-switches '("--date=iso-local"))
   :config
   (defun hoagie-vc-git-fetch-all ()
     "Run \"git fetch --all\" in the current repo.
@@ -1356,9 +1352,11 @@ With prefix ARG show the remote branches."
   ;; slots.
   (defvar hoagie-window-configuration nil
     "Window configuration saved manually, or before deleting other windows.")
-  (defun hoagie-store-window-configuration ()
+  (defun hoagie-store-window-configuration (&optional silent)
     (interactive)
-    (setf hoagie-window-configuration (current-window-configuration)))
+    (setf hoagie-window-configuration (current-window-configuration))
+    (unless silent
+      (message "Stored current window configuration")))
   (defun hoagie-restore-window-configuration ()
     "Use `hoagie-window-configuration' to restore the window setup."
     (interactive)
@@ -1370,7 +1368,7 @@ With prefix ARG show the remote branches."
 `hoagie-window-configuration'.
 Adding an advice to the existing command was finicky."
     (interactive)
-    (hoagie-store-window-configuration)
+    (hoagie-store-window-configuration t)
     (delete-other-windows))
   (defun hoagie-toggle-frame-split ()
     "Toggle orientation, just like ediff's |.
@@ -1412,111 +1410,29 @@ page."
     (if arg
         (dired-other-window "~/")
       (dired "~/")))
-  ;; from https://www.emacswiki.org/emacs/BackwardDeleteWord because I
-  ;; agree C-backspace shouldn't kill the word! It litters my kill ring
-  (defun delete-word (arg)
-    "Delete characters forward until encountering the end of a word.
-With ARG, do this that many times."
-    (interactive "p")
-    (if (use-region-p)
-        (delete-region (region-beginning) (region-end))
-      (delete-region (point) (progn
-                               (forward-word arg)
-                               (point)))))
-  (defun backward-delete-word (arg)
-    "Delete characters backward until encountering the end of a word.
-With ARG, do this that many times."
-    (interactive "p")
-    (delete-word (- arg)))
   ;; Inspired by https://demonastery.org/2013/04/emacs-narrow-to-region-indirect/
   ;; and modified to DWIM. Also use `pop-to-buffer' instead of `switch-to-buffer'
   (defun hoagie-clone-indirect-dwim (&optional arg)
     "Create an indirect buffer, narrow it to defun or active region.
-If ARG, don't narrow."
+If ARG, don't prompt for buffer name suffix."
     (interactive "P")
-    (unless (or (use-region-p)
-                arg)
-      (mark-defun))
-    (let ((start (use-region-beginning))
-          (end (use-region-end))
-          ;; we'll pop the buffer manually
-          ;; to clear the region
-          (buf (clone-indirect-buffer nil nil)))
-      (deactivate-mark)
-      (with-current-buffer buf
-        (when (and start end)
+    (with-region-or-thing 'defun
+      (let* ((new-name (unless arg
+                         (format "%s<%s>"
+                                 (buffer-name)
+                                 (read-string "<suffix>: "))))
+             ;; we'll pop the buffer manually to clear the region
+             (buf (clone-indirect-buffer new-name nil)))
+        (with-current-buffer buf
           (narrow-to-region start end)
           (deactivate-mark))
         (pop-to-buffer buf))))
-  (defun hoagie-jump-to-char (arg char &optional interactive)
-    "A copy of `zap-to-char' that doesn't kill the text."
-    (interactive (list (prefix-numeric-value current-prefix-arg)
-		               (read-char-from-minibuffer "Jump to char: "
-						                          nil 'read-char-history)
-                       t))
-    (let ((direction (if (>= arg 0) 1 -1))
-          (case-fold-search (if (and interactive (char-uppercase-p char))
-                                nil
-                              case-fold-search)))
-      (goto-char
-	   (progn
-		 (forward-char direction)
-		 (unwind-protect
-		     (search-forward (char-to-string char) nil nil arg)
-		   (backward-char direction))
-		 (point)))))
   (defun hoagie-kill-buffer (&optional prefix-arg)
     "Kill the current buffer, with PREFIX-ARG defer to `kill-buffer'."
     (interactive "P")
     (if current-prefix-arg
         (call-interactively #'kill-buffer)
       (kill-buffer (current-buffer))))
-  (defun hoagie-region-escape-quotes (start end)
-    "Escape quotes in the region.
-It simply adds a \\ to each \" found."
-    (interactive "r")
-    (unless (use-region-p)
-      (error "No active region"))
-    ;; using replace in string vs replace in region because I need to
-    ;; insert the literal replacement
-    (let ((new-text
-           (replace-regexp-in-string "\\(\"\\)"
-                                     "\\\""
-                                     (buffer-substring-no-properties start end)
-                                     nil
-                                     t)))
-      (delete-region start end)
-      (insert new-text)))
-  (defvar hoagie-pair-chars
-    '((?\" . ?\")
-      (?\' . ?\')
-      (?\` . ?\')
-      (?\( . ?\))
-      (?\[ . ?\])
-      (?\{ . ?\}))
-    "Alist of pairs to insert for `hoagie-insert-pair'.")
-  (defun hoagie-insert-pair (start end)
-    "Wrap the region or symbol at point in a pair from `hoagie-pair-chars'.
-This is my own counterpart to `delete-pair' (which see). Emacs
-has a built in mode for this, `electric-pair-mode', but it does
-more than I want, it is more intrusive, and I couldn't get around
-some of it's behaviours."
-    (interactive "r")
-    (unless (use-region-p)
-      ;; if there's no active region, pick the bounds of the current symbol
-      (cl-destructuring-bind (a . b)
-          (bounds-of-thing-at-point 'symbol)
-        (setf start a
-              end b)))
-    (let* ((opener (read-char "Opening char: "))
-           (closer (alist-get opener hoagie-pair-chars)))
-      ;; if the opener isn't from our list of chars, message and do nothing
-      (if (not closer)
-          (message "\"%c\" is not in the pair list" opener)
-        (goto-char start)
-        (insert opener)
-        (goto-char (+ 1 end))
-        (insert closer))))
   :bind
   ("<S-f1>" . (lambda () (interactive) (find-file user-init-file)))
   ("<f1>" . hoagie-go-home)
@@ -1536,11 +1452,9 @@ some of it's behaviours."
   ("<remap> <comment-dwim>" . comment-line)
   ;; replace delete-char, as recommended in the docs
   ("C-d" . delete-forward-char)
-  ("C-<backspace>" . backward-delete-word)
   ("M-c" . capitalize-dwim)
   ("M-u" . upcase-dwim)
   ("M-l" . downcase-dwim)
-  ("C-z" . hoagie-jump-to-char)
   ("M-z" . zap-up-to-char)
   ("C-x k" . hoagie-kill-buffer)
   ;; it's back...
@@ -1558,8 +1472,7 @@ some of it's behaviours."
   (:map hoagie-second-keymap
         ;; Used to be C-x n i (narrow indirect) with the enhancement
         ;; to narrow to defun, it gets a new and shorter binding
-        ("c" . hoagie-clone-indirect-dwim)
-        ("q" . hoagie-region-escape-quotes))
+        ("c" . hoagie-clone-indirect-dwim))
   :custom
   ;; experimental, I don't think I have a need for lockfiles...
   (create-lockfiles nil)
