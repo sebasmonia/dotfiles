@@ -88,14 +88,14 @@ The right side has a numpad, with backspace bumped one row down (to make room fo
 
 ## Layer 7 - "Base for Windows"
 
-When I am using my work laptop, I switch to this layer as a replacemente base. So far, the only difference is that the OS layer is #8 instead of #3. But in teh future can accomodate more Windows-specific changes, or jump other customized layers.  
+When I am using my work laptop, I switch to this layer as a replacemente base. So far, the only difference is that the OS layer is #8 instead of #3. But in the future it can accomodate more Windows-specific changes, or jump other customized layers.  
 The Backspace key toggles to the Linux layer via a "Lock to 1".  
 
 ![Layer 7](pictures/Layer-7-Base-Windows.png)
 
 ## Layer 8 - "OS Windows/Arrows/Media"
 
-This started as a clone of Layer 3 but with keys to move workspaces adjusted to Windows' multiple desktops usage. Turns out though, that the feature in Windows is quite incomplete, and basically unusuable with keyboard only. I created a macro that does the dance to move the current window to a new desktop, but there's no key to close a virtual desktop, or to move an application to the next/prev desktop. Bleh.  
+This started as a clone of Layer 3 but with keys to move workspaces adjusted to Windows' multiple desktops usage. Turns out though, that the feature in Windows is quite incomplete, and basically unusable with keyboard only. I created a macro that does the dance to move the current window to a new desktop, but there's no key to close a virtual desktop, or to move an application to the next/prev desktop. Bleh.  
 At least I get to customize the screenshot key (from PrintScreen in Gnome, to Win+Shift+S in Windows) and add Ctrl+Alt+Del in the Backspace position.
 
 ![Layer 8](pictures/Layer-8-OS-Windows-Arrows.png)
