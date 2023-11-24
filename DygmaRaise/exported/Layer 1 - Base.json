@@ -1,4 +1,17 @@
 {
+  "device": {
+    "vendor": "Dygma",
+    "product": "Raise",
+    "keyboardType": "ANSI",
+    "displayName": "Dygma Raise ANSI",
+    "urls": [
+      {
+        "name": "Homepage",
+        "url": "https://www.dygma.com/raise/"
+      }
+    ]
+  },
+  "language": "english",
   "layerNames": [
     {
       "id": 0,
@@ -6,11 +19,11 @@
     },
     {
       "id": 1,
-      "name": "F-keys / Browser / Mouse"
+      "name": "Browser - Mouse"
     },
     {
       "id": 2,
-      "name": "Windows/Arrows/Media"
+      "name": "OS - Linux"
     },
     {
       "id": 3,
@@ -18,19 +31,19 @@
     },
     {
       "id": 4,
-      "name": "Base + Shift"
+      "name": "Shift + Base"
     },
     {
       "id": 5,
-      "name": "L6"
+      "name": "Excel"
     },
     {
       "id": 6,
-      "name": "L7"
+      "name": "Base - Windows"
     },
     {
       "id": 7,
-      "name": "L8"
+      "name": "OS - Windows"
     },
     {
       "id": 8,
@@ -107,9 +120,9 @@
       "label": "="
     },
     {
-      "keyCode": 53980,
-      "label": "ThatK",
-      "extraLabel": "SUPER"
+      "keyCode": 17498,
+      "label": "7",
+      "extraLabel": "LOCK"
     },
     {
       "keyCode": 43,
@@ -323,9 +336,9 @@
       "extraLabel": "C+"
     },
     {
-      "keyCode": 53858,
-      "label": "Gnome",
-      "extraLabel": "MACRO"
+      "keyCode": 49166,
+      "label": "6",
+      "extraLabel": "OSL"
     },
     {
       "keyCode": 227,
@@ -383,23 +396,23 @@
       "verbose": "Backspace"
     },
     {
-      "keyCode": 226,
-      "label": "LEFT ALT",
-      "verbose": "Left Alt"
+      "keyCode": 230,
+      "label": "RIGHT ALT",
+      "extraLabel": "",
+      "verbose": "AltGr"
     },
     {
       "keyCode": 101,
       "label": "MENU"
     },
     {
-      "keyCode": 4322,
-      "label": "LEFT ALT",
-      "extraLabel": "G+"
+      "keyCode": 73,
+      "label": "INSERT"
     },
     {
-      "keyCode": 53857,
-      "label": "Gnome",
-      "extraLabel": "MACRO"
+      "keyCode": 53982,
+      "label": "Lang+",
+      "extraLabel": "SUPER"
     }
   ],
   "colormap": [
@@ -429,14 +442,14 @@
     1,
     1,
     1,
-    4,
+    2,
     11,
     11,
     5,
     0,
     2,
     0,
-    4,
+    2,
     10,
     10,
     1,
@@ -465,9 +478,9 @@
     1,
     1,
     4,
+    5,
+    11,
     14,
-    11,
-    11,
     5,
     0,
     2,
@@ -616,16 +629,16 @@
       "rgb": "rgb(0, 0, 0)"
     },
     {
-      "r": 189,
-      "g": 0,
-      "b": 25,
-      "rgb": "rgb(189, 0, 25)"
+      "r": 175,
+      "g": 65,
+      "b": 0,
+      "rgb": "rgb(175, 65, 0)"
     },
     {
-      "r": 48,
-      "g": 148,
+      "r": 189,
+      "g": 197,
       "b": 0,
-      "rgb": "rgb(48, 148, 0)"
+      "rgb": "rgb(189, 197, 0)"
     },
     {
       "r": 0,
