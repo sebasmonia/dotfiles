@@ -91,45 +91,6 @@
           (pop-to-buffer output-buffer))
       (find-file-other-window output)))))
 
-(use-package restclient
-  :ensure t
-  :custom
-  (restclient-same-buffer-response t)
-  (restclient-response-body-only nil)
-  :mode
-  ("\\.http\\'" . restclient-mode)
-  :bind
-  ("<f4>" . hoagie-open-restclient)
-  (:map restclient-mode-map
-        ("C-c r" . rename-buffer)
-        ("C-c h" . restclient-toggle-headers))
-  :hook
-  (restclient-mode-hook . hoagie-restclient-imenu-index)
-  :config
-  (defun restclient-toggle-headers ()
-    (interactive)
-    (message "restclient-response-body-only=%s"
-             (setf restclient-response-body-only
-                   (not restclient-response-body-only))))
-  (defun hoagie-open-restclient (arg)
-    "Open a file from the restclient \"collection\"."
-    (interactive "P")
-    (let ((restclient-file (read-file-name "Open restclient file:"
-                                           "~/restclient/"
-                                           nil
-                                           nil
-                                           nil
-                                           (lambda (name)
-                                             (string-equal
-                                              (file-name-extension name)
-                                              "http")))))
-      (if arg
-          (find-file-other-window restclient-file)
-        (find-file restclient-file))))
-  (defun hoagie-restclient-imenu-index ()
-    "Configure imenu on the convention \"### Title ###\"."
-    (setq-local imenu-generic-expression '((nil "^### \\(.*\\) ###$" 1)))))
-
 (use-package rcirc
   :commands rcirc
   :custom

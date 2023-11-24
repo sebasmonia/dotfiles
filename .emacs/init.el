@@ -2,7 +2,7 @@
 
 ;; Author: Sebastian Monia <code@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
-;; Version: 29.10
+;; Version: 29.11
 ;; Keywords: tools maint
 
 ;; This file is not part of GNU Emacs.
@@ -18,6 +18,8 @@
 ;; 2023-08-31: Notifications and appointments setup
 ;; 2023-10-09: Move unused languages/tools to purgatory.el
 ;; 2023-11-07: Move general editing commands to hoagie-editing.el
+;; 2023-11-24: Remove some bindings, add auth-source customization, add some
+;;             initialization to sql-mode and markdown-mode.
 
 ;;; Code:
 
@@ -151,6 +153,11 @@
                             :timeout 0
                             ;; use 'low to add a notification without toast
                             :urgency 'normal))))
+(use-package auth-source
+  :custom
+  ;; change order so TRAMP defaults to saving passwords in
+  ;; the encrypted gpg file
+  (auth-sources '("~/.authinfo.gpg" "~/.authinfo" "~/.netrc")))
 
 (use-package bookmark
   :bind
@@ -755,12 +762,15 @@ This is C-u M-g but I figured I would put it in a simpler binding."
   (:map hoagie-keymap
         ("3" . hoagie-howm-inbox)
         ("C-3" . howm-list-todo)
-        ("ESC 3" . howm-list-schedule))
+        ;; ("ESC 3" . howm-list-schedule))
+        ("ESC 3" . howm-list-all))
   (:map hoagie-howm-keymap
         ("c" . howm-create)
         ("3" . howm-menu)
         ("s" . howm-list-grep-fixed)
-        ("t" . howm-insert-date))
+        ("t" . howm-insert-dtime)
+        ("d" . howm-insert-date)
+        ("a" . howm-list-all))
   :config
   (setf howm-file-name-format "%Y/%m/%Y-%m-%d-%H%M%S.md")
   ;; https://leahneukirchen.org/blog/archive/2022/03/note-taking-in-emacs-with-howm.html
@@ -836,7 +846,12 @@ This is C-u M-g but I figured I would put it in a simpler binding."
   (setq markdown-command "pandoc")
   :bind
   (:map markdown-mode-map
-        ("C-c C-e" . markdown-do)))
+        ("C-c C-e" . markdown-do))
+  :hook
+  (markdown-mode-hook . (lambda ()
+                          (setf fill-column 100
+                          truncate-lines t))))
+
 
 (use-package message
   :bind
@@ -1132,6 +1147,45 @@ Meant to be added to `occur-hook'."
       (pop-to-buffer
        (rename-buffer (format "*Occur: %s %s*" search-term buffer-name) t)))))
 
+(use-package restclient
+  :ensure t
+  :custom
+  (restclient-same-buffer-response nil)
+  (restclient-response-body-only nil)
+  :mode
+  ("\\.http\\'" . restclient-mode)
+  :bind
+  ("<f4>" . hoagie-open-restclient)
+  (:map restclient-mode-map
+        ("C-c r" . rename-buffer)
+        ("C-c h" . restclient-toggle-headers))
+  :hook
+  (restclient-mode-hook . hoagie-restclient-imenu-index)
+  :config
+  (defun restclient-toggle-headers ()
+    (interactive)
+    (message "restclient-response-body-only=%s"
+             (setf restclient-response-body-only
+                   (not restclient-response-body-only))))
+  (defun hoagie-open-restclient (arg)
+    "Open a file from the restclient \"collection\"."
+    (interactive "P")
+    (let ((restclient-file (read-file-name "Open restclient file:"
+                                           "~/restclient/"
+                                           nil
+                                           nil
+                                           nil
+                                           (lambda (name)
+                                             (string-equal
+                                              (file-name-extension name)
+                                              "http")))))
+      (if arg
+          (find-file-other-window restclient-file)
+        (find-file restclient-file))))
+  (defun hoagie-restclient-imenu-index ()
+    "Configure imenu on the convention \"### Title\"."
+    (setq-local imenu-generic-expression '((nil "^### \\(.*\\)$" 1)))))
+
 (use-package savehist
   :custom
   (savehist-additional-variables '(kill-ring
@@ -1203,7 +1257,12 @@ Inspired by a similar function in Elpher."
 
 (use-package sql
   :hook
-  (sql-interactive-mode-hook . (lambda () (setf truncate-lines t))))
+  (sql-interactive-mode-hook . hoagie-sql-interactive-hook)
+  :config
+  (defun hoagie-sql-interactive-hook ()
+    "Configure SQLi"
+    (setf truncate-lines t)
+    (setq-local imenu-generic-expression '((nil "^\\(.*\\)" 1)))))
 
 (use-package sql-datum :load-path "~/github/datum"
   :after sql
@@ -1445,9 +1504,6 @@ If ARG, don't prompt for buffer name suffix."
   ("S-<right>" . (lambda () (interactive)(enlarge-window-horizontally 5)))
   ("S-<up>" . (lambda () (interactive)(shrink-window 5)))
   ("S-<down>" . (lambda () (interactive)(shrink-window -5)))
-  ("M-o" . other-window)
-  ("M-O" . other-frame)
-  ("M-`" . other-frame) ;; for Windows - behave like Gnome
   ;; from https://emacsredux.com/blog/2020/06/10/comment-commands-redux/
   ("<remap> <comment-dwim>" . comment-line)
   ;; replace delete-char, as recommended in the docs
@@ -1473,6 +1529,9 @@ If ARG, don't prompt for buffer name suffix."
         ;; Used to be C-x n i (narrow indirect) with the enhancement
         ;; to narrow to defun, it gets a new and shorter binding
         ("c" . hoagie-clone-indirect-dwim))
+  (:map ctl-x-map
+        ;; add shift to C-x o to switch frames instead
+        ("O" . other-frame))
   :custom
   ;; experimental, I don't think I have a need for lockfiles...
   (create-lockfiles nil)
@@ -1498,7 +1557,7 @@ If ARG, don't prompt for buffer name suffix."
   (inhibit-startup-screen t)
   (initial-buffer-choice t)
   (initial-scratch-message
-   ";; Il semble que la perfection soit atteinte non quand il n’y a plus rien à ajouter, mais quand il n’y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n;; Marking:                             ;; Killing\n;; M-@ Next word C-M-<SPC> Next sexp    ;; C-M-k next sexp\n;; M-h Paragraph C-x h Buffer           ;; C-k rest of line\n;; C-M-h Next defun                     ;; <f6> k whole line\n\n;; Misc:                                   ;; (e)SHELL C-c then...\n;; <f6> i imenu C-x C-k e edit kmacro      ;; C-[p|n] prev/next input\n;; M-t Transpose word C-M-t Tranpose sexp  ;; C-o clear last output\n;; C-x / vundo\n\n;; During search\n;; C-w add word at point, repeat to add more\n;; M-r toggle regex\n\n;; Replace (regexp + elisp):\n;; \"movie\" -> \"film\" and \"movies\" -> \"films\":\n;; ‘movie(s)?‘ -> ‘,(if \\1 \"films\" \"film\")‘\n\n;; howm:\n;; <f6> 3 - inbox\n;; <f6> C-3 - show TODO\n;; <f6> ESC 3 - show scheduled\n;; <f3> howm keymap (hit twice for menu)\n\n;; REMEMBER: REGEXPS - INFO\n\n")
+   ";; Il semble que la perfection soit atteinte non quand il n’y a plus rien à ajouter, mais quand il n’y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n;; Marking:                             ;; Killing\n;; M-@ Next word C-M-<SPC> Next sexp    ;; C-M-k next sexp\n;; M-h Paragraph C-x h Buffer           ;; C-k rest of line\n;; C-M-h Next defun                     ;; <f6> k whole line\n\n;; Misc:                                   ;; (e)SHELL C-c then...\n;; <f6> i imenu C-x C-k e edit kmacro      ;; C-[p|n] prev/next input\n;; M-t Transpose word C-M-t Tranpose sexp  ;; C-o clear last output\n;; C-x / vundo\n\n;; During search\n;; C-w add word at point, repeat to add more\n;; M-r toggle regex\n\n;; Replace (regexp + elisp):\n;; \"movie\" -> \"film\" and \"movies\" -> \"films\":\n;; ‘movie(s)?‘ -> ‘,(if \\1 \"films\" \"film\")‘\n\n;; howm:\n;; <f6> 3 - inbox\n;; <f6> C-3 - show TODO\n;; <f6> ESC 3 - show all notes\n;; <f3> howm keymap (hit twice for menu)\n\n;; REMEMBER: REGEXPS - INFO\n\n")
   (save-interprogram-paste-before-kill t)
   (visible-bell nil) ;; macOS change
   ;; from https://gitlab.com/jessieh/dot-emacs
