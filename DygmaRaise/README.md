@@ -82,7 +82,7 @@ This is mostly the same as layer 1, but keys have the shift modifier applied. In
 ## Layer 6 - "Excel (and numpad)"
 
 It finally happened. This layer came to life after I had to work for a couple hours on spreadsheets. It is intended to be used locked, having on the left side arrows in the ESDF position, with easy undo/redo in Z and Q. It also has a convenient Alt+= for the "SUM in range" shortcut in the 6 key.  
-The right side has a numpad, with backspace bumped one row down (to make room for 0).
+The right side has a numpad, with backspace bumped one row down (to make room for 0), next to delete and Esc. Basically everything I need to quickly move around cells and edit them.
 
 ![Layer 6](pictures/Layer-6-Excel.png)
 
