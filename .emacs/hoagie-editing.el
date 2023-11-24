@@ -58,8 +58,7 @@ With ARG, do this that many times."
 (defun hoagie-region-to-char (arg char &optional interactive)
   "A copy of `zap-to-char' that activates or expands the region."
   (interactive (list (prefix-numeric-value current-prefix-arg)
-		             (read-char-from-minibuffer "Mark to char: "
-						                        nil 'read-char-history)
+		             (read-char "Mark to char: " nil 'read-char-history)
                      t))
   (let ((direction (if (>= arg 0) 1 -1))
         (case-fold-search (if (and interactive (char-uppercase-p char))
