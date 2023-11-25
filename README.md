@@ -2,10 +2,10 @@ A place to store my keyboard and Emacs configuration. I used to have more things
 
 ## Emacs config
 
-A [use-package](https://github.com/jwiegley/use-package) based configuration, that tries its best to be platform agnostic.  
-In most cases I prefer smaller packages, if built-in, even better (eg icomplete over ivy/helm, project.el over projectile, etc.).  
-I use/used [lsp-mode](https://emacs-lsp.github.io/lsp-mode/) for C#, Python, Java, Go and PHP. Haven't revisited dap-mode but I used it in the past for C# with success.  
-I use [Sly](https://github.com/joaotavora/sly) for Common Lisp.  
+A [use-package](https://www.gnu.org/software/emacs/manual/html_mono/use-package.html) based configuration, that tries its best to be platform agnostic.  
+In most cases I prefer smaller packages, if built-in, even better (eg fido-mode over ivy/helm, project.el over projectile, etc.).  
+In the same spirit, I use Eglot for my LSP needs.  
+My package of preference for Common Lisp is [Sly](https://github.com/joaotavora/sly), a fork of SLIME.  
 My theme of choice is [modus-operandi](https://gitlab.com/protesilaos/modus-themes). Every once in a while I try other themes, but at most a day later I end up going back to modus.  
 My mode line of choice is [mood-line](https://gitlab.com/jessieh/mood-line), a text-only variant of doom-modeline, with two patches: narrowing indicator, and displaying region size when it is active.  
 
@@ -37,7 +37,8 @@ I really like the idea of not layering anything over the base image, so all apps
 
 ### Work setup
 
-Dell Latitude 5421 with Windows 10.  
+Dell Precision 7670 running Windows 11. Emacs compiled from source using MinGW, executed under Win32, with native-comp and libjansson.  
+I could use WSL or a VM, but I'd rather not have one more layer of indirection (plus I used Windows for so many years, I can find my way around it...).  
 
 
 
