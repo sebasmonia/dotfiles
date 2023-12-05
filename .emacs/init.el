@@ -587,9 +587,6 @@ Based on the elpher code."
                       all-links
                       nil nil #'string=)))))
 
-
-;; TODO: as I write less C#, should I stil keep this around?
-;; haven't used it much lately
 (use-package fill-function-arguments
   :ensure t
   :commands (fill-function-arguments-dwim)
@@ -848,10 +845,15 @@ This is C-u M-g but I figured I would put it in a simpler binding."
   (:map markdown-mode-map
         ("C-c C-e" . markdown-do))
   :hook
-  (markdown-mode-hook . (lambda ()
-                          (setf fill-column 100
-                          truncate-lines t))))
-
+  (markdown-mode-hook . hoagie-markdown-mode-setup)
+  :config
+  (defun hoagie-markdown-mode-setup ()
+    "Setup my `markdown-mode' configuration.
+Set `fill-column', `truncate-lines'."
+    (setf fill-column 100
+          truncate-lines t)
+    (display-fill-column-indicator-mode)
+    (auto-fill-mode)))
 
 (use-package message
   :bind
@@ -1256,6 +1258,8 @@ Inspired by a similar function in Elpher."
   (smtpmail-smtp-service 587))
 
 (use-package sql
+  :custom
+  (sql-display-sqli-buffer-function nil)
   :hook
   (sql-interactive-mode-hook . hoagie-sql-interactive-hook)
   :config
@@ -1372,7 +1376,7 @@ With prefix ARG show the remote branches."
     (let* ((default-directory (project-root (project-current t)))
            (buffer-name (project-prefixed-buffer-name (if arg
                                                           "git remote branches"
-                                                        "git branches"))))
+                                                        "git local branches"))))
       (vc-git-command buffer-name
                       0
                       nil
@@ -1537,9 +1541,6 @@ If ARG, don't prompt for buffer name suffix."
   (create-lockfiles nil)
   (sentence-end-double-space nil)
   (tab-width 4) ;; make golang code nicer to read
-  ;; TODO: so far I'm liking being explicit when I request completion
-  ;; vs triggering when trying to indent. But it is an extra key... :shrug:
-  ;; (tab-always-indent 'complete)
   (delete-pair-blink-delay 0.1)
   (recenter-positions '(1 middle -2)) ;; behaviour for C-l
   (comint-prompt-read-only t)
@@ -1670,11 +1671,22 @@ If the parameter is not provided use word at point."
 (use-package modus-themes
   :demand t
   :config
-  (load-theme 'modus-operandi t))
+  (load-theme 'modus-operandi t)
+  :custom
+  (modus-themes-completions (quote ((matches . (underline))
+                                    (selection . (bold intense))))))
 
+(require 'mood-line-segment-vc)
 (use-package mood-line
   :demand t
   :custom
+  (mood-line-format
+   '((" " (mood-line-hoagie-segment-buffer-status) " "
+      (mood-line-segment-buffer-name) " " (mood-line-segment-cursor-position)
+      " " (mood-line-segment-region) " ")
+     ((mood-line-segment-vc) "  " (mood-line-segment-major-mode) "  "
+      (mood-line-hoagie-segment-misc-info) "  " (mood-line-segment-checker)
+      "  " (mood-line-segment-process) " ")))
   (mood-line-glyph-alist '((:checker-info . ?i)
                            (:checker-issues . ?!)
                            (:checker-good . ?+)
@@ -1694,37 +1706,25 @@ If the parameter is not provided use word at point."
   ;; same as the original one, but **make it bold**!
   (mood-line-buffer-status-modified ((t (:inherit (error) :weight bold))))
   :init
-  (mood-line-mode)
-  (defun mood-line-segment-cursor-position ()
-    "Display the current cursor position.
-This modified version shows the region size if applicable."
-    (let ((region-size (when (use-region-p)
-                         (propertize (format " (%sL:%sC)"
-                                             (count-lines (region-beginning)
-                                                          (region-end))
-                                             (- (region-end) (region-beginning)))
-                                     'face 'mood-line-unimportant)))
-          (position (propertize " %p%% " 'face 'mood-line-unimportant)))
-      (list "%l:%c" position region-size)))
-  (defun mood-line-segment-buffer-status ()
+  (defun mood-line-hoagie-segment-buffer-status ()
     "Return an indicator for buffer status.
 This version makes the narrowing indicator independent, and shows
 modified only when the buffer isn't read-only.
 The whole segment is decorated with `mood-line-buffer-status-modified'.
-See https://gitlab.com/jessieh/mood-line/-/issues/20."
+see https://gitlab.com/jessieh/mood-line/-/issues/20."
     (propertize (concat (if buffer-read-only
                             (mood-line--get-glyph :buffer-read-only)
                           ;; since it's not read-only, show the
                           ;; modified flag
                           (if (buffer-modified-p)
-                            (mood-line--get-glyph :buffer-modified)
+                              (mood-line--get-glyph :buffer-modified)
                             " "))
                         (if (buffer-narrowed-p)
                             (mood-line--get-glyph :buffer-narrowed)
                           " ")
                         " ")
                 'face 'mood-line-buffer-status-modified))
-  (defun mood-line-segment-misc-info ()
+  (defun mood-line-hoagie-segment-misc-info ()
     "Display the current value of `mode-line-misc-info'.
 This modified version adds a keyboard macro recording status."
     (let ((misc-info (concat (format-mode-line mode-line-misc-info 'mood-line-unimportant)
@@ -1732,6 +1732,8 @@ This modified version adds a keyboard macro recording status."
                                (format-mode-line mode-line-defining-kbd-macro
                                                  'mood-line-major-mode)))))
       (unless (string-blank-p (string-trim misc-info))
-          (concat (string-trim misc-info) "  ")))))
+          (concat (string-trim misc-info) "  "))))
+  :config
+  (mood-line-mode))
 
 ;;; init.el ends here
