@@ -2,7 +2,7 @@
 
 ;; Author: Sebastian Monia <code@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
-;; Version: 29.11
+;; Version: 30.1
 ;; Keywords: tools maint
 
 ;; This file is not part of GNU Emacs.
@@ -20,7 +20,7 @@
 ;; 2023-11-07: Move general editing commands to hoagie-editing.el
 ;; 2023-11-24: Remove some bindings, add auth-source customization, add some
 ;;             initialization to sql-mode and markdown-mode.
-
+;; 2023-12-06: Use my own mode-line configuration. Require Emacs 30.
 ;;; Code:
 
 (setf custom-file (locate-user-emacs-file "custom.el"))
@@ -951,6 +951,7 @@ Set `fill-column', `truncate-lines'."
         ("f" . project-find-file))
   :custom
   (project-vc-extra-root-markers '(".subproject"))
+  (project-mode-line t)
   ;; go back to old default of "d" for "dired at root"
   (project-switch-commands
    '((project-find-file "Find file" nil)
@@ -1654,7 +1655,8 @@ If the parameter is not provided use word at point."
 
   (require 'cl-lib)
   (defun hoagie-adjust-font-size (frame)
-    "Inspired by https://emacs.stackexchange.com/a/44930/17066. FRAME is ignored."
+    "Inspired by https://emacs.stackexchange.com/a/44930/17066.
+FRAME is ignored."
     ;; 2021-05-22: now I use the pgtk branch everywhere, and the monitor name
     ;; has a meaningul value in all cases, so:
     (let* ((monitor-name (alist-get 'name (frame-monitor-attributes)))
@@ -1676,64 +1678,59 @@ If the parameter is not provided use word at point."
   (modus-themes-completions (quote ((matches . (underline))
                                     (selection . (bold intense))))))
 
-(require 'mood-line-segment-vc)
-(use-package mood-line
-  :demand t
-  :custom
-  (mood-line-format
-   '((" " (mood-line-hoagie-segment-buffer-status) " "
-      (mood-line-segment-buffer-name) " " (mood-line-segment-cursor-position)
-      " " (mood-line-segment-region) " ")
-     ((mood-line-segment-vc) "  " (mood-line-segment-major-mode) "  "
-      (mood-line-hoagie-segment-misc-info) "  " (mood-line-segment-checker)
-      "  " (mood-line-segment-process) " ")))
-  (mood-line-glyph-alist '((:checker-info . ?i)
-                           (:checker-issues . ?!)
-                           (:checker-good . ?+)
-                           (:checker-checking . ?-)
-                           (:checker-errored . ?x)
-                           (:checker-interrupted . ?=)
-                           (:vc-added . ?+)
-                           (:vc-needs-merge . ?m)
-                           (:vc-needs-update . ?u)
-                           (:vc-conflict . ?c)
-                           (:vc-good . ?-)
-                           (:buffer-narrowed . ?n)
-                           (:buffer-modified . ?!)
-                           (:buffer-read-only . ?-)
-                           (:count-separator . ?*)))
-  :custom-face
-  ;; same as the original one, but **make it bold**!
-  (mood-line-buffer-status-modified ((t (:inherit (error) :weight bold))))
-  :init
-  (defun mood-line-hoagie-segment-buffer-status ()
-    "Return an indicator for buffer status.
-This version makes the narrowing indicator independent, and shows
-modified only when the buffer isn't read-only.
-The whole segment is decorated with `mood-line-buffer-status-modified'.
-see https://gitlab.com/jessieh/mood-line/-/issues/20."
-    (propertize (concat (if buffer-read-only
-                            (mood-line--get-glyph :buffer-read-only)
-                          ;; since it's not read-only, show the
-                          ;; modified flag
-                          (if (buffer-modified-p)
-                              (mood-line--get-glyph :buffer-modified)
-                            " "))
-                        (if (buffer-narrowed-p)
-                            (mood-line--get-glyph :buffer-narrowed)
-                          " ")
-                        " ")
-                'face 'mood-line-buffer-status-modified))
-  (defun mood-line-hoagie-segment-misc-info ()
-    "Display the current value of `mode-line-misc-info'.
-This modified version adds a keyboard macro recording status."
-    (let ((misc-info (concat (format-mode-line mode-line-misc-info 'mood-line-unimportant)
-                             (when defining-kbd-macro
-                               (format-mode-line mode-line-defining-kbd-macro
-                                                 'mood-line-major-mode)))))
-      (unless (string-blank-p (string-trim misc-info))
-          (concat (string-trim misc-info) "  "))))
-  :config
-  (mood-line-mode))
+;; These are based on my mood-line configuration. The package broke a few times
+;; after updates, plus it kept growing in size, and I had my own customizations
+;; on top of it.
+;; So I decided to setup my own mode-line from scratch.
+(defun hoagie-mode-line-buffer-status ()
+  "Return a mode-line indicator for buffer status.
+Also shows whether the buffer is narrowed or remote.
+Shows encoding and EOL info in a tooltip."
+  (propertize (concat (if buffer-read-only
+                          "-"
+                        ;; since it's not read-only, show the
+                        ;; modified flag
+                        (if (buffer-modified-p) "!" " "))
+                      (if (buffer-narrowed-p) "N" "")
+                      (if (file-remote-p default-directory) "R" "")
+                      " ")
+              'face '((t (:inherit (error) :weight bold)))))
+
+(defun hoagie-mode-line-cursor-position ()
+    "Mode line cursor position with region if applicable."
+    (let ((region-size (when (use-region-p)
+                         (propertize (format " (%sL:%sC)"
+                                             (count-lines (region-beginning)
+                                                          (region-end))
+                                             (- (region-end) (region-beginning)))
+                                     'face 'shadow)))
+          (position (propertize " %p% " 'face 'shadow)))
+      (list "%l:%c" position region-size)))
+
+(defun hoagie-mode-line-keybmacro-indicator ()
+  "Show an indicator when macro recording is in progress."
+  (when defining-kbd-macro
+    (propertize "RM"
+                'face 'error
+                'help-echo "Recording macro" )))
+
+(defun hoagie-mode-line-buffer-name ()
+  "Return a mode-line indicator for buffer name.
+Shows file name in a tooltip.
+From http://emacs-fu.blogspot.com/2011/08/customizing-mode-line.html"
+  (propertize "%b" 'face 'mode-line-buffer-id 'help-echo (buffer-file-name)))
+
+(defun hoagie-mode-line-major-mode ()
+  "Mode-line major mode segment.
+Show minor modes in a tooltip."
+  (propertize (format-mode-line mode-name)
+              'face 'mode-line-buffer-id
+              'help-echo (format-mode-line minor-mode-alist)))
+
+(setq-default
+ mode-line-format
+ '(" " (:eval (hoagie-mode-line-buffer-status)) "  " (:eval (hoagie-mode-line-buffer-name)) "  " (:eval (hoagie-mode-line-cursor-position))
+   mode-line-format-right-align
+   (:eval (hoagie-mode-line-keybmacro-indicator)) " " mode-line-misc-info " " mode-line-process "  " (vc-mode vc-mode) "  " (:eval (hoagie-mode-line-major-mode)) "  " (project-mode-line project-mode-line-format) "  " " "))
 
 ;;; init.el ends here
