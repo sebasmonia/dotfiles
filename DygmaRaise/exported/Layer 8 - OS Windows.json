@@ -1,4 +1,17 @@
 {
+  "device": {
+    "vendor": "Dygma",
+    "product": "Raise",
+    "keyboardType": "ANSI",
+    "displayName": "Dygma Raise ANSI",
+    "urls": [
+      {
+        "name": "Homepage",
+        "url": "https://www.dygma.com/raise/"
+      }
+    ]
+  },
+  "language": "english",
   "layerNames": [
     {
       "id": 0,
@@ -6,11 +19,11 @@
     },
     {
       "id": 1,
-      "name": "F-keys / Browser / Mouse"
+      "name": "Browser - Mouse"
     },
     {
       "id": 2,
-      "name": "Windows/Arrows/Media"
+      "name": "OS - Linux"
     },
     {
       "id": 3,
@@ -18,19 +31,19 @@
     },
     {
       "id": 4,
-      "name": "Base + Shift"
+      "name": "Shift + Base"
     },
     {
       "id": 5,
-      "name": "L6"
+      "name": "Excel"
     },
     {
       "id": 6,
-      "name": "L7"
+      "name": "Base - Windows"
     },
     {
       "id": 7,
-      "name": "L8"
+      "name": "OS - Windows"
     },
     {
       "id": 8,
@@ -49,32 +62,32 @@
     {
       "keyCode": 4126,
       "label": "1",
-      "extraLabel": "G+"
+      "extraLabel": "O+"
     },
     {
       "keyCode": 4127,
       "label": "2",
-      "extraLabel": "G+"
+      "extraLabel": "O+"
     },
     {
       "keyCode": 4128,
       "label": "3",
-      "extraLabel": "G+"
+      "extraLabel": "O+"
     },
     {
       "keyCode": 4129,
       "label": "4",
-      "extraLabel": "G+"
+      "extraLabel": "O+"
     },
     {
       "keyCode": 4130,
       "label": "5",
-      "extraLabel": "G+"
+      "extraLabel": "O+"
     },
     {
       "keyCode": 4131,
       "label": "6",
-      "extraLabel": "G+"
+      "extraLabel": "O+"
     },
     {
       "keyCode": 0,
@@ -91,22 +104,22 @@
     {
       "keyCode": 4132,
       "label": "7",
-      "extraLabel": "G+"
+      "extraLabel": "O+"
     },
     {
       "keyCode": 4133,
       "label": "8",
-      "extraLabel": "G+"
+      "extraLabel": "O+"
     },
     {
       "keyCode": 4134,
       "label": "9",
-      "extraLabel": "G+"
+      "extraLabel": "O+"
     },
     {
       "keyCode": 4135,
       "label": "0",
-      "extraLabel": "G+"
+      "extraLabel": "O+"
     },
     {
       "keyCode": 71,
@@ -114,14 +127,14 @@
       "verbose": "Scroll Lock"
     },
     {
-      "keyCode": 70,
-      "label": "PRINT SCRN",
-      "verbose": "Print Screen"
+      "keyCode": 6166,
+      "label": "S",
+      "extraLabel": "S+O+"
     },
     {
-      "keyCode": 42,
-      "label": "BACKSPACE",
-      "verbose": "Backspace"
+      "keyCode": 844,
+      "label": "DEL",
+      "extraLabel": "C+A+"
     },
     {
       "keyCode": 23663,
@@ -129,29 +142,29 @@
       "extraLabel": "Display"
     },
     {
-      "keyCode": 6219,
-      "label": "PAGE UP",
-      "extraLabel": "S+G+"
+      "keyCode": 4359,
+      "label": "D",
+      "extraLabel": "C+O+"
     },
     {
-      "keyCode": 4171,
-      "label": "PAGE UP",
-      "extraLabel": "G+"
+      "keyCode": 4432,
+      "label": "←",
+      "extraLabel": "C+O+"
     },
     {
       "keyCode": 4178,
       "label": "↑",
-      "extraLabel": "G+"
+      "extraLabel": "O+"
     },
     {
-      "keyCode": 4174,
-      "label": "PAGE DOWN",
-      "extraLabel": "G+"
+      "keyCode": 4431,
+      "label": "→",
+      "extraLabel": "C+O+"
     },
     {
-      "keyCode": 6222,
-      "label": "PAGE DOWN",
-      "extraLabel": "S+G+"
+      "keyCode": 4139,
+      "label": "TAB",
+      "extraLabel": "O+"
     },
     {
       "keyCode": 0,
@@ -183,8 +196,10 @@
       "label": "END"
     },
     {
-      "keyCode": 73,
-      "label": "INSERT"
+      "keyCode": 0,
+      "label": "KEY",
+      "extraLabel": "NO",
+      "verbose": "Disabled"
     },
     {
       "keyCode": 17153,
@@ -207,29 +222,29 @@
       "extraLabel": "Display"
     },
     {
-      "keyCode": 6224,
-      "label": "←",
-      "extraLabel": "S+G+"
+      "keyCode": 4413,
+      "label": "F4",
+      "extraLabel": "C+O+"
     },
     {
       "keyCode": 4176,
       "label": "←",
-      "extraLabel": "G+"
+      "extraLabel": "O+"
     },
     {
       "keyCode": 4177,
       "label": "↓",
-      "extraLabel": "G+"
+      "extraLabel": "O+"
     },
     {
       "keyCode": 4175,
       "label": "→",
-      "extraLabel": "G+"
+      "extraLabel": "O+"
     },
     {
-      "keyCode": 6223,
-      "label": "→",
-      "extraLabel": "S+G+"
+      "keyCode": 53863,
+      "label": "Win -",
+      "extraLabel": "MACRO"
     },
     {
       "keyCode": 0,
@@ -342,7 +357,7 @@
     {
       "keyCode": 4151,
       "label": ".",
-      "extraLabel": "G+"
+      "extraLabel": "O+"
     },
     {
       "keyCode": 2128,
@@ -367,9 +382,9 @@
       "verbose": "Disabled"
     },
     {
-      "keyCode": 573,
-      "label": "F4",
-      "extraLabel": "A+"
+      "keyCode": 17498,
+      "label": "7",
+      "extraLabel": "LOCK"
     },
     {
       "keyCode": 224,
@@ -412,8 +427,8 @@
       "verbose": "Transparent"
     },
     {
-      "keyCode": 53854,
-      "label": "W+L1",
+      "keyCode": 53864,
+      "label": "Win+L",
       "extraLabel": "MACRO"
     },
     {
@@ -423,9 +438,9 @@
       "verbose": "Disabled"
     },
     {
-      "keyCode": 49162,
-      "label": "2",
-      "extraLabel": "OSL"
+      "keyCode": 17498,
+      "label": "7",
+      "extraLabel": "LOCK"
     },
     {
       "keyCode": 23786,
@@ -446,9 +461,9 @@
       "verbose": "Volume up"
     },
     {
-      "keyCode": 70,
-      "label": "PRINT SCRN",
-      "verbose": "Print Screen"
+      "keyCode": 6166,
+      "label": "S",
+      "extraLabel": "S+O+"
     },
     {
       "keyCode": 0,
@@ -457,144 +472,144 @@
       "verbose": "Disabled"
     },
     {
-      "keyCode": 17492,
-      "label": "1",
-      "extraLabel": "LOCK"
+      "keyCode": 573,
+      "label": "F4",
+      "extraLabel": "A+"
     }
   ],
   "colormap": [
     11,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
     1,
-    0,
-    0,
-    3,
-    0,
-    0,
-    1,
-    3,
-    3,
-    3,
-    3,
-    3,
-    11,
-    15,
-    4,
-    4,
-    4,
-    4,
-    15,
-    11,
-    1,
-    1,
-    1,
-    11,
-    2,
     8,
-    11,
-    4,
-    4,
+    10,
     5,
-    5,
-    5,
-    5,
-    11,
-    6,
-    6,
+    10,
     7,
+    1,
+    8,
+    5,
+    5,
+    5,
     0,
+    11,
+    15,
+    4,
+    4,
+    4,
+    4,
+    15,
+    11,
+    1,
+    1,
+    1,
+    11,
+    2,
+    8,
+    4,
     3,
     0,
-    0,
+    14,
+    14,
+    14,
+    14,
+    11,
+    6,
+    6,
+    12,
+    10,
+    5,
+    10,
+    10,
     6,
     15,
     15,
-    3,
-    3,
-    3,
-    0,
-    8,
-    15,
-    10,
-    15,
-    10,
     5,
+    5,
+    5,
+    10,
     2,
     15,
-    4,
+    10,
+    15,
+    10,
+    3,
+    3,
+    12,
+    3,
     1,
     1,
     1,
     2,
     12,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5,
-    5
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14,
+    14
   ],
   "palette": [
     {
@@ -676,16 +691,16 @@
       "rgb": "rgb(0, 0, 0)"
     },
     {
-      "r": 189,
-      "g": 0,
-      "b": 25,
-      "rgb": "rgb(189, 0, 25)"
+      "r": 175,
+      "g": 65,
+      "b": 0,
+      "rgb": "rgb(175, 65, 0)"
     },
     {
-      "r": 48,
-      "g": 148,
+      "r": 189,
+      "g": 197,
       "b": 0,
-      "rgb": "rgb(48, 148, 0)"
+      "rgb": "rgb(189, 197, 0)"
     },
     {
       "r": 0,
