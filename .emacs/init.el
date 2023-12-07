@@ -951,7 +951,9 @@ Set `fill-column', `truncate-lines'."
         ("f" . project-find-file))
   :custom
   (project-vc-extra-root-markers '(".subproject"))
-  (project-mode-line t)
+  ;; TODO: tried it briefly, not that useful.
+  ;; reconsider in the future
+  (project-mode-line nil)
   ;; go back to old default of "d" for "dired at root"
   (project-switch-commands
    '((project-find-file "Find file" nil)
@@ -1694,7 +1696,7 @@ Shows encoding and EOL info in a tooltip."
                       (if (buffer-narrowed-p) "N" "")
                       (if (file-remote-p default-directory) "R" "")
                       " ")
-              'face '((t (:inherit (error) :weight bold)))))
+              'face 'error))
 
 (defun hoagie-mode-line-cursor-position ()
     "Mode line cursor position with region if applicable."
@@ -1708,10 +1710,11 @@ Shows encoding and EOL info in a tooltip."
       (list "%l:%c" position region-size)))
 
 (defun hoagie-mode-line-keybmacro-indicator ()
-  "Show an indicator when macro recording is in progress."
+  "Show an indicator when macro recording is in progress.
+Because I like REC better than Def."
   (when defining-kbd-macro
-    (propertize "RM"
-                'face 'error
+    (propertize "REC"
+                'face 'warning
                 'help-echo "Recording macro" )))
 
 (defun hoagie-mode-line-buffer-name ()
@@ -1727,10 +1730,35 @@ Show minor modes in a tooltip."
               'face 'mode-line-buffer-id
               'help-echo (format-mode-line minor-mode-alist)))
 
+(defun hoagie-mode-line-overwrite-indicator ()
+  "Show me when I fat fingered Insert.
+I am not sure about this one, but I can remove if I need to."
+  (when overwrite-mode
+    (propertize "OVERWRITE"
+                'face 'warning)))
+
 (setq-default
  mode-line-format
- '(" " (:eval (hoagie-mode-line-buffer-status)) "  " (:eval (hoagie-mode-line-buffer-name)) "  " (:eval (hoagie-mode-line-cursor-position))
+ '(" "
+   (:eval (hoagie-mode-line-buffer-status))
+   "  "
+   (:eval (hoagie-mode-line-buffer-name))
+   "  "
+   (:eval (hoagie-mode-line-cursor-position))
+   "  "
+   (:eval (hoagie-mode-line-overwrite-indicator))
    mode-line-format-right-align
-   (:eval (hoagie-mode-line-keybmacro-indicator)) " " mode-line-misc-info " " mode-line-process "  " (vc-mode vc-mode) "  " (:eval (hoagie-mode-line-major-mode)) "  " (project-mode-line project-mode-line-format) "  " " "))
+   (:eval (hoagie-mode-line-keyqbmacro-indicator))
+   " "
+   (vc-mode vc-mode)
+   " "
+   mode-line-misc-info
+   "  "
+   mode-line-process
+   "  "
+   (:eval (hoagie-mode-line-major-mode))
+   " "))
+   ;; (project-mode-line project-mode-line-format)
+   ;; " "))
 
 ;;; init.el ends here
