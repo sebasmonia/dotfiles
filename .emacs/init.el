@@ -94,6 +94,7 @@
 
 ;; this package declares commands and macros (!) that I use for general
 ;; editing
+(require 'hoagie-editing)
 (use-package hoagie-editing :load-path "~/sourcehut/dotfiles/.emacs/"
   :bind
   ("C-<backspace>" . backward-delete-word)
@@ -1710,7 +1711,7 @@ Shows encoding and EOL info in a tooltip."
 (defun hoagie-mode-line-keybmacro-indicator ()
   "Show an indicator when macro recording is in progress."
   (when defining-kbd-macro
-    (propertize "RM"
+    (propertize "REC"
                 'face 'error
                 'help-echo "Recording macro" )))
 
