@@ -1748,7 +1748,7 @@ I am not sure about this one, but I can remove if I need to."
    "  "
    (:eval (hoagie-mode-line-overwrite-indicator))
    mode-line-format-right-align
-   (:eval (hoagie-mode-line-keyqbmacro-indicator))
+   (:eval (hoagie-mode-line-keybmacro-indicator))
    " "
    (vc-mode vc-mode)
    " "
