@@ -74,17 +74,25 @@ With ARG, do this that many times."
 		 (backward-char direction))
 	   (point)))))
 
-(defun hoagie-escape-quotes ()
-    "Escape quotes in the region.
+(defun hoagie-escape-quotes (&optional arg)
+  "Escape quotes in the region.
+Call with prefix ARG to ignore the first and last quote.
 If there's no active region, it operates on the current line. It
 simply adds a \\ to each \" found."
-    (interactive)
-    (with-region-or-thing 'line
-      (save-excursion
-        (with-restriction start end
-          (goto-char start)
-          (while (search-forward "\"" nil t)
-            (replace-match "\\\\\""))))))
+  (interactive "P")
+  (with-region-or-thing 'line
+    (save-excursion
+      (with-restriction start end
+        (goto-char start)
+        (when arg
+          ;; skip the first
+          (search-forward "\"" nil t))
+        (while (search-forward "\"" nil t)
+          (replace-match "\\\\\""))
+        (when arg
+          ;; undo the last
+          (search-backward "\\\\\"" nil t)
+          (replace-match "\""))))))
 
 (defvar hoagie-pair-chars
   '((?\" . ?\")
