@@ -94,6 +94,7 @@
 
 ;; this package declares commands and macros (!) that I use for general
 ;; editing
+(require 'hoagie-editing)
 (use-package hoagie-editing :load-path "~/sourcehut/dotfiles/.emacs/"
   :bind
   ("C-<backspace>" . backward-delete-word)
