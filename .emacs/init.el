@@ -593,29 +593,35 @@ Based on the elpher code."
   :commands (fill-function-arguments-dwim)
   :custom
   (fill-function-arguments-indent-after-fill t)
+  (fill-function-arguments-fall-through-to-fill-paragraph t)
+  :bind
+  ("<remap> <fill-paragraph>" . fill-function-arguments-dwim)
+  :config
+  (defun hoagie-fill-arguments-setup-sgml ()
+    "Setup for `fill-function-arguments-dwim'."
+    (setq-local fill-function-arguments-first-argument-same-line t)
+    (setq-local fill-function-arguments-argument-sep " "))
+  (defun hoagie-fill-arguments-setup-lisp ()
+    "Setup for `fill-function-arguments-dwim'."
+    ;; both emacs-lisp-mode and lisp-mode inherit from lisp-data-mode, and I
+    ;; want the same rules for both
+    (setq-local fill-function-arguments-first-argument-same-line t)
+    (setq-local fill-function-arguments-second-argument-same-line t)
+    (setq-local fill-function-arguments-last-argument-same-line t)
+    (setq-local fill-function-arguments-argument-separator " "))
+  (defun hoagie-fill-arguments-setup-csharp ()
+    (setq-local fill-function-arguments-first-argument-same-line t)
+    (setq-local fill-function-arguments-second-argument-same-line nil)
+    (setq-local fill-function-arguments-last-argument-same-line t)
+    ;; override LSP indentation for this particular command
+    (setq-local fill-function-arguments-indent-after-fill
+                (lambda (start end)
+                  (let ((indent-region-function #'c-indent-region))
+                    (indent-region start end)))))
   :hook
-  (prog-mode-hook . (lambda () (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))
-  (sgml-mode-hook . (lambda ()
-                      (setq-local fill-function-arguments-first-argument-same-line t)
-                      (setq-local fill-function-arguments-argument-sep " ")
-                      (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))
-  ;; both emacs-lisp-mode and lisp-mode inherit from lisp-data-mode, and I want the same
-  ;; rules for both
-  (lisp-data-mode-hook . (lambda ()
-                           (setq-local fill-function-arguments-first-argument-same-line t)
-                           (setq-local fill-function-arguments-second-argument-same-line t)
-                           (setq-local fill-function-arguments-last-argument-same-line t)
-                           (setq-local fill-function-arguments-argument-separator " ")
-                           (local-set-key (kbd "M-q") #'fill-function-arguments-dwim)))
-  (csharp-mode-hook . (lambda ()
-                        (setq-local fill-function-arguments-first-argument-same-line t)
-                        (setq-local fill-function-arguments-second-argument-same-line nil)
-                        (setq-local fill-function-arguments-last-argument-same-line t)
-                        ;; override LSP indentation for this particular command
-                        (setq-local fill-function-arguments-indent-after-fill
-                                    (lambda (start end)
-                                      (let ((indent-region-function #'c-indent-region))
-                                        (indent-region start end)))))))
+  (sgml-mode-hook . hoagie-fill-arguments-setup-sgml)
+  (lisp-data-mode-hook . hoagie-fill-arguments-setup-lisp)
+  (csharp-mode-hook . hoagie-fill-arguments-setup-csharp))
 
 (defvar hoagie-flymake-keymap
   (define-prefix-command 'hoagie-flymake-keymap)
@@ -831,12 +837,16 @@ This is C-u M-g but I figured I would put it in a simpler binding."
   :mode "\\.json$")
 
 (use-package lisp-mode
+  :config
+  (defun hoagie-lisp-mode-setup ()
+    "Setup my `lisp-mode' configuration.
+Set `fill-column' and setup indent to CL style."
+    (set (make-local-variable lisp-indent-function)
+		 'common-lisp-indent-function)
+    (setf fill-column 100)
+    (display-fill-column-indicator-mode))
   :hook
-  (lisp-mode-hook . (lambda ()
-                      (set (make-local-variable lisp-indent-function)
-		                   'common-lisp-indent-function)
-                      (setf fill-column 100)
-                      (display-fill-column-indicator-mode))))
+  (lisp-mode-hook . hoagie-lisp-mode-setup))
 
 (use-package markdown-mode
   :ensure t
@@ -952,7 +962,9 @@ Set `fill-column', `truncate-lines'."
         ("f" . project-find-file))
   :custom
   (project-vc-extra-root-markers '(".subproject"))
-  (project-mode-line t)
+  ;; TODO: tried it briefly, not that useful.
+  ;; reconsider in the future
+  (project-mode-line nil)
   ;; go back to old default of "d" for "dired at root"
   (project-switch-commands
    '((project-find-file "Find file" nil)
@@ -1634,7 +1646,24 @@ If the parameter is not provided use word at point."
 
 (when (string= system-type "windows-nt")
   (require 'ls-lisp)
-  (customize-set-value 'ls-lisp-use-insert-directory-program nil))
+  (customize-set-value 'ls-lisp-use-insert-directory-program nil)
+  (defun hoagie-adjust-font-size (frame)
+    "Inspired by https://emacs.stackexchange.com/a/44930/17066.
+FRAME is ignored."
+    ;; 2023-12-04: Moving to a 4K display, disable scaling in Windows so I
+    ;; don't have to restart Emacs when unplugging the display. But then I need
+    ;; to adjust font size manually:
+    (let ((geometry-width (cadddr (car (frame-monitor-attributes)))))
+      (set-face-attribute 'default (selected-frame)
+                          :height (cond ((= 3840 geometry-width)
+                                         (setf size 181)) ;; 158
+                                         ((= 1920 geometry-width)
+                                         (setf size 120)) ;; 113
+                                        (t
+                                         (setf size 113))))))
+  (add-hook 'window-size-change-functions #'hoagie-adjust-font-size)
+  ;;(remove-hook 'window-size-change-functions #'hoagie-adjust-font-size)
+  )
 
 (when (string= system-type "darwin")
   ;; use `ls` from coreutils, installed with homebrew
@@ -1695,7 +1724,7 @@ Shows encoding and EOL info in a tooltip."
                       (if (buffer-narrowed-p) "N" "")
                       (if (file-remote-p default-directory) "R" "")
                       " ")
-              'face '((t (:inherit (error) :weight bold)))))
+              'face 'error))
 
 (defun hoagie-mode-line-cursor-position ()
     "Mode line cursor position with region if applicable."
@@ -1709,10 +1738,11 @@ Shows encoding and EOL info in a tooltip."
       (list "%l:%c" position region-size)))
 
 (defun hoagie-mode-line-keybmacro-indicator ()
-  "Show an indicator when macro recording is in progress."
+  "Show an indicator when macro recording is in progress.
+Because I like REC better than Def."
   (when defining-kbd-macro
     (propertize "REC"
-                'face 'error
+                'face 'warning
                 'help-echo "Recording macro" )))
 
 (defun hoagie-mode-line-buffer-name ()
@@ -1728,10 +1758,35 @@ Show minor modes in a tooltip."
               'face 'mode-line-buffer-id
               'help-echo (format-mode-line minor-mode-alist)))
 
+(defun hoagie-mode-line-overwrite-indicator ()
+  "Show me when I fat fingered Insert.
+I am not sure about this one, but I can remove if I need to."
+  (when overwrite-mode
+    (propertize "OVERWRITE"
+                'face 'warning)))
+
 (setq-default
  mode-line-format
- '(" " (:eval (hoagie-mode-line-buffer-status)) "  " (:eval (hoagie-mode-line-buffer-name)) "  " (:eval (hoagie-mode-line-cursor-position))
+ '(" "
+   (:eval (hoagie-mode-line-buffer-status))
+   "  "
+   (:eval (hoagie-mode-line-buffer-name))
+   "  "
+   (:eval (hoagie-mode-line-cursor-position))
+   "  "
+   (:eval (hoagie-mode-line-overwrite-indicator))
    mode-line-format-right-align
-   (:eval (hoagie-mode-line-keybmacro-indicator)) " " mode-line-misc-info " " mode-line-process "  " (vc-mode vc-mode) "  " (:eval (hoagie-mode-line-major-mode)) "  " (project-mode-line project-mode-line-format) "  " " "))
+   (:eval (hoagie-mode-line-keybmacro-indicator))
+   " "
+   (vc-mode vc-mode)
+   " "
+   mode-line-misc-info
+   "  "
+   mode-line-process
+   "  "
+   (:eval (hoagie-mode-line-major-mode))
+   " "))
+   ;; (project-mode-line project-mode-line-format)
+   ;; " "))
 
 ;;; init.el ends here
