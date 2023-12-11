@@ -1656,9 +1656,11 @@ FRAME is ignored."
     (let ((geometry-width (cadddr (car (frame-monitor-attributes)))))
       (set-face-attribute 'default (selected-frame)
                           :height (cond ((= 3840 geometry-width)
-                                         (setf size 181)) ;; 158
-                                         ((= 1920 geometry-width)
-                                         (setf size 120)) ;; 113
+                                         ;; 120 - 141 - 158 - 181
+                                         (setf size 120))
+                                        ((= 1920 geometry-width)
+                                         ;; 90 - 100 - 113 - 120
+                                         (setf size 90))
                                         (t
                                          (setf size 113))))))
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size)
