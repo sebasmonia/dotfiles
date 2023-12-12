@@ -603,12 +603,14 @@ Based on the elpher code."
     (setq-local fill-function-arguments-argument-sep " "))
   (defun hoagie-fill-arguments-setup-lisp ()
     "Setup for `fill-function-arguments-dwim'."
-    ;; both emacs-lisp-mode and lisp-mode inherit from lisp-data-mode, and I
-    ;; want the same rules for both
+    ;; both emacs-lisp-mode and lisp-mode inherit from lisp-data-mode,
+    ;; and I want the same rules for both
     (setq-local fill-function-arguments-first-argument-same-line t)
     (setq-local fill-function-arguments-second-argument-same-line t)
     (setq-local fill-function-arguments-last-argument-same-line t)
-    (setq-local fill-function-arguments-argument-separator " "))
+    (setq-local fill-function-arguments-argument-separator " ")
+    ;; uses `prog-fill-reindent-defun' by default
+    (local-set-key (kbd "M-q") #'fill-function-arguments-dwim))
   (defun hoagie-fill-arguments-setup-csharp ()
     (setq-local fill-function-arguments-first-argument-same-line t)
     (setq-local fill-function-arguments-second-argument-same-line nil)
@@ -1664,7 +1666,7 @@ FRAME is ignored."
                                         (t
                                          (setf size 113))))))
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size)
-  ;;(remove-hook 'window-size-change-functions #'hoagie-adjust-font-size)
+  ;; (remove-hook 'window-size-change-functions #'hoagie-adjust-font-size)
   )
 
 (when (string= system-type "darwin")
@@ -1716,8 +1718,7 @@ FRAME is ignored."
 ;; So I decided to setup my own mode-line from scratch.
 (defun hoagie-mode-line-buffer-status ()
   "Return a mode-line indicator for buffer status.
-Also shows whether the buffer is narrowed or remote.
-Shows encoding and EOL info in a tooltip."
+Also shows whether the buffer is narrowed or remote."
   (propertize (concat (if buffer-read-only
                           "-"
                         ;; since it's not read-only, show the
@@ -1729,7 +1730,8 @@ Shows encoding and EOL info in a tooltip."
               'face 'error))
 
 (defun hoagie-mode-line-cursor-position ()
-    "Mode line cursor position with region if applicable."
+  "Mode line cursor position, includes percent indicator.
+If the region is active, include its size in lines and characters."
     (let ((region-size (when (use-region-p)
                          (propertize (format " (%sL:%sC)"
                                              (count-lines (region-beginning)
@@ -1741,7 +1743,7 @@ Shows encoding and EOL info in a tooltip."
 
 (defun hoagie-mode-line-keybmacro-indicator ()
   "Show an indicator when macro recording is in progress.
-Because I like REC better than Def."
+Because I like \"REC\" better than \"Def\"."
   (when defining-kbd-macro
     (propertize "REC"
                 'face 'warning
@@ -1749,13 +1751,13 @@ Because I like REC better than Def."
 
 (defun hoagie-mode-line-buffer-name ()
   "Return a mode-line indicator for buffer name.
-Shows file name in a tooltip.
-From http://emacs-fu.blogspot.com/2011/08/customizing-mode-line.html"
+Shows file name in the echo area/a tooltip. From
+http://emacs-fu.blogspot.com/2011/08/customizing-mode-line.html"
   (propertize "%b" 'face 'mode-line-buffer-id 'help-echo (buffer-file-name)))
 
 (defun hoagie-mode-line-major-mode ()
   "Mode-line major mode segment.
-Show minor modes in a tooltip."
+Show minor modes in the echo area/a tooltip."
   (propertize (format-mode-line mode-name)
               'face 'mode-line-buffer-id
               'help-echo (format-mode-line minor-mode-alist)))
@@ -1787,7 +1789,7 @@ I am not sure about this one, but I can remove if I need to."
    mode-line-process
    "  "
    (:eval (hoagie-mode-line-major-mode))
-   " "))
+   "   "))
    ;; (project-mode-line project-mode-line-format)
    ;; " "))
 
