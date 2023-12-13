@@ -28,9 +28,6 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
 ;; (setf use-package-compute-statistics t)
 
 (when (eq window-system 'pgtk)
@@ -41,9 +38,6 @@
 
 (require 'use-package)
 (setf use-package-verbose t)
-;; turns out I use more built ins than externals...
-;; let's see how this change goes :)
-;; (setf use-package-always-ensure t)
 (setf use-package-hook-name-suffix nil)
 (setf package-native-compile t)
 (custom-set-faces
@@ -58,7 +52,10 @@
                         normal)))))
 (set-fontset-font t 'emoji (font-spec :family "Noto Emoji"))
 
-;; based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html
+;; Based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html I
+;; eventually I moved away from the menu key to F6, and even later that key
+;; ended in a very similar place to <menu> but on the other side of the
+;; keyboard (Dygma Raise)
 (defvar hoagie-keymap
   (define-prefix-command 'hoagie-keymap)
   "My custom bindings.")
@@ -88,8 +85,8 @@
 (global-set-key (kbd "<f6>") 'hoagie-keymap) ;; T1 (next to SPC/Control)
 (global-set-key (kbd "<f5>") 'hoagie-second-keymap) ;; Enter
 (define-key key-translation-map (kbd "<f7>") (kbd "C-x")) ;; CapsLock
-;; This one is for the benefit of the laptop keyboard, which
-;; I'm barely using nowadays, TBH
+;; This one is for the benefit of the laptop keyboard, which I'm barely using
+;; nowadays, TBH
 (define-key key-translation-map (kbd "<f8>") (kbd "C-c"))
 
 ;; this package declares commands and macros (!) that I use for general
@@ -235,19 +232,6 @@ Running in a toolbox is actually the \"common\" case. :)"
 (use-package dired
   :custom
   (dired-listing-switches "-laogGhvD")
-  (dired-compress-file-suffixes
-        '(("\\.tar\\.gz\\'" #1="" "7za x -aoa -o%o %i")
-          ("\\.tgz\\'" #1# "7za x -aoa -o%o %i")
-          ("\\.zip\\'" #1# "7za x -aoa -o%o %i")
-          ("\\.7z\\'" #1# "7za x -aoa -o%o %i")
-          ("\\.tar\\'" ".tgz" nil)
-          (":" ".tar.gz" "tar -cf- %i | gzip -c9 > %o")))
-  (dired-compress-directory-default-suffix ".7z")
-  (dired-compress-file-default-suffix ".7z")
-  (dired-compress-files-alist
-        '(("\\.7z\\'" . "7za a -r %o %i")
-          ("\\.zip\\'" . "7za a -r %o  %i")))
-  (dired-do-revert-buffer t)
   :bind
   (:map hoagie-keymap
         (("ESC f" . find-name-dired)
@@ -304,6 +288,23 @@ replacement, but not sure about toolboxes..."
           (kill-new name))
         (message (format "Filename: %s"
                          (or name "-No file for this buffer-")))))))
+
+(use-package dired-aux
+  :after dired
+  :custom
+  (dired-compress-file-suffixes
+        '(("\\.tar\\.gz\\'" #1="" "7z x -aoa -o%o %i")
+          ("\\.tgz\\'" #1# "7z x -aoa -o%o %i")
+          ("\\.zip\\'" #1# "7z x -aoa -o%o %i")
+          ("\\.7z\\'" #1# "7z x -aoa -o%o %i")
+          ("\\.tar\\'" ".tgz" nil)
+          (":" ".tar.gz" "tar -cf- %i | gzip -c9 > %o")))
+  (dired-compress-directory-default-suffix ".7z")
+  (dired-compress-file-default-suffix ".7z")
+  (dired-compress-files-alist
+        '(("\\.7z\\'" . "7z a -r %o %i")
+          ("\\.zip\\'" . "7z a -r %o  %i")))
+  (dired-do-revert-buffer t))
 
 (use-package dired-narrow
   :ensure t
@@ -1654,17 +1655,16 @@ If the parameter is not provided use word at point."
 FRAME is ignored."
     ;; 2023-12-04: Moving to a 4K display, disable scaling in Windows so I
     ;; don't have to restart Emacs when unplugging the display. But then I need
-    ;; to adjust font size manually:
-    (let ((geometry-width (cadddr (car (frame-monitor-attributes)))))
+    ;; to adjust font size manually.
+    (let ((geometry-width (cadddr (car (frame-monitor-attributes))))
+          (monitor-count (length (display-monitor-attributes-list))))
       (set-face-attribute 'default (selected-frame)
-                          :height (cond ((= 3840 geometry-width)
-                                         ;; 120 - 141 - 158 - 181
-                                         (setf size 120))
-                                        ((= 1920 geometry-width)
-                                         ;; 90 - 100 - 113 - 120
-                                         (setf size 90))
-                                        (t
-                                         (setf size 113))))))
+                          :height (cond ((= 2 monitor-count) 113) ;; work
+                                        ;; 120 - 141 - 158 - 181
+                                        ((= 3840 geometry-width) 120) ;; 4K
+                                        ;; 90 - 100 - 113 - 120
+                                        ((= 1920 geometry-width) 90) ;; laptop
+                                        (t 113))))) ;; default
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size)
   ;; (remove-hook 'window-size-change-functions #'hoagie-adjust-font-size)
   )
