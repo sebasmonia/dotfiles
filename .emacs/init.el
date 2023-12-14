@@ -1556,6 +1556,8 @@ If ARG, don't prompt for buffer name suffix."
   :custom
   ;; experimental, I don't think I have a need for lockfiles...
   (create-lockfiles nil)
+  ;; from TRAMP's FAQ
+  (remote-file-name-inhibit-locks t)
   (sentence-end-double-space nil)
   (tab-width 4) ;; make golang code nicer to read
   (delete-pair-blink-delay 0.1)
@@ -1650,24 +1652,21 @@ If the parameter is not provided use word at point."
 (when (string= system-type "windows-nt")
   (require 'ls-lisp)
   (customize-set-value 'ls-lisp-use-insert-directory-program nil)
-  (defun hoagie-adjust-font-size (frame)
-    "Inspired by https://emacs.stackexchange.com/a/44930/17066.
-FRAME is ignored."
-    ;; 2023-12-04: Moving to a 4K display, disable scaling in Windows so I
-    ;; don't have to restart Emacs when unplugging the display. But then I need
-    ;; to adjust font size manually.
-    (let ((geometry-width (cadddr (car (frame-monitor-attributes))))
-          (monitor-count (length (display-monitor-attributes-list))))
-      (set-face-attribute 'default (selected-frame)
-                          :height (cond ((= 2 monitor-count) 113) ;; work
-                                        ;; 120 - 141 - 158 - 181
-                                        ((= 3840 geometry-width) 120) ;; 4K
-                                        ;; 90 - 100 - 113 - 120
-                                        ((= 1920 geometry-width) 90) ;; laptop
-                                        (t 113))))) ;; default
-  (add-hook 'window-size-change-functions #'hoagie-adjust-font-size)
-  ;; (remove-hook 'window-size-change-functions #'hoagie-adjust-font-size)
-  )
+  (easy-menu-define size-menu nil "Menu to select a font size"
+  '("Font sizes"
+    ["a  90" 90]
+    ["s  100" 100]
+    ["d  113" 113]
+    ["f  120" 120]
+    ["g  141" 141]
+    ["z  158" 158]
+    ["x  181" 181]))
+  (defun hoagie-manually-adjust-font-size ()
+    "Something fishy is going on with font sizes...set them manually for now."
+    (interactive)
+    (set-face-attribute 'default (selected-frame)
+                        :height (tmm-prompt size-menu)))
+  (global-set-key (kbd "<f9>") #'hoagie-manually-adjust-font-size))
 
 (when (string= system-type "darwin")
   ;; use `ls` from coreutils, installed with homebrew
