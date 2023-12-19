@@ -104,32 +104,32 @@ simply adds a \\ to each \" found."
   "Alist of pairs to insert for `hoagie-insert-pair'.")
 
 (defun hoagie-insert-pair (&optional arg)
-  "Wrap the region or symbol at point in a pair from `hoagie-pair-chars'.
+  "Wrap the region or sexp at point in a pair from `hoagie-pair-chars'.
+Note that using sexp at point might wrap a symbol, depending on
+point position.
+Point is not modified, unless called with prefix ARG: a negative
+prefix moves point to the opening delimiter; any other value to
+the last one.
+
 This is my own counterpart to `delete-pair' (which see). Emacs
 has a built in mode for this, `electric-pair-mode', but it does
 more than I want, it is more intrusive, and I couldn't get around
-some of it's behaviours.
-Note that using sexp at point might wrap a symbol, depending on
-point position.
-UPDATE: also look at `insert-pair', which seems to be a more
-complete solution to this.
-With prefix ARG, then move point to the closer delimiter, else
-keep it after the opener."
+some of it's behaviours. There's also `insert-pair', but I
+couldn't crack how to use it :("
   (interactive "P")
   (with-region-or-thing 'sexp
     (let* ((opener (read-char "Opening char: "))
-           (closer (alist-get opener hoagie-pair-chars))
-           point-after-opener)
+           (closer (alist-get opener hoagie-pair-chars)))
       ;; if the opener isn't from our list of chars, message and do nothing
       (if (not closer)
           (message "\"%c\" is not in the pair list" opener)
-        (goto-char start)
-        (insert opener)
-        (setf point-after-opener (point))
-        (goto-char (+ 1 end))
-        (insert closer)
-        (unless arg
-          (goto-char point-after-opener))))))
+        (save-excursion
+          (goto-char start)
+          (insert opener)
+          (goto-char (+ 1 end))
+          (insert closer))
+        (cond ((eq arg '-) (goto-char start))
+              (arg (goto-char (+ 1 end))))))))
 
 (defun hoagie-toggle-backslash ()
   "Toggle slashes-backslashes in the region or line."
