@@ -549,6 +549,7 @@ With prefix arg, create a new instance even if there was one running."
   :hook
   (eww-mode-hook . toggle-word-wrap)
   (eww-mode-hook . visual-line-mode)
+  (eww-mode-hook . unpackaged/setup-imenu)
   :bind
   (:map hoagie-second-keymap
         ;; already have "g" for Gemini on this keymap
@@ -556,9 +557,33 @@ With prefix arg, create a new instance even if there was one running."
         ("w" . eww))
   (:map eww-mode-map
         ("m" . hoagie-eww-jump)
+        ("ESC m" . hoagie-eww-anchor-jump)
         ("o" . eww)
         ("O" . eww-browse-with-external-browser))
   :config
+  (defun unpackaged/imenu-eww-headings ()
+    "Return alist of HTML headings in current EWW buffer for Imenu.
+  Suitable for `imenu-create-index-function'."
+    (let ((faces '(shr-h1 shr-h2 shr-h3 shr-h4 shr-h5 shr-h6 shr-heading)))
+      (save-excursion
+        (save-restriction
+          (widen)
+          (goto-char (point-min))
+          (cl-loop for next-pos = (next-single-property-change (point) 'face)
+                   while next-pos
+                   do (goto-char next-pos)
+                   for face = (get-text-property (point) 'face)
+                   when (cl-typecase face
+                          (list (cl-intersection face faces))
+                          (symbol (member face faces)))
+                   collect (cons (buffer-substring (point-at-bol)
+                                                   (point-at-eol))
+                                 (point))
+                   and do (forward-line 1))))))
+  (defun unpackaged/setup-imenu ()
+    "Set `imenu' configuration for EWW buffers."
+    (setq-local imenu-auto-rescan t)
+    (setq-local imenu-create-index-function #'unpackaged/imenu-eww-headings))
   (defun hoagie-eww-rename-buffer ()
     "Rename EWW buffers like \"title\", but put title last.
 Function based on the same from the docstring for `eww-auto-rename-buffer'."
@@ -580,14 +605,17 @@ Optional argument NEW-BUFFER is passed to `eww' as prefix arg."
       (add-hook 'eww-after-render-hook nonce))
     (eww url new-buffer))
   (defun hoagie-eww-jump ()
-    "Like `elpher-jump', but for EWW.
-Based on the elpher code."
+    "Similar `elpher-jump', but for EWW.
+It is based on the elpher code, but instead of opening the link,
+it moves point to it, to take advantage of links'
+`eww-follow-link' binding (using prefix or double prefix for
+external browser and new eww buffer, respectively)."
     (interactive)
     (let ((all-links (hoagie--collect-shr-links)))
-      (eww (alist-get (completing-read "Link: "
-                                       all-links nil)
-                      all-links
-                      nil nil #'string=)))))
+      (goto-char (alist-get (completing-read "Link: "
+                                             all-links nil)
+                            all-links
+                            nil nil #'string=)))))
 
 (use-package fill-function-arguments
   :ensure t
@@ -1225,7 +1253,7 @@ Meant to be added to `occur-hook'."
 
 (use-package shr
   :custom
-  (shr-use-fonts t)
+  (shr-use-fonts nil)
   (shr-use-colors t)
   (shr-bullet "• ")
   (shr-indentation 2)
@@ -1243,18 +1271,19 @@ Meant to be added to `occur-hook'."
         (message "URL: %s" target-url))))
   (defun hoagie--collect-shr-links ()
     "Get an alist of all link targets in the current buffer.
+The format returned is (link-text . link-position)
 Inspired by a similar function in Elpher."
-    (let ((link-template "%s (%s)"))
-      (save-excursion
-        (goto-char (point-min))
-        (cl-loop for link = (text-property-search-forward 'shr-url nil nil t)
-                 while link
-                 for text = (buffer-substring (prop-match-beginning link)
-                                              (prop-match-end link))
-                 for target = (prop-match-value link)
-                 collect
-                 (cons (format link-template text target)
-                       target))))))
+    (save-excursion
+      (goto-char (point-min))
+      (cl-loop for link = (text-property-search-forward 'shr-url nil nil t)
+               while link
+               for position = (prop-match-beginning link)
+               for text = (buffer-substring position
+                                            (prop-match-end link))
+               collect
+               (cons text position)))))
+
+
 
 (use-package sly
   :ensure t
@@ -1559,6 +1588,7 @@ If ARG, don't prompt for buffer name suffix."
   ;; from TRAMP's FAQ
   (remote-file-name-inhibit-locks t)
   (sentence-end-double-space nil)
+  (minibuffer-restore-windows nil) ;; finally...
   (tab-width 4) ;; make golang code nicer to read
   (delete-pair-blink-delay 0.1)
   (recenter-positions '(1 middle -2)) ;; behaviour for C-l
@@ -1577,7 +1607,7 @@ If ARG, don't prompt for buffer name suffix."
   (inhibit-startup-screen t)
   (initial-buffer-choice t)
   (initial-scratch-message
-   ";; Il semble que la perfection soit atteinte non quand il n’y a plus rien à ajouter, mais quand il n’y a plus à retrancher. - Antoine de Saint Exupéry\n;; It seems that perfection is attained not when there is nothing more to add, but when there is nothing more to remove.\n\n;; Marking:                             ;; Killing\n;; M-@ Next word C-M-<SPC> Next sexp    ;; C-M-k next sexp\n;; M-h Paragraph C-x h Buffer           ;; C-k rest of line\n;; C-M-h Next defun                     ;; <f6> k whole line\n\n;; Misc:                                   ;; (e)SHELL C-c then...\n;; <f6> i imenu C-x C-k e edit kmacro      ;; C-[p|n] prev/next input\n;; M-t Transpose word C-M-t Tranpose sexp  ;; C-o clear last output\n;; C-x / vundo\n\n;; During search\n;; C-w add word at point, repeat to add more\n;; M-r toggle regex\n\n;; Replace (regexp + elisp):\n;; \"movie\" -> \"film\" and \"movies\" -> \"films\":\n;; ‘movie(s)?‘ -> ‘,(if \\1 \"films\" \"film\")‘\n\n;; howm:\n;; <f6> 3 - inbox\n;; <f6> C-3 - show TODO\n;; <f6> ESC 3 - show all notes\n;; <f3> howm keymap (hit twice for menu)\n\n;; REMEMBER: REGEXPS - INFO\n\n")
+   ";; Il semble que la perfection soit atteinte non quand il n’y a plus rien à\n;; ajouter, mais quand il n’y a plus à retrancher. - Antoine de Saint Exupéry\n\n;; Misc:\n;; C-x C-k e edit kmacro               ;; (e)SHELL C-c C-o clear last output\n;; C-x / vundo                         ;; C-x C-t transpose-lines (0 arg!)\n                                      \n;; During isearch                      ;; Query replace\n;; C-w add word at point, can repeat   ;; Prefix to M-% to replace words\n;; M-r toggle regex                    ;; Remember new keyb setup :)\n                                      \n;; Newlines:                          \n;; C-o open-line                       ;; C-M-o split-line\n;; M-^ join with prev line            \n                                      \n;; M-x...                             \n;; copy-matching-lines (& kill-)       ;; align-current (or align-regexp)\n;; highlight-*\n\n;; howm:\n;; <f6> 3 - inbox\n;; <f6> C-3 - show TODO\n;; <f6> ESC 3 - show all notes\n;; <f3> howm keymap (hit twice for menu)\n\n;; REMEMBER: REGEXPS - INFO\n\n")
   (save-interprogram-paste-before-kill t)
   (visible-bell nil) ;; macOS change
   ;; from https://gitlab.com/jessieh/dot-emacs
