@@ -142,5 +142,32 @@ couldn't crack how to use it :("
             (while (search-forward "/" nil t) (replace-match "\\\\" 'literal))
           (while (search-forward "\\" nil t) (replace-match "/")))))))
 
+(defun hoagie-split-and-indent (&optional arg)
+  "Split rest of line by a separator, then indent.
+By default the separator is a single space, and contiguous spaces
+are collapsed to one. With prefix ARG prompt for separator, with
+no collapsing.
+
+This is based on the super useful package
+\"fill-function-arguments\", which works well but sometimes gets
+confused on how to split things (usually in the edges of comments
+and strings). Also the way the package does fall-through to
+`fill-paragraph' is a bit inconsistent. This function is a
+fraction of its functionality, and isn't as smart, but it is more
+predicatable."
+  (interactive "P")
+  (save-excursion
+    (let ((start (point))
+          (sep (if arg
+                   (read-string "Separator: ")
+                 " ")))
+      (while (search-forward sep (pos-eol) t)
+        (unless arg
+          (just-one-space))
+        (replace-match "\n"))
+      ;; move to the line _right after_ the last new line character inserted
+      (forward-line)
+      (indent-region start (point)))))
+
 (provide 'hoagie-editing)
 ;;; hoagie-editing.el ends here
