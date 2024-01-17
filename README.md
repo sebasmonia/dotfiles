@@ -7,7 +7,8 @@ In most cases I prefer smaller packages, if built-in, even better (eg fido-mode 
 In the same spirit, I use Eglot for my LSP needs.  
 My package of preference for Common Lisp is [Sly](https://github.com/joaotavora/sly), a fork of SLIME.  
 My theme of choice is [modus-operandi](https://gitlab.com/protesilaos/modus-themes). Every once in a while I try other themes, but at most a day later I end up going back to modus.  
-My mode line of choice is [mood-line](https://gitlab.com/jessieh/mood-line), a text-only variant of doom-modeline, with two patches: narrowing indicator, and displaying region size when it is active.  
+I use a custom mode-line, based on [mood-line](https://gitlab.com/jessieh/mood-line) (a text-only
+variant of doom-modeline). I had enough little patches and additions to it that I figured I might as well do my own thing. Which is of course more limited in scope, but tailored to the packages I use.  
 
 I have a very soft spot for the Consolas font (showing my old time MS heritage here) and in the past I have used IBM Plex Mono. Nowadays though, my font of choice is [Iosevka Comfy Wide Fixed](https://git.sr.ht/~protesilaos/iosevka-comfy)
 
