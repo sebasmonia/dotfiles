@@ -1,6 +1,6 @@
 ;;; .emacs --- My dot emacs file  -*- lexical-binding: t; -*-
 
-;; Author: Sebastian Monia <code@sebasmonia.com>
+;; Author: Sebastián Monía <code@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
 ;; Version: 30.1
 ;; Keywords: tools maint
@@ -98,7 +98,8 @@
   ("C-z" . hoagie-region-to-char)
   (:map hoagie-keymap
         ("/" . hoagie-toggle-backslash)
-        ("p" . hoagie-insert-pair))
+        ("p" . hoagie-insert-pair)
+        ("q" . hoagie-split-and-indent))
   (:map hoagie-second-keymap
         ("q" . hoagie-escape-quotes)))
 
@@ -613,43 +614,6 @@ external browser and new eww buffer, respectively)."
                             all-links
                             nil nil #'string=)))))
 
-(use-package fill-function-arguments
-  :ensure t
-  :commands (fill-function-arguments-dwim)
-  :custom
-  (fill-function-arguments-indent-after-fill t)
-  (fill-function-arguments-fall-through-to-fill-paragraph t)
-  :bind
-  ("<remap> <fill-paragraph>" . fill-function-arguments-dwim)
-  :config
-  (defun hoagie-fill-arguments-setup-sgml ()
-    "Setup for `fill-function-arguments-dwim'."
-    (setq-local fill-function-arguments-first-argument-same-line t)
-    (setq-local fill-function-arguments-argument-sep " "))
-  (defun hoagie-fill-arguments-setup-lisp ()
-    "Setup for `fill-function-arguments-dwim'."
-    ;; both emacs-lisp-mode and lisp-mode inherit from lisp-data-mode,
-    ;; and I want the same rules for both
-    (setq-local fill-function-arguments-first-argument-same-line t)
-    (setq-local fill-function-arguments-second-argument-same-line t)
-    (setq-local fill-function-arguments-last-argument-same-line t)
-    (setq-local fill-function-arguments-argument-separator " ")
-    ;; uses `prog-fill-reindent-defun' by default
-    (local-set-key (kbd "M-q") #'fill-function-arguments-dwim))
-  (defun hoagie-fill-arguments-setup-csharp ()
-    (setq-local fill-function-arguments-first-argument-same-line t)
-    (setq-local fill-function-arguments-second-argument-same-line nil)
-    (setq-local fill-function-arguments-last-argument-same-line t)
-    ;; override LSP indentation for this particular command
-    (setq-local fill-function-arguments-indent-after-fill
-                (lambda (start end)
-                  (let ((indent-region-function #'c-indent-region))
-                    (indent-region start end)))))
-  :hook
-  (sgml-mode-hook . hoagie-fill-arguments-setup-sgml)
-  (lisp-data-mode-hook . hoagie-fill-arguments-setup-lisp)
-  (csharp-mode-hook . hoagie-fill-arguments-setup-csharp))
-
 (defvar hoagie-flymake-keymap
   (define-prefix-command 'hoagie-flymake-keymap)
   "Custom bindings for `flymake-mode'.")
@@ -958,7 +922,9 @@ Set `fill-column', `truncate-lines'."
         ("C-n" . minibuffer-next-completion)
         ("C-p" . minibuffer-previous-completion))
   (:map completion-in-region-mode-map
-        ("RET" . minibuffer-choose-completion)
+        ;; what was I thinking when I did this? >_>
+        ;; do I still want it??? <_<
+        ;; ("RET" . minibuffer-choose-completion)
         ("C-n" . minibuffer-next-completion)
         ("C-p" . minibuffer-previous-completion))
   (:map hoagie-keymap
@@ -1062,7 +1028,7 @@ Set `fill-column', `truncate-lines'."
       (if (null buf)
 	      (princ "a marker in no buffer")
         (princ (hoagie--text-around-marker val))
-        (princ " -- buffer ")
+        (princ "   -- buffer ")
         (princ (buffer-name buf))
         (princ ", pos ")
         (princ (marker-position val)))))
@@ -1425,7 +1391,8 @@ With prefix ARG show the remote branches."
                       "branch"
                       (when arg "-r"))
       (pop-to-buffer buffer-name)
-      (goto-char (point-min)))))
+      (goto-char (point-min))
+      (special-mode))))
 
 (use-package vc-hooks
   :after (vc vc-git)
@@ -1576,8 +1543,11 @@ If ARG, don't prompt for buffer name suffix."
         ;; to narrow to defun, it gets a new and shorter binding
         ("c" . hoagie-clone-indirect-dwim))
   (:map ctl-x-map
-        ;; add shift to C-x o to switch frames instead
-        ("O" . other-frame))
+        ;; right next to other-window
+        ("i" . other-frame)
+        ;; add shift to get the original command for C-x i...
+        ;; ...although I never used it
+        ("I" . insert-file))
   :custom
   ;; experimental, I don't think I have a need for lockfiles...
   (create-lockfiles nil)
