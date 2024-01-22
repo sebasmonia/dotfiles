@@ -1366,20 +1366,33 @@ With prefix arg, does a hard reset (thus it asks for confirmation)."
   (vc-git-revision-complete-only-branches t)
   (vc-git-log-switches '("--date=iso-local"))
   :config
+  (defvar hoagie-vc-git-emails
+    '("code@sebasmonia.com"
+      "some.work@email.com :)")
+    "List of email addresses that can be associated with a repository")
   (defun hoagie-vc-git-fetch-all ()
     "Run \"git fetch --all\" in the current repo.
 No validations, so better be in a git repo when calling this :)."
     (interactive)
     (vc-git-command nil 0 nil "fetch" "--all")
     (message "Completed \"fetch --all\" for current repo."))
-  (defun hoagie-vc-git-clone (repository-url directory)
-    "Run \"git clone REPOSITORY-URL\" into DIRECTORY."
-    (interactive "sRepository URL: \nsTarget directory (empty for default): ")
-    (when (string= directory "")
-      ;; "clone" needs nil to use the default directory
-      (setf directory nil))
-    (vc-git-command nil 0 nil "clone" repository-url directory)
-    (message "Repository cloned!"))
+  (defun hoagie-vc-git-clone (repository-url local-dir)
+    "Run \"git clone REPOSITORY-URL\" to LOCAL-DIR.
+It also prompts what email to use in the directory, from the
+values in `hoagie-vc-git-emails'.
+Executes `vc-dir' in the newly cloned directory."
+    (interactive
+     (let* ((url (read-string "Repository URL: "))
+            (dir (file-name-base url)))
+       ;; docs say not to use "initial-input", but it does what I want...
+       ;; and the other "default-value" doesn't.
+       (list url (read-string "Target directory: " dir))))
+    (vc-git-command nil 0 nil "clone" repository-url local-dir)
+    (let ((default-directory (file-name-concat default-directory local-dir)))
+      (vc-git-command nil 0 nil "config" "user.email"
+                      (completing-read "Email for this repo: "
+                                       hoagie-vc-git-emails))
+      (vc-dir default-directory)))
   (defun hoagie-vc-git-show-branches (&optional arg)
     "Show in a buffer the list of branches in the current repository.
 With prefix ARG show the remote branches."
