@@ -229,6 +229,19 @@ Running in a toolbox is actually the \"common\" case. :)"
 (use-package dired
   :custom
   (dired-listing-switches "-laogGhvD")
+  (dired-compress-file-suffixes
+        '(("\\.tar\\.gz\\'" #1="" "7za x -aoa -o%o %i")
+          ("\\.tgz\\'" #1# "7za x -aoa -o%o %i")
+          ("\\.zip\\'" #1# "7za x -aoa -o%o %i")
+          ("\\.7z\\'" #1# "7za x -aoa -o%o %i")
+          ("\\.tar\\'" ".tgz" nil)
+          (":" ".tar.gz" "tar -cf- %i | gzip -c9 > %o")))
+  (dired-compress-directory-default-suffix ".7z")
+  (dired-compress-file-default-suffix ".7z")
+  (dired-compress-files-alist
+        '(("\\.7z\\'" . "7za a -r %o %i")
+          ("\\.zip\\'" . "7za a -r %o  %i")))
+  (dired-do-revert-buffer t)
   :bind
   (:map hoagie-keymap
         (("ESC f" . find-name-dired)
@@ -285,23 +298,6 @@ replacement, but not sure about toolboxes..."
           (kill-new name))
         (message (format "Filename: %s"
                          (or name "-No file for this buffer-")))))))
-
-(use-package dired-aux
-  :after dired
-  :custom
-  (dired-compress-file-suffixes
-        '(("\\.tar\\.gz\\'" #1="" "7z x -aoa -o%o %i")
-          ("\\.tgz\\'" #1# "7z x -aoa -o%o %i")
-          ("\\.zip\\'" #1# "7z x -aoa -o%o %i")
-          ("\\.7z\\'" #1# "7z x -aoa -o%o %i")
-          ("\\.tar\\'" ".tgz" nil)
-          (":" ".tar.gz" "tar -cf- %i | gzip -c9 > %o")))
-  (dired-compress-directory-default-suffix ".7z")
-  (dired-compress-file-default-suffix ".7z")
-  (dired-compress-files-alist
-        '(("\\.7z\\'" . "7z a -r %o %i")
-          ("\\.zip\\'" . "7z a -r %o  %i")))
-  (dired-do-revert-buffer t))
 
 (use-package dired-narrow
   :ensure t
@@ -1730,8 +1726,7 @@ FRAME is ignored."
     ;; has a meaningul value in all cases, so:
     (let* ((monitor-name (alist-get 'name (frame-monitor-attributes)))
            (monitor-font '(("0x0536" . 143) ;; laptop -- was 151
-                           ("2757" . 120))) ;; external monitor
-                         ;;("2757" . 128))) ;; external monitor
+                           ("LG Ultra HD" . 139))) ;; external monitor
            (size (alist-get monitor-name monitor-font
                             180 ;; default size, "big just in case"
                             nil
