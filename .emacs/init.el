@@ -931,6 +931,7 @@ Set `fill-column', `truncate-lines'."
         ("C-n" . minibuffer-next-completion)
         ("C-p" . minibuffer-previous-completion))
   (:map hoagie-keymap
+        ("i" . completion-at-point)
         ("<f6>" . execute-extended-command)))
 
 (use-package newsticker
@@ -1312,20 +1313,41 @@ Inspired by a similar function in Elpher."
   :custom
   (sql-display-sqli-buffer-function t)
   :hook
-  (sql-interactive-mode-hook . hoagie-sql-interactive-hook)
+  (sql-interactive-mode-hook . hoagie-sql-interactive-setup)
   :config
-  (defun hoagie-sql-interactive-hook ()
-    "Configure SQLi"
+  (defun hoagie-sql-interactive-setup ()
+    "Configure SQLi."
     (setf truncate-lines t)
     (setq-local imenu-generic-expression '((nil "^\\(.*\\)" 1)))))
 
 (use-package sql-datum :load-path "~/github/datum"
   :after sql
   :custom
-  (sql-datum-program "/var/home/hoagie/.local/bin/datum.sh")
+  (sql-datum-program "/var/home/hoagie/.local/bin/datum.sh"))
+
+(use-package tempo
+  :ensure t
+  :custom
+  (tempo-insert-region nil) ;; this doesn't do what I thought it would :)
+  (tempo-interactive t)
+  :bind
+  (:map hoagie-keymap
+        ("ESC i" . hoagie-tempo-template))
   :config
-  ;; these are defined separately in each computer I use
-  (setf sql-connection-alist nil))
+  (defun hoagie-tempo-template ()
+    (interactive)
+    (funcall-interactively
+     (alist-get (completing-read "Insert..." tempo-tags)
+                tempo-tags nil nil #'string=)))
+  (tempo-define-template "sql-varbinary"
+                         '("CONVERT(VARBINARY(MAX),'" (r "Value: ")  "', 1)")
+                         "sql-tovarbin"
+                         "Convert the region or parameter to VARBINARY.")
+  (tempo-define-template "sql-top"
+                         '("SELECT TOP " (p "How many: ")
+                           " FROM " (p "Table: "))
+                         "sql-top"
+                         "SELECT TOP {#} FROM {table}"))
 
 (use-package time
   :custom
@@ -1635,11 +1657,12 @@ If ARG, don't prompt for buffer name suffix."
   (read-file-name-completion-ignore-case t) ;; useful in Linux
   ;; via https://github.com/jacmoe/emacs.d/blob/master/jacmoe.org
   (help-window-select t)
-  ;; From https://github.com/wasamasa/dotemacs/blob/master/init.org
-  (line-number-display-limit-width 10000)
   ;; tired of this question. Sorry not sorry
   (custom-safe-themes t)
   (indent-tabs-mode nil)
+  ;; from https://karthinks.com/software/batteries-included-with-emacs/
+  ;; use view-mode for all read only files automatically
+  (view-read-only t)
   (delete-by-moving-to-trash t)
   (global-mark-ring-max 64)
   (mark-ring-max 64)
