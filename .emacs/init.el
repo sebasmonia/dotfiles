@@ -671,15 +671,15 @@ external browser and new eww buffer, respectively)."
                                      (nnimap-address "imap.fastmail.com")
                                      (nnimap-server-port 993)
                                      (nnimap-stream ssl)
-                                     (nnir-search-engine imap))
-                                   (nntp "feedbase"
-                                     ;; feedbase does not do STARTTLS (yet?)
-                                     (nntp-open-connection-function nntp-open-tls-stream)
-                                     (nntp-port-number 563) ; nntps
-                                     (nntp-address "feedbase.org"))
-                                   (nntp "gmane"
-                                     (nntp-open-connection-function nntp-open-plain-stream)
-                                     (nntp-address "news.gmane.io"))))
+                                     (nnir-search-engine imap))))
+                                   ;; (nntp "feedbase"
+                                   ;;   ;; feedbase does not do STARTTLS (yet?)
+                                   ;;   (nntp-open-connection-function nntp-open-tls-stream)
+                                   ;;   (nntp-port-number 563) ; nntps
+                                   ;;   (nntp-address "feedbase.org"))
+                                   ;; (nntp "gmane"
+                                   ;;   (nntp-open-connection-function nntp-open-plain-stream)
+                                   ;;   (nntp-address "news.gmane.io"))))
    ;; Archive outgoing email in Sent folder, mark it as read
   (gnus-message-archive-method '(nnimap "imap.fastmail.com"))
   (gnus-message-archive-group "nnimap+fastmail:Sent")
@@ -705,7 +705,7 @@ external browser and new eww buffer, respectively)."
   (gnus-user-date-format-alist '((t . "%Y-%m-%d %I:%M%p")))
   (gnus-thread-sort-functions '(gnus-thread-sort-by-date))
   ;; let's experiment disabling threads...
-  (gnus-show-threads nil)
+  (gnus-show-threads t)
   (gnus-sum-thread-tree-false-root "")
   (gnus-sum-thread-tree-root "")
   (gnus-sum-thread-tree-indent " ")
@@ -929,6 +929,43 @@ Set `fill-column', `truncate-lines'."
         ("C-p" . minibuffer-previous-completion))
   (:map hoagie-keymap
         ("<f6>" . execute-extended-command)))
+
+(use-package newsticker
+  :commands
+  (newsticker-show-news newsticker-start)
+  :custom
+  (newsticker-frontend 'newsticker-treeview)
+  ;; format: (label url start-time interbal wget-args)
+  (newsticker-url-list '(("NPR World News" "https://feeds.npr.org/1004/rss.xml")
+	                     ("NPR National News" "https://feeds.npr.org/1003/rss.xml")
+	                     ("Endless Parentheses" "http://endlessparentheses.com/atom.xml")
+	                     ("Irreal" "http://irreal.org/blog/?feed=rss2")
+	                     ("Planet Emacslife" "https://planet.emacslife.com/atom.xml")
+                         ("Planet Lisp" "http://planet.lisp.org/rss20.xml")
+                         ("Fedora Magazine" "https://fedoramagazine.org/feed/")
+                         ("Schneier on Security" "https://www.schneier.com/feed/atom")
+                         ("Slashdot" "http://rss.slashdot.org/Slashdot/slashdotMain")
+                         ("BA Times" "https://www.batimes.com.ar/feed")
+                         ("Olé - Fútbol internacional" "https://www.ole.com.ar/rss/futbol-internacional/")
+                         ("Olé - Fútbol Primera" "http://www.ole.com.ar/rss/futbol-primera/")
+                         ("Olé - Fútbol Ascenso" "http://www.ole.com.ar/rss/futbol-ascenso/")))
+  :bind
+  (:map newsticker-treeview-mode-map
+        ("v" . hoagie-browse-url-newsticker))
+  :config
+  (defun hoagie-browse-url-newsticker (&optional arg)
+    "Call my own browse-url-function from Newsticker.
+Function inspired by `newsticker-treeview-browse-url'.
+Call with prefix arg to open in Firefox instead of EWW."
+    (interactive "P")
+    (with-current-buffer (newsticker--treeview-list-buffer)
+      (let ((url (get-text-property (point) :nt-link)))
+        (when url
+          (if arg
+              (hoagie-browse-url url)
+            (eww-browse-url url))
+          (if newsticker-automatically-mark-visited-items-as-old
+              (newsticker-treeview-mark-item-old)))))))
 
 (use-package notifications
   ;; this package is used by appt to display
@@ -1261,6 +1298,9 @@ Inspired by a similar function in Elpher."
 (use-package smtpmail
   :custom
   (send-mail-function 'smtpmail-send-it)
+  (smtpmail-queue-mail t)
+  (smtpmail-queue-mail-directory "~/.gnus.d/queued-mail/")
+  ;; smtpmail-queue-mail-directory "~/.rmail.d/queued-mail/")
   (smtpmail-default-smtp-server "smtp.fastmail.com")
   (smtpmail-stream-type  'starttls)
   (smtpmail-smtp-service 587))
