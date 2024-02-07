@@ -84,10 +84,6 @@
 ;; these keys are mapped on particular positions in my Dygma Raise
 (global-set-key (kbd "<f6>") 'hoagie-keymap) ;; T1 (next to SPC/Control)
 (global-set-key (kbd "<f5>") 'hoagie-second-keymap) ;; Enter
-(define-key key-translation-map (kbd "<f7>") (kbd "C-x")) ;; CapsLock
-;; This one is for the benefit of the laptop keyboard, which
-;; I'm barely using nowadays, TBH
-(define-key key-translation-map (kbd "<f8>") (kbd "C-c"))
 
 ;; this package declares commands and macros (!) that I use for general
 ;; editing
@@ -256,14 +252,14 @@ Running in a toolbox is actually the \"common\" case. :)"
          ;; n for "name"
          ("n" . hoagie-kill-buffer-filename)))
   (:map dired-mode-map
-        ("C-<return>" . hoagie-dired-open-file))
+        ("C-<return>" . hoagie-dired-os-open-file))
   :hook
   (dired-mode-hook . dired-hide-details-mode)
   ;; Enables "C-c C-m a" (yeah, really :) lol) to attach
   ;; all files marked in dired to the current/a new email
   (dired-mode-hook . turn-on-gnus-dired-mode)
   :config
-  (defun hoagie-dired-open-file ()
+  (defun hoagie-dired-os-open-file ()
     "Open a file with the default OS program.
 Initial version from EmacsWiki, added macOS & Silverblue toolbox
 support. This could also use `w32-shell-execute' on Windows.
@@ -807,6 +803,13 @@ This is C-u M-g but I figured I would put it in a simpler binding."
   :bind
   ("M-i" . imenu))
 
+;; From Steve Yegge's post:
+;; Info files out of the docs for just about anything. I have a custom "dir"...
+;; I have the Perl 5 info pages and Ruby, and Python, and OCaml, Scheme,
+;; Common Lisp, Guile, a whole bunch of language references.
+;; All bookmarked heavily — Emacs has a very nice bookmark facility.
+;; I also have info files for a bunch of Gnu tools, Emacs utilities, Unix
+;; utilities, all kinds of stuff.
 (use-package info
   :config
   (add-to-list 'Info-directory-list
@@ -1307,7 +1310,7 @@ Inspired by a similar function in Elpher."
 
 (use-package sql
   :custom
-  (sql-display-sqli-buffer-function nil)
+  (sql-display-sqli-buffer-function t)
   :hook
   (sql-interactive-mode-hook . hoagie-sql-interactive-hook)
   :config
@@ -1368,7 +1371,7 @@ Time can be anything accepted by `run-at-time'."
         ("e" . vc-ediff)
         ("k" . vc-revert)
         ("r" . hoagie-vc-dir-reset)
-        ("d" . hoagie-vc-dir-delete)
+        ;; ("d" . hoagie-vc-dir-delete)
         ("b b" . hoagie-vc-git-show-branches))
   :config
   (defun hoagie-vc-dir-reset (&optional arg)
@@ -1381,20 +1384,20 @@ With prefix arg, does a hard reset (thus it asks for confirmation)."
           (message "Completed. All pending changes are lost."))
       (vc-git-command nil 0 nil "reset")
       (message "All changes are unstaged."))
-    (vc-dir-refresh))
-  (defun hoagie-vc-dir-delete ()
-    "Delete files directly in the vc-dir buffer."
-    (interactive)
-    ;; idea from https://stackoverflow.com/a/29504426/91877 but much
-    ;; simplified (many cases I really don't need) and getting the
-    ;; list of files using `vc-deduce-fileset'
-    (let ((files (cl-second (vc-deduce-fileset))))
-      (when (and files
-                 (yes-or-no-p (format "Delete %s? "
-                                      (string-join files ", " ))))
-        (unwind-protect
-            (mapcar (lambda (path) (delete-file path t)) files)
-          (revert-buffer))))))
+    (vc-dir-refresh)))
+  ;; (defun hoagie-vc-dir-delete ()
+  ;;   "Delete files directly in the vc-dir buffer."
+  ;;   (interactive)
+  ;;   ;; idea from https://stackoverflow.com/a/29504426/91877 but much
+  ;;   ;; simplified (many cases I really don't need) and getting the
+  ;;   ;; list of files using `vc-deduce-fileset'
+  ;;   (let ((files (cl-second (vc-deduce-fileset))))
+  ;;     (when (and files
+  ;;                (yes-or-no-p (format "Delete %s? "
+  ;;                                     (string-join files ", " ))))
+  ;;       (unwind-protect
+  ;;           (mapcar (lambda (path) (delete-file path t)) files)
+  ;;         (revert-buffer))))))
 
 (use-package vc-git
   :after vc
@@ -1402,20 +1405,33 @@ With prefix arg, does a hard reset (thus it asks for confirmation)."
   (vc-git-revision-complete-only-branches t)
   (vc-git-log-switches '("--date=iso-local"))
   :config
+  (defvar hoagie-vc-git-emails
+    '("code@sebasmonia.com"
+      "some.work@email.com :)")
+    "List of email addresses that can be associated with a repository")
   (defun hoagie-vc-git-fetch-all ()
     "Run \"git fetch --all\" in the current repo.
 No validations, so better be in a git repo when calling this :)."
     (interactive)
     (vc-git-command nil 0 nil "fetch" "--all")
     (message "Completed \"fetch --all\" for current repo."))
-  (defun hoagie-vc-git-clone (repository-url directory)
-    "Run \"git clone REPOSITORY-URL\" into DIRECTORY."
-    (interactive "sRepository URL: \nsTarget directory (empty for default): ")
-    (when (string= directory "")
-      ;; "clone" needs nil to use the default directory
-      (setf directory nil))
-    (vc-git-command nil 0 nil "clone" repository-url directory)
-    (message "Repository cloned!"))
+  (defun hoagie-vc-git-clone (repository-url local-dir)
+    "Run \"git clone REPOSITORY-URL\" to LOCAL-DIR.
+It also prompts what email to use in the directory, from the
+values in `hoagie-vc-git-emails'.
+Executes `vc-dir' in the newly cloned directory."
+    (interactive
+     (let* ((url (read-string "Repository URL: "))
+            (dir (file-name-base url)))
+       ;; docs say not to use "initial-input", but it does what I want...
+       ;; and the other "default-value" doesn't.
+       (list url (read-string "Target directory: " dir))))
+    (vc-git-command nil 0 nil "clone" repository-url local-dir)
+    (let ((default-directory (file-name-concat default-directory local-dir)))
+      (vc-git-command nil 0 nil "config" "user.email"
+                      (completing-read "Email for this repo: "
+                                       hoagie-vc-git-emails))
+      (vc-dir default-directory)))
   (defun hoagie-vc-git-show-branches (&optional arg)
     "Show in a buffer the list of branches in the current repository.
 With prefix ARG show the remote branches."
@@ -1432,7 +1448,23 @@ With prefix ARG show the remote branches."
                       (when arg "-r"))
       (pop-to-buffer buffer-name)
       (goto-char (point-min))
-      (special-mode))))
+      (special-mode)))
+  (defun hoagie-vc-git-commit-amend (&optional arg)
+    "Amend the last commit message.
+Use prefix-arg to amend including current changes.
+This depends on setting GIT_EDITOR to use emacsclient, and
+running `server-start' after startup."
+    (interactive "P")
+    (message "Waiting for git...")
+    (vc-git-command nil 'async nil "commit" (when arg "-a") "--amend"))
+  (defun hoagie-vc-git-interactive-rebase (&optional arg)
+    "Amend the last commit message.
+Use prefix-arg to amend including current changes.
+This depends on setting GIT_EDITOR to use emacsclient, and
+running `server-start' after startup."
+    (interactive "P")
+    (message "Waiting for git...")
+    (vc-git-command nil 'async nil "commit" (when arg "-a") "--amend")))
 
 (use-package vc-hooks
   :after (vc vc-git)
@@ -1585,6 +1617,7 @@ If ARG, don't prompt for buffer name suffix."
   (:map ctl-x-map
         ;; right next to other-window
         ("i" . other-frame)
+        ("ESC i" . make-frame)
         ;; add shift to get the original command for C-x i...
         ;; ...although I never used it
         ("I" . insert-file))
@@ -1689,18 +1722,21 @@ If the parameter is not provided use word at point."
   (require 'ls-lisp)
   (customize-set-value 'ls-lisp-use-insert-directory-program nil)
   (easy-menu-define size-menu nil "Menu to select a font size"
-  '("Font sizes"
-    ["a  90" 90]
-    ["s  100" 100]
-    ["d  113" 113]
-    ["f  120" 120]
-    ["g  141" 141]
-    ["z  158" 158]
-    ["x  181" 181]))
+    '("Font sizes"
+      ["q  70" 70]
+      ["w  80" 80]
+      ["e  90" 90]
+      ["a  100" 100]
+      ["s  113" 113]
+      ["d  120" 120]
+      ["z  141" 141]
+      ["x  158" 158]
+      ["c  181" 181]))
   (defun hoagie-manually-adjust-font-size ()
     "Something fishy is going on with font sizes...set them manually for now."
     (interactive)
-    (set-face-attribute 'default (selected-frame)
+    ;; nil for "all frames"
+    (set-face-attribute 'default nil
                         :height (tmm-prompt size-menu)))
   (global-set-key (kbd "<f9>") #'hoagie-manually-adjust-font-size))
 
