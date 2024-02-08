@@ -1347,7 +1347,13 @@ Inspired by a similar function in Elpher."
                          '("SELECT TOP " (p "How many: ")
                            " FROM " (p "Table: "))
                          "sql-top"
-                         "SELECT TOP {#} FROM {table}"))
+                         "SELECT TOP {#} FROM {table}")
+  (tempo-define-template "py-fake_options"
+                         '("from collections import namedtuple; make_options = namedtuple('fake_options', '"
+                           (r "Space separated field names: ")
+                           "')")
+                         "py-fake_options"
+                         "Create a namedtuple for script's fake options"))
 
 (use-package time
   :custom
