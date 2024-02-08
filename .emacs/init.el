@@ -1263,15 +1263,17 @@ Meant to be added to `occur-hook'."
   (shr-discard-aria-hidden t)
   :bind
   (:map hoagie-keymap
-        ("ESC b" . hoagie-shr-kill-link-target))
+        ("ESC b" . hoagie-shr-link-open-or-kill))
   :config
-  (defun hoagie-shr-kill-link-target ()
-    "Kill (and show in echo area) the target of the link at point."
-    (interactive)
-    (let ((target-url (get-text-property (point) 'shr-url)))
-      (when target-url
-        (kill-new target-url)
-        (message "URL: %s" target-url))))
+  (defun hoagie-shr-link-open-or-kill (&optional arg)
+    "Edit and open the link at point in EWW.
+With prefig ARG, put it in the kill ring instead."
+    (interactive "P")
+    (when-let ((target-url (get-text-property (point) 'shr-url)))
+      (message "Link: %s" target-url)
+      (if arg
+          (kill-new target-url)
+        (eww (read-string "" target-url)))))
   (defun hoagie--collect-shr-links ()
     "Get an alist of all link targets in the current buffer.
 The format returned is (link-text . link-position)
