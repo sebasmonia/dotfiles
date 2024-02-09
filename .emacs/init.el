@@ -637,6 +637,13 @@ external browser and new eww buffer, respectively)."
         ;; next to "a"rchive :)
         ("v b" . hoagie-summary-spam)
         ("v g" . hoagie-summary-show-all))
+  (:map gnus-group-mode-map
+	    ;; "disconnect"
+        ("v d" . gnus-unplugged)
+	    ;; "connect but also sync flags"
+        ("v c" . hoagie-gnus-plugged))
+  :hook
+  (gnus-select-article-hook . gnus-agent-fetch-selected-article)
   :init
   ;; let's do our best to keep Gnus files/dir outside of ~
   ;; some of these are not really Gnus vars, but declared in
@@ -667,15 +674,25 @@ external browser and new eww buffer, respectively)."
                                      (nnimap-address "imap.fastmail.com")
                                      (nnimap-server-port 993)
                                      (nnimap-stream ssl)
-                                     (nnir-search-engine imap))))
-                                   ;; (nntp "feedbase"
-                                   ;;   ;; feedbase does not do STARTTLS (yet?)
-                                   ;;   (nntp-open-connection-function nntp-open-tls-stream)
-                                   ;;   (nntp-port-number 563) ; nntps
-                                   ;;   (nntp-address "feedbase.org"))
-                                   ;; (nntp "gmane"
-                                   ;;   (nntp-open-connection-function nntp-open-plain-stream)
-                                   ;;   (nntp-address "news.gmane.io"))))
+                                     (nnimap-streaming t) ;; experimental
+                                     (nnir-search-engine imap))
+                                   (nntp "feedbase"
+                                     ;; feedbase does not do STARTTLS (yet?)
+                                     (nntp-open-connection-function nntp-open-tls-stream)
+                                     (nntp-port-number 563) ; nntps
+                                     (nntp-address "feedbase.org"))
+                                   (nntp "gmane"
+                                     (nntp-open-connection-function nntp-open-plain-stream)
+                                     (nntp-address "news.gmane.io"))))
+  ;; reading email offline after fetching
+  (gnus-agent-mark-unread-after-downloaded nil)
+  (gnus-use-cache t)
+  (gnus-agent-cache nil) ;; don't use the cache when I am connected
+  (gnus-cache-enter-articles '(ticked dormant unread read))
+  (gnus-cache-remove-articles nil)
+  (gnus-cacheable-groups "^[nnimap|nntp]")
+  (gnus-agent-synchronize-flags t)
+  (gnus-agent-queue-mail 'always)
    ;; Archive outgoing email in Sent folder, mark it as read
   (gnus-message-archive-method '(nnimap "imap.fastmail.com"))
   (gnus-message-archive-group "nnimap+fastmail:Sent")
@@ -686,7 +703,7 @@ external browser and new eww buffer, respectively)."
   (gnus-summary-stop-at-end-of-message t)
   ;; http://groups.google.com/group/gnu.emacs.gnus/browse_thread/thread/a673a74356e7141f
   (gnus-summary-line-format (concat
-                             "%0{%U%R%z%}"
+                             "%0{%U%R%O%}"
                              "%3{│%}%1{%&user-date;%}%3{│%}" ;; date
                              " "
                              "%4{%-25,25f%}" ;; name
@@ -694,7 +711,7 @@ external browser and new eww buffer, respectively)."
                              "%3{│%}"
                              " "
                              "%1{%B%}"
-                             "%s\n"))
+                             "%S\n"))
   (gnus-user-date-format-alist '((t . "%Y-%m-%d (%a) %H:%M")
                                  gnus-thread-sort-functions '(gnus-thread-sort-by-date)
                                  ))
@@ -709,6 +726,13 @@ external browser and new eww buffer, respectively)."
   (gnus-sum-thread-tree-leaf-with-other "├─► ")
   (gnus-sum-thread-tree-single-leaf     "╰─► ")
   :config
+  (defun hoagie-gnus-plugged ()
+    "Plug Gnus, and also sync flags - useful for IMAP."
+    (interactive)
+    ;; in theory this is also triggered by the variable (set above)
+    ;; gnus-agent-synchronize-flags being t. But it doesn't work
+    (gnus-plugged)
+    (gnus-agent-synchronize-flags))
   ;; Inspired by https://github.com/kensanata/ggg, add shortcuts to
   ;; Archive, Trash and Spam, but bind to keymap directly
   (defun hoagie-summary-spam ()
@@ -727,8 +751,7 @@ external browser and new eww buffer, respectively)."
     "Show all messages, even the ones read.
 This is C-u M-g but I figured I would put it in a simpler binding."
     (interactive)
-    (gnus-summary-rescan-group t))
-  )
+    (gnus-summary-rescan-group t)))
 
 (use-package grep
   :custom
@@ -933,43 +956,6 @@ Set `fill-column', `truncate-lines'."
   (:map hoagie-keymap
         ("i" . completion-at-point)
         ("<f6>" . execute-extended-command)))
-
-(use-package newsticker
-  :commands
-  (newsticker-show-news newsticker-start)
-  :custom
-  (newsticker-frontend 'newsticker-treeview)
-  ;; format: (label url start-time interbal wget-args)
-  (newsticker-url-list '(("NPR World News" "https://feeds.npr.org/1004/rss.xml")
-	                     ("NPR National News" "https://feeds.npr.org/1003/rss.xml")
-	                     ("Endless Parentheses" "http://endlessparentheses.com/atom.xml")
-	                     ("Irreal" "http://irreal.org/blog/?feed=rss2")
-	                     ("Planet Emacslife" "https://planet.emacslife.com/atom.xml")
-                         ("Planet Lisp" "http://planet.lisp.org/rss20.xml")
-                         ("Fedora Magazine" "https://fedoramagazine.org/feed/")
-                         ("Schneier on Security" "https://www.schneier.com/feed/atom")
-                         ("Slashdot" "http://rss.slashdot.org/Slashdot/slashdotMain")
-                         ("BA Times" "https://www.batimes.com.ar/feed")
-                         ("Olé - Fútbol internacional" "https://www.ole.com.ar/rss/futbol-internacional/")
-                         ("Olé - Fútbol Primera" "http://www.ole.com.ar/rss/futbol-primera/")
-                         ("Olé - Fútbol Ascenso" "http://www.ole.com.ar/rss/futbol-ascenso/")))
-  :bind
-  (:map newsticker-treeview-mode-map
-        ("v" . hoagie-browse-url-newsticker))
-  :config
-  (defun hoagie-browse-url-newsticker (&optional arg)
-    "Call my own browse-url-function from Newsticker.
-Function inspired by `newsticker-treeview-browse-url'.
-Call with prefix arg to open in Firefox instead of EWW."
-    (interactive "P")
-    (with-current-buffer (newsticker--treeview-list-buffer)
-      (let ((url (get-text-property (point) :nt-link)))
-        (when url
-          (if arg
-              (hoagie-browse-url url)
-            (eww-browse-url url))
-          (if newsticker-automatically-mark-visited-items-as-old
-              (newsticker-treeview-mark-item-old)))))))
 
 (use-package notifications
   ;; this package is used by appt to display
@@ -1306,7 +1292,6 @@ Inspired by a similar function in Elpher."
   (send-mail-function 'smtpmail-send-it)
   (smtpmail-queue-mail t)
   (smtpmail-queue-mail-directory "~/.gnus.d/queued-mail/")
-  ;; smtpmail-queue-mail-directory "~/.rmail.d/queued-mail/")
   (smtpmail-default-smtp-server "smtp.fastmail.com")
   (smtpmail-stream-type  'starttls)
   (smtpmail-smtp-service 587))
