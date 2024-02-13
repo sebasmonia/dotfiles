@@ -89,6 +89,7 @@
 ;; editing
 (require 'hoagie-editing)
 (use-package hoagie-editing :load-path "~/sourcehut/dotfiles/.emacs/"
+  :demand t
   :bind
   ("C-<backspace>" . backward-delete-word)
   ("C-z" . hoagie-region-to-char)
@@ -1785,7 +1786,7 @@ FRAME is ignored."
     ;; 2021-05-22: now I use the pgtk branch everywhere, and the monitor name
     ;; has a meaningul value in all cases, so:
     (let* ((monitor-name (alist-get 'name (frame-monitor-attributes)))
-           (monitor-font '(("0x0536" . 143) ;; laptop -- was 151
+           (monitor-font '(("0x0536" . 108) ;; laptop -- was 143, 151
                            ("LG Ultra HD" . 139))) ;; external monitor
            (size (alist-get monitor-name monitor-font
                             180 ;; default size, "big just in case"
