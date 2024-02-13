@@ -95,9 +95,11 @@
   (:map hoagie-keymap
         ("/" . hoagie-toggle-backslash)
         ("p" . hoagie-insert-pair)
-        ("q" . hoagie-split-and-indent))
+        ;; swapped this and `hoagie-split-and-indent', this keymap
+        ;; is more about quotes and pairs, it made sense
+        ("q" . hoagie-escape-quotes))
   (:map hoagie-second-keymap
-        ("q" . hoagie-escape-quotes)))
+        ("q" . hoagie-split-and-indent)))
 
 (use-package ansi-color
   :commands (ansi-color-apply-buffer)
@@ -785,6 +787,19 @@ This is C-u M-g but I figured I would put it in a simpler binding."
         ("t" . howm-insert-dtime)
         ("d" . howm-insert-date)
         ("a" . howm-list-all))
+  :custom
+  (howm-file-name-format "%Y/%m/%Y-%m-%d-%H%M%S.md")
+  :init
+  ;; https://a-blog-with.relevant-information.com/weblog/2024-01-28-howm/
+  ;; Change format of titles to use Markdown's "# Heading 1"
+  (setf howm-view-title-header "#" ;; was =
+        howm-view-title-header "#" ;; was =
+        ;; was "= %title%cursor\n%date %file\n\n"
+        howm-template "# %title%cursor\n%date %file\n\n"
+        ;; was  "^=\\( +\\(.*\\)\\|\\)$"
+        howm-view-title-regexp  "^#\\( +\\(.*\\)\\|\\)$"
+        ;; was "^= +"
+        howm-view-title-regexp-grep  "^# +")
   :config
   (setf howm-file-name-format "%Y/%m/%Y-%m-%d-%H%M%S.md")
   ;; https://leahneukirchen.org/blog/archive/2022/03/note-taking-in-emacs-with-howm.html
@@ -1203,8 +1218,9 @@ Meant to be added to `occur-hook'."
     (message "restclient-response-body-only=%s"
              (setf restclient-response-body-only
                    (not restclient-response-body-only))))
-  (defun hoagie-open-restclient (arg)
-    "Open a file from the restclient \"collection\"."
+  (defun hoagie-open-restclient (&optional arg)
+    "Open a file from the restclient \"collection\".
+Use prefix ARG to open the file in another window."
     (interactive "P")
     (let ((restclient-file (read-file-name "Open restclient file:"
                                            "~/restclient/"
@@ -1323,9 +1339,10 @@ Inspired by a similar function in Elpher."
   :config
   (defun hoagie-tempo-template ()
     (interactive)
-    (funcall-interactively
-     (alist-get (completing-read "Insert..." tempo-tags)
-                tempo-tags nil nil #'string=)))
+    (let ((current-tags (tempo-build-collection)))
+      (funcall-interactively
+       (alist-get (completing-read "Insert..." current-tags)
+                  current-tags nil nil #'string=))))
   (tempo-define-template "sql-varbinary"
                          '("CONVERT(VARBINARY(MAX),'" (r "Value: ")  "', 1)")
                          "sql-tovarbin"
@@ -1386,7 +1403,6 @@ Time can be anything accepted by `run-at-time'."
         ("e" . vc-ediff)
         ("k" . vc-revert)
         ("r" . hoagie-vc-dir-reset)
-        ;; ("d" . hoagie-vc-dir-delete)
         ("b b" . hoagie-vc-git-show-branches))
   :config
   (defun hoagie-vc-dir-reset (&optional arg)
@@ -1400,19 +1416,6 @@ With prefix arg, does a hard reset (thus it asks for confirmation)."
       (vc-git-command nil 0 nil "reset")
       (message "All changes are unstaged."))
     (vc-dir-refresh)))
-  ;; (defun hoagie-vc-dir-delete ()
-  ;;   "Delete files directly in the vc-dir buffer."
-  ;;   (interactive)
-  ;;   ;; idea from https://stackoverflow.com/a/29504426/91877 but much
-  ;;   ;; simplified (many cases I really don't need) and getting the
-  ;;   ;; list of files using `vc-deduce-fileset'
-  ;;   (let ((files (cl-second (vc-deduce-fileset))))
-  ;;     (when (and files
-  ;;                (yes-or-no-p (format "Delete %s? "
-  ;;                                     (string-join files ", " ))))
-  ;;       (unwind-protect
-  ;;           (mapcar (lambda (path) (delete-file path t)) files)
-  ;;         (revert-buffer))))))
 
 (use-package vc-git
   :after vc
@@ -1565,6 +1568,7 @@ page."
 (use-package emacs
   :init
   (defun hoagie-go-home (arg)
+    "Open ~. Prefix ARG to open in other window."
     (interactive "P")
     (if arg
         (dired-other-window "~/")
