@@ -970,7 +970,6 @@ Set `fill-column', `truncate-lines'."
         ("C-n" . minibuffer-next-completion)
         ("C-p" . minibuffer-previous-completion))
   (:map hoagie-keymap
-        ("i" . completion-at-point)
         ("<f6>" . execute-extended-command)))
 
 (use-package notifications
@@ -1336,7 +1335,10 @@ Inspired by a similar function in Elpher."
   (tempo-interactive t)
   :bind
   (:map hoagie-keymap
-        ("ESC i" . hoagie-tempo-template))
+        ("i" . hoagie-tempo-template))
+        ;; Original with "i" for completion at point, but
+        ;; I was fine with C-M-i so :shrug:
+        ;; ("ESC i" . hoagie-tempo-template))
   :config
   (defun hoagie-tempo-template ()
     (interactive)
@@ -1693,7 +1695,9 @@ If ARG, don't prompt for buffer name suffix."
   ;; https://200ok.ch/posts/2020-09-29_comprehensive_guide_on_handling_long_lines_in_emacs.html
   (setq-default bidi-paragraph-direction 'left-to-right
   ;; from https://github.com/SystemCrafters/rational-emacs/blob/master/modules/rational-defaults.el
-                bidi-inhibit-bpa t)
+                bidi-inhibit-bpa t
+  ;; from https://blogs.dgplug.org/sandeepk/no-newline-at-the-end-of-file-_-tsu-_
+                require-final-newline t)
   (delete-selection-mode)
   (blink-cursor-mode -1)
   (column-number-mode 1)
