@@ -96,9 +96,7 @@
   (:map hoagie-keymap
         ("/" . hoagie-toggle-backslash)
         ("p" . hoagie-insert-pair)
-        ;; swapped this and `hoagie-split-and-indent', this keymap
-        ;; is more about quotes and pairs, it made sense
-        ("q" . hoagie-escape-quotes))
+        ("q" . hoagie-escape-regexp))
   (:map hoagie-second-keymap
         ("q" . hoagie-split-and-indent)))
 

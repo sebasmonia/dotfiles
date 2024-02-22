@@ -74,25 +74,32 @@ With ARG, do this that many times."
 		 (backward-char direction))
 	   (point)))))
 
-(defun hoagie-escape-characters (&optional arg)
-  "Escape quotes in the region.
-Call with prefix ARG to ignore the first and last quote.
-If there's no active region, it operates on the current line. It
-simply adds a \\ to each \" found."
+(defun hoagie-escape-regexp (&optional arg)
+  "Escape a regexp in the region or current line.
+Call with prefix ARG to be prompted a different regexp.
+Use double prefix to ignore the first and last match, intended
+for escaping a line that contains a string literal."
   (interactive "*P")
-  (with-region-or-thing 'line
-    (save-excursion
-      (with-restriction start end
-        (goto-char start)
-        (when arg
-          ;; skip the first
-          (search-forward "\"" nil t))
-        (while (search-forward "\"" nil t)
-          (replace-match "\\\\\""))
-        (when arg
-          ;; undo the last
-          (search-backward "\\\\\"" nil t)
-          (replace-match "\""))))))
+  (let ((regexp "\\([\\\"\\\\\\\\]\\)")
+        (skip-first-last (equal '(16) arg))
+        last-match)
+    (when arg
+      (setf regexp (read-string "Regexp: " "\\([\\\"\\\\\\\\]\\)")))
+    (with-region-or-thing 'line
+      (save-excursion
+        (deactivate-mark)
+        (with-restriction start end
+          (goto-char start)
+          (when skip-first-last
+            ;; skip the first
+            (re-search-forward regexp nil t))
+          (while (re-search-forward regexp nil t)
+            (setf last-match (match-string 1))
+            (replace-match "\\\\\\1"))
+          (when skip-first-last
+            ;; go to the last char replacement and delete the \
+            (search-backward last-match nil t)
+            (delete-char -1)))))))
 
 (defvar hoagie-pair-chars
   '((?\" . ?\")
