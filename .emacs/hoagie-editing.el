@@ -42,7 +42,7 @@ in my custom commands, that I turned it into a reusable macro."
 (defun hoagie-delete-word (arg)
   "Delete characters forward until encountering the end of a word.
 With ARG, do this that many times."
-  (interactive "p")
+  (interactive "*p")
   (if (use-region-p)
       (delete-region (region-beginning) (region-end))
     (delete-region (point) (progn
@@ -52,7 +52,7 @@ With ARG, do this that many times."
 (defun hoagie-backward-delete-word (arg)
   "Delete characters backward until encountering the end of a word.
 With ARG, do this that many times."
-  (interactive "p")
+  (interactive "*p")
   (delete-word (- arg)))
 
 (defun hoagie-region-to-char (arg char &optional interactive)
@@ -74,12 +74,12 @@ With ARG, do this that many times."
 		 (backward-char direction))
 	   (point)))))
 
-(defun hoagie-escape-quotes (&optional arg)
+(defun hoagie-escape-characters (&optional arg)
   "Escape quotes in the region.
 Call with prefix ARG to ignore the first and last quote.
 If there's no active region, it operates on the current line. It
 simply adds a \\ to each \" found."
-  (interactive "P")
+  (interactive "*P")
   (with-region-or-thing 'line
     (save-excursion
       (with-restriction start end
@@ -120,7 +120,7 @@ has a built in mode for this, `electric-pair-mode', but it does
 more than I want, it is more intrusive, and I couldn't get around
 some of it's behaviours. There's also `insert-pair', but I
 couldn't crack how to use it :("
-  (interactive "P")
+  (interactive "*P")
   (with-region-or-thing 'sexp
     (let* ((opener (read-char "Opening char: "))
            (closer (alist-get opener hoagie-pair-chars)))
@@ -159,7 +159,7 @@ and strings). Also the way the package does fall-through to
 `fill-paragraph' is a bit inconsistent. This function is a
 fraction of its functionality, and isn't as smart, but it is more
 predicatable."
-  (interactive "P")
+  (interactive "*P")
   (save-excursion
     (let ((start (point))
           (sep (if arg
