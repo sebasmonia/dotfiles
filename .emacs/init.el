@@ -506,30 +506,6 @@ Add hooks for `eldoc' customizations and set `fill-column'."
   :custom
   (epg-pinentry-mode 'loopback))
 
-(use-package eshell
-  :custom
-  ;; TODO: check all customizations
-  (eshell-prefer-lisp-functions nil)
-  (eshell-prefer-lisp-variables nil)
-  :bind
-  (:map hoagie-keymap
-        ("`" . hoagie-eshell-here))
-  ;; experimental - better on separate halves of the keyboard
-  (:map hoagie-second-keymap
-        ("`" . hoagie-eshell-here))
-  :config
-  (defun hoagie-eshell-here (&optional arg)
-    "Pop eshell and switch to `default-directory' when the command was invoked.
-With prefix arg, create a new instance even if there was one running."
-    (interactive "P")
-    ;; pass-through of the argument, will return an existing eshell or
-    ;; create a new one
-    (let ((new-dir default-directory))
-      (with-current-buffer (eshell arg)
-        (goto-char (point-max))
-        (eshell/cd new-dir)
-        (eshell-send-input "")))))
-
 (use-package eww
   :demand t
   :custom
@@ -1146,6 +1122,15 @@ Use prefix ARG to open the file in another window."
   :custom
   (sharper-run-only-one t))
 
+(use-package shell
+  :hook
+  (shell-mode-hook . hoagie-shell-mode-setup)
+  :config
+  (defun hoagie-shell-mode-setup ()
+    "Configure shell buffers."
+    (toggle-truncate-lines t)
+    (setq comint-process-echoes t)))
+
 (use-package shr
   :custom
   (shr-use-fonts nil)
@@ -1543,6 +1528,10 @@ If ARG, don't prompt for buffer name suffix."
   (minibuffer-restore-windows nil) ;; finally...
   (tab-width 4) ;; make golang code nicer to read
   (delete-pair-blink-delay 0.1)
+  ;; This feature was the culprit of the messages "No matching parenthesis
+  ;; found" in the minibuffer, an annoyance in `zap-up-to-char' - and probably
+  ;; other commands. With `show-paren-mode', it feels superfluous.
+  (blink-matching-paren nil)
   (recenter-positions '(1 middle -2)) ;; behaviour for C-l
   (comint-prompt-read-only t)
   (read-file-name-completion-ignore-case t) ;; useful in Linux
