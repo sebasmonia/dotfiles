@@ -2,7 +2,7 @@
 
 ;; Author: Sebastián Monía <code@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
-;; Version: 30.1
+;; Version: 30.2
 ;; Keywords: tools maint
 
 ;; This file is not part of GNU Emacs.
@@ -11,16 +11,13 @@
 
 ;; My dot Emacs file
 ;; Recent changes:
-;; 2023-08-09: Update config to use PGP for authinfo and sending emails, minor
-;;             improvements on Gnus and message modes, add emoji font (for some
-;;             Gemini sites, this is a must!)
-;; 2023-08-25: Manage email contacts with ecomplete
 ;; 2023-08-31: Notifications and appointments setup
 ;; 2023-10-09: Move unused languages/tools to purgatory.el
 ;; 2023-11-07: Move general editing commands to hoagie-editing.el
 ;; 2023-11-24: Remove some bindings, add auth-source customization, add some
 ;;             initialization to sql-mode and markdown-mode.
 ;; 2023-12-06: Use my own mode-line configuration. Require Emacs 30.
+;; 2024-02-25: Move from Gnus to mu4e (and elfeed)
 ;;; Code:
 
 (setf custom-file (locate-user-emacs-file "custom.el"))
@@ -256,9 +253,6 @@ Running in a toolbox is actually the \"common\" case. :)"
         ("C-<return>" . hoagie-dired-os-open-file))
   :hook
   (dired-mode-hook . dired-hide-details-mode)
-  ;; Enables "C-c C-m a" (yeah, really :) lol) to attach
-  ;; all files marked in dired to the current/a new email
-  (dired-mode-hook . turn-on-gnus-dired-mode)
   :config
   (defun hoagie-dired-os-open-file ()
     "Open a file with the default OS program.
@@ -626,134 +620,6 @@ external browser and new eww buffer, respectively)."
   (:map hoagie-second-keymap
         ("f" . hoagie-flymake-keymap)))
 
-(use-package gnus
-  :bind
-  (:map hoagie-second-keymap
-        ;; for "email"
-        ("e" . gnus))
-  (:map gnus-summary-mode-map
-        ("v t" . hoagie-summary-trash)
-        ("v a" . hoagie-summary-archive)
-        ;; "b" for Basura. Using "s" is risky, as it is
-        ;; next to "a"rchive :)
-        ("v b" . hoagie-summary-spam)
-        ("v g" . hoagie-summary-show-all))
-  (:map gnus-group-mode-map
-	    ;; "disconnect"
-        ("v d" . gnus-unplugged)
-	    ;; "connect but also sync flags"
-        ("v c" . hoagie-gnus-plugged))
-  :hook
-  (gnus-select-article-hook . gnus-agent-fetch-selected-article)
-  :init
-  ;; let's do our best to keep Gnus files/dir outside of ~
-  ;; some of these are not really Gnus vars, but declared in
-  ;; nndraft, message, etc.
-  (setq gnus-home-directory "~/.gnus.d/"
-        gnus-directory "~/.gnus.d/News/"
-        nndraft-directory "~/.gnus.d/News/drafts/"
-        nnmh-directory "~/.gnus.d/News/drafts/"
-        nnfolder-directory "~/.gnus.d/Mail/archive"
-        nnml-directory "~/.gnus.d/Mail/"
-        message-directory "~/.gnus.d/Mail/"
-        gnus-article-save-directory "~/.gnus.d/News/"
-        gnus-read-newsrc-file nil
-        gnus-save-newsrc-file nil
-        ;; the two values above mean I don't need this.
-        ;; But, just in case:
-        gnus-startup-file "~/.gnus.d/.newsrc"
-        gnus-dribble-directory "~/.gnus.d/"
-        gnus-always-read-dribble-file t)
-  :custom
-  ;; these two are not really Gnus values, but a sensible place to set them
-  (user-full-name "Sebastián Monía")
-  (user-mail-address "sebastian@sebasmonia.com")
-  (mml-secure-openpgp-signers '("A65927B22A60F72A53D77CD7EF7DAC84163D7A83"))
-  (mml-secure-openpgp-encrypt-to-self t)
-  (gnus-select-method '(nnnil ""))
-  (gnus-secondary-select-methods '((nnimap "fastmail"
-                                     (nnimap-address "imap.fastmail.com")
-                                     (nnimap-server-port 993)
-                                     (nnimap-stream ssl)
-                                     (nnimap-streaming t) ;; experimental
-                                     (nnir-search-engine imap))
-                                   (nntp "feedbase"
-                                     ;; feedbase does not do STARTTLS (yet?)
-                                     (nntp-open-connection-function nntp-open-tls-stream)
-                                     (nntp-port-number 563) ; nntps
-                                     (nntp-address "feedbase.org"))
-                                   (nntp "gmane"
-                                     (nntp-open-connection-function nntp-open-plain-stream)
-                                     (nntp-address "news.gmane.io"))))
-  ;; reading email offline after fetching
-  (gnus-agent-mark-unread-after-downloaded nil)
-  (gnus-use-cache t)
-  (gnus-agent-cache nil) ;; don't use the cache when I am connected
-  (gnus-cache-enter-articles '(ticked dormant unread read))
-  (gnus-cache-remove-articles nil)
-  (gnus-cacheable-groups "^[nnimap|nntp]")
-  (gnus-agent-synchronize-flags t)
-  (gnus-agent-queue-mail 'always)
-   ;; Archive outgoing email in Sent folder, mark it as read
-  (gnus-message-archive-method '(nnimap "imap.fastmail.com"))
-  (gnus-message-archive-group "nnimap+fastmail:Sent")
-  (gnus-gcc-mark-as-read t)
-  (gnus-search-use-parsed-queries t)
-  (gnus-auto-select-next nil)
-  (gnus-paging-select-next nil)
-  (gnus-summary-stop-at-end-of-message t)
-  ;; http://groups.google.com/group/gnu.emacs.gnus/browse_thread/thread/a673a74356e7141f
-  (gnus-summary-line-format (concat
-                             "%0{%U%R%O%}"
-                             "%3{│%}%1{%&user-date;%}%3{│%}" ;; date
-                             " "
-                             "%4{%-25,25f%}" ;; name
-                             " "
-                             "%3{│%}"
-                             " "
-                             "%1{%B%}"
-                             "%S\n"))
-  (gnus-user-date-format-alist '((t . "%Y-%m-%d (%a) %H:%M")
-                                 gnus-thread-sort-functions '(gnus-thread-sort-by-date)
-                                 ))
-  (gnus-user-date-format-alist '((t . "%Y-%m-%d %I:%M%p")))
-  (gnus-thread-sort-functions '(gnus-thread-sort-by-date))
-  ;; let's experiment disabling threads...
-  (gnus-show-threads t)
-  (gnus-sum-thread-tree-false-root "")
-  (gnus-sum-thread-tree-root "")
-  (gnus-sum-thread-tree-indent " ")
-  (gnus-sum-thread-tree-vertical        "│")
-  (gnus-sum-thread-tree-leaf-with-other "├─► ")
-  (gnus-sum-thread-tree-single-leaf     "╰─► ")
-  :config
-  (defun hoagie-gnus-plugged ()
-    "Plug Gnus, and also sync flags - useful for IMAP."
-    (interactive)
-    ;; in theory this is also triggered by the variable (set above)
-    ;; gnus-agent-synchronize-flags being t. But it doesn't work
-    (gnus-plugged)
-    (gnus-agent-synchronize-flags))
-  ;; Inspired by https://github.com/kensanata/ggg, add shortcuts to
-  ;; Archive, Trash and Spam, but bind to keymap directly
-  (defun hoagie-summary-spam ()
-    "Move the current or marked mails to Spam in Fastmail."
-    (interactive)
-    (gnus-summary-move-article nil "nnimap+fastmail:Spam"))
-  (defun hoagie-summary-archive ()
-    "Move the current or marked mails to the Archive in Fastmail."
-    (interactive)
-    (gnus-summary-move-article nil "nnimap+fastmail:Archive"))
-  (defun hoagie-summary-trash ()
-    "Move the current or marked mails to Trash in Fastmail."
-    (interactive)
-    (gnus-summary-move-article nil "nnimap+fastmail:Trash"))
-  (defun hoagie-summary-show-all ()
-    "Show all messages, even the ones read.
-This is C-u M-g but I figured I would put it in a simpler binding."
-    (interactive)
-    (gnus-summary-rescan-group t)))
-
 (use-package grep
   :custom
   (grep-command "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
@@ -902,12 +768,7 @@ Set `fill-column', `truncate-lines'."
   (:map message-mode-map
         ;; shadows `message-elide-region' :shrug:
         ("C-c C-e" . hoagie-confirm-encrypt))
-  :hook
-  (message-setup-hook . hoagie-message-change-from)
   :custom
-  ;; actually part of simple.el, but putting it here because
-  ;; it is relevant to message.el behaviour for C-x m
-  (mail-user-agent 'gnus-user-agent)
   ;; integrate with ecomplete. Press TAB to get email completion
   (message-mail-alias-type 'ecomplete)
   (message-self-insert-commands nil)
@@ -917,26 +778,6 @@ Set `fill-column', `truncate-lines'."
   ;; existing commands to "go to header" which add them
   ;; (message-default-mail-headers "Cc: \nBcc: \n")
   :config
-  ;; From https://www.emacswiki.org/emacs/GnusTutorial#h5o-40
-  (defvar hoagie-email-addresses '("sebastian@sebasmonia.com"
-                                   "capsule@sebasmonia.com"
-                                   "code@sebasmonia.com"
-                                   "mailing@sebasmonia.com"
-                                   "subscriptions@sebasmonia.com"
-                                   "thingstopay@sebasmonia.com"
-                                   "work@sebasmonia.com")
-    "The list of aliases in my email setup.")
-  (defun hoagie-message-change-from ()
-    "Select the \"From:\" address when composing a new email."
-    (interactive)
-    (let* ((selected-address (completing-read "From: " hoagie-email-addresses))
-           (address (concat user-full-name " <" selected-address ">"))
-           (from-text (concat "From: " address)))
-      (setq gnus-article-current-point (point))
-      (goto-char (point-min))
-      (while (re-search-forward "^From:.*$" nil t)
-        (replace-match from-text))
-      (goto-char gnus-article-current-point)))
   (defun hoagie-confirm-encrypt ()
     "Answer y/n to whether to send the message encrypted."
     (interactive)
@@ -968,7 +809,58 @@ Set `fill-column', `truncate-lines'."
         ("C-n" . minibuffer-next-completion)
         ("C-p" . minibuffer-previous-completion))
   (:map hoagie-keymap
+        ("i" . completion-at-point)
         ("<f6>" . execute-extended-command)))
+
+;; TODO:
+;; mu4e-index-updated-hook
+;; mu4e-attachment-dir
+(use-package mu4e
+  :bind
+  (:map hoagie-second-keymap
+        ;; for "email"
+        ("e" . mu4e))
+  :custom
+  (mu4e-sent-folder "/Sent")
+  (mu4e-drafts-folder "/Drafts")
+  (mu4e-trash-folder  "/Trash")
+  (mu4e-refile-folder "/Archive")
+  (mu4e-get-mail-command "offlineimap")
+  (mu4e-update-interval 300)
+  (mu4e-notification-support t)
+  ;; ((:human-date . 12) (:flags . 6) (:mailing-list . 10) (:from . 22) (:subject))
+   ;; alternatively, use :thread-subject
+  (mu4e-headers-fields '((:date . 25) (:flags . 6) (:from . 22) (:subject .  nil)))
+  (mu4e-headers-date-format "%F %I:%M %p")
+  (mu4e-view-auto-mark-as-read nil)
+  (mu4e-read-option-use-builtin nil)
+  (mu4e-completing-read-function 'completing-read)
+  ;; these settings are from simple.el, not mu4e
+  (mail-user-agent 'mu4e-user-agent)
+  (read-mail-command 'mu4e)
+  (user-full-name "Sebastián Monía")
+  (user-mail-address "sebastian@sebasmonia.com")
+  :hook
+  (mu4e-compose-mode-hook . hoagie-mu4e-change-from)
+  :config
+  ;; From https://www.emacswiki.org/emacs/GnusTutorial#h5o-40
+  (defvar hoagie-email-addresses '("sebastian@sebasmonia.com"
+                                   "capsule@sebasmonia.com"
+                                   "code@sebasmonia.com"
+                                   "mailing@sebasmonia.com"
+                                   "subscriptions@sebasmonia.com"
+                                   "thingstopay@sebasmonia.com"
+                                   "work@sebasmonia.com")
+    "The list of aliases in my email setup.")
+  (defun hoagie-mu4e-change-from ()
+    "Select the \"From:\" address when composing a new email."
+    (interactive)
+    (message-replace-header "From"
+                            (concat user-full-name
+                                    " <"
+                                    (completing-read "From: "
+                                                     hoagie-email-addresses)
+                                    ">"))))
 
 (use-package notifications
   ;; this package is used by appt to display
@@ -1304,7 +1196,8 @@ Inspired by a similar function in Elpher."
 (use-package smtpmail
   :custom
   (send-mail-function 'smtpmail-send-it)
-  (smtpmail-queue-mail t)
+  ;; (smtpmail-queue-mail t)
+  ;; TODO: update for mu4e
   (smtpmail-queue-mail-directory "~/.gnus.d/queued-mail/")
   (smtpmail-default-smtp-server "smtp.fastmail.com")
   (smtpmail-stream-type  'starttls)
