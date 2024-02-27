@@ -88,7 +88,7 @@
 (use-package hoagie-editing :load-path "~/sourcehut/dotfiles/.emacs/"
   :demand t
   :bind
-  ("C-<backspace>" . backward-delete-word)
+  ("C-<backspace>" . hoagie-backward-delete-word)
   ("C-z" . hoagie-region-to-char)
   (:map hoagie-keymap
         ("/" . hoagie-toggle-backslash)
@@ -785,7 +785,6 @@ Set `fill-column', `truncate-lines'."
         ("C-n" . minibuffer-next-completion)
         ("C-p" . minibuffer-previous-completion))
   (:map hoagie-keymap
-        ("i" . completion-at-point)
         ("<f6>" . execute-extended-command)))
 
 ;; TODO:

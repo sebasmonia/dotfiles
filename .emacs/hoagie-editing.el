@@ -53,7 +53,7 @@ With ARG, do this that many times."
   "Delete characters backward until encountering the end of a word.
 With ARG, do this that many times."
   (interactive "*p")
-  (delete-word (- arg)))
+  (hoagie-delete-word (- arg)))
 
 (defun hoagie-region-to-char (arg char &optional interactive)
   "A copy of `zap-to-char' that activates or expands the region."
