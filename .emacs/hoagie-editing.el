@@ -153,8 +153,8 @@ couldn't crack how to use it :("
             (while (search-forward "/" nil t) (replace-match "\\\\" 'literal))
           (while (search-forward "\\" nil t) (replace-match "/")))))))
 
-(defun hoagie-split-and-indent (&optional arg)
-  "Split rest of line by a separator, then indent.
+(defun hoagie-split-by-newline (&optional arg)
+  "Split using newlines by a separator, then indent.
 By default the separator is a single space, and contiguous spaces
 are collapsed to one. With prefix ARG prompt for separator, with
 no collapsing.
@@ -165,7 +165,7 @@ confused on how to split things (usually in the edges of comments
 and strings). Also the way the package does fall-through to
 `fill-paragraph' is a bit inconsistent. This function is a
 fraction of its functionality, and isn't as smart, but it is more
-predicatable."
+predictable."
   (interactive "*P")
   (save-excursion
     (let ((start (point))
@@ -175,7 +175,9 @@ predicatable."
       (while (search-forward sep (pos-eol) t)
         (unless arg
           (just-one-space))
-        (replace-match "\n"))
+        ;; don't add newline when inside a string
+        (unless (nth 3 (syntax-ppss))
+          (newline)))
       ;; move to the line _right after_ the last new line character inserted
       (forward-line)
       (indent-region start (point)))))

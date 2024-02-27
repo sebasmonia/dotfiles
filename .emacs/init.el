@@ -95,7 +95,7 @@
         ("p" . hoagie-insert-pair)
         ("q" . hoagie-escape-regexp))
   (:map hoagie-second-keymap
-        ("q" . hoagie-split-and-indent)))
+        ("q" . hoagie-split-by-newline)))
 
 (use-package ansi-color
   :commands (ansi-color-apply-buffer)
