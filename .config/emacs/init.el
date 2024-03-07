@@ -788,7 +788,6 @@ Set `fill-column', `truncate-lines'."
         ("<f6>" . execute-extended-command)))
 
 ;; TODO:
-;; mu4e-index-updated-hook
 ;; mu4e-attachment-dir
 (use-package mu4e
   :bind
@@ -805,7 +804,7 @@ Set `fill-column', `truncate-lines'."
   (mu4e-notification-support t)
   ;; ((:human-date . 12) (:flags . 6) (:mailing-list . 10) (:from . 22) (:subject))
    ;; alternatively, use :thread-subject
-  (mu4e-headers-fields '((:date . 25) (:flags . 6) (:from . 22) (:subject .  nil)))
+  (mu4e-headers-fields '((:maildir . 25) (:date . 20) (:flags . 6) (:from . 30) (:subject)))
   (mu4e-headers-date-format "%F %I:%M %p")
   (mu4e-view-auto-mark-as-read nil)
   (mu4e-read-option-use-builtin nil)
