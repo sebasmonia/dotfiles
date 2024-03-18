@@ -435,6 +435,34 @@ buffer name when eglot is enabled."
           (quit-window nil eldoc-window)
         (eldoc-doc-buffer t)))))
 
+(use-package elfeed
+  :ensure t
+  :custom
+  (elfeed-sort-order 'ascending)
+  (elfeed-db-directory (expand-file-name "elfeed" user-emacs-directory))
+  (elfeed-feeds '("http://nullprogram.com/feed/"
+                  "https://irreal.org/blog/?feed=rss2"
+                  "https://lars.ingebrigtsen.no/feed/"
+                  "https://feeds.npr.org/1001/rss.xml"
+                  "https://batsov.com/atom.xml"
+                  "https://manueluberti.eu/feed.xml"
+                  "https://metaredux.com/feed.xml"
+                  "https://lisp-journey.gitlab.io/index.xml"
+                  "https://www.n16f.net/blog/index.xml"
+                  "https://borretti.me/feed.xml"
+                  "https://www.n16f.net/blog/index.xml"
+                  "https://planet.emacslife.com/atom.xml"
+                  "https://batimes.com.ar/feed"))
+  ;;                  "https://feeds.npr.org/1002/rss.xml"))
+  (elfeed-show-entry-switch 'pop-to-buffer)
+  :bind
+  ;; match eww/help bindings
+  (:map elfeed-show-mode-map
+        ("r" . elfeed-show-next)
+        ("l" . elfeed-show-prev))
+  (:map hoagie-second-keymap
+        ("r" . elfeed)))
+
 (use-package elisp-mode
   :hook
   (emacs-lisp-mode-hook . hoagie-elisp-mode-setup)
@@ -1191,7 +1219,11 @@ Inspired by a similar function in Elpher."
   (sql-display-sqli-buffer-function t)
   :hook
   (sql-interactive-mode-hook . hoagie-sql-interactive-setup)
+  (sql-mode-hook . hoagie-sql-setup)
   :config
+  (defun hoagie-sql-setup ()
+    "Configure sql-mode."
+    (setf truncate-lines t))
   (defun hoagie-sql-interactive-setup ()
     "Configure SQLi."
     (setf truncate-lines t)
@@ -1225,8 +1257,9 @@ Inspired by a similar function in Elpher."
                          "sql-tovarbin"
                          "Convert the region or parameter to VARBINARY.")
   (tempo-define-template "sql-top"
-                         '("SELECT TOP " (p "How many: ")
-                           " FROM " (p "Table: "))
+                         '("SELECT TOP "
+                           (read-string "How many (default 10): " nil nil "10")
+                           " * FROM " (p "Table: "))
                          "sql-top"
                          "SELECT TOP {#} FROM {table}")
   (tempo-define-template "py-fake_options"
@@ -1234,7 +1267,12 @@ Inspired by a similar function in Elpher."
                            (r "Space separated field names: ")
                            "')")
                          "py-fake_options"
-                         "Create a namedtuple for script's fake options"))
+                         "Create a namedtuple for script's fake options")
+  (tempo-define-template "shell-pipe-head"
+                         '((r "Command: ") " | head -n "
+                           (read-string "Lines (default 10): " nil nil "10"))
+                         "shell-pipe-head"
+                         "Add \"| head -n {lines}\" to {command}"))
 
 (use-package time
   :custom
@@ -1364,6 +1402,7 @@ running `server-start' after startup."
 (use-package vc-hooks
   :after (vc vc-git)
   :custom
+  (vc-display-status 'no-backend)
   ;; from https://emacs.stackexchange.com/a/37855, which links to TRAMP's manual
   (vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
                                 vc-ignore-dir-regexp
@@ -1621,7 +1660,7 @@ If the parameter is not provided use word at point."
 
 ;; Per-OS configuration
 
-(when (string= system-type "windows-nt")
+(when (eq system-type 'windows-nt)
   (require 'ls-lisp)
   (customize-set-value 'ls-lisp-use-insert-directory-program nil)
   (easy-menu-define size-menu nil "Menu to select a font size"
@@ -1691,16 +1730,17 @@ FRAME is ignored."
 ;; So I decided to setup my own mode-line from scratch.
 (defun hoagie-mode-line-buffer-status ()
   "Return a mode-line indicator for buffer status.
-Also shows whether the buffer is narrowed or remote."
-  (propertize (concat (if buffer-read-only
-                          "-"
-                        ;; since it's not read-only, show the
-                        ;; modified flag
-                        (if (buffer-modified-p) "!" " "))
-                      (if (buffer-narrowed-p) "N" "")
-                      (if (file-remote-p default-directory) "R" "")
-                      " ")
-              'face 'error))
+It also shows whether the buffer is narrowed or remote.
+Emojis are used instead of the text-only approach of \"-!R\" from
+previous versions."
+  (concat (if buffer-read-only "❎"
+            ;; since it's not read-only, show the modified flag
+            (if (and (buffer-modified-p) (not (derived-mode-p 'comint-mode)))
+                "⚠️"
+              "✅"))
+          (when (buffer-narrowed-p) "🔍")
+          (when (file-remote-p default-directory) "📡")
+          " "))
 
 (defun hoagie-mode-line-cursor-position ()
   "Mode line cursor position, includes percent indicator.
@@ -1711,7 +1751,8 @@ If the region is active, include its size in lines and characters."
                                                           (region-end))
                                              (- (region-end) (region-beginning)))
                                      'face 'shadow)))
-          (position (propertize " %p% " 'face 'shadow)))
+          ;; experimental, show buffer size in human readable format
+          (position (propertize " %p%  %I" 'face 'shadow)))
       (list "%l:%c" position region-size)))
 
 (defun hoagie-mode-line-keybmacro-indicator ()
