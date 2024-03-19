@@ -111,7 +111,8 @@ for escaping a line that contains a string literal."
     (?\~ . ?\~)
     (?\( . ?\))
     (?\[ . ?\])
-    (?\{ . ?\}))
+    (?\{ . ?\})
+    (?\<  ?\>))
   "Alist of pairs to insert for `hoagie-insert-pair'.")
 
 (defun hoagie-insert-pair (&optional arg)
