@@ -82,17 +82,17 @@
 (global-set-key (kbd "<f6>") 'hoagie-keymap) ;; T1 (next to SPC/Control)
 (global-set-key (kbd "<f5>") 'hoagie-second-keymap) ;; Enter
 
-;; this package declares commands and macros (!) that I use for general
+;; This package declares commands and macros (!) that I use for general
 ;; editing
-(require 'hoagie-editing)
-(use-package hoagie-editing :load-path "~/sourcehut/dotfiles/.emacs/"
+(use-package hoagie-editing
+  :load-path "~/sourcehut/dotfiles/.config/emacs"
   :demand t
   :bind
   ("C-<backspace>" . hoagie-backward-delete-word)
   ("C-z" . hoagie-region-to-char)
   (:map hoagie-keymap
         ("/" . hoagie-toggle-backslash)
-        ("p" . hoagie-insert-pair)
+        ("p" . hoagie-insert-pair) ;; and "u" for built-in unpair
         ("q" . hoagie-escape-regexp))
   (:map hoagie-second-keymap
         ("q" . hoagie-split-by-newline)))
@@ -417,7 +417,7 @@ buffer name when eglot is enabled."
               #'xref-find-references-with-eglot))
 
 (use-package eldoc
-  :demand t
+  :demand t
   :custom
   (eldoc-echo-area-use-multiline-p nil)
   (eldoc-documentation-function 'eldoc-documentation-compose-eagerly)
@@ -1542,9 +1542,7 @@ If ARG, don't prompt for buffer name suffix."
         ;; <f6>-k kill the whole thing
         ;; (F6 and C are next to each other in the Raise)
         ("k" . kill-whole-line)
-        ;; need to keep this one more present...
-        ("u" . delete-pair)
-        ("p" . hoagie-insert-pair))
+        ("u" . delete-pair))
   (:map hoagie-second-keymap
         ;; Used to be C-x n i (narrow indirect) with the enhancement
         ;; to narrow to defun, it gets a new and shorter binding
