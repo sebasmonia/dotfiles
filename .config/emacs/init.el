@@ -38,16 +38,20 @@
 (setf use-package-hook-name-suffix nil)
 (setf package-native-compile t)
 (custom-set-faces
- '(default ((t (:family "Iosevka Comfy Wide Fixed"
-                        :slant
-                        normal
-                        :weight
-                        regular
-                        :height
-                        160
-                        :width
-                        normal)))))
-(set-fontset-font t 'emoji (font-spec :family "Noto Emoji"))
+ '(default ((t (:family "Consolas"
+                :slant normal
+                :weight regular
+                :height 128
+                :width normal
+                :foundry "outline")))))
+ ;; '(default ((t (:family "Iosevka Comfy Wide Fixed Ex"
+ ;;                        :slant normal
+ ;;                        :weight regular
+ ;;                        :height 113
+ ;;                        ;; 120
+ ;;                        :width normal)))))
+(set-fontset-font t 'emoji (font-spec :family "Segoe UI Emoji"))
+;;(set-fontset-font t 'emoji (font-spec :family "Noto Emoji"))
 
 ;; Based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html I
 ;; eventually I moved away from the menu key to F6, and even later that key
@@ -185,14 +189,6 @@ Running in a toolbox is actually the \"common\" case. :)"
   :hook
   (csharp-mode-hook . subword-mode))
 
-(use-package dabbrev
-  :custom
-  (dabbrev-case-distinction nil)
-  (dabbrev-case-fold-search t)
-  (dabbrev-case-replace nil)
-  :bind
-  ("C-;" . dabbrev-expand))
-
 (use-package calendar
   :demand t
   :custom
@@ -203,6 +199,42 @@ Running in a toolbox is actually the \"common\" case. :)"
   :hook
   (calendar-today-visible-hook . calendar-mark-today)
   (calendar-mode-hook . diary-mark-entries))
+
+(use-package dabbrev
+  :custom
+  (dabbrev-case-distinction nil)
+  (dabbrev-case-fold-search t)
+  (dabbrev-case-replace nil)
+  :bind
+  ("C-;" . dabbrev-expand))
+
+(use-package dape
+  :ensure t
+  :preface
+  (setq dape-key-prefix "\C-x\C-a")
+  ;; :hook
+  ;; ((kill-emacs . dape-breakpoint-save)
+  ;; Load breakpoints on startup
+  ;;  (after-init . dape-breakpoint-load))
+  :init
+  ;; To use window configuration like gud (gdb-mi)
+  (setq dape-buffer-window-arrangement 'gud)
+  :config
+  ;; Info buffers to the right
+  ;; (setq dape-buffer-window-arrangement 'right)
+  ;; Global bindings for setting breakpoints with mouse
+  ;; (dape-breakpoint-global-mode)
+  ;; To not display info and/or buffers on startup
+  ;; (remove-hook 'dape-on-start-hooks 'dape-info)
+  ;; (remove-hook 'dape-on-start-hooks 'dape-repl)
+  ;; To display info and/or repl buffers on stopped
+  (add-hook 'dape-on-stopped-hooks 'dape-info)
+  (add-hook 'dape-on-stopped-hooks 'dape-repl)
+  ;; Kill compile buffer on build success
+  ; (add-hook 'dape-compile-compile-hooks 'kill-buffer)
+  ;; Save buffers on startup, useful for interpreted languages
+  ;; (add-hook 'dape-on-start-hooks (lambda () (save-some-buffers t t)))
+  )
 
 (use-package diary-lib
   :demand t
@@ -417,7 +449,7 @@ buffer name when eglot is enabled."
               #'xref-find-references-with-eglot))
 
 (use-package eldoc
-  :demand t
+  :demand t
   :custom
   (eldoc-echo-area-use-multiline-p nil)
   (eldoc-documentation-function 'eldoc-documentation-compose-eagerly)
@@ -1663,15 +1695,25 @@ If the parameter is not provided use word at point."
   (customize-set-value 'ls-lisp-use-insert-directory-program nil)
   (easy-menu-define size-menu nil "Menu to select a font size"
     '("Font sizes"
-      ["q  70" 70]
-      ["w  80" 80]
-      ["e  90" 90]
-      ["a  100" 100]
-      ["s  113" 113]
-      ["d  120" 120]
-      ["z  141" 141]
-      ["x  158" 158]
+      ["q  70" 83]
+      ["w  80" 90]
+      ["e  90" 98]
+      ["a  100" 113]
+      ["s  120" 120]
+      ["d  128" 128] ;; 13 - default non 4k
+      ["z  141" 143]
+      ["x  158" 151]
       ["c  181" 181]))
+    ;; '("Font sizes"
+    ;;   ["q  70" 70]
+    ;;   ["w  80" 80]
+    ;;   ["e  90" 90]
+    ;;   ["a  100" 100]
+    ;;   ["s  113" 113]
+    ;;   ["d  120" 120]
+    ;;   ["z  141" 141]
+    ;;   ["x  158" 158]
+    ;;   ["c  181" 181]))
   (defun hoagie-manually-adjust-font-size ()
     "Something fishy is going on with font sizes...set them manually for now."
     (interactive)
