@@ -258,7 +258,7 @@ Running in a toolbox is actually the \"common\" case. :)"
 
 (use-package dired
   :custom
-  (dired-listing-switches "-laogGhvD")
+  (dired-listing-switches "-labogGhvD")
   (dired-compress-file-suffixes
         '(("\\.tar\\.gz\\'" #1="" "7za x -aoa -o%o %i")
           ("\\.tgz\\'" #1# "7za x -aoa -o%o %i")
