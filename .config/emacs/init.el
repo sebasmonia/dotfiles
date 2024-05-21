@@ -205,8 +205,10 @@ Running in a toolbox is actually the \"common\" case. :)"
   (dabbrev-case-distinction nil)
   (dabbrev-case-fold-search t)
   (dabbrev-case-replace nil)
-  :bind
-  ("C-;" . dabbrev-expand))
+  )
+  ;; getting used to default M-/
+  ;; :bind
+  ;; ("C-;" . dabbrev-expand))
 
 (use-package dape
   :ensure t
@@ -257,20 +259,12 @@ Running in a toolbox is actually the \"common\" case. :)"
   (cdsync-setup-calendar-integration))
 
 (use-package dired
+  :demand t
   :custom
+  (dired-vc-rename-file t)
   (dired-listing-switches "-labogGhvD")
-  (dired-compress-file-suffixes
-        '(("\\.tar\\.gz\\'" #1="" "7za x -aoa -o%o %i")
-          ("\\.tgz\\'" #1# "7za x -aoa -o%o %i")
-          ("\\.zip\\'" #1# "7za x -aoa -o%o %i")
-          ("\\.7z\\'" #1# "7za x -aoa -o%o %i")
-          ("\\.tar\\'" ".tgz" nil)
-          (":" ".tar.gz" "tar -cf- %i | gzip -c9 > %o")))
   (dired-compress-directory-default-suffix ".7z")
   (dired-compress-file-default-suffix ".7z")
-  (dired-compress-files-alist
-        '(("\\.7z\\'" . "7za a -r %o %i")
-          ("\\.zip\\'" . "7za a -r %o  %i")))
   (dired-do-revert-buffer t)
   :bind
   (:map hoagie-keymap
@@ -286,6 +280,16 @@ Running in a toolbox is actually the \"common\" case. :)"
   :hook
   (dired-mode-hook . dired-hide-details-mode)
   :config
+  (setf dired-compress-file-suffixes
+        '(("\\.tar\\.gz\\'" #1="" "7z x -aoa -o%o %i")
+          ("\\.tgz\\'" #1# "7z x -aoa -o%o %i")
+          ("\\.zip\\'" #1# "7z x -aoa -o%o %i")
+          ("\\.7z\\'" #1# "7z x -aoa -o%o %i")
+          ("\\.tar\\'" ".tgz" nil)
+          (":" ".tar.gz" "tar -cf- %i | gzip -c9 > %o"))
+        dired-compress-files-alist
+        '(("\\.7z\\'" . "7za a -r %o %i")
+          ("\\.zip\\'" . "7za a -r %o  %i")))
   (defun hoagie-dired-os-open-file ()
     "Open a file with the default OS program.
 Initial version from EmacsWiki, added macOS & Silverblue toolbox
@@ -573,7 +577,6 @@ Add hooks for `eldoc' customizations and set `fill-column'."
   :hook
   (eww-mode-hook . toggle-word-wrap)
   (eww-mode-hook . visual-line-mode)
-  (eww-mode-hook . unpackaged/setup-imenu)
   :bind
   (:map hoagie-second-keymap
         ;; already have "g" for Gemini on this keymap
@@ -585,29 +588,6 @@ Add hooks for `eldoc' customizations and set `fill-column'."
         ("o" . eww)
         ("O" . eww-browse-with-external-browser))
   :config
-  (defun unpackaged/imenu-eww-headings ()
-    "Return alist of HTML headings in current EWW buffer for Imenu.
-  Suitable for `imenu-create-index-function'."
-    (let ((faces '(shr-h1 shr-h2 shr-h3 shr-h4 shr-h5 shr-h6 shr-heading)))
-      (save-excursion
-        (save-restriction
-          (widen)
-          (goto-char (point-min))
-          (cl-loop for next-pos = (next-single-property-change (point) 'face)
-                   while next-pos
-                   do (goto-char next-pos)
-                   for face = (get-text-property (point) 'face)
-                   when (cl-typecase face
-                          (list (cl-intersection face faces))
-                          (symbol (member face faces)))
-                   collect (cons (buffer-substring (point-at-bol)
-                                                   (point-at-eol))
-                                 (point))
-                   and do (forward-line 1))))))
-  (defun unpackaged/setup-imenu ()
-    "Set `imenu' configuration for EWW buffers."
-    (setq-local imenu-auto-rescan t)
-    (setq-local imenu-create-index-function #'unpackaged/imenu-eww-headings))
   (defun hoagie-eww-rename-buffer ()
     "Rename EWW buffers like \"title\", but put title last.
 Function based on the same from the docstring for `eww-auto-rename-buffer'."
@@ -907,11 +887,12 @@ Set `fill-column', `truncate-lines'."
 
 (use-package paren
   :custom
-  (show-paren-style 'mixed)
+  ;; (show-paren-style 'mixed)
   (show-paren-when-point-inside-paren t))
 
 (use-package proced
   :custom
+  (proced-show-remote-processes t)
   (proced-filter 'all))
 
 (use-package project
@@ -1592,6 +1573,7 @@ If ARG, don't prompt for buffer name suffix."
   ;; from TRAMP's FAQ
   (remote-file-name-inhibit-locks t)
   (sentence-end-double-space nil)
+  (tab-always-indent 'complete)
   (minibuffer-restore-windows nil) ;; finally...
   (tab-width 4) ;; make golang code nicer to read
   (delete-pair-blink-delay 0.1)
@@ -1611,8 +1593,6 @@ If ARG, don't prompt for buffer name suffix."
   ;; use view-mode for all read only files automatically
   (view-read-only t)
   (delete-by-moving-to-trash t)
-  (global-mark-ring-max 64)
-  (mark-ring-max 64)
   (inhibit-startup-screen t)
   (initial-buffer-choice t)
   (initial-scratch-message
