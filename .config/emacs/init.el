@@ -2,7 +2,7 @@
 
 ;; Author: Sebastián Monía <code@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
-;; Version: 30.2
+;; Version: 30.3
 ;; Keywords: tools maint
 
 ;; This file is not part of GNU Emacs.
@@ -117,8 +117,6 @@
   (appt-disp-window-function #'hoagie-appt-notify)
   (appt-audible nil)
   (appt-display-diary nil)
-  ;; (appt-display-mode-line nil)
-  ;; next two are default values - might not need to customize
   (appt-display-interval 5)
   (appt-message-warning-time 15)
   :config
@@ -193,7 +191,10 @@ Running in a toolbox is actually the \"common\" case. :)"
   :demand t
   :custom
   (calendar-date-style 'iso)
-  (calendar-view-diary-initially-flag t)
+  (calendar-view-diary-initially-flag nil)
+  (calendar-latitude 40.7)
+  (calendar-longitude -73.9)
+  (calendar-location-name "New York, NY")
   ;; show events for the next 7 days when the calendar opens
   (diary-number-of-entries 7)
   :hook
@@ -208,7 +209,12 @@ Running in a toolbox is actually the \"common\" case. :)"
   )
   ;; getting used to default M-/
   ;; :bind
-  ;; ("C-;" . dabbrev-expand))
+;; ("C-;" . dabbrev-expand))
+
+(use-package hippie-exp
+  :bind
+  ("C-;" . hippie-expand))
+
 
 (use-package dape
   :ensure t
@@ -584,7 +590,6 @@ Add hooks for `eldoc' customizations and set `fill-column'."
         ("w" . eww))
   (:map eww-mode-map
         ("m" . hoagie-eww-jump)
-        ("ESC m" . hoagie-eww-anchor-jump)
         ("o" . eww)
         ("O" . eww-browse-with-external-browser))
   :config
@@ -914,15 +919,6 @@ Set `fill-column', `truncate-lines'."
      (project-shell "Shell" nil)
      (project-eshell "Eshell" nil)))
   :config
-  (defun hoagie-project-multi-occur (regexp &optional nlines)
-    "Run `multi-occur' in all the files in the current project."
-    ;; very much inspired by https://github.com/NicolasPetton/noccur.el
-    ;; By using `project-files' instead of "git ls", it works in subprojects
-    (interactive (occur-read-primary-args))
-    (let* ((the-project (project-current t))
-           (default-directory (project-root the-project ))
-           (files (mapcar #'find-file-noselect (project-files the-project))))
-      (multi-occur files regexp nlines)))
   ;; from https://dawranliou.com/blog/xref-with-eglot-and-project/
   (defun project-find-regexp-with-unique-buffer (orig-fun &rest args)
     "An advice function that gives project-find-regexp a unique buffer name"
@@ -1596,7 +1592,7 @@ If ARG, don't prompt for buffer name suffix."
   (inhibit-startup-screen t)
   (initial-buffer-choice t)
   (initial-scratch-message
-   ";; Il semble que la perfection soit atteinte non quand il n’y a plus rien à\n;; ajouter, mais quand il n’y a plus à retrancher. - Antoine de Saint Exupéry\n\n;; Misc:\n;; C-x C-k e edit kmacro               ;; (e)SHELL C-c C-o clear last output\n;; C-x / vundo                         ;; C-x C-t transpose-lines (0 arg!)\n                                      \n;; During isearch                      ;; Query replace\n;; C-w add word at point, can repeat   ;; Prefix to M-% to replace words\n;; M-r toggle regex                    ;; Remember new keyb setup :)\n                                      \n;; Newlines:                          \n;; C-o open-line                       ;; C-M-o split-line\n;; M-^ join with prev line            \n                                      \n;; M-x...                             \n;; copy-matching-lines (& kill-)       ;; align-current (or align-regexp)\n;; highlight-*\n\n;; howm:\n;; <f6> 3 - inbox\n;; <f6> C-3 - show TODO\n;; <f6> ESC 3 - show all notes\n;; <f3> howm keymap (hit twice for menu)\n\n;; REMEMBER: REGEXPS - INFO\n\n")
+   ";; Il semble que la perfection soit atteinte non quand il n’y a\n;; plus rien à ajouter, mais quand il n’y a plus à retrancher.\n;;                                   - Antoine de Saint Exupéry\n\n;; Misc:\n;; C-x C-k e edit kmacro    ;; (shell) C-c C-o clear last output\n;; C-x / vundo              ;; C-x C-t transpose-lines (0 arg!)\n\n;; During isearch           ;; Query replace\n;; C-w add watp, can repeat ;; Prefix to M-% to replace words\n;; M-r toggle regex\n\n;; Newlines:\n;; C-o open-line            ;; C-M-o split-line\n;; M-^ join with prev line\n\n;; M-x...\n;; copy-matching-lines (also kill-) ;; (un)highlight-regexp\n;; align-current (or align-regexp)\n\n;; Calendar & Diary\n;; . - go to today          ;; u/m/x - unmark/mark events/holidays\n;; M-= count days region\n\n;; howm:\n;; <f6> => 3 inbox / C-3 show TODO / ESC-3 show all notes\n\n;; Remember: REGEXPS - INFO\n\n")
   (save-interprogram-paste-before-kill t)
   (visible-bell nil) ;; macOS change
   ;; from https://gitlab.com/jessieh/dot-emacs
