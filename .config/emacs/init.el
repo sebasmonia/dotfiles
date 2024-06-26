@@ -2,7 +2,7 @@
 
 ;; Author: Sebastián Monía <code@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
-;; Version: 30.3
+;; Version: 30.4
 ;; Keywords: tools maint
 
 ;; This file is not part of GNU Emacs.
@@ -18,6 +18,7 @@
 ;;             initialization to sql-mode and markdown-mode.
 ;; 2023-12-06: Use my own mode-line configuration. Require Emacs 30.
 ;; 2024-02-25: Move from Gnus to mu4e (and elfeed)
+;; 2024-06-26: Remove howm - I only used like, 3 features from it.
 ;;; Code:
 
 (setf custom-file (locate-user-emacs-file "custom.el"))
@@ -97,9 +98,13 @@
   (:map hoagie-keymap
         ("/" . hoagie-toggle-backslash)
         ("p" . hoagie-insert-pair) ;; and "u" for built-in unpair
-        ("q" . hoagie-escape-regexp))
+        ("q" . hoagie-escape-regexp)
+        ("t" . hoagie-insert-datetime))
   (:map hoagie-second-keymap
-        ("q" . hoagie-split-by-newline)))
+        ("q" . hoagie-split-by-newline)
+        ;; always have a binding for plain old fill-paragraph (it tends to be
+        ;; replaced/shadowed in a lot of modes).
+        ("ESC q" . fill-paragraph)))
 
 (use-package ansi-color
   :commands (ansi-color-apply-buffer)
@@ -120,7 +125,6 @@
   (appt-display-interval 5)
   (appt-message-warning-time 15)
   :config
-  (appt-activate)
   ;; override the built in function, as there is not way to customize this
   (defun appt-mode-line (min-to-app &optional _abbrev)
     "Return an appointment string for the mode-line. Hoagie version.
@@ -147,7 +151,9 @@
                             ;; never expire
                             :timeout 0
                             ;; use 'low to add a notification without toast
-                            :urgency 'normal))))
+                            :urgency 'normal)))
+    (appt-activate))
+
 (use-package auth-source
   :custom
   ;; change order so TRAMP defaults to saving passwords in
@@ -195,6 +201,7 @@ Running in a toolbox is actually the \"common\" case. :)"
   (calendar-latitude 40.7)
   (calendar-longitude -73.9)
   (calendar-location-name "New York, NY")
+  (calendar-setup 'one-frame)
   ;; show events for the next 7 days when the calendar opens
   (diary-number-of-entries 7)
   :hook
@@ -214,7 +221,6 @@ Running in a toolbox is actually the \"common\" case. :)"
 (use-package hippie-exp
   :bind
   ("C-;" . hippie-expand))
-
 
 (use-package dape
   :ensure t
@@ -254,6 +260,17 @@ Running in a toolbox is actually the \"common\" case. :)"
   ;; use-package to do that I have to add it _first_
   (diary-list-entries-hook . diary-sort-entries)
   (diary-list-entries-hook . diary-include-other-diary-files))
+
+(use-package dictionary
+  :custom
+  ;; unless I run a dict server locally - which I am tempted to, but
+  ;; it is definitely overkill
+  (dictionary-server "dict.org")
+  :commands
+  (dictionary-search dictionary-lookup-definition)
+  :bind
+  ;; suggested in Mastering Emacs: this nicely mirrors M-$ for spellchecking
+  ("M-#" . dictionary-lookup-definition))
 
 (use-package cdsync :load-path "~/sourcehut/caldav-sync.el"
   :demand t
@@ -653,51 +670,39 @@ external browser and new eww buffer, respectively)."
   :hook
   (after-init-hook . global-hl-line-mode))
 
-(defvar hoagie-howm-keymap
-  (define-prefix-command 'hoagie-howm-keymap)
-  "Custom bindings for `howm-mode'.")
-(use-package howm
-  :demand t
-  :bind-keymap
-  ("<f3>" . hoagie-howm-keymap)
+;; My note-taking "system"...if you can call it that.
+;; Maybe this needs to live in a small package like hoagie-editing
+(use-package emacs
   :bind
   (:map hoagie-keymap
-        ("3" . hoagie-howm-inbox)
-        ("C-3" . howm-list-todo)
-        ;; ("ESC 3" . howm-list-schedule))
-        ("ESC 3" . howm-list-all))
-  (:map hoagie-howm-keymap
-        ("c" . howm-create)
-        ("3" . howm-menu)
-        ("s" . howm-list-grep-fixed)
-        ("t" . howm-insert-dtime)
-        ("d" . howm-insert-date)
-        ("a" . howm-list-all))
-  :custom
-  (howm-file-name-format "%Y/%m/%Y-%m-%d-%H%M%S.md")
-  :init
-  ;; https://a-blog-with.relevant-information.com/weblog/2024-01-28-howm/
-  ;; Change format of titles to use Markdown's "# Heading 1"
-  (setf howm-view-title-header "#" ;; was =
-        howm-view-title-header "#" ;; was =
-        ;; was "= %title%cursor\n%date %file\n\n"
-        howm-template "# %title%cursor\n%date %file\n\n"
-        ;; was  "^=\\( +\\(.*\\)\\|\\)$"
-        howm-view-title-regexp  "^#\\( +\\(.*\\)\\|\\)$"
-        ;; was "^= +"
-        howm-view-title-regexp-grep  "^# +")
+        ("3" . hoagie-notes-open-inbox)
+        ("C-3" . hoagie-notes-new-note)
+        ("ESC 3" . hoagie-notes-grep))
   :config
-  (setf howm-file-name-format "%Y/%m/%Y-%m-%d-%H%M%S.md")
-  ;; https://leahneukirchen.org/blog/archive/2022/03/note-taking-in-emacs-with-howm.html
-  ;; keep C-h for help in howm modes
-  (define-key howm-menu-mode-map "\C-h" nil)
-  (define-key riffle-summary-mode-map "\C-h" nil)
-  (define-key howm-view-contents-mode-map "\C-h" nil)
-  (defun hoagie-howm-inbox ()
+  (defun hoagie-notes-open-inbox ()
+    "Open notes \"inbox\" file.
+Meant to take quick, uncategorized notes."
     (interactive)
-    (find-file "~/howm/tasks.md")
-    (howm-set-mode)
-    (goto-char (point-max))))
+    (find-file "~/notes/inbox.md")
+    (goto-char (point-max)))
+  (defun hoagie-notes-new-note (filename-title)
+    "Create a new note, with FILENAME-TITLE."
+    (interactive "sShort title: ")
+    ;; could I do this with proper path functions? yes
+    ;; should I? also yes
+    (let ((dir-name (format "~/notes/%s/" (format-time-string "%Y%m")))
+          (starting-text (concat "# " filename-title "\n"
+                                 (format-time-string "%Y-%m-%d") "\n\n")))
+      (make-directory dir-name t)
+      (find-file (format "%s/%s-%s.md"
+                         dir-name
+                         (format-time-string "%Y%m")
+                         filename-title))
+      (insert starting-text)))
+  (defun hoagie-notes-grep (regexp)
+    "Search for REGEXP in the notes."
+    (interactive "sRegexp: ")
+    (rgrep regexp "*" "~/notes/")))
 
 (use-package icomplete
   :demand t
@@ -1232,7 +1237,10 @@ Inspired by a similar function in Elpher."
   :config
   (defun hoagie-sql-setup ()
     "Configure sql-mode."
-    (setf truncate-lines t))
+    (setf truncate-lines t
+          fill-column 100)
+    (auto-fill-mode)
+    (display-fill-column-indicator-mode))
   (defun hoagie-sql-interactive-setup ()
     "Configure SQLi."
     (setf truncate-lines t)
@@ -1390,23 +1398,7 @@ With prefix ARG show the remote branches."
                       (when arg "-r"))
       (pop-to-buffer buffer-name)
       (goto-char (point-min))
-      (special-mode)))
-  (defun hoagie-vc-git-commit-amend (&optional arg)
-    "Amend the last commit message.
-Use prefix-arg to amend including current changes.
-This depends on setting GIT_EDITOR to use emacsclient, and
-running `server-start' after startup."
-    (interactive "P")
-    (message "Waiting for git...")
-    (vc-git-command nil 'async nil "commit" (when arg "-a") "--amend"))
-  (defun hoagie-vc-git-interactive-rebase (&optional arg)
-    "Amend the last commit message.
-Use prefix-arg to amend including current changes.
-This depends on setting GIT_EDITOR to use emacsclient, and
-running `server-start' after startup."
-    (interactive "P")
-    (message "Waiting for git...")
-    (vc-git-command nil 'async nil "commit" (when arg "-a") "--amend")))
+      (special-mode))))
 
 (use-package vc-hooks
   :after (vc vc-git)
@@ -1646,23 +1638,6 @@ If ARG, don't prompt for buffer name suffix."
   ;; Identify the toolbox container for this Emacs instance in the frame title
   (setf frame-title-format '(" %b @ " (:eval hoagie-toolbox-name))
         icon-title-format '(" %b @ " (:eval hoagie-toolbox-name))))
-
-;; Convenient to work with AWS timestamps
-(defun hoagie-convert-timestamp (&optional timestamp)
-"Convert a Unix TIMESTAMP (as string) to date.
-If the parameter is not provided use word at point."
-  (interactive (list (thing-at-point 'word t)))
-  (let ((to-convert (if (< 10 (length timestamp))
-                        (substring timestamp 0 10)
-                      timestamp))
-        (millis (if (< 10 (length timestamp))
-                  "000")))
-    (message "%s.%s"
-             (format-time-string "%Y-%m-%d %H:%M:%S"
-                                 (seconds-to-time
-                                  (string-to-number to-convert)))
-             millis)))
-(define-key hoagie-keymap (kbd "t") #'hoagie-convert-timestamp)
 
 ;; Per-OS configuration
 

@@ -146,3 +146,20 @@
 (use-package yaml-mode
   :ensure t
   :mode "\\.yml$")
+
+;; Convenient to work with AWS timestamps
+(defun hoagie-convert-timestamp (&optional timestamp)
+"Convert a Unix TIMESTAMP (as string) to date.
+If the parameter is not provided use word at point."
+  (interactive (list (thing-at-point 'word t)))
+  (let ((to-convert (if (< 10 (length timestamp))
+                        (substring timestamp 0 10)
+                      timestamp))
+        (millis (if (< 10 (length timestamp))
+                  "000")))
+    (message "%s.%s"
+             (format-time-string "%Y-%m-%d %H:%M:%S"
+                                 (seconds-to-time
+                                  (string-to-number to-convert)))
+             millis)))
+(define-key hoagie-keymap (kbd "t") #'hoagie-convert-timestamp)

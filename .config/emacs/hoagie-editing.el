@@ -183,5 +183,13 @@ predictable."
       (forward-line)
       (indent-region start (point)))))
 
+(defun hoagie-insert-datetime (&optional arg)
+  "Insert ISO8601 date at point.
+With prefix ARG, include the time."
+  (interactive "P")
+  (insert (format-time-string (if arg
+                                  "%F %T"
+                                  "%F"))))
+
 (provide 'hoagie-editing)
 ;;; hoagie-editing.el ends here
