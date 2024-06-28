@@ -187,12 +187,6 @@ Running in a toolbox is actually the \"common\" case. :)"
                     "firefox"
                     url))))
 
-(use-package csharp-mode
-  :ensure t
-  :mode "\\.cs$"
-  :hook
-  (csharp-mode-hook . subword-mode))
-
 (use-package calendar
   :demand t
   :custom
@@ -208,6 +202,19 @@ Running in a toolbox is actually the \"common\" case. :)"
   (calendar-today-visible-hook . calendar-mark-today)
   (calendar-mode-hook . diary-mark-entries))
 
+(use-package cambalache
+  :load-path "~/sourcehut/davmover"
+  :custom
+  (cambalache-root-url "https://webdav.fastmail.com/sebasmonia.fastmail.com/files")
+  :commands
+  (cambalache-list-contents cambalache-download-file cambalache-upload-file))
+
+(use-package csharp-mode
+  :ensure t
+  :mode "\\.cs$"
+  :hook
+  (csharp-mode-hook . subword-mode))
+
 (use-package dabbrev
   :custom
   (dabbrev-case-distinction nil)
@@ -217,10 +224,6 @@ Running in a toolbox is actually the \"common\" case. :)"
   ;; getting used to default M-/
   ;; :bind
 ;; ("C-;" . dabbrev-expand))
-
-(use-package hippie-exp
-  :bind
-  ("C-;" . hippie-expand))
 
 (use-package dape
   :ensure t
