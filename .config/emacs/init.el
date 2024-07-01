@@ -203,9 +203,9 @@ Running in a toolbox is actually the \"common\" case. :)"
   (calendar-mode-hook . diary-mark-entries))
 
 (use-package cambalache
-  :load-path "~/sourcehut/davmover"
+  :load-path "~/sourcehut/cambalache"
   :custom
-  (cambalache-root-url "https://webdav.fastmail.com/sebasmonia.fastmail.com/files")
+  (cambalache-root-url "https://myfiles.fastmail.com/")
   :commands
   (cambalache-list-contents cambalache-download-file cambalache-upload-file))
 
