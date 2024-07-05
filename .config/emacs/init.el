@@ -620,19 +620,6 @@ Function based on the same from the docstring for `eww-auto-rename-buffer'."
       (when-let ((string (or (plist-get eww-data :title)
                              (plist-get eww-data :url))))
         (format "*eww: %s*" string))))
-  ;; from https://emacs.stackexchange.com/a/36287 I want this for a
-  ;; function to open the gcloud docs but I think it is useful as a
-  ;; general tool to have around
-  (defun hoagie-eww-readable (url &optional new-buffer)
-    "Open URL, after the page loads, call `eww-readable'.
-Optional argument NEW-BUFFER is passed to `eww' as prefix arg."
-    ;;TIL letrec, too
-    (letrec ((nonce (lambda ()
-                      (unwind-protect
-                          (eww-readable)
-                        (remove-hook 'eww-after-render-hook nonce)))))
-      (add-hook 'eww-after-render-hook nonce))
-    (eww url new-buffer))
   (defun hoagie-eww-jump ()
     "Similar `elpher-jump', but for EWW.
 It is based on the elpher code, but instead of opening the link,

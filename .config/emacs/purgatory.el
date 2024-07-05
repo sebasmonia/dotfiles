@@ -25,6 +25,21 @@
   :ensure t
   :mode "Dockerfile\\'")
 
+;; from https://emacs.stackexchange.com/a/36287 I want this for a
+;; function to open the gcloud docs but I think it is useful as a
+;; general tool to have around
+;; UPDATE: never used this other than for the Go docs...so here it is,
+;; in the purgatory
+(defun hoagie-eww-readable (url &optional new-buffer)
+  "Open URL, after the page loads, call `eww-readable'.
+Optional argument NEW-BUFFER is passed to `eww' as prefix arg."
+  ;;TIL letrec, too
+  (letrec ((nonce (lambda ()
+                    (unwind-protect
+                        (eww-readable)
+                      (remove-hook 'eww-after-render-hook nonce)))))
+    (add-hook 'eww-after-render-hook nonce))
+  (eww url new-buffer))
 (use-package go-mode
   :ensure t
   :hook
