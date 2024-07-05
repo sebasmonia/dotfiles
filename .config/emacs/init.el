@@ -719,6 +719,9 @@ Meant to take quick, uncategorized notes."
 
 (use-package imenu
   :demand t
+  :custom
+  (imenu-auto-rescan t)
+  (imenu-flatten 'annotation)
   :bind
   ("M-i" . imenu))
 
