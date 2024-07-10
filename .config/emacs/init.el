@@ -677,21 +677,28 @@ Meant to take quick, uncategorized notes."
     (goto-char (point-max)))
   (defun hoagie-notes-new-note (filename-title)
     "Create a new note, with FILENAME-TITLE."
-    (interactive "sShort title: ")
+    (interactive "sTitle (filename): ")
     ;; could I do this with proper path functions? yes
     ;; should I? also yes
     (let ((dir-name (format "~/notes/%s/" (format-time-string "%Y%m")))
           (starting-text (concat "# " filename-title "\n"
-                                 (format-time-string "%Y-%m-%d") "\n\n")))
+                                 (format-time-string "%Y-%m-%d") "\n\n"
+                                 "tags: #tags-here" "\n\n"))
+          (file-name (format "%s/%s-%s.md"
+                             dir-name
+                             (format-time-string "%Y%m")
+                             ;; change spaces to dash in the file name
+                             (string-replace " " "-" filename-title))))
       (make-directory dir-name t)
-      (find-file (format "%s/%s-%s.md"
-                         dir-name
-                         (format-time-string "%Y%m")
-                         filename-title))
+      (find-file file-name)
       (insert starting-text)))
   (defun hoagie-notes-grep (regexp)
     "Search for REGEXP in the notes."
-    (interactive "sRegexp: ")
+    (interactive (list
+                  (read-string "Regexp: "
+                               (when (use-region-p)
+                                 (buffer-substring-no-properties
+                                  (region-beginning) (region-end))))))
     (rgrep regexp "*" "~/notes/")))
 
 (use-package icomplete
@@ -904,7 +911,7 @@ Set `fill-column', `truncate-lines'."
         ("g" . project-find-regexp)
         ("f" . project-find-file))
   :custom
-  (project-vc-extra-root-markers '(".subproject"))
+  (project-vc-extra-root-markers '(".emacs-project"))
   ;; TODO: tried it briefly, not that useful.
   ;; reconsider in the future
   (project-mode-line nil)
@@ -912,7 +919,7 @@ Set `fill-column', `truncate-lines'."
   (project-switch-commands
    '((project-find-file "Find file" nil)
      (project-find-regexp "Find regexp" nil)
-     (project-dired "Find directory" ?d)
+     (project-dired "Dired" ?d)
      (project-vc-dir "VC-Dir" nil)
      (project-shell "Shell" nil)
      (project-eshell "Eshell" nil)))
