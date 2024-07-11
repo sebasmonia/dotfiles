@@ -106,6 +106,12 @@
         ;; replaced/shadowed in a lot of modes).
         ("ESC q" . fill-paragraph)))
 
+(use-package hoagie-notes
+  :load-path "~/sourcehut/dotfiles/.config/emacs"
+  :demand t
+  :bind
+  ("<f3>" . hoagie-notes-keymap))
+
 (use-package ansi-color
   :commands (ansi-color-apply-buffer)
   :init
@@ -659,47 +665,6 @@ external browser and new eww buffer, respectively)."
 (use-package hl-line
   :hook
   (after-init-hook . global-hl-line-mode))
-
-;; My note-taking "system"...if you can call it that.
-;; Maybe this needs to live in a small package like hoagie-editing
-(use-package emacs
-  :bind
-  (:map hoagie-keymap
-        ("3" . hoagie-notes-open-inbox)
-        ("C-3" . hoagie-notes-new-note)
-        ("ESC 3" . hoagie-notes-grep))
-  :config
-  (defun hoagie-notes-open-inbox ()
-    "Open notes \"inbox\" file.
-Meant to take quick, uncategorized notes."
-    (interactive)
-    (find-file "~/notes/inbox.md")
-    (goto-char (point-max)))
-  (defun hoagie-notes-new-note (filename-title)
-    "Create a new note, with FILENAME-TITLE."
-    (interactive "sTitle (filename): ")
-    ;; could I do this with proper path functions? yes
-    ;; should I? also yes
-    (let ((dir-name (format "~/notes/%s/" (format-time-string "%Y%m")))
-          (starting-text (concat "# " filename-title "\n"
-                                 (format-time-string "%Y-%m-%d") "\n\n"
-                                 "tags: #tags-here" "\n\n"))
-          (file-name (format "%s/%s-%s.md"
-                             dir-name
-                             (format-time-string "%Y%m")
-                             ;; change spaces to dash in the file name
-                             (string-replace " " "-" filename-title))))
-      (make-directory dir-name t)
-      (find-file file-name)
-      (insert starting-text)))
-  (defun hoagie-notes-grep (regexp)
-    "Search for REGEXP in the notes."
-    (interactive (list
-                  (read-string "Regexp: "
-                               (when (use-region-p)
-                                 (buffer-substring-no-properties
-                                  (region-beginning) (region-end))))))
-    (rgrep regexp "*" "~/notes/")))
 
 (use-package icomplete
   :demand t
