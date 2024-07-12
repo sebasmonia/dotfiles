@@ -16,6 +16,12 @@
 
 ;;; Code:
 
+(use-package csharp-mode
+  :ensure t
+  :mode "\\.cs$"
+  :hook
+  (csharp-mode-hook . subword-mode))
+
 (use-package docker
   :ensure t
   :bind
@@ -24,6 +30,35 @@
 (use-package dockerfile-mode
   :ensure t
   :mode "Dockerfile\\'")
+
+;; I didn't really click w/ using feeds - but I want to revisit the idea
+(use-package elfeed
+  :ensure t
+  :custom
+  (elfeed-sort-order 'ascending)
+  (elfeed-db-directory (expand-file-name "elfeed" user-emacs-directory))
+  (elfeed-feeds '("http://nullprogram.com/feed/"
+                  "https://irreal.org/blog/?feed=rss2"
+                  "https://lars.ingebrigtsen.no/feed/"
+                  "https://feeds.npr.org/1001/rss.xml"
+                  "https://batsov.com/atom.xml"
+                  "https://manueluberti.eu/feed.xml"
+                  "https://metaredux.com/feed.xml"
+                  "https://lisp-journey.gitlab.io/index.xml"
+                  "https://www.n16f.net/blog/index.xml"
+                  "https://borretti.me/feed.xml"
+                  "https://www.n16f.net/blog/index.xml"
+                  "https://planet.emacslife.com/atom.xml"
+                  "https://batimes.com.ar/feed"))
+  ;;                  "https://feeds.npr.org/1002/rss.xml"))
+  (elfeed-show-entry-switch 'pop-to-buffer)
+  :bind
+  ;; match eww/help bindings
+  (:map elfeed-show-mode-map
+        ("r" . elfeed-show-next)
+        ("l" . elfeed-show-prev))
+  (:map hoagie-second-keymap
+        ("r" . elfeed)))
 
 ;; from https://emacs.stackexchange.com/a/36287 I want this for a
 ;; function to open the gcloud docs but I think it is useful as a

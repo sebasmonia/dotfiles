@@ -19,6 +19,8 @@
 ;; 2023-12-06: Use my own mode-line configuration. Require Emacs 30.
 ;; 2024-02-25: Move from Gnus to mu4e (and elfeed)
 ;; 2024-06-26: Remove howm - I only used like, 3 features from it.
+;; 2024-07-10: Going back to Gnus with IMAP back end, sending elfeed to
+;;             purgatory, and putting note comments in a separate package.
 ;;; Code:
 
 (setf custom-file (locate-user-emacs-file "custom.el"))
@@ -215,12 +217,6 @@ Running in a toolbox is actually the \"common\" case. :)"
   :commands
   (cambalache-list-contents cambalache-download-file cambalache-upload-file))
 
-(use-package csharp-mode
-  :ensure t
-  :mode "\\.cs$"
-  :hook
-  (csharp-mode-hook . subword-mode))
-
 (use-package dabbrev
   :custom
   (dabbrev-case-distinction nil)
@@ -311,6 +307,9 @@ Running in a toolbox is actually the \"common\" case. :)"
         ("C-<return>" . hoagie-dired-os-open-file))
   :hook
   (dired-mode-hook . dired-hide-details-mode)
+  ;; Enables "C-c C-m a" (yeah, really :) lol) to attach
+  ;; all files marked in dired to the current/a new email
+  (dired-mode-hook . turn-on-gnus-dired-mode)
   :config
   (setf dired-compress-file-suffixes
         '(("\\.tar\\.gz\\'" #1="" "7z x -aoa -o%o %i")
@@ -503,34 +502,6 @@ buffer name when eglot is enabled."
           (quit-window nil eldoc-window)
         (eldoc-doc-buffer t)))))
 
-(use-package elfeed
-  :ensure t
-  :custom
-  (elfeed-sort-order 'ascending)
-  (elfeed-db-directory (expand-file-name "elfeed" user-emacs-directory))
-  (elfeed-feeds '("http://nullprogram.com/feed/"
-                  "https://irreal.org/blog/?feed=rss2"
-                  "https://lars.ingebrigtsen.no/feed/"
-                  "https://feeds.npr.org/1001/rss.xml"
-                  "https://batsov.com/atom.xml"
-                  "https://manueluberti.eu/feed.xml"
-                  "https://metaredux.com/feed.xml"
-                  "https://lisp-journey.gitlab.io/index.xml"
-                  "https://www.n16f.net/blog/index.xml"
-                  "https://borretti.me/feed.xml"
-                  "https://www.n16f.net/blog/index.xml"
-                  "https://planet.emacslife.com/atom.xml"
-                  "https://batimes.com.ar/feed"))
-  ;;                  "https://feeds.npr.org/1002/rss.xml"))
-  (elfeed-show-entry-switch 'pop-to-buffer)
-  :bind
-  ;; match eww/help bindings
-  (:map elfeed-show-mode-map
-        ("r" . elfeed-show-next)
-        ("l" . elfeed-show-prev))
-  (:map hoagie-second-keymap
-        ("r" . elfeed)))
-
 (use-package elisp-mode
   :hook
   (emacs-lisp-mode-hook . hoagie-elisp-mode-setup)
@@ -654,6 +625,105 @@ external browser and new eww buffer, respectively)."
   (:map hoagie-second-keymap
         ("f" . hoagie-flymake-keymap)))
 
+(use-package gnus
+  :bind
+  (:map hoagie-second-keymap
+        ;; for "email"
+        ("e" . gnus))
+  (:map gnus-summary-mode-map
+        ("v t" . hoagie-summary-trash)
+        ("v a" . hoagie-summary-archive)
+        ;; "b" for Basura. Using "s" is risky, as it is
+        ;; next to "a"rchive :)
+        ("v b" . hoagie-summary-spam)
+        ("v g" . hoagie-summary-show-all)
+        ;; originally T # - I can use it to make whole threads
+        ;; or individual messages
+        ("v #" . gnus-uu-mark-thread))
+  :init
+  ;; let's do our best to keep Gnus files/dir outside of ~
+  ;; some of these are not really Gnus vars, but declared in
+  ;; nndraft, message, etc.
+  (setq gnus-home-directory "~/.gnus.d/"
+        gnus-directory "~/.gnus.d/News/"
+        nndraft-directory "~/.gnus.d/News/drafts/"
+        nnmh-directory "~/.gnus.d/News/drafts/"
+        nnfolder-directory "~/.gnus.d/Mail/archive"
+        nnml-directory "~/.gnus.d/Mail/"
+        message-directory "~/.gnus.d/Mail/"
+        gnus-article-save-directory "~/.gnus.d/News/"
+        gnus-read-newsrc-file nil
+        gnus-save-newsrc-file nil
+        ;; the two values above mean I don't need this.
+        ;; But, just in case:
+        gnus-startup-file "~/.gnus.d/.newsrc"
+        gnus-dribble-directory "~/.gnus.d/"
+        gnus-always-read-dribble-file nil)
+  :custom
+  ;; these two are not really Gnus values, but a sensible place to set them
+  (user-full-name "Sebastián Monía")
+  (user-mail-address "sebastian@sebasmonia.com")
+  (mml-secure-openpgp-signers '("A65927B22A60F72A53D77CD7EF7DAC84163D7A83"))
+  (mml-secure-openpgp-encrypt-to-self t)
+  (gnus-select-method '(nnnil ""))
+  (gnus-secondary-select-methods '((nnimap "fastmail"
+                                           (nnimap-address "imap.fastmail.com")
+                                           (nnimap-server-port 993)
+                                           (nnimap-stream ssl)
+                                           (nnir-search-engine imap))))
+  ;; Archive outgoing email in Sent folder, mark it as read
+  (gnus-message-archive-method '(nnimap "imap.fastmail.com"))
+  (gnus-message-archive-group "nnimap+fastmail:Sent")
+  (gnus-gcc-mark-as-read t)
+  (gnus-search-use-parsed-queries t)
+  (gnus-auto-select-next nil)
+  (gnus-paging-select-next nil)
+  (gnus-summary-stop-at-end-of-message t)
+  (gnus-mime-display-multipart-related-as-mixed t)
+  (gnus-auto-select-first nil)
+  (gnus-summary-display-arrow nil)
+  ;; http://groups.google.com/group/gnu.emacs.gnus/browse_thread/thread/a673a74356e7141f
+  (gnus-summary-line-format (concat
+                             "%0{%U%R%z%}"
+                             "%3{│%}%1{%&user-date;%}%3{│%}" ;; date
+                             " "
+                             "%4{%-25,25f%}" ;; name
+                             " "
+                             "%3{│%}"
+                             " "
+                             "%1{%B%}"
+                             "%s\n"))
+  (gnus-user-date-format-alist '((t . "%Y-%m-%d (%a) %H:%M")
+                                 gnus-thread-sort-functions '(gnus-thread-sort-by-date)
+                                 ))
+  (gnus-user-date-format-alist '((t . "%Y-%m-%d %I:%M%p")))
+  (gnus-thread-sort-functions '(gnus-thread-sort-by-date))
+  (gnus-show-threads t)
+  (gnus-sum-thread-tree-false-root nil) ;; use subject
+  (gnus-sum-thread-tree-root nil)
+  (gnus-sum-thread-tree-indent " ")
+  (gnus-sum-thread-tree-vertical        "│")
+  (gnus-sum-thread-tree-leaf-with-other "├─► ")
+  (gnus-sum-thread-tree-single-leaf     "╰─► ")
+  :config
+  (defun hoagie-summary-spam ()
+    "Move the current or marked mails to Spam in Fastmail."
+    (interactive)
+    (gnus-summary-move-article nil "nnimap+fastmail:Spam"))
+  (defun hoagie-summary-archive ()
+    "Move the current or marked mails to the Archive in Fastmail."
+    (interactive)
+    (gnus-summary-move-article nil "nnimap+fastmail:Archive"))
+  (defun hoagie-summary-trash ()
+    "Move the current or marked mails to Trash in Fastmail."
+    (interactive)
+    (gnus-summary-move-article nil "nnimap+fastmail:Trash"))
+  (defun hoagie-summary-show-all ()
+    "Show all messages, even the ones read.
+This is C-u M-g but I figured I would put it in a simpler binding."
+    (interactive)
+    (gnus-summary-rescan-group t)))
+
 (use-package grep
   :custom
   (grep-command "grep --color=always -nHi -r --include=*.* -e \"pattern\" .")
@@ -759,7 +829,12 @@ Set `fill-column', `truncate-lines'."
   (:map message-mode-map
         ;; shadows `message-elide-region' :shrug:
         ("C-c C-e" . hoagie-confirm-encrypt))
+  :hook
+  (message-setup-hook . hoagie-message-change-from)
   :custom
+  ;; actually part of simple.el, but putting it here because
+  ;; it is relevant to message.el behaviour for C-x m
+  (mail-user-agent 'gnus-user-agent)
   ;; integrate with ecomplete. Press TAB to get email completion
   (message-mail-alias-type 'ecomplete)
   (message-self-insert-commands nil)
@@ -769,6 +844,26 @@ Set `fill-column', `truncate-lines'."
   ;; existing commands to "go to header" which add them
   ;; (message-default-mail-headers "Cc: \nBcc: \n")
   :config
+  ;; From https://www.emacswiki.org/emacs/GnusTutorial#h5o-40
+  (defvar hoagie-email-addresses '("sebastian@sebasmonia.com"
+                                   "capsule@sebasmonia.com"
+                                   "code@sebasmonia.com"
+                                   "mailing@sebasmonia.com"
+                                   "subscriptions@sebasmonia.com"
+                                   "thingstopay@sebasmonia.com"
+                                   "work@sebasmonia.com")
+    "The list of aliases in my email setup.")
+  (defun hoagie-message-change-from ()
+    "Select the \"From:\" address when composing a new email."
+    (interactive)
+    (let* ((selected-address (completing-read "From: " hoagie-email-addresses))
+           (address (concat user-full-name " <" selected-address ">"))
+           (from-text (concat "From: " address)))
+      (setq gnus-article-current-point (point))
+      (goto-char (point-min))
+      (while (re-search-forward "^From:.*$" nil t)
+        (replace-match from-text))
+      (goto-char gnus-article-current-point)))
   (defun hoagie-confirm-encrypt ()
     "Answer y/n to whether to send the message encrypted."
     (interactive)
@@ -801,55 +896,6 @@ Set `fill-column', `truncate-lines'."
         ("C-p" . minibuffer-previous-completion))
   (:map hoagie-keymap
         ("<f6>" . execute-extended-command)))
-
-;; TODO:
-;; mu4e-attachment-dir
-(use-package mu4e
-  :bind
-  (:map hoagie-second-keymap
-        ;; for "email"
-        ("e" . mu4e))
-  :custom
-  (mu4e-sent-folder "/Sent")
-  (mu4e-drafts-folder "/Drafts")
-  (mu4e-trash-folder  "/Trash")
-  (mu4e-refile-folder "/Archive")
-  (mu4e-get-mail-command "offlineimap")
-  (mu4e-update-interval 300)
-  (mu4e-notification-support t)
-  ;; ((:human-date . 12) (:flags . 6) (:mailing-list . 10) (:from . 22) (:subject))
-   ;; alternatively, use :thread-subject
-  (mu4e-headers-fields '((:maildir . 25) (:date . 20) (:flags . 6) (:from . 30) (:subject)))
-  (mu4e-headers-date-format "%F %I:%M %p")
-  (mu4e-view-auto-mark-as-read nil)
-  (mu4e-read-option-use-builtin nil)
-  (mu4e-completing-read-function 'completing-read)
-  ;; these settings are from simple.el, not mu4e
-  (mail-user-agent 'mu4e-user-agent)
-  (read-mail-command 'mu4e)
-  (user-full-name "Sebastián Monía")
-  (user-mail-address "sebastian@sebasmonia.com")
-  :hook
-  (mu4e-compose-mode-hook . hoagie-mu4e-change-from)
-  :config
-  ;; From https://www.emacswiki.org/emacs/GnusTutorial#h5o-40
-  (defvar hoagie-email-addresses '("sebastian@sebasmonia.com"
-                                   "capsule@sebasmonia.com"
-                                   "code@sebasmonia.com"
-                                   "mailing@sebasmonia.com"
-                                   "subscriptions@sebasmonia.com"
-                                   "thingstopay@sebasmonia.com"
-                                   "work@sebasmonia.com")
-    "The list of aliases in my email setup.")
-  (defun hoagie-mu4e-change-from ()
-    "Select the \"From:\" address when composing a new email."
-    (interactive)
-    (message-replace-header "From"
-                            (concat user-full-name
-                                    " <"
-                                    (completing-read "From: "
-                                                     hoagie-email-addresses)
-                                    ">"))))
 
 (use-package notifications
   ;; this package is used by appt to display
@@ -1186,8 +1232,6 @@ Inspired by a similar function in Elpher."
 (use-package smtpmail
   :custom
   (send-mail-function 'smtpmail-send-it)
-  ;; (smtpmail-queue-mail t)
-  ;; TODO: update for mu4e
   (smtpmail-queue-mail-directory "~/.gnus.d/queued-mail/")
   (smtpmail-default-smtp-server "smtp.fastmail.com")
   (smtpmail-stream-type  'starttls)
@@ -1551,7 +1595,7 @@ If ARG, don't prompt for buffer name suffix."
   (initial-scratch-message
    ";; Il semble que la perfection soit atteinte non quand il n’y a\n;; plus rien à ajouter, mais quand il n’y a plus à retrancher.\n;;                                   - Antoine de Saint Exupéry\n\n;; Misc:\n;; C-x C-k e edit kmacro    ;; (shell) C-c C-o clear last output\n;; C-x / vundo              ;; C-x C-t transpose-lines (0 arg!)\n\n;; During isearch           ;; Query replace\n;; C-w add watp, can repeat ;; C-u M-% to replace words\n;; M-r toggle regex\n\n;; Newlines:\n;; C-o open-line            ;; C-M-o split-line\n;; M-^ join with prev line\n\n;; M-x...\n;; copy-matching-lines (also kill-) ;; (un)highlight-regexp\n;; align-current (or align-regexp)\n\n;; Calendar & Diary\n;; . - go to today          ;; u/m/x - unmark/mark events/holidays\n;; M-= count days region\n\n;; Notes:\n;; <f6> => 3 inbox / C-3 new note / ESC-3 grep notes\n\n")
   (save-interprogram-paste-before-kill t)
-  (visible-bell nil) ;; macOS change
+  (visible-bell t)
   ;; from https://gitlab.com/jessieh/dot-emacs
   (backup-by-copying t)   ; Don't delink hardlinks
   (version-control t)     ; Use version numbers on backups
@@ -1643,19 +1687,6 @@ If ARG, don't prompt for buffer name suffix."
   (customize-set-value 'insert-directory-program "gls"))
 
 (when (string= system-type "gnu/linux")
-  (defun find-alternative-file-with-sudo ()
-    (interactive)
-    (let ((fname (or buffer-file-name
-		     dired-directory)))
-      (when fname
-        (if (string-match "^/sudo:root@localhost:" fname)
-	    (setf fname (replace-regexp-in-string
-		         "^/sudo:root@localhost:" ""
-		         fname))
-	  (setf fname (concat "/sudo:root@localhost:" fname)))
-        (find-alternate-file fname))))
-  (global-set-key (kbd "C-x F") 'find-alternative-file-with-sudo)
-
   (require 'cl-lib)
   (defun hoagie-adjust-font-size (frame)
     "Inspired by https://emacs.stackexchange.com/a/44930/17066.
@@ -1664,7 +1695,7 @@ FRAME is ignored."
     ;; has a meaningul value in all cases, so:
     (let* ((monitor-name (alist-get 'name (frame-monitor-attributes)))
            (monitor-font '(("0x0536" . 108) ;; laptop -- was 143, 151
-                           ("LG Ultra HD" . 139))) ;; external monitor
+                           ("LG Ultra HD" . 151))) ;; external monitor
            (size (alist-get monitor-name monitor-font
                             180 ;; default size, "big just in case"
                             nil
