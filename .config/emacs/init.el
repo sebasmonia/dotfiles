@@ -550,25 +550,6 @@ Add hooks for `eldoc' customizations and set `fill-column'."
     (setf fill-column 79)
     (display-fill-column-indicator-mode)))
 
-(use-package elpher
-  :ensure t
-  :custom
-  ;; from gemini://sporiff.dev/2023/08/08/elpher/
-  ;; so Station works with Elpher :)
-  (elpher-certificate-map '(("gemini://station.martinrue.com/" "sebhoagie")))
-  :bind
-  (:map hoagie-second-keymap
-        ;; "g" for Gemini
-        ("g" . elpher))
-  ;; match eww/help bindings
-  (:map elpher-mode-map
-        ;; go to previous page
-        ("l" . elpher-back)
-        ;; TODO: no match for "next"?
-        ;; rebind O to u, which makes
-        ;; more sense to me :shrug:
-        ("u" . elpher-root-dir)))
-
 (use-package epg-config
   :custom
   (epg-pinentry-mode 'loopback))
@@ -1159,7 +1140,8 @@ Use prefix ARG to open the file in another window."
   :custom
   (savehist-additional-variables '(kill-ring
                                    search-ring
-                                   regexp-search-ring))
+                                   regexp-search-ring
+                                   eww-history))
   (history-delete-duplicates t)
   :config
   (savehist-mode))
@@ -1593,7 +1575,7 @@ If ARG, don't prompt for buffer name suffix."
   (inhibit-startup-screen t)
   (initial-buffer-choice t)
   (initial-scratch-message
-   ";; Il semble que la perfection soit atteinte non quand il n’y a\n;; plus rien à ajouter, mais quand il n’y a plus à retrancher.\n;;                                   - Antoine de Saint Exupéry\n\n;; Misc:\n;; C-x C-k e edit kmacro    ;; (shell) C-c C-o clear last output\n;; C-x / vundo              ;; C-x C-t transpose-lines (0 arg!)\n\n;; During isearch           ;; Query replace\n;; C-w add watp, can repeat ;; C-u M-% to replace words\n;; M-r toggle regex\n\n;; Newlines:\n;; C-o open-line            ;; C-M-o split-line\n;; M-^ join with prev line\n\n;; M-x...\n;; copy-matching-lines (also kill-) ;; (un)highlight-regexp\n;; align-current (or align-regexp)\n\n;; Calendar & Diary\n;; . - go to today          ;; u/m/x - unmark/mark events/holidays\n;; M-= count days region\n\n;; Notes:\n;; <f6> => 3 inbox / C-3 new note / ESC-3 grep notes\n\n")
+   ";; Il semble que la perfection soit atteinte non quand il n’y a\n;; plus rien à ajouter, mais quand il n’y a plus à retrancher.\n;;                                   - Antoine de Saint Exupéry\n\n;; Misc:\n;; C-x C-k e edit kmacro    ;; (shell) C-c C-o clear last output\n;; C-x / vundo              ;; C-x C-t transpose-lines (0 arg!)\n\n;; During isearch           ;; Query replace\n;; C-w add watp, can repeat ;; C-u M-% to replace words\n;; M-r toggle regex\n\n;; Newlines:\n;; C-o open-line            ;; C-M-o split-line\n;; M-^ join with prev line\n\n;; M-x...\n;; copy-matching-lines (also kill-) ;; (un)highlight-regexp\n;; align-current (or align-regexp)\n\n;; Calendar & Diary\n;; . - go to today          ;; u/m/x - unmark/mark events/holidays\n;; M-= count days region\n\n;; Notes prefix <f3> => 3 inbox / n new / g grep / f find by name\n\n")
   (save-interprogram-paste-before-kill t)
   (visible-bell t)
   ;; from https://gitlab.com/jessieh/dot-emacs
