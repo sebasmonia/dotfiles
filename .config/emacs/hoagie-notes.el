@@ -50,7 +50,9 @@ Meant to take quick, uncategorized notes."
   (goto-char (point-max)))
 
 (defun hoagie-notes-new-note (filename-title)
-  "Create a new note, with FILENAME-TITLE."
+  "Create a new note, with FILENAME-TITLE.
+The value of FILENAME-TITLE is used as-is for the title inside the note.
+It is lowercased and with dashes replacing spaces in the filename."
   (interactive "sTitle (filename): ")
   (let* ((starting-text (concat "# " filename-title "\n"
                                 (format-time-string "%Y-%m-%d") "\n\n"
@@ -58,9 +60,9 @@ Meant to take quick, uncategorized notes."
          (note-file-name (file-name-concat
                           hoagie-notes-directory
                           (format-time-string "%Y%m")
-                          ;; change spaces to dash in the file name
-                          (concat (string-replace " " "-" filename-title)
-                                  ".md"))))
+                          (downcase (concat
+                                     (string-replace " " "-" filename-title)
+                                  ".md")))))
     (make-directory (file-name-directory note-file-name) t)
     (find-file note-file-name)
     (insert starting-text)))
