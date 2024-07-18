@@ -958,8 +958,7 @@ Set `fill-column', `truncate-lines'."
         ("l" . list-registers)
         ("SPC" . point-to-register)
         ("d" . hoagie-clean-registers)
-        ("j" . hoagie-jump-to-register)
-        ("4 j" . hoagie-jump-to-register-other-window))
+        ("j" . hoagie-jump-to-register))
   :config
   ;; BRITTLENESS WARNING: this re-defines a built-in method, there's
   ;; a high risk it breaks when moving Emacs versions
@@ -1030,19 +1029,6 @@ It also deletes the register if called with prefix ARG."
                                     when (markerp (cdr reg))
                                     collect reg))
            (reg (register-read-with-preview "Jump to: ")))
-      (jump-to-register reg)
-      (when arg
-        (set-register reg nil))))
-  (defun hoagie-jump-to-register-other-window (&optional arg)
-    (interactive)
-    "Variant of `hoagie-jump-to-register' that jumps in other window.
-It also deletes the register if called with prefix ARG."
-    (interactive "P")
-    (let* ((register-alist (cl-loop for reg in register-alist
-                                    when (markerp (cdr reg))
-                                    collect reg))
-           (reg (register-read-with-preview "Jump to: ")))
-      (pop-to-buffer (current-buffer) t t)
       (jump-to-register reg)
       (when arg
         (set-register reg nil))))
