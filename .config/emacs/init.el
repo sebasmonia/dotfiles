@@ -1184,8 +1184,6 @@ Inspired by a similar function in Elpher."
                collect
                (cons text position)))))
 
-
-
 (use-package sly
   :ensure t
   :commands sly
@@ -1650,20 +1648,15 @@ If ARG, don't prompt for buffer name suffix."
                         :height (tmm-prompt size-menu)))
   (global-set-key (kbd "<f9>") #'hoagie-manually-adjust-font-size))
 
-(when (string= system-type "darwin")
-  ;; use `ls` from coreutils, installed with homebrew
-  (customize-set-value 'insert-directory-program "gls"))
-
-(when (string= system-type "gnu/linux")
-  (require 'cl-lib)
+(when (eq system-type 'gnu/linux)
   (defun hoagie-adjust-font-size (frame)
     "Inspired by https://emacs.stackexchange.com/a/44930/17066.
 FRAME is ignored."
     ;; 2021-05-22: now I use the pgtk branch everywhere, and the monitor name
     ;; has a meaningul value in all cases, so:
     (let* ((monitor-name (alist-get 'name (frame-monitor-attributes)))
-           (monitor-font '(("0x0536" . 108) ;; laptop -- was 143, 151
-                           ("LG Ultra HD" . 151))) ;; external monitor
+           (monitor-font '(("0x0536" . 128) ;; laptop -- maybe 143
+                           ("LG Ultra HD" . 173))) ;; monitor -- maybe 158
            (size (alist-get monitor-name monitor-font
                             180 ;; default size, "big just in case"
                             nil
