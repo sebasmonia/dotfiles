@@ -32,15 +32,14 @@ These are values for the "Preferences" section, that controls timeouts for dual 
 ## Layer 1 - "Base"
 
 From my MD770 days I got used to having modifiers in my thumbs (Space/Control on the left spacebar, and ESC/Control on the right spacebar), which is very convenient for Emacs. I'm keeping that in the Raise, in T2 and T3.  
-T1 is F6, which is bound to my personal keymap in Emacs. T4 is backspace.
+T1 is F6, which is bound to my personal keymap in Emacs. T4 is backspace.  
 The thumbs keys in the bottom row are all layer changes, with some extra features:
   * T5 goes to layer 3, OS/window management, arrow keys, media
   * T6 has dual function: Enter on tap, activate layer 4 on hold (symbols for programming and compose key in Gnome to type with accented characters for Spanish)
   * T7 activates layer 5. It is almost identical to the base but most keys have the shift modifier. This frees up both shift keys on the sides and makes chording for shift use the thumb instead of pinky finger
-  * T8 goes to layer 2, Function keys, browser/app shorcuts, and mouse keys
+  * T8 goes to layer 2, Function keys, browser/app shorcuts, and mouse keys  
 &nbsp;  
 I still need proper Alt modifiers for other applications, but since I can trigger Control and Shift with thumbs and layers, I can repurpose those keys and a few others:   
-
 * Left control: Jump to Excel layer
 * Right control: Change language macro
 * Caps Lock: C-x (Control+x) for Emacs
@@ -97,3 +96,5 @@ This is the layer that started the process of swapping my original arrangement f
 ## Layer 7 - "Standard/Gaming"
 
 After trying to configure a game and realizing you can't really use C-u as a command :) I created this layer. It is the "standard" keyboard, but I added Esc in the thumb cluster so I don't lose ` to map it. In addition the cluster can change to the 2 and 5 layers just like in the base one for quick access to shifted keys and F-keys.
+
+![Layer 7](pictures/Layer-7-Standard-Gaming.png)
