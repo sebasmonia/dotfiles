@@ -1132,7 +1132,8 @@ Use prefix ARG to open the file in another window."
   :config
   (savehist-mode))
 
-(use-package sharper :load-path "~/github/sharper"
+(use-package sharper
+  :load-path "~/github/sharper"
   :bind
   (:map hoagie-keymap
         ;; using "n" for another command now, moving
@@ -1155,12 +1156,13 @@ Use prefix ARG to open the file in another window."
   (shr-use-fonts nil)
   (shr-use-colors t)
   (shr-bullet "• ")
-  (shr-indentation 2)
   (shr-discard-aria-hidden t)
+  (shr-max-image-proportion 0.5)
   :bind
   (:map hoagie-keymap
         ("ESC b" . hoagie-shr-link-open-or-kill))
   :config
+  (setf shr-indentation 2)
   (defun hoagie-shr-link-open-or-kill (&optional arg)
     "Edit and open the link at point in EWW.
 With prefig ARG, put it in the kill ring instead."
@@ -1225,46 +1227,6 @@ Inspired by a similar function in Elpher."
   :after sql
   :custom
   (sql-datum-program "/var/home/hoagie/.local/bin/datum.sh"))
-
-(use-package tempo
-  :ensure t
-  :custom
-  (tempo-insert-region nil) ;; this doesn't do what I thought it would :)
-  (tempo-interactive t)
-  :bind
-  (:map hoagie-keymap
-        ("i" . hoagie-tempo-template))
-        ;; Original with "i" for completion at point, but
-        ;; I was fine with C-M-i so :shrug:
-        ;; ("ESC i" . hoagie-tempo-template))
-  :config
-  (defun hoagie-tempo-template ()
-    (interactive)
-    (let ((current-tags (tempo-build-collection)))
-      (funcall-interactively
-       (alist-get (completing-read "Insert..." current-tags)
-                  current-tags nil nil #'string=))))
-  (tempo-define-template "sql-varbinary"
-                         '("CONVERT(VARBINARY(MAX),'" (r "Value: ")  "', 1)")
-                         "sql-tovarbin"
-                         "Convert the region or parameter to VARBINARY.")
-  (tempo-define-template "sql-top"
-                         '("SELECT TOP "
-                           (read-string "How many (default 10): " nil nil "10")
-                           " * FROM " (p "Table: "))
-                         "sql-top"
-                         "SELECT TOP {#} FROM {table}")
-  (tempo-define-template "py-fake_options"
-                         '("from collections import namedtuple; make_options = namedtuple('fake_options', '"
-                           (r "Space separated field names: ")
-                           "')")
-                         "py-fake_options"
-                         "Create a namedtuple for script's fake options")
-  (tempo-define-template "shell-pipe-head"
-                         '((r "Command: ") " | head -n "
-                           (read-string "Lines (default 10): " nil nil "10"))
-                         "shell-pipe-head"
-                         "Add \"| head -n {lines}\" to {command}"))
 
 (use-package time
   :custom
