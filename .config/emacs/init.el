@@ -41,20 +41,14 @@
 (setf use-package-hook-name-suffix nil)
 (setf package-native-compile t)
 (custom-set-faces
- '(default ((t (:family "Consolas"
+ '(default ((t (:family "Berkeley Mono"
                 :slant normal
                 :weight regular
                 :height 128
                 :width normal
                 :foundry "outline")))))
- ;; '(default ((t (:family "Iosevka Comfy Wide Fixed Ex"
- ;;                        :slant normal
- ;;                        :weight regular
- ;;                        :height 113
- ;;                        ;; 120
- ;;                        :width normal)))))
-(set-fontset-font t 'emoji (font-spec :family "Segoe UI Emoji"))
-;;(set-fontset-font t 'emoji (font-spec :family "Noto Emoji"))
+;;(set-fontset-font t 'emoji (font-spec :family "Segoe UI Emoji"))
+(set-fontset-font t 'emoji (font-spec :family "Noto Emoji"))
 
 ;; Based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html I
 ;; eventually I moved away from the menu key to F6, and even later that key
@@ -1583,7 +1577,7 @@ If ARG, don't prompt for buffer name suffix."
   (customize-set-value 'ls-lisp-use-insert-directory-program nil)
   (easy-menu-define size-menu nil "Menu to select a font size"
     '("Font sizes"
-      ["q  70" 83]
+      ["q  83" 83]
       ["w  80" 90]
       ["e  90" 98]
       ["a  100" 113]
@@ -1592,16 +1586,6 @@ If ARG, don't prompt for buffer name suffix."
       ["z  141" 143]
       ["x  158" 151]
       ["c  181" 181]))
-    ;; '("Font sizes"
-    ;;   ["q  70" 70]
-    ;;   ["w  80" 80]
-    ;;   ["e  90" 90]
-    ;;   ["a  100" 100]
-    ;;   ["s  113" 113]
-    ;;   ["d  120" 120]
-    ;;   ["z  141" 141]
-    ;;   ["x  158" 158]
-    ;;   ["c  181" 181]))
   (defun hoagie-manually-adjust-font-size ()
     "Something fishy is going on with font sizes...set them manually for now."
     (interactive)
