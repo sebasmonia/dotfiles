@@ -1,0 +1,39 @@
+;; Auto-generated file; don't edit -*- mode: lisp-data -*-
+((:url "https://search.marginalia.nu/" :title "Marginalia Search"
+       :time "2024-02-13 12:21:28 PM")
+ (:url "https://text.npr.org/" :title "NPR Text news" :time
+       "2024-05-29 09:25:17 AM")
+ (:url "https://plaintextworld.com/" :title "Plaintext World" :time
+       "2024-07-18 10:16:31 AM")
+ (:url "https://sarajaksa.eu/" :title "Blog of Sara Jakša" :time
+       "2024-07-18 10:14:30 AM")
+ (:url "https://www.archaeoramblings.com/blog/" :title
+       "Archeoramblings" :time "2024-07-18 10:15:34 AM")
+ (:url "https://bacardi55.io/posts/" :title "Bacardi55's Web Cave"
+       :time "2024-07-18 10:16:05 AM")
+ (:url "https://82mhz.net/" :title "82MHz" :time
+       "2024-07-18 10:21:35 AM")
+ (:url "https://sjmulder.nl/en/textonly.html" :title
+       "Sijmen plain text links" :time "2024-07-24 08:44:01 AM")
+ (:url "https://www.schneier.com/" :title "Schneier on Security" :time
+       "2024-07-26 08:36:42 AM")
+ (:url "https://search.marginalia.nu/" :title "Marginalia Search"
+       :time "2024-02-13 02:45:54 PM")
+ (:url "https://1mb.club/" :title "1MB Club" :time
+       "2024-06-12 11:55:52 PM")
+ (:url "https://fabiensanglard.net/" :title
+       "Fabien Sanglard's Website" :time "2024-07-27 07:04:56 PM")
+ (:url "https://burgundywave.com/category/colorado-rapids/" :title
+       "Colorado Rapids Archives - Burgundy Wave" :time
+       "2024-07-27 06:58:18 PM")
+ (:url "https://kevquirk.com/blogroll" :title "Blogroll | Kev Quirk"
+       :time "2024-07-27 07:02:56 PM")
+ (:url "https://manuelmoreale.com/blogroll" :title
+       "Blogroll - Manu Moreale" :time "2024-07-27 07:03:43 PM")
+ (:url "https://peopleandblogs.com/" :title "People and Blogs" :time
+       "2024-07-27 07:04:19 PM")
+ (:url "https://smallweb.site/" :title "smallweb.site" :time
+       "2024-07-27 07:06:13 PM")
+ (:url "https://berthub.eu/index.html" :title "Bert Hubert" :time
+       "2024-07-30 12:36:14 AM")
+ (:url "https://0xff.nu/" :title "0xFF" :time "2024-07-30 07:01:50 AM"))

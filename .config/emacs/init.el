@@ -552,16 +552,20 @@ Add hooks for `eldoc' customizations and set `fill-column'."
   :demand t
   :custom
   (eww-auto-rename-buffer #'hoagie-eww-rename-buffer)
+  (eww-download-directory  "~/eww-downloads/")
+  (eww-bookmarks-directory "~/sourcehut/dotfiles/.config/emacs/")
   :hook
   (eww-mode-hook . toggle-word-wrap)
   (eww-mode-hook . visual-line-mode)
   :bind
   (:map hoagie-second-keymap
-        ;; already have "g" for Gemini on this keymap
-        ;; might as well use "w" for web.
+        ;; "w" for web.
         ("w" . eww))
   (:map eww-mode-map
         ("m" . hoagie-eww-jump)
+        ;; default M-I - but I use this often
+        ;; using uppercase to mirror F to toggle fonts
+        ("I" . eww-toggle-images)
         ("o" . eww)
         ("O" . eww-browse-with-external-browser))
   :config
@@ -614,7 +618,10 @@ external browser and new eww buffer, respectively)."
         ("v g" . hoagie-summary-show-all)
         ;; originally T # - I can use it to make whole threads
         ;; or individual messages
-        ("v #" . gnus-uu-mark-thread))
+        ("v #" . gnus-uu-mark-thread)
+        ;; originally T n or M-<down> or C-M-f
+        ;; instead, get more Thread commands under "v"
+        ("v n" . gnus-summary-next-thread))
   :init
   ;; let's do our best to keep Gnus files/dir outside of ~
   ;; some of these are not really Gnus vars, but declared in
@@ -1194,7 +1201,6 @@ Inspired by a similar function in Elpher."
 (use-package smtpmail
   :custom
   (send-mail-function 'smtpmail-send-it)
-  (smtpmail-queue-mail-directory "~/.gnus.d/queued-mail/")
   (smtpmail-default-smtp-server "smtp.fastmail.com")
   (smtpmail-stream-type  'starttls)
   (smtpmail-smtp-service 587))
@@ -1517,7 +1523,7 @@ If ARG, don't prompt for buffer name suffix."
   (initial-scratch-message
    ";; Il semble que la perfection soit atteinte non quand il n’y a\n;; plus rien à ajouter, mais quand il n’y a plus à retrancher.\n;;                                   - Antoine de Saint Exupéry\n\n;; Misc:\n;; C-x C-k e edit kmacro    ;; (shell) C-c C-o clear last output\n;; C-x / vundo              ;; C-x C-t transpose-lines (0 arg!)\n\n;; During isearch           ;; Query replace\n;; C-w add watp, can repeat ;; C-u M-% to replace words\n;; M-r toggle regex\n\n;; Newlines:\n;; C-o open-line            ;; C-M-o split-line\n;; M-^ join with prev line\n\n;; M-x...\n;; copy-matching-lines (also kill-) ;; (un)highlight-regexp\n;; align-current (or align-regexp)\n\n;; Calendar & Diary\n;; . - go to today          ;; u/m/x - unmark/mark events/holidays\n;; M-= count days region\n\n;; Notes prefix <f3> => 3 inbox / n new / g grep / f find by name\n\n")
   (save-interprogram-paste-before-kill t)
-  (visible-bell t)
+  (visible-bell nil)
   ;; from https://gitlab.com/jessieh/dot-emacs
   (backup-by-copying t)   ; Don't delink hardlinks
   (version-control t)     ; Use version numbers on backups
