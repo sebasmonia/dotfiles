@@ -1,5 +1,7 @@
 ;; Auto-generated file; don't edit -*- mode: lisp-data -*-
-((:url "https://taonaw.com/blogroll/" :title
+((:url "https://koldfront.dk/" :title "koldfront" :time
+       "Wed Jul 31 17:36:13 2024")
+ (:url "https://taonaw.com/blogroll/" :title
        "🥁 Blogrolls | The Art Of Not Asking Why" :time
        "Tue Jul 30 12:08:41 2024")
  (:url "https://search.marginalia.nu/" :title "Marginalia Search"
