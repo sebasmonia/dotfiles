@@ -560,7 +560,9 @@ Add hooks for `eldoc' customizations and set `fill-column'."
   :bind
   (:map hoagie-second-keymap
         ;; "w" for web.
-        ("w" . eww))
+        ("w" . eww)
+        ;; the EWW boormarks are the "personal" ones
+        ("ESC w" . eww-list-bookmarks))
   (:map eww-mode-map
         ("m" . hoagie-eww-jump)
         ;; default M-I - but I use this often
@@ -642,11 +644,13 @@ external browser and new eww buffer, respectively)."
         gnus-dribble-directory "~/.gnus.d/"
         gnus-always-read-dribble-file nil)
   :custom
-  ;; these two are not really Gnus values, but a sensible place to set them
+  ;; the first four are not really Gnus values, but this is a sensible place
+  ;; to set them
   (user-full-name "Sebastián Monía")
   (user-mail-address "sebastian@sebasmonia.com")
   (mml-secure-openpgp-signers '("A65927B22A60F72A53D77CD7EF7DAC84163D7A83"))
   (mml-secure-openpgp-encrypt-to-self t)
+  ;; -----
   (gnus-select-method '(nnnil ""))
   (gnus-secondary-select-methods '((nnimap "fastmail"
                                            (nnimap-address "imap.fastmail.com")

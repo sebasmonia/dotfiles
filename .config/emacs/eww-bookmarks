@@ -1,11 +1,14 @@
 ;; Auto-generated file; don't edit -*- mode: lisp-data -*-
-((:url "https://search.marginalia.nu/" :title "Marginalia Search"
+((:url "https://taonaw.com/blogroll/" :title
+       "🥁 Blogrolls | The Art Of Not Asking Why" :time
+       "Tue Jul 30 12:08:41 2024")
+ (:url "https://search.marginalia.nu/" :title "Marginalia Search"
        :time "2024-02-13 12:21:28 PM")
  (:url "https://text.npr.org/" :title "NPR Text news" :time
        "2024-05-29 09:25:17 AM")
  (:url "https://plaintextworld.com/" :title "Plaintext World" :time
        "2024-07-18 10:16:31 AM")
- (:url "https://sarajaksa.eu/" :title "Blog of Sara Jakša" :time
+ (:url "https://sarajaksa.eu/" :title "Blog of Sara Jaksa" :time
        "2024-07-18 10:14:30 AM")
  (:url "https://www.archaeoramblings.com/blog/" :title
        "Archeoramblings" :time "2024-07-18 10:15:34 AM")
