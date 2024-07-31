@@ -552,16 +552,22 @@ Add hooks for `eldoc' customizations and set `fill-column'."
   :demand t
   :custom
   (eww-auto-rename-buffer #'hoagie-eww-rename-buffer)
+  (eww-download-directory  "~/eww-downloads/")
+  (eww-bookmarks-directory "~/sourcehut/dotfiles/.config/emacs/")
   :hook
   (eww-mode-hook . toggle-word-wrap)
   (eww-mode-hook . visual-line-mode)
   :bind
   (:map hoagie-second-keymap
-        ;; already have "g" for Gemini on this keymap
-        ;; might as well use "w" for web.
-        ("w" . eww))
+        ;; "w" for web.
+        ("w" . eww)
+        ;; the EWW boormarks are the "personal" ones
+        ("ESC w" . eww-list-bookmarks))
   (:map eww-mode-map
         ("m" . hoagie-eww-jump)
+        ;; default M-I - but I use this often
+        ;; using uppercase to mirror F to toggle fonts
+        ("I" . eww-toggle-images)
         ("o" . eww)
         ("O" . eww-browse-with-external-browser))
   :config
@@ -614,7 +620,10 @@ external browser and new eww buffer, respectively)."
         ("v g" . hoagie-summary-show-all)
         ;; originally T # - I can use it to make whole threads
         ;; or individual messages
-        ("v #" . gnus-uu-mark-thread))
+        ("v #" . gnus-uu-mark-thread)
+        ;; originally T n or M-<down> or C-M-f
+        ;; instead, get more Thread commands under "v"
+        ("v n" . gnus-summary-next-thread))
   :init
   ;; let's do our best to keep Gnus files/dir outside of ~
   ;; some of these are not really Gnus vars, but declared in
@@ -635,11 +644,13 @@ external browser and new eww buffer, respectively)."
         gnus-dribble-directory "~/.gnus.d/"
         gnus-always-read-dribble-file nil)
   :custom
-  ;; these two are not really Gnus values, but a sensible place to set them
+  ;; the first four are not really Gnus values, but this is a sensible place
+  ;; to set them
   (user-full-name "Sebastián Monía")
   (user-mail-address "sebastian@sebasmonia.com")
   (mml-secure-openpgp-signers '("A65927B22A60F72A53D77CD7EF7DAC84163D7A83"))
   (mml-secure-openpgp-encrypt-to-self t)
+  ;; -----
   (gnus-select-method '(nnnil ""))
   (gnus-secondary-select-methods '((nnimap "fastmail"
                                            (nnimap-address "imap.fastmail.com")
@@ -1205,7 +1216,6 @@ Inspired by a similar function in Elpher."
 (use-package smtpmail
   :custom
   (send-mail-function 'smtpmail-send-it)
-  (smtpmail-queue-mail-directory "~/.gnus.d/queued-mail/")
   (smtpmail-default-smtp-server "smtp.fastmail.com")
   (smtpmail-stream-type  'starttls)
   (smtpmail-smtp-service 587))
