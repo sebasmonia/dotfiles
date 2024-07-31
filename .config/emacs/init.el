@@ -44,7 +44,7 @@
  '(default ((t (:family "Berkeley Mono"
                 :slant normal
                 :weight regular
-                :height 128
+                :height 180
                 :width normal
                 :foundry "outline")))))
 ;;(set-fontset-font t 'emoji (font-spec :family "Segoe UI Emoji"))
@@ -710,6 +710,17 @@ This is C-u M-g but I figured I would put it in a simpler binding."
 (use-package hl-line
   :hook
   (after-init-hook . global-hl-line-mode))
+
+(use-package mhtml-mode
+  :hook
+  (mhtml-mode-hook . hoagie-mhtml-mode-setup)
+  :config
+  (defun hoagie-mhtml-mode-setup ()
+    "Setup my `mhtml-mode' configuration.
+Set `fill-column' and related modes.'."
+    (setf fill-column 100)
+    (display-fill-column-indicator-mode)
+    (auto-fill-mode)))
 
 (use-package icomplete
   :demand t
@@ -1517,7 +1528,7 @@ If ARG, don't prompt for buffer name suffix."
   (initial-scratch-message
    ";; Il semble que la perfection soit atteinte non quand il n’y a\n;; plus rien à ajouter, mais quand il n’y a plus à retrancher.\n;;                                   - Antoine de Saint Exupéry\n\n;; Misc:\n;; C-x C-k e edit kmacro    ;; (shell) C-c C-o clear last output\n;; C-x / vundo              ;; C-x C-t transpose-lines (0 arg!)\n\n;; During isearch           ;; Query replace\n;; C-w add watp, can repeat ;; C-u M-% to replace words\n;; M-r toggle regex\n\n;; Newlines:\n;; C-o open-line            ;; C-M-o split-line\n;; M-^ join with prev line\n\n;; M-x...\n;; copy-matching-lines (also kill-) ;; (un)highlight-regexp\n;; align-current (or align-regexp)\n\n;; Calendar & Diary\n;; . - go to today          ;; u/m/x - unmark/mark events/holidays\n;; M-= count days region\n\n;; Notes prefix <f3> => 3 inbox / n new / g grep / f find by name\n\n")
   (save-interprogram-paste-before-kill t)
-  (visible-bell t)
+  (visible-bell nil)
   ;; from https://gitlab.com/jessieh/dot-emacs
   (backup-by-copying t)   ; Don't delink hardlinks
   (version-control t)     ; Use version numbers on backups
