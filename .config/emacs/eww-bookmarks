@@ -10,6 +10,11 @@
  (:url "https://www.fosskers.ca/en/blog/contributing-to-emacs" :title
        "Colin Woodbury - Contributing to Emacs" :time
        "Thu Aug  1 11:57:11 2024")
+ (:url "http://starbreaker.org/index.html" :title
+       "welcome | starbreaker.org" :time "Wed Jul 31 17:50:25 2024")
+ (:url "https://thebloggess.com/" :title
+       "The Bloggess – Like Mother Teresa, only better." :time
+       "Wed Jul 31 17:50:12 2024")
  (:url "https://koldfront.dk/" :title "koldfront" :time
        "Wed Jul 31 17:36:13 2024")
  (:url "https://taonaw.com/blogroll/" :title
