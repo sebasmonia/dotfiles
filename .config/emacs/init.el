@@ -567,9 +567,7 @@ Add hooks for `eldoc' customizations and set `fill-column'."
         ("m" . hoagie-eww-jump)
         ;; default M-I - but I use this often
         ;; using uppercase to mirror F to toggle fonts
-        ("I" . eww-toggle-images)
-        ("o" . eww)
-        ("O" . eww-browse-with-external-browser))
+        ("I" . eww-toggle-images))
   :config
   (defun hoagie-eww-rename-buffer ()
     "Rename EWW buffers like \"title\", but put title last.
