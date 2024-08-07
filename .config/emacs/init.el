@@ -1436,23 +1436,14 @@ If ARG, don't prompt for buffer name suffix."
 (when (eq system-type 'windows-nt)
   (require 'ls-lisp)
   (customize-set-value 'ls-lisp-use-insert-directory-program nil)
-  (easy-menu-define size-menu nil "Menu to select a font size"
-    '("Font sizes"
-      ["q  83" 83]
-      ["w  80" 90]
-      ["e  90" 98]
-      ["a  100" 113]
-      ["s  120" 120]
-      ["d  128" 128] ;; 13 - default non 4k
-      ["z  141" 143]
-      ["x  158" 151]
-      ["c  181" 181]))
   (defun hoagie-manually-adjust-font-size ()
     "Something fishy is going on with font sizes...set them manually for now."
     (interactive)
     ;; nil for "all frames"
     (set-face-attribute 'default nil
-                        :height (tmm-prompt size-menu)))
+                        :height (if (= (face-attribute 'default :height) 128)
+                                    181
+                                  128)))
   (global-set-key (kbd "<f9>") #'hoagie-manually-adjust-font-size))
 
 (when (eq system-type 'gnu/linux)
