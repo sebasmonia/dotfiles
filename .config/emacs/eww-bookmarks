@@ -1,9 +1,10 @@
 ;; Auto-generated file; don't edit -*- mode: lisp-data -*-
-((:url "http://68k.news/" :title "68k.news"
-       :time "Fri Aug  2 16:54:46 2024")
+((:url "https://berthub.eu/articles/" :title "Bert Hubert's writings"
+       :time "Thu Aug  8 13:53:45 2024")
+ (:url "http://68k.news/" :title "68k.news" :time
+       "Fri Aug  2 16:54:46 2024")
  (:url "http://68k.news/index.php?section=nation&loc=AR" :title
-       "68k.news (AR)" :time
-       "Fri Aug  2 16:51:13 2024")
+       "68k.news (AR)" :time "Fri Aug  2 16:51:13 2024")
  (:url
   "https://casouri.github.io/note/2020/contributing-to-emacs/index.html"
   :title "Contributing to Emacs" :time "Thu Aug  1 14:30:18 2024")
@@ -55,6 +56,4 @@
        "2024-07-27 07:04:19 PM")
  (:url "https://smallweb.site/" :title "smallweb.site" :time
        "2024-07-27 07:06:13 PM")
- (:url "https://berthub.eu/index.html" :title "Bert Hubert" :time
-       "2024-07-30 12:36:14 AM")
  (:url "https://0xff.nu/" :title "0xFF" :time "2024-07-30 07:01:50 AM"))
