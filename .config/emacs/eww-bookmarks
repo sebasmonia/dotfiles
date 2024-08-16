@@ -1,8 +1,12 @@
 ;; Auto-generated file; don't edit -*- mode: lisp-data -*-
-((:url "https://ohhelloana.blog/posts/" :title "Oh Hello Ana - Blog"
+((:url
+  "https://www.rousette.org.uk/archives/devilish-fun-with-a-modeless-modal-editor/"
+  :title "BSAG » Devilish fun with a modeless modal editing mode"
+  :time "Fri Aug 16 17:00:55 2024")
+ (:url "https://ohhelloana.blog/posts/" :title "Oh Hello Ana - Blog"
        :time "Fri Aug 16 16:38:38 2024")
- (:url "https://mariosangiorgio.com/post/" :title "Mario Sangiorgio - Posts" :time
-       "Fri Aug 16 16:26:44 2024")
+ (:url "https://mariosangiorgio.com/post/" :title
+       "Mario Sangiorgio - Posts" :time "Fri Aug 16 16:26:44 2024")
  (:url "https://nelson.cloud/" :title "nelson.cloud ☁️" :time
        "Fri Aug 16 16:22:05 2024")
  (:url "https://www.schemescape.com/" :title "Schemescape" :time
