@@ -18,8 +18,8 @@
 ;;    they are also complex and have way more features than I neeed.
 ;; 3. I am keeping what I used from howm: grepping notes, date in filename.
 ;; 4. I want to sync this more with the Emacs diary/calendar, eventually. Howm
-;; and org each have their own systems for agenda and notifications, and I
-;; never quite got them. The Emacs diary is simple.
+;;    and org each have their own systems for agenda and notifications, and I
+;;    never quite got them. The Emacs diary is simple.
 
 ;;; Code:
 

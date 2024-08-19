@@ -211,6 +211,11 @@ Running in a toolbox is actually the \"common\" case. :)"
   :commands
   (cambalache-list-contents cambalache-download-file cambalache-upload-file))
 
+(use-package comint
+  :custom
+  (comint-prompt-read-only t)
+  (comint-scroll-to-bottom-on-input 'this))
+
 (use-package dabbrev
   :custom
   (dabbrev-case-distinction nil)
@@ -1362,7 +1367,6 @@ If ARG, don't prompt for buffer name suffix."
   ;; other commands. With `show-paren-mode', it feels superfluous.
   (blink-matching-paren nil)
   (recenter-positions '(1 middle -2)) ;; behaviour for C-l
-  (comint-prompt-read-only t)
   (read-file-name-completion-ignore-case t) ;; useful in Linux
   ;; via https://github.com/jacmoe/emacs.d/blob/master/jacmoe.org
   (help-window-select t)
