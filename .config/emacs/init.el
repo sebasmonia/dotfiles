@@ -21,6 +21,7 @@
 ;; 2024-06-26: Remove howm - I only used like, 3 features from it.
 ;; 2024-07-10: Going back to Gnus with IMAP back end, sending elfeed to
 ;;             purgatory, and putting note comments in a separate package.
+;; 2024-08-29: Move mode-line setup to separate file.
 ;;; Code:
 
 (setf custom-file (locate-user-emacs-file "custom.el"))
@@ -632,28 +633,28 @@ Set `fill-column' and related modes.'."
     (display-fill-column-indicator-mode)
     (auto-fill-mode)))
 
-(use-package icomplete
-  :demand t
-  :custom
-  (icomplete-hide-common-prefix nil)
-  (icomplete-show-matches-on-no-input t)
-  (icomplete-prospects-height 15)
-  :config
-  (fido-vertical-mode t)
-  (defun hoagie-icomplete-styles ()
-    (setq-local completion-styles '(substring partial-completion flex)))
-  ;; experimental, override style so there isn't only flex, see
-  ;; https://www.reddit.com/r/emacs/comments/16f2t3u/comment/k013bk8/
-  :hook
-  (icomplete-minibuffer-setup-hook . hoagie-icomplete-styles)
-  :bind
-  (:map icomplete-minibuffer-map
-        ;; when there's no exact match, accept the first one
-        ;; under cursor with RET
-        ("RET" . icomplete-force-complete-and-exit)
-        ;; C-j to force-accept current input even if it's not
-        ;; in the candidate list
-        ("C-j" . icomplete-fido-exit)))
+;; (use-package icomplete
+;;   :demand t
+;;   :custom
+;;   (icomplete-hide-common-prefix nil)
+;;   (icomplete-show-matches-on-no-input t)
+;;   (icomplete-prospects-height 15)
+;;   :config
+;;   (fido-vertical-mode t)
+;;   (defun hoagie-icomplete-styles ()
+;;     (setq-local completion-styles '(substring partial-completion flex)))
+;;   ;; experimental, override style so there isn't only flex, see
+;;   ;; https://www.reddit.com/r/emacs/comments/16f2t3u/comment/k013bk8/
+;;   :hook
+;;   (icomplete-minibuffer-setup-hook . hoagie-icomplete-styles)
+;;   :bind
+;;   (:map icomplete-minibuffer-map
+;;         ;; when there's no exact match, accept the first one
+;;         ;; under cursor with RET
+;;         ("RET" . icomplete-force-complete-and-exit)
+;;         ;; C-j to force-accept current input even if it's not
+;;         ;; in the candidate list
+;;         ("C-j" . icomplete-fido-exit)))
 
 (use-package imenu
   :demand t
@@ -725,7 +726,8 @@ Set `fill-column', `truncate-lines'."
   :custom
   (completions-format 'one-column)
   (completions-max-height 20)
-  (completion-styles '(substring partial-completion flex))
+  (completion-styles '(flex))
+  ;; (completion-styles '(substring partial-completion flex))
   ;; default: (basic partial-completion emacs22)
   ;; and it is overriden by fido-mode anyway? :shrug:
   (read-buffer-completion-ignore-case t)
@@ -1022,7 +1024,7 @@ Use prefix ARG to open the file in another window."
 
 (use-package shr
   :custom
-  (shr-use-fonts nil)
+  ;; (shr-use-fonts nil)
   (shr-use-colors t)
   (shr-bullet "• ")
   (shr-discard-aria-hidden t)
@@ -1083,10 +1085,12 @@ Inspired by a similar function in Elpher."
     (setf truncate-lines t)
     (setq-local imenu-generic-expression '((nil "^\\(.*\\)" 1)))))
 
-(use-package sql-datum :load-path "~/github/datum"
+;; connections defined in qontigo-init.el
+(use-package sql-datum
+  :load-path "~/github/datum"
   :after sql
   :custom
-  (sql-datum-program "/var/home/hoagie/.local/bin/datum.sh"))
+  (sql-datum-program "datum"))
 
 (use-package time
   :custom
@@ -1474,88 +1478,9 @@ FRAME is ignored."
   (modus-themes-completions (quote ((matches . (underline))
                                     (selection . (bold intense))))))
 
-;; These are based on my mood-line configuration. The package broke a few times
-;; after updates, plus it kept growing in size, and I had my own customizations
-;; on top of it.
-;; So I decided to setup my own mode-line from scratch.
-(defun hoagie-mode-line-buffer-status ()
-  "Return a mode-line indicator for buffer status.
-It also shows whether the buffer is narrowed or remote.
-Emojis are used instead of the text-only approach of \"-!R\" from
-previous versions."
-  (concat (if buffer-read-only "❎"
-            ;; since it's not read-only, show the modified flag
-            (if (and (buffer-modified-p) (not (derived-mode-p 'comint-mode)))
-                "⚠️"
-              "✅"))
-          (when (buffer-narrowed-p) "🔍")
-          (when (file-remote-p default-directory) "📡")
-          " "))
-
-(defun hoagie-mode-line-cursor-position ()
-  "Mode line cursor position, includes percent indicator.
-If the region is active, include its size in lines and characters."
-    (let ((region-size (when (use-region-p)
-                         (propertize (format " (%sL:%sC)"
-                                             (count-lines (region-beginning)
-                                                          (region-end))
-                                             (- (region-end) (region-beginning)))
-                                     'face 'shadow)))
-          ;; experimental, show buffer size in human readable format
-          (position (propertize " %p%  %I" 'face 'shadow)))
-      (list "%l:%c" position region-size)))
-
-(defun hoagie-mode-line-keybmacro-indicator ()
-  "Show an indicator when macro recording is in progress.
-Because I like \"REC\" better than \"Def\"."
-  (when defining-kbd-macro
-    (propertize "REC"
-                'face 'warning
-                'help-echo "Recording macro" )))
-
-(defun hoagie-mode-line-buffer-name ()
-  "Return a mode-line indicator for buffer name.
-Shows file name in the echo area/a tooltip. From
-http://emacs-fu.blogspot.com/2011/08/customizing-mode-line.html"
-  (propertize "%b" 'face 'mode-line-buffer-id 'help-echo (buffer-file-name)))
-
-(defun hoagie-mode-line-major-mode ()
-  "Mode-line major mode segment.
-Show minor modes in the echo area/a tooltip."
-  (propertize (format-mode-line mode-name)
-              'face 'mode-line-buffer-id
-              'help-echo (format-mode-line minor-mode-alist)))
-
-(defun hoagie-mode-line-overwrite-indicator ()
-  "Show me when I fat fingered Insert.
-I am not sure about this one, but I can remove if I need to."
-  (when overwrite-mode
-    (propertize "OVERWRITE"
-                'face 'warning)))
-
-(setq-default
- mode-line-format
- '(" "
-   (:eval (hoagie-mode-line-buffer-status))
-   "  "
-   (:eval (hoagie-mode-line-buffer-name))
-   "  "
-   (:eval (hoagie-mode-line-cursor-position))
-   "  "
-   (:eval (hoagie-mode-line-overwrite-indicator))
-   mode-line-format-right-align
-   (:eval (hoagie-mode-line-keybmacro-indicator))
-   " "
-   (vc-mode vc-mode)
-   " "
-   mode-line-misc-info
-   "  "
-   mode-line-process
-   "  "
-   (:eval (hoagie-mode-line-major-mode))
-   "   "))
-   ;; (project-mode-line project-mode-line-format)
-   ;; " "))
+;; Almost tempted to make it a package. But given that I _always_ load this,
+;; in a normal init, a simple `load-file' will suffice.
+(load-file "~/sourcehut/dotfiles/.config/emacs/hoagie-modeline.el")
 
 ;; let's do our best to keep Gnus files/dir outside of ~
 (load-file "~/sourcehut/dotfiles/.config/gnus/.gnus.el")

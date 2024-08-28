@@ -156,5 +156,5 @@ This is C-u M-g but I figured I would put it in a simpler binding."
   :custom
   (send-mail-function 'smtpmail-send-it)
   (smtpmail-default-smtp-server "smtp.fastmail.com")
-  (smtpmail-stream-type  'starttls)
-  (smtpmail-smtp-service 587))
+  (smtpmail-stream-type 'ssl)
+  (smtpmail-smtp-service 465))

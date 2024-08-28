@@ -1,9 +1,36 @@
 ;; Auto-generated file; don't edit -*- mode: lisp-data -*-
-((:url "http://68k.news/" :title "68k.news"
-       :time "Fri Aug  2 16:54:46 2024")
+((:url "https://shanewrogers.lol/" :title "Just Some Stuff" :time
+       "Mon Aug 26 10:38:45 2024")
+ (:url "https://www.rousette.org.uk" :title "BSAG" :time
+       "Fri Aug 16 17:00:55 2024")
+ (:url "https://ohhelloana.blog/posts/" :title "Oh Hello Ana - Blog"
+       :time "Fri Aug 16 16:38:38 2024")
+ (:url "https://mariosangiorgio.com/post/" :title
+       "Mario Sangiorgio - Posts" :time "Fri Aug 16 16:26:44 2024")
+ (:url "https://nelson.cloud/" :title "nelson.cloud ☁️" :time
+       "Fri Aug 16 16:22:05 2024")
+ (:url "https://www.schemescape.com/" :title "Schemescape" :time
+       "Fri Aug 16 15:46:54 2024")
+ (:url "https://btxx.org/" :title "~bt" :time
+       "Fri Aug 16 15:14:12 2024")
+ (:url "https://taonaw.com/" :title "The Art Of Not Asking Why" :time
+       "Fri Aug  9 16:23:47 2024")
+ (:url "https://manuelmoreale.com/" :title "Manu – I write" :time
+       "Fri Aug  9 16:22:35 2024")
+ (:url "https://kevquirk.com/" :title "Blog | Kev Quirk" :time
+       "Fri Aug  9 16:21:34 2024")
+ (:url "https://www.fromjason.xyz/me/bookmarks/" :title "Bookmarks"
+       :time "Fri Aug  9 09:16:44 2024")
+ (:url "https://kwon.nyc/" :title "Kwon.nyc" :time
+       "Fri Aug  9 08:55:25 2024")
+ (:url "https://sarajaksa.eu/archive.html" :title
+       "Archive | Blog of Sara Jaksa" :time "Thu Aug  8 16:22:49 2024")
+ (:url "https://berthub.eu/articles/" :title "Bert Hubert's writings"
+       :time "Thu Aug  8 13:53:45 2024")
+ (:url "http://68k.news/" :title "68k.news" :time
+       "Fri Aug  2 16:54:46 2024")
  (:url "http://68k.news/index.php?section=nation&loc=AR" :title
-       "68k.news (AR)" :time
-       "Fri Aug  2 16:51:13 2024")
+       "68k.news (AR)" :time "Fri Aug  2 16:51:13 2024")
  (:url
   "https://casouri.github.io/note/2020/contributing-to-emacs/index.html"
   :title "Contributing to Emacs" :time "Thu Aug  1 14:30:18 2024")
@@ -26,8 +53,6 @@
        "2024-05-29 09:25:17 AM")
  (:url "https://plaintextworld.com/" :title "Plaintext World" :time
        "2024-07-18 10:16:31 AM")
- (:url "https://sarajaksa.eu/" :title "Blog of Sara Jaksa" :time
-       "2024-07-18 10:14:30 AM")
  (:url "https://www.archaeoramblings.com/blog/" :title
        "Archeoramblings" :time "2024-07-18 10:15:34 AM")
  (:url "https://bacardi55.io/posts/" :title "Bacardi55's Web Cave"
@@ -47,14 +72,8 @@
  (:url "https://burgundywave.com/category/colorado-rapids/" :title
        "Colorado Rapids Archives - Burgundy Wave" :time
        "2024-07-27 06:58:18 PM")
- (:url "https://kevquirk.com/blogroll" :title "Blogroll | Kev Quirk"
-       :time "2024-07-27 07:02:56 PM")
- (:url "https://manuelmoreale.com/blogroll" :title
-       "Blogroll - Manu Moreale" :time "2024-07-27 07:03:43 PM")
  (:url "https://peopleandblogs.com/" :title "People and Blogs" :time
        "2024-07-27 07:04:19 PM")
  (:url "https://smallweb.site/" :title "smallweb.site" :time
        "2024-07-27 07:06:13 PM")
- (:url "https://berthub.eu/index.html" :title "Bert Hubert" :time
-       "2024-07-30 12:36:14 AM")
  (:url "https://0xff.nu/" :title "0xFF" :time "2024-07-30 07:01:50 AM"))
