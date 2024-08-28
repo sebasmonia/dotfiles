@@ -1,8 +1,8 @@
 ;; Auto-generated file; don't edit -*- mode: lisp-data -*-
-((:url
-  "https://www.rousette.org.uk"
-  :title "BSAG"
-  :time "Fri Aug 16 17:00:55 2024")
+((:url "https://shanewrogers.lol/" :title "Just Some Stuff" :time
+       "Mon Aug 26 10:38:45 2024")
+ (:url "https://www.rousette.org.uk" :title "BSAG" :time
+       "Fri Aug 16 17:00:55 2024")
  (:url "https://ohhelloana.blog/posts/" :title "Oh Hello Ana - Blog"
        :time "Fri Aug 16 16:38:38 2024")
  (:url "https://mariosangiorgio.com/post/" :title
