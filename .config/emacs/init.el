@@ -28,6 +28,7 @@
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(setf package-install-upgrade-built-in t)
 
 ;; (setf use-package-compute-statistics t)
 
@@ -726,10 +727,8 @@ Set `fill-column', `truncate-lines'."
   (python-mode-hook . hoagie-python-mode-setup)
   :custom
   (python-shell-font-lock-enable nil)
-  ;; (python-shell-interpreter "ipython")
-  ;; (python-shell-interpreter-args "--pprint --simple-prompt")
-  (python-shell-interpreter "python3")
-  (python-shell-interpreter-args "-i")
+  (python-shell-interpreter "ipython")
+  (python-shell-interpreter-args "--pprint --simple-prompt")
   :config
   (defun hoagie-python-mode-setup ()
     "Setup my `python-mode' configuration."
