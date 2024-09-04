@@ -11,8 +11,8 @@ It also shows whether the buffer is narrowed or remote."
                                  (not (derived-mode-p 'comint-mode)))
                             "!"
                           "-"))
-                      (if (buffer-narrowed-p) "N" " ")
-                      (if (file-remote-p default-directory) "R" " ")
+                      (when (buffer-narrowed-p) "N")
+                      (when (file-remote-p default-directory) "R")
                       " ")
               'face 'error))
 
