@@ -1,0 +1,12 @@
+.config/emacs/custom.el*
+.config/emacs/auto-save/*
+.config/emacs/eln-cache/*
+.config/emacs/elpa/*
+.config/emacs/url/*
+.config/emacs/backups/*
+.config/emacs/projects
+.config/emacs/tramp
+.config/emacs/history
+.config/emacs/diary*
+.config/emacs/network-security.data
+.config/emacs/server/

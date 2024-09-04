@@ -28,6 +28,7 @@
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(setf package-install-upgrade-built-in t)
 
 ;; (setf use-package-compute-statistics t)
 
@@ -41,15 +42,15 @@
 (setf use-package-verbose t)
 (setf use-package-hook-name-suffix nil)
 (setf package-native-compile t)
-(custom-set-faces
- '(default ((t (:family "Berkeley Mono"
-                :slant normal
-                :weight regular
-                :height 180
-                :width normal
-                :foundry "outline")))))
-;;(set-fontset-font t 'emoji (font-spec :family "Segoe UI Emoji"))
-(set-fontset-font t 'emoji (font-spec :family "Noto Emoji"))
+
+(when (display-graphic-p)
+  (custom-set-faces
+   '(default ((t (:family "Intel One Mono"
+                          :slant normal
+                          :weight regular
+                          :height 180
+                          :width normal
+                          :foundry "outline"))))))
 
 ;; Based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html I
 ;; eventually I moved away from the menu key to F6, and even later that key
@@ -221,39 +222,7 @@ Running in a toolbox is actually the \"common\" case. :)"
   :custom
   (dabbrev-case-distinction nil)
   (dabbrev-case-fold-search t)
-  (dabbrev-case-replace nil)
-  )
-  ;; getting used to default M-/
-  ;; :bind
-;; ("C-;" . dabbrev-expand))
-
-(use-package dape
-  :ensure t
-  :preface
-  (setq dape-key-prefix "\C-x\C-a")
-  ;; :hook
-  ;; ((kill-emacs . dape-breakpoint-save)
-  ;; Load breakpoints on startup
-  ;;  (after-init . dape-breakpoint-load))
-  :init
-  ;; To use window configuration like gud (gdb-mi)
-  (setq dape-buffer-window-arrangement 'gud)
-  :config
-  ;; Info buffers to the right
-  ;; (setq dape-buffer-window-arrangement 'right)
-  ;; Global bindings for setting breakpoints with mouse
-  ;; (dape-breakpoint-global-mode)
-  ;; To not display info and/or buffers on startup
-  ;; (remove-hook 'dape-on-start-hooks 'dape-info)
-  ;; (remove-hook 'dape-on-start-hooks 'dape-repl)
-  ;; To display info and/or repl buffers on stopped
-  (add-hook 'dape-on-stopped-hooks 'dape-info)
-  (add-hook 'dape-on-stopped-hooks 'dape-repl)
-  ;; Kill compile buffer on build success
-  ; (add-hook 'dape-compile-compile-hooks 'kill-buffer)
-  ;; Save buffers on startup, useful for interpreted languages
-  ;; (add-hook 'dape-on-start-hooks (lambda () (save-some-buffers t t)))
-  )
+  (dabbrev-case-replace nil))
 
 (use-package diary-lib
   :demand t
@@ -487,7 +456,6 @@ buffer name when eglot is enabled."
   :demand t
   :custom
   (eldoc-echo-area-use-multiline-p nil)
-  (eldoc-documentation-function 'eldoc-documentation-compose-eagerly)
   :bind
   (:map hoagie-second-keymap
         ;; "h" for "help"
@@ -506,47 +474,9 @@ buffer name when eglot is enabled."
   :hook
   (emacs-lisp-mode-hook . hoagie-elisp-mode-setup)
   :config
-  (defun hoagie-elisp-eldoc-value (callback &rest _)
-    "Show the value variable at point by calling CALLBACK.
-One portion of `elisp-eldoc-var-docstring-with-value', it only prints
-the value, docstrings are handled by `hoagie-elisp-eldoc-fulldoc'."
-    (when-let ((cs (elisp--current-symbol)))
-      (when (and (boundp cs)
-                 (not (null cs))
-                 (not (eq cs t)))
-        (funcall callback
-                 (format "Variable value:\n%s"
-		                 (prin1-to-string (symbol-value cs))))
-        :thing cs
-        :face 'font-lock-variable-name-face)))
-  (defun hoagie-elisp-eldoc-fulldoc (callback &rest _)
-    "Show the complete docs for the symbol at point by calling CALLBACK.
-Based on `elisp-eldoc-var-docstring-with-value' and the SO post at
-https://emacs.stackexchange.com/a/55914."
-    (when-let ((cs (elisp--current-symbol)))
-      (funcall callback
-               (format "(full doc)\n%s"
-                       (if (and (boundp cs)
-                                (not (null cs))
-                                (not (eq cs t)))
-                           (or (documentation-property cs
-                                                       'variable-documentation
-                                                       t)
-                               "Undocumented")
-                         (condition-case nil
-                             (documentation cs t)
-                           ((error "Possibly undefined?")))))
-               :thing cs
-               :face 'font-lock-variable-name-face)))
   (defun hoagie-elisp-mode-setup ()
     "Setup my `emacs-lisp-mode' configuration.
-Add hooks for `eldoc' customizations and set `fill-column'."
-    ;; add last to the hook, the value for variables and the complete docstring
-    ;; for variables and functions. This is displayed when invoking
-    ;; `hoagie-toggle-eldoc-buffer', and good to have samples of how to add
-    ;; more eldoc sources :D
-    (add-hook 'eldoc-documentation-functions #'hoagie-elisp-eldoc-value 90 t)
-    (add-hook 'eldoc-documentation-functions #'hoagie-elisp-eldoc-fulldoc 91 t)
+Sets `fill-column'."
     (setf fill-column 79)
     (display-fill-column-indicator-mode)))
 
@@ -1444,6 +1374,9 @@ If ARG, don't prompt for buffer name suffix."
 (when (eq system-type 'windows-nt)
   (require 'ls-lisp)
   (customize-set-value 'ls-lisp-use-insert-directory-program nil)
+
+  (set-fontset-font t 'emoji (font-spec :family "Segoe UI Emoji"))
+
   (defun hoagie-manually-adjust-font-size ()
     "Something fishy is going on with font sizes...set them manually for now."
     (interactive)
@@ -1455,6 +1388,9 @@ If ARG, don't prompt for buffer name suffix."
   (global-set-key (kbd "<f9>") #'hoagie-manually-adjust-font-size))
 
 (when (eq system-type 'gnu/linux)
+  (when (display-graphic-p)
+    (set-fontset-font t 'emoji (font-spec :family "Noto Emoji")))
+
   (defun hoagie-adjust-font-size (frame)
     "Inspired by https://emacs.stackexchange.com/a/44930/17066.
 FRAME is ignored."
