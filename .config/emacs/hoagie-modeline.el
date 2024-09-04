@@ -5,14 +5,14 @@
 (defun hoagie-mode-line-buffer-status ()
   "Return a mode-line indicator for buffer status.
 It also shows whether the buffer is narrowed or remote."
-  (propertize (concat (if buffer-read-only "R"
+  (propertize (concat (if buffer-read-only "/"
                         ;; since it's not read-only, show the modified flag
                         (if (and (buffer-modified-p)
                                  (not (derived-mode-p 'comint-mode)))
                             "!"
                           "-"))
-                      (if (buffer-narrowed-p) "N" " ")
-                      (if (file-remote-p default-directory) "R" " ")
+                      (when (buffer-narrowed-p) "N")
+                      (when (file-remote-p default-directory) "R")
                       " ")
               'face 'error))
 
