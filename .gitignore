@@ -7,3 +7,6 @@
 .config/emacs/projects
 .config/emacs/tramp
 .config/emacs/history
+.config/emacs/diary*
+.config/emacs/network-security.data
+.config/emacs/server/
