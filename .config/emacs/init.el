@@ -45,10 +45,10 @@
 
 (when (display-graphic-p)
   (custom-set-faces
-   '(default ((t (:family "Intel One Mono"
+   '(default ((t (:family "Berkeley Mono"
                           :slant normal
                           :weight regular
-                          :height 180
+                          :height 120
                           :width normal
                           :foundry "outline"))))))
 
@@ -1378,9 +1378,9 @@ If ARG, don't prompt for buffer name suffix."
     (interactive)
     ;; nil for "all frames"
     (set-face-attribute 'default nil
-                        :height (if (= (face-attribute 'default :height) 128)
+                        :height (if (= (face-attribute 'default :height) 120)
                                     181
-                                  128)))
+                                  120)))
   (global-set-key (kbd "<f9>") #'hoagie-manually-adjust-font-size))
 
 (when (eq system-type 'gnu/linux)
