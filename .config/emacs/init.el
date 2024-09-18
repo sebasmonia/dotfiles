@@ -424,6 +424,8 @@ If REGEXP is not provided, then all emails are printed."
 
 (use-package eglot
   :commands (eglot eglot-ensure)
+  :custom
+  (eglot-events-buffer-config '(:size 0 :format full))
   :hook
   ((python-mode-hook . eglot-ensure)
    (go-mode-hook . eglot-ensure))
@@ -442,7 +444,7 @@ If REGEXP is not provided, then all emails are printed."
   :config
   ;; from https://dawranliou.com/blog/xref-with-eglot-and-project/
   (defun xref-find-references-with-eglot (orig-fun &rest args)
-    "An advice function that gives xref-find-definitions a unique
+    "An advice function that gives `xref-find-definitions' a unique
 buffer name when eglot is enabled."
     (if (bound-and-true-p eglot--managed-mode)
         (let ((xref-buffer-name (format "*xref %s*"
@@ -669,17 +671,8 @@ Set `fill-column', `truncate-lines'."
   :bind
   (:map minibuffer-mode-map
         ("C-n" . minibuffer-next-completion)
-        ("C-p" . minibuffer-previous-completion)
-        ;; I _think_ I want this based on my icomplete setup, itself
-        ;; based on IDO setup. Mostly C-j to accept input as-is.
-        ;; UPDATE: I want to keep the default for exit-minibuffer,
-        ;; and instead use C-j to force completion mmmmm
-        ("C-j" . minibuffer-force-complete-and-exit)
-        ("RET" . exit-minibuffer))
+        ("C-p" . minibuffer-previous-completion))
   (:map completion-in-region-mode-map
-        ;; what was I thinking when I did this? >_>
-        ;; do I still want it??? <_<
-        ;; ("RET" . minibuffer-choose-completion)
         ("C-n" . minibuffer-next-completion)
         ("C-p" . minibuffer-previous-completion))
   (:map hoagie-keymap
