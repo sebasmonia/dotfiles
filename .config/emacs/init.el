@@ -664,7 +664,13 @@ Set `fill-column', `truncate-lines'."
   :bind
   (:map minibuffer-mode-map
         ("C-n" . minibuffer-next-completion)
-        ("C-p" . minibuffer-previous-completion))
+        ("C-p" . minibuffer-previous-completion)
+        ;; I _think_ I want this based on my icomplete setup, itself
+        ;; based on IDO setup. Mostly C-j to accept input as-is.
+        ;; UPDATE: I want to keep the default for exit-minibuffer,
+        ;; and instead use C-j to force completion mmmmm
+        ("C-j" . minibuffer-force-complete-and-exit)
+        ("RET" . exit-minibuffer))
   (:map completion-in-region-mode-map
         ;; what was I thinking when I did this? >_>
         ;; do I still want it??? <_<
