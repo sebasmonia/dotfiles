@@ -565,29 +565,6 @@ Set `fill-column' and related modes.'."
     (display-fill-column-indicator-mode)
     (auto-fill-mode)))
 
-;; (use-package icomplete
-;;   :demand t
-;;   :custom
-;;   (icomplete-hide-common-prefix nil)
-;;   (icomplete-show-matches-on-no-input t)
-;;   (icomplete-prospects-height 15)
-;;   :config
-;;   (fido-vertical-mode t)
-;;   (defun hoagie-icomplete-styles ()
-;;     (setq-local completion-styles '(substring partial-completion flex)))
-;;   ;; experimental, override style so there isn't only flex, see
-;;   ;; https://www.reddit.com/r/emacs/comments/16f2t3u/comment/k013bk8/
-;;   :hook
-;;   (icomplete-minibuffer-setup-hook . hoagie-icomplete-styles)
-;;   :bind
-;;   (:map icomplete-minibuffer-map
-;;         ;; when there's no exact match, accept the first one
-;;         ;; under cursor with RET
-;;         ("RET" . icomplete-force-complete-and-exit)
-;;         ;; C-j to force-accept current input even if it's not
-;;         ;; in the candidate list
-;;         ("C-j" . icomplete-fido-exit)))
-
 (use-package imenu
   :demand t
   :custom
@@ -659,19 +636,22 @@ Set `fill-column', `truncate-lines'."
   (completions-format 'one-column)
   (completions-max-height 20)
   (completion-styles '(flex))
-  ;; (completion-styles '(substring partial-completion flex))
-  ;; default: (basic partial-completion emacs22)
-  ;; and it is overriden by fido-mode anyway? :shrug:
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
   (completions-detailed t)
-  (completion-auto-help 'visible)
+  ;; experimental, was using 'visible
+  (completion-auto-help 'always)
   (completion-auto-select 'second-tab)
   :bind
   (:map minibuffer-mode-map
         ("C-n" . minibuffer-next-completion)
-        ("C-p" . minibuffer-previous-completion))
+        ("C-p" . minibuffer-previous-completion)
+        ;; I want a keybinding to "force" the first candidate possible
+        ;; This is useful for buffer switching and file selection: the default
+        ;; of creating a new one is good, but I want a shorcut to (C-i + RET)
+        ;; in one go, for cases where I know the partial input is good enough
+        ("C-<return>" . minibuffer-force-complete-and-exit))
   (:map completion-in-region-mode-map
         ("C-n" . minibuffer-next-completion)
         ("C-p" . minibuffer-previous-completion))
