@@ -1063,7 +1063,7 @@ With prefix arg, does a hard reset (thus it asks for confirmation)."
   :after vc
   :custom
   (vc-git-revision-complete-only-branches t)
-  (vc-git-log-switches '("--date=iso-local"))
+  (vc-git-log-switches '("--date=iso-local" "--stat"))
   :config
   (defvar hoagie-vc-git-emails
     '("code@sebasmonia.com"
