@@ -1,5 +1,15 @@
 ;; Auto-generated file; don't edit -*- mode: lisp-data -*-
-((:url "https://blog.ari.lt/" :title "Ari::web -> Blog" :time
+((:url "https://netigen.com/tags" :title "Netigen: Tags (volume-5)"
+       :time "Wed Oct  2 17:14:47 2024")
+ (:url "https://log.schemescape.com/" :title "Schemescape" :time
+       "Mon Sep 30 09:18:57 2024")
+ (:url "https://thejollyteapot.com/archives" :title
+       "Archives・The Jolly Teapot" :time "Fri Sep 27 09:27:44 2024")
+ (:url "https://localghost.dev/blog/" :title "Blog - localghost" :time
+       "Thu Sep 26 09:18:29 2024")
+ (:url "https://avris.it/blog" :title "Avris » Blog" :time
+       "Fri Sep 20 14:17:58 2024")
+ (:url "https://blog.ari.lt/" :title "Ari::web -> Blog" :time
        "Fri Aug 30 14:26:47 2024")
  (:url "https://shanewrogers.lol/" :title "Just Some Stuff" :time
        "Mon Aug 26 10:38:45 2024")
@@ -11,8 +21,6 @@
        "Mario Sangiorgio - Posts" :time "Fri Aug 16 16:26:44 2024")
  (:url "https://nelson.cloud/" :title "nelson.cloud" :time
        "Fri Aug 16 16:22:05 2024")
- (:url "https://www.schemescape.com/" :title "Schemescape" :time
-       "Fri Aug 16 15:46:54 2024")
  (:url "https://btxx.org/" :title "~bt" :time
        "Fri Aug 16 15:14:12 2024")
  (:url "https://taonaw.com/" :title "The Art Of Not Asking Why" :time
