@@ -1,10 +1,15 @@
 ;; Auto-generated file; don't edit -*- mode: lisp-data -*-
-((:url "https://netigen.com/tags" :title "Netigen: Tags (volume-5)"
+((:url "https://wiby.me/" :title
+       "Wiby - Search Engine for the Classic Web" :time
+       "Thu Oct  3 14:32:33 2024")
+ (:url "https://legiblenews.com/" :title "Legible News" :time
+       "Thu Oct  3 11:49:05 2024")
+ (:url "https://netigen.com/tags" :title "Netigen: Tags (volume-5)"
        :time "Wed Oct  2 17:14:47 2024")
  (:url "https://log.schemescape.com/" :title "Schemescape" :time
        "Mon Sep 30 09:18:57 2024")
  (:url "https://thejollyteapot.com/archives" :title
-       "Archives・The Jolly Teapot" :time "Fri Sep 27 09:27:44 2024")
+       "Archives - The Jolly Teapot" :time "Fri Sep 27 09:27:44 2024")
  (:url "https://localghost.dev/blog/" :title "Blog - localghost" :time
        "Thu Sep 26 09:18:29 2024")
  (:url "https://avris.it/blog" :title "Avris » Blog" :time
@@ -25,7 +30,7 @@
        "Fri Aug 16 15:14:12 2024")
  (:url "https://taonaw.com/" :title "The Art Of Not Asking Why" :time
        "Fri Aug  9 16:23:47 2024")
- (:url "https://manuelmoreale.com/" :title "Manu – I write" :time
+ (:url "https://manuelmoreale.com/" :title "Manu - I write" :time
        "Fri Aug  9 16:22:35 2024")
  (:url "https://kevquirk.com/" :title "Blog | Kev Quirk" :time
        "Fri Aug  9 16:21:34 2024")
@@ -50,7 +55,7 @@
  (:url "http://starbreaker.org/index.html" :title
        "welcome | starbreaker.org" :time "Wed Jul 31 17:50:25 2024")
  (:url "https://thebloggess.com/" :title
-       "The Bloggess – Like Mother Teresa, only better." :time
+       "The Bloggess - Like Mother Teresa, only better." :time
        "Wed Jul 31 17:50:12 2024")
  (:url "https://koldfront.dk/" :title "koldfront" :time
        "Wed Jul 31 17:36:13 2024")
