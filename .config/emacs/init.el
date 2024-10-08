@@ -1364,7 +1364,7 @@ If ARG, don't prompt for buffer name suffix."
                         :height (if (= (face-attribute 'default :height) 120)
                                     181
                                   120)))
-  (global-set-key (kbd "<f9>") #'hoagie-manually-adjust-font-size))
+  (global-set-key (kbd "<f7>") #'hoagie-manually-adjust-font-size))
 
 (when (eq system-type 'gnu/linux)
   (when (display-graphic-p)
