@@ -1,5 +1,9 @@
 ;; Auto-generated file; don't edit -*- mode: lisp-data -*-
-((:url "https://wiby.me/" :title
+((:url "https://jrn.sh/" :title "jrn.sh" :time
+       "Mon Oct  7 13:23:29 2024")
+ (:url "https://anniemueller.com/" :title "annie's blog" :time
+       "Mon Oct  7 13:22:35 2024")
+ (:url "https://wiby.me/" :title
        "Wiby - Search Engine for the Classic Web" :time
        "Thu Oct  3 14:32:33 2024")
  (:url "https://legiblenews.com/" :title "Legible News" :time
