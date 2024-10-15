@@ -643,6 +643,10 @@ Set `fill-column', `truncate-lines'."
   ;; experimental, was using 'visible
   (completion-auto-help 'always)
   (completion-auto-select 'second-tab)
+  ;; experimental too
+  (completion-group t)
+  ;; not a minibuffer.el setting, but makes sense to it here
+  (enable-recursive-minibuffers t)
   :bind
   (:map minibuffer-mode-map
         ("C-n" . minibuffer-next-completion)
