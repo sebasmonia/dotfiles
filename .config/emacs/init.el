@@ -634,7 +634,7 @@ Set `fill-column', `truncate-lines'."
   :demand t
   :custom
   (completions-format 'one-column)
-  (completions-max-height 20)
+  (completions-max-height 25)
   (completion-styles '(flex))
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
@@ -645,6 +645,7 @@ Set `fill-column', `truncate-lines'."
   (completion-auto-select 'second-tab)
   ;; experimental too
   (completion-group t)
+  (minibuffer-visible-completions t)
   ;; not a minibuffer.el setting, but makes sense to it here
   (enable-recursive-minibuffers t)
   :bind
