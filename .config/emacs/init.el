@@ -1080,23 +1080,26 @@ No validations, so better be in a git repo when calling this :)."
     (interactive)
     (vc-git-command nil 0 nil "fetch" "--all")
     (message "Completed \"fetch --all\" for current repo."))
-  (defun hoagie-vc-git-clone (repository-url local-dir)
+  (defun hoagie-vc-git-clone (repository-url local-dir email)
     "Run \"git clone REPOSITORY-URL\" to LOCAL-DIR.
-It also prompts what email to use in the directory, from the
-values in `hoagie-vc-git-emails'.
-Executes `vc-dir' in the newly cloned directory."
+After cloning, EMAIL is set in the repo.
+Interactively, the email is read from `hoagie-vc-git-emails', and it
+also runs `vc-dir' in the newly cloned directory."
     (interactive
      (let* ((url (read-string "Repository URL: "))
-            (dir (file-name-base url)))
+            (dir (read-directory-name "Target directory: " nil nil nil
+                                      (file-name-base url)))
+            (mail (completing-read "Email for this repo: "
+                                       hoagie-vc-git-emails)))
        ;; docs say not to use "initial-input", but it does what I want...
        ;; and the other "default-value" doesn't.
-       (list url (read-string "Target directory: " dir))))
-    (vc-git-command nil 0 nil "clone" repository-url local-dir)
-    (let ((default-directory (file-name-concat default-directory local-dir)))
-      (vc-git-command nil 0 nil "config" "user.email"
-                      (completing-read "Email for this repo: "
-                                       hoagie-vc-git-emails))
-      (vc-dir default-directory)))
+       (list url dir mail)))
+    (vc-git-command nil 0 nil "clone" repository-url
+                    (expand-file-name local-dir))
+    (let ((default-directory local-dir))
+      (vc-git-command nil 0 nil "config" "user.email" email))
+    (when (called-interactively-p 'any)
+      (vc-dir local-dir)))
   (defun hoagie-vc-git-show-branches (&optional arg)
     "Show in a buffer the list of branches in the current repository.
 With prefix ARG show the remote branches."
