@@ -1,5 +1,12 @@
 ;; Auto-generated file; don't edit -*- mode: lisp-data -*-
-((:url "https://wiby.me/" :title
+((:url "https://www.filfre.net/sitemap/" :title
+       "» Table of Contents The Digital Antiquarian" :time
+       "Fri Oct 18 09:54:58 2024")
+ (:url "https://stevelosh.com/links/" :title "Links / Steve Losh"
+       :time "Fri Oct 18 09:46:17 2024")
+ (:url "https://brokensandals.net/" :title "brokensandals.net" :time
+       "Wed Oct 16 13:46:10 2024")
+ (:url "https://wiby.me/" :title
        "Wiby - Search Engine for the Classic Web" :time
        "Thu Oct  3 14:32:33 2024")
  (:url "https://legiblenews.com/" :title "Legible News" :time
@@ -18,8 +25,6 @@
        :time "Fri Aug 16 16:38:38 2024")
  (:url "https://mariosangiorgio.com/post/" :title
        "Mario Sangiorgio - Posts" :time "Fri Aug 16 16:26:44 2024")
- (:url "https://nelson.cloud/" :title "nelson.cloud" :time
-       "Fri Aug 16 16:22:05 2024")
  (:url "https://btxx.org/" :title "~bt" :time
        "Fri Aug 16 15:14:12 2024")
  (:url "https://taonaw.com/" :title "The Art Of Not Asking Why" :time
