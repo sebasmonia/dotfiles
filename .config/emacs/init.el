@@ -28,8 +28,7 @@
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(setf package-install-upgrade-built-in t)
-
+(setf package-install-upgrade-built-in nil)
 ;; (setf use-package-compute-statistics t)
 
 (when (eq window-system 'pgtk)
@@ -640,8 +639,8 @@ Set `fill-column', `truncate-lines'."
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
+  (minibuffer-visible-completions t)
   (completions-detailed t)
-  ;; experimental, was using 'visible
   (completion-auto-help 'always)
   (completion-auto-select 'second-tab)
   ;; experimental too
