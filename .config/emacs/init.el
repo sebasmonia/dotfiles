@@ -247,6 +247,7 @@ Running in a toolbox is actually the \"common\" case. :)"
   ("M-#" . dictionary-lookup-definition))
 
 (use-package cdsync :load-path "~/sourcehut/caldav-sync.el"
+  :if (eq system-type 'gnu/linux)
   :demand t
   :custom
   (cdsync-auth-source-host "caldav-fastmail")
