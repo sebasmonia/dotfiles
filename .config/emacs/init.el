@@ -1094,6 +1094,8 @@ also runs `vc-dir' in the newly cloned directory."
        ;; docs say not to use "initial-input", but it does what I want...
        ;; and the other "default-value" doesn't.
        (list url dir mail)))
+    ;; TODO: there's not a vc command for this, consider replacing using it in
+    ;; this function?
     (vc-git-command nil 0 nil "clone" repository-url
                     (expand-file-name local-dir))
     (let ((default-directory local-dir))
@@ -1116,7 +1118,15 @@ With prefix ARG show the remote branches."
                       (when arg "-r"))
       (pop-to-buffer buffer-name)
       (goto-char (point-min))
-      (special-mode))))
+      (special-mode)))
+  (defun hoagie-vc-git-interactive-rebase ()
+    "Do an interactive rebase against another branch.
+This command needs the Emacs server running and GIT_EDITOR properly set,
+on Windows. And I need to test it on Linux =P"
+    (interactive)
+    (vc-git-command "*git rebase -i*" 'async nil "rebase" "-i"
+                    (completing-read "Rebase target: "
+                                     (cdr (vc-git-branches))))))
 
 (use-package vc-hooks
   :after (vc vc-git)
