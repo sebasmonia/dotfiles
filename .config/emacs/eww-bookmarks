@@ -1,5 +1,7 @@
 ;; Auto-generated file; don't edit -*- mode: lisp-data -*-
-((:url "https://www.filfre.net/sitemap/" :title
+((:url "https://anniemueller.com/" :title "annie's blog" :time
+       "Wed Oct 23 14:09:59 2024")
+ (:url "https://www.filfre.net/sitemap/" :title
        "» Table of Contents The Digital Antiquarian" :time
        "Fri Oct 18 09:54:58 2024")
  (:url "https://stevelosh.com/links/" :title "Links / Steve Losh"
@@ -43,12 +45,6 @@
        "Fri Aug  2 16:54:46 2024")
  (:url "http://68k.news/index.php?section=nation&loc=AR" :title
        "68k.news (AR)" :time "Fri Aug  2 16:51:13 2024")
- (:url
-  "https://casouri.github.io/note/2020/contributing-to-emacs/index.html"
-  :title "Contributing to Emacs" :time "Thu Aug  1 14:30:18 2024")
- (:url "https://www.fosskers.ca/en/blog/contributing-to-emacs" :title
-       "Colin Woodbury - Contributing to Emacs" :time
-       "Thu Aug  1 11:57:11 2024")
  (:url "http://starbreaker.org/index.html" :title
        "welcome | starbreaker.org" :time "Wed Jul 31 17:50:25 2024")
  (:url "https://thebloggess.com/" :title

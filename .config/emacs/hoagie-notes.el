@@ -86,7 +86,8 @@ It is lowercased and with dashes replacing spaces in the filename."
   ;; project
   (let ((default-directory hoagie-notes-directory)
         (project-prompter (lambda () hoagie-notes-directory)))
-    (project-find-file)))
+    (project-find-file-in nil (list hoagie-notes-directory)
+                          (project-current))))
 
 (provide 'hoagie-notes)
 ;;; hoagie-notes.el ends here
