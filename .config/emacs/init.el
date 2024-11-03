@@ -264,14 +264,17 @@ Running in a toolbox is actually the \"common\" case. :)"
   (dired-compress-file-default-suffix ".7z")
   (dired-do-revert-buffer t)
   :bind
+  ;; The default binding for dired-jump is C-x C-j. I used F6-j for
+  ;; dired-jump-other-window.
+  ;; Adding C-x j to jump to other window, freeing j on my personal keymap.
+  (:map ctl-x-map
+        ("j" . dired-jump-other-window))
   (:map hoagie-keymap
-        (("ESC f" . find-name-dired)
+        (("n" . hoagie-kill-buffer-filename)
          ;; for some cases where I used prefix args or shifted keys
          ;; I am now trying this alternative of adding ESC to the binding
-         ("ESC j" . dired-jump)
-         ("j" . dired-jump-other-window)
-         ;; n for "name"
-         ("n" . hoagie-kill-buffer-filename)))
+         ("ESC f" . find-name-dired)
+         ("ESC j" . dired-jump)))
   (:map dired-mode-map
         ("C-<return>" . hoagie-dired-os-open-file))
   :hook
