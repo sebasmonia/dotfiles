@@ -1387,8 +1387,8 @@ FRAME is ignored."
     ;; 2021-05-22: now I use the pgtk branch everywhere, and the monitor name
     ;; has a meaningul value in all cases, so:
     (let* ((monitor-name (alist-get 'name (frame-monitor-attributes)))
-           (monitor-font '(("0x0536" . 128) ;; laptop -- maybe 143
-                           ("LG Ultra HD" . 151))) ;; monitor -- maybe 158
+           (monitor-font '(("0x0536" . 151) ;; laptop -- maybe 143
+                           ("LG Ultra HD" . 128))) ;; monitor -- also 135 & 143
            (size (alist-get monitor-name monitor-font
                             180 ;; default size, "big just in case"
                             nil
