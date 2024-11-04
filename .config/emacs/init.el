@@ -437,6 +437,12 @@ If REGEXP is not provided, then all emails are printed."
   :commands (eglot eglot-ensure)
   :custom
   (eglot-events-buffer-config '(:size 0 :format full))
+  (eglot-ignored-server-capabilities '(:codeLensProvider
+                                       :documentHighlightProvider
+                                       :documentFormattingProvider
+                                       :documentRangeFormattingProvider
+                                       :documentOnTypeFormattingProvider
+                                       :foldingRangeProvider))
   :hook
   ((python-mode-hook . eglot-ensure)
    (go-mode-hook . eglot-ensure))
