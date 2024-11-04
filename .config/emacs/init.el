@@ -28,7 +28,6 @@
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(setf package-install-upgrade-built-in nil)
 ;; (setf use-package-compute-statistics t)
 
 (when (eq window-system 'pgtk)
@@ -176,6 +175,7 @@
   :custom
   (browse-url-secondary-browser-function #'hoagie-browse-url)
   (browse-url-browser-function #'eww-browse-url)
+  (browse-url-new-window-flag t)
   :config
   (defun hoagie-browse-url (url &rest args)
     "Open Firefox, changing invocation if running in a toolbox.
