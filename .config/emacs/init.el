@@ -270,11 +270,8 @@ Running in a toolbox is actually the \"common\" case. :)"
   (:map ctl-x-map
         ("j" . dired-jump-other-window))
   (:map hoagie-keymap
-        (("n" . hoagie-kill-buffer-filename)
-         ;; for some cases where I used prefix args or shifted keys
-         ;; I am now trying this alternative of adding ESC to the binding
-         ("ESC f" . find-name-dired)
-         ("ESC j" . dired-jump)))
+        ;; see definition for F6-f in :config below
+        ("n" . hoagie-kill-buffer-filename))
   (:map dired-mode-map
         ("C-<return>" . hoagie-dired-os-open-file))
   :hook
@@ -283,6 +280,17 @@ Running in a toolbox is actually the \"common\" case. :)"
   ;; all files marked in dired to the current/a new email
   (dired-mode-hook . turn-on-gnus-dired-mode)
   :config
+  (defvar hoagie-find-keymap
+    (let ((map (make-sparse-keymap "Find...")))
+      (keymap-set map (kbd "g") '("grep dired" . find-grep-dired))
+      (keymap-set map (kbd "n") '("name dired" . find-name-dired))
+      (keymap-set map (kbd "d") '("dired" . find-name-dired))
+      map)
+    "Keymap for Dired find commands.")
+  ;; UPDATE 2024-11-04: I saw this technique in "M-o" for sgml-mode, which turn
+  ;; uses facemenu.el, but it only works correctly if I assign the binding
+  ;; "manually" instead through use-package
+  (define-key hoagie-keymap (kbd "ESC f") hoagie-find-keymap)
   (setf dired-compress-file-suffixes
         '(("\\.tar\\.gz\\'" #1="" "7z x -aoa -o%o %i")
           ("\\.tgz\\'" #1# "7z x -aoa -o%o %i")
