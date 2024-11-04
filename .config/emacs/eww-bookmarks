@@ -1,6 +1,10 @@
 ;; Auto-generated file; don't edit -*- mode: lisp-data -*-
 ((:url "https://anniemueller.com/" :title "annie's blog" :time
        "Wed Oct 23 14:09:59 2024")
+ (:url "https://digdeeper.neocities.org/" :title "Dig Deeper" :time
+       "Mon Sep 16 21:39:37 2024")
+ (:url "https://idle.nprescott.com/" :title "Idle Cycles" :time
+       "Mon Sep 16 21:39:23 2024")
  (:url "https://www.filfre.net/sitemap/" :title
        "» Table of Contents The Digital Antiquarian" :time
        "Fri Oct 18 09:54:58 2024")
