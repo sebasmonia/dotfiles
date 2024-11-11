@@ -1,93 +1,79 @@
 ;; Auto-generated file; don't edit -*- mode: lisp-data -*-
-((:url "https://digdeeper.neocities.org/" :title "Dig Deeper" :time
-       "Mon Sep 16 21:39:37 2024")
- (:url "https://idle.nprescott.com/" :title "Idle Cycles" :time
-       "Mon Sep 16 21:39:23 2024")
- (:url "https://www.filfre.net/sitemap/" :title
-       "» Table of Contents The Digital Antiquarian" :time
-       "Fri Oct 18 09:54:58 2024")
- (:url "https://stevelosh.com/links/" :title "Links / Steve Losh"
-       :time "Fri Oct 18 09:46:17 2024")
- (:url "https://brokensandals.net/" :title "brokensandals.net" :time
-       "Wed Oct 16 13:46:10 2024")
- (:url "https://wiby.me/" :title
-       "Wiby - Search Engine for the Classic Web" :time
-       "Thu Oct  3 14:32:33 2024")
+((:url "https://text.npr.org/" :title "NPR Text news" :time
+       "2024-05-29 09:25:17 AM")
  (:url "https://legiblenews.com/" :title "Legible News" :time
        "Thu Oct  3 11:49:05 2024")
- (:url "https://netigen.com/tags" :title "Netigen: Tags (volume-5)"
-       :time "Wed Oct  2 17:14:47 2024")
- (:url "https://log.schemescape.com/" :title "Schemescape" :time
-       "Mon Sep 30 09:18:57 2024")
+ (:url "http://68k.news/" :title "68k.news" :time
+       "Fri Aug  2 16:54:46 2024")
+ (:url "http://68k.news/index.php?section=nation&loc=AR" :title
+       "68k.news (AR)" :time "Fri Aug  2 16:51:13 2024")
+ (:url "https://burgundywave.com/category/colorado-rapids/" :title
+       "Colorado Rapids Archives - Burgundy Wave" :time
+       "2024-07-27 06:58:18 PM")
  (:url "https://thejollyteapot.com/archives" :title
        "Archives - The Jolly Teapot" :time "Fri Sep 27 09:27:44 2024")
- (:url "https://localghost.dev/blog/" :title "Blog - localghost" :time
-       "Thu Sep 26 09:18:29 2024")
- (:url "https://www.rousette.org.uk" :title "BSAG" :time
-       "Fri Aug 16 17:00:55 2024")
+ (:url "https://brokensandals.net/" :title "brokensandals.net" :time
+       "Wed Oct 16 13:46:10 2024")
+ (:url "https://netigen.com/tags" :title "Netigen: Tags (volume-5)"
+       :time "Wed Oct  2 17:14:47 2024")
+ (:url "http://starbreaker.org/index.html" :title
+       "welcome | starbreaker.org" :time "Wed Jul 31 17:50:25 2024")
+ (:url "https://www.schneier.com/" :title "Schneier on Security" :time
+       "2024-07-26 08:36:42 AM")
+ (:url "https://taonaw.com/" :title "The Art Of Not Asking Why" :time
+       "Fri Aug  9 16:23:47 2024")
+ (:url "https://bacardi55.io/posts/" :title "Bacardi55's Web Cave"
+       :time "2024-07-18 10:16:05 AM")
+ (:url "https://82mhz.net/" :title "82MHz" :time
+       "2024-07-18 10:21:35 AM")
+ (:url "https://manuelmoreale.com/" :title "Manu - I write" :time
+       "Fri Aug  9 16:22:35 2024")
+ (:url "https://kevquirk.com/" :title "Blog | Kev Quirk" :time
+       "Fri Aug  9 16:21:34 2024")
+ (:url "https://www.archaeoramblings.com/blog/" :title
+       "Archeoramblings" :time "2024-07-18 10:15:34 AM")
+ (:url "https://thebloggess.com/" :title
+       "The Bloggess - Like Mother Teresa, only better." :time
+       "Wed Jul 31 17:50:12 2024")
+ (:url "https://koldfront.dk/" :title "koldfront" :time
+       "Wed Jul 31 17:36:13 2024")
+ (:url "https://berthub.eu/articles/" :title "Bert Hubert's writings"
+       :time "Thu Aug  8 13:53:45 2024")
+ (:url "https://kwon.nyc/" :title "Kwon.nyc" :time
+       "Fri Aug  9 08:55:25 2024")
  (:url "https://ohhelloana.blog/posts/" :title "Oh Hello Ana - Blog"
        :time "Fri Aug 16 16:38:38 2024")
  (:url "https://mariosangiorgio.com/post/" :title
        "Mario Sangiorgio - Posts" :time "Fri Aug 16 16:26:44 2024")
  (:url "https://btxx.org/" :title "~bt" :time
        "Fri Aug 16 15:14:12 2024")
- (:url "https://taonaw.com/" :title "The Art Of Not Asking Why" :time
-       "Fri Aug  9 16:23:47 2024")
- (:url "https://manuelmoreale.com/" :title "Manu - I write" :time
-       "Fri Aug  9 16:22:35 2024")
- (:url "https://kevquirk.com/" :title "Blog | Kev Quirk" :time
-       "Fri Aug  9 16:21:34 2024")
- (:url "https://www.fromjason.xyz/me/bookmarks/" :title "Bookmarks"
-       :time "Fri Aug  9 09:16:44 2024")
- (:url "https://kwon.nyc/" :title "Kwon.nyc" :time
-       "Fri Aug  9 08:55:25 2024")
- (:url "https://berthub.eu/articles/" :title "Bert Hubert's writings"
-       :time "Thu Aug  8 13:53:45 2024")
- (:url "http://68k.news/" :title "68k.news" :time
-       "Fri Aug  2 16:54:46 2024")
- (:url "http://68k.news/index.php?section=nation&loc=AR" :title
-       "68k.news (AR)" :time "Fri Aug  2 16:51:13 2024")
- (:url
-  "https://casouri.github.io/note/2020/contributing-to-emacs/index.html"
-  :title "Contributing to Emacs" :time "Thu Aug  1 14:30:18 2024")
- (:url "https://www.fosskers.ca/en/blog/contributing-to-emacs" :title
-       "Colin Woodbury - Contributing to Emacs" :time
-       "Thu Aug  1 11:57:11 2024")
- (:url "http://starbreaker.org/index.html" :title
-       "welcome | starbreaker.org" :time "Wed Jul 31 17:50:25 2024")
- (:url "https://thebloggess.com/" :title
-       "The Bloggess - Like Mother Teresa, only better." :time
-       "Wed Jul 31 17:50:12 2024")
- (:url "https://koldfront.dk/" :title "koldfront" :time
-       "Wed Jul 31 17:36:13 2024")
- (:url "https://taonaw.com/blogroll/" :title
-       "Blogrolls | The Art Of Not Asking Why" :time
-       "Tue Jul 30 12:08:41 2024")
- (:url "https://search.marginalia.nu/" :title "Marginalia Search"
-       :time "2024-02-13 12:21:28 PM")
- (:url "https://text.npr.org/" :title "NPR Text news" :time
-       "2024-05-29 09:25:17 AM")
- (:url "https://www.archaeoramblings.com/blog/" :title
-       "Archeoramblings" :time "2024-07-18 10:15:34 AM")
- (:url "https://bacardi55.io/posts/" :title "Bacardi55's Web Cave"
-       :time "2024-07-18 10:16:05 AM")
- (:url "https://82mhz.net/" :title "82MHz" :time
-       "2024-07-18 10:21:35 AM")
- (:url "https://sjmulder.nl/en/textonly.html" :title
-       "Sijmen plain text links" :time "2024-07-24 08:44:01 AM")
- (:url "https://www.schneier.com/" :title "Schneier on Security" :time
-       "2024-07-26 08:36:42 AM")
- (:url "https://search.marginalia.nu/" :title "Marginalia Search"
-       :time "2024-02-13 02:45:54 PM")
- (:url "https://1mb.club/" :title "1MB Club" :time
-       "2024-06-12 11:55:52 PM")
  (:url "https://fabiensanglard.net/" :title
        "Fabien Sanglard's Website" :time "2024-07-27 07:04:56 PM")
- (:url "https://burgundywave.com/category/colorado-rapids/" :title
-       "Colorado Rapids Archives - Burgundy Wave" :time
-       "2024-07-27 06:58:18 PM")
+ (:url "https://digdeeper.neocities.org/" :title "Dig Deeper" :time
+       "Mon Sep 16 21:39:37 2024")
+ (:url "https://idle.nprescott.com/" :title "Idle Cycles" :time
+       "Mon Sep 16 21:39:23 2024")
+ (:url "https://www.filfre.net/sitemap/" :title
+       "» Table of Contents The Digital Antiquarian" :time
+       "Fri Oct 18 09:54:58 2024")
+ (:url "https://log.schemescape.com/" :title "Schemescape" :time
+       "Mon Sep 30 09:18:57 2024")
+ (:url "https://localghost.dev/blog/" :title "Blog - localghost" :time
+       "Thu Sep 26 09:18:29 2024")
+ (:url "https://www.rousette.org.uk" :title "BSAG" :time
+       "Fri Aug 16 17:00:55 2024")
  (:url "https://peopleandblogs.com/" :title "People and Blogs" :time
        "2024-07-27 07:04:19 PM")
- (:url "https://smallweb.site/" :title "smallweb.site" :time
-       "2024-07-27 07:06:13 PM")
- (:url "https://0xff.nu/" :title "0xFF" :time "2024-07-30 07:01:50 AM"))
+ (:url "https://sjmulder.nl/en/textonly.html" :title
+       "Sijmen plain text links" :time "2024-07-24 08:44:01 AM")
+ (:url "https://www.fromjason.xyz/me/bookmarks/" :title "Bookmarks"
+       :time "Fri Aug  9 09:16:44 2024")
+ (:url "https://stevelosh.com/links/" :title "Links / Steve Losh"
+       :time "Fri Oct 18 09:46:17 2024")
+ (:url "https://1mb.club/" :title "1MB Club" :time
+       "2024-06-12 11:55:52 PM")
+ (:url "https://search.marginalia.nu/" :title "Marginalia Search"
+       :time "2024-02-13 12:21:28 PM")
+ (:url "https://wiby.me/" :title
+       "Wiby - Search Engine for the Classic Web" :time
+       "Thu Oct  3 14:32:33 2024"))

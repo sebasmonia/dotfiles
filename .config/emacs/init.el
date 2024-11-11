@@ -28,7 +28,6 @@
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(setf package-install-upgrade-built-in nil)
 ;; (setf use-package-compute-statistics t)
 
 (when (eq window-system 'pgtk)
@@ -176,6 +175,7 @@
   :custom
   (browse-url-secondary-browser-function #'hoagie-browse-url)
   (browse-url-browser-function #'eww-browse-url)
+  (browse-url-new-window-flag t)
   :config
   (defun hoagie-browse-url (url &rest args)
     "Open Firefox, changing invocation if running in a toolbox.
@@ -270,11 +270,8 @@ Running in a toolbox is actually the \"common\" case. :)"
   (:map ctl-x-map
         ("j" . dired-jump-other-window))
   (:map hoagie-keymap
-        (("n" . hoagie-kill-buffer-filename)
-         ;; for some cases where I used prefix args or shifted keys
-         ;; I am now trying this alternative of adding ESC to the binding
-         ("ESC f" . find-name-dired)
-         ("ESC j" . dired-jump)))
+        ;; see definition for F6-f in :config below
+        ("n" . hoagie-kill-buffer-filename))
   (:map dired-mode-map
         ("C-<return>" . hoagie-dired-os-open-file))
   :hook
@@ -283,6 +280,17 @@ Running in a toolbox is actually the \"common\" case. :)"
   ;; all files marked in dired to the current/a new email
   (dired-mode-hook . turn-on-gnus-dired-mode)
   :config
+  (defvar hoagie-find-keymap
+    (let ((map (make-sparse-keymap "Find...")))
+      (keymap-set map (kbd "g") '("grep dired" . find-grep-dired))
+      (keymap-set map (kbd "n") '("name dired" . find-name-dired))
+      (keymap-set map (kbd "d") '("dired" . find-name-dired))
+      map)
+    "Keymap for Dired find commands.")
+  ;; UPDATE 2024-11-04: I saw this technique in "M-o" for sgml-mode, which turn
+  ;; uses facemenu.el, but it only works correctly if I assign the binding
+  ;; "manually" instead through use-package
+  (define-key hoagie-keymap (kbd "ESC f") hoagie-find-keymap)
   (setf dired-compress-file-suffixes
         '(("\\.tar\\.gz\\'" #1="" "7z x -aoa -o%o %i")
           ("\\.tgz\\'" #1# "7z x -aoa -o%o %i")
@@ -429,6 +437,12 @@ If REGEXP is not provided, then all emails are printed."
   :commands (eglot eglot-ensure)
   :custom
   (eglot-events-buffer-config '(:size 0 :format full))
+  (eglot-ignored-server-capabilities '(:codeLensProvider
+                                       :documentHighlightProvider
+                                       :documentFormattingProvider
+                                       :documentRangeFormattingProvider
+                                       :documentOnTypeFormattingProvider
+                                       :foldingRangeProvider))
   :hook
   ((python-mode-hook . eglot-ensure)
    (go-mode-hook . eglot-ensure))
@@ -1097,6 +1111,8 @@ also runs `vc-dir' in the newly cloned directory."
        ;; docs say not to use "initial-input", but it does what I want...
        ;; and the other "default-value" doesn't.
        (list url dir mail)))
+    ;; TODO: there's not a vc command for this, consider replacing using it in
+    ;; this function?
     (vc-git-command nil 0 nil "clone" repository-url
                     (expand-file-name local-dir))
     (let ((default-directory local-dir))
@@ -1119,7 +1135,15 @@ With prefix ARG show the remote branches."
                       (when arg "-r"))
       (pop-to-buffer buffer-name)
       (goto-char (point-min))
-      (special-mode))))
+      (special-mode)))
+  (defun hoagie-vc-git-interactive-rebase ()
+    "Do an interactive rebase against another branch.
+This command needs the Emacs server running and GIT_EDITOR properly set,
+on Windows. And I need to test it on Linux =P"
+    (interactive)
+    (vc-git-command "*git rebase -i*" 'async nil "rebase" "-i"
+                    (completing-read "Rebase target: "
+                                     (cdr (vc-git-branches))))))
 
 (use-package vc-hooks
   :after (vc vc-git)
@@ -1304,7 +1328,7 @@ If ARG, don't prompt for buffer name suffix."
   (inhibit-startup-screen t)
   (initial-buffer-choice t)
   (initial-scratch-message
-   ";; Il semble que la perfection soit atteinte non quand il n’y a\n;; plus rien à ajouter, mais quand il n’y a plus à retrancher.\n;;                                   - Antoine de Saint Exupéry\n\n;; Misc:\n;; C-x C-k e edit kmacro    ;; (shell) C-c C-o clear last output\n;; C-x / vundo              ;; C-x C-t transpose-lines (0 arg!)\n\n;; During isearch           ;; Query replace\n;; C-w add watp, can repeat ;; C-u M-% to replace words\n;; M-r toggle regex\n\n;; Newlines:\n;; C-o open-line            ;; C-M-o split-line\n;; M-^ join with prev line\n\n;; M-x...\n;; copy-matching-lines (also kill-) ;; (un)highlight-regexp\n;; align-current (or align-regexp)\n\n;; Calendar & Diary\n;; . - go to today          ;; u/m/x - unmark/mark events/holidays\n;; M-= count days region\n\n;; Notes prefix <f3> => 3 inbox / n new / g grep / f find by name\n\n")
+   ";; Il semble que la perfection soit atteinte non quand il n’y a\n;; plus rien à ajouter, mais quand il n’y a plus à retrancher.\n;;                                   - Antoine de Saint Exupéry\n\n;; Misc:\n;; C-x C-k e edit kmacro    ;; (shell) C-c C-o clear last output\n;; C-x / vundo              ;; C-x C-t transpose-lines (0 arg!)\n\n;; During isearch           ;; Query replace\n;; C-w add watp, can repeat ;; C-u M-% to replace words\n;; M-r toggle regex\n\n;; Newlines:\n;; C-o open-line            ;; C-M-o split-line\n;; M-^ join with prev line  ;; M-j default-indent-new-line\n\n;; M-x...\n;; copy-matching-lines (also kill-) ;; (un)highlight-regexp\n;; align-current (or align-regexp)\n\n;; Calendar & Diary\n;; . - go to today          ;; u/m/x - unmark/mark events/holidays\n;; M-= count days region\n\n;; Replace in many files:\n;; 1. multi-occur (if buffers visiting)\n;; 2. in Dired, Q -> regexp replace in marked files\n;; 2. F6-f (find-name-dired, find-grep-dired), then #2\n\n;; Notes prefix <f3> => 3 inbox / n new / g grep / f find by name\n\n")
   (save-interprogram-paste-before-kill t)
   (visible-bell nil)
   ;; from https://gitlab.com/jessieh/dot-emacs
