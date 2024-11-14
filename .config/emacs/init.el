@@ -1473,13 +1473,6 @@ FRAME is ignored."
 ;; let's do our best to keep Gnus files/dir outside of ~
 (load-file "~/sourcehut/dotfiles/.config/gnus/.gnus.el")
 
-(defvar sc-init-file
-  "~/sourcehut/qontigo-files/.emacs.d/sc-init.el"
-  "Location of the SimCorp init file.")
-(load sc-init-file)
-(global-set-key (kbd "ESC S-<f1>")
-                (lambda () (interactive) (find-file sc-init-file)))
-
 (use-package smolsite
   :load-path "~/sourcehut/site.sebasmonia"
   :demand t)
