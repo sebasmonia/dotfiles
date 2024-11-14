@@ -1148,7 +1148,7 @@ also runs `vc-dir' in the newly cloned directory."
        ;; docs say not to use "initial-input", but it does what I want...
        ;; and the other "default-value" doesn't.
        (list url dir mail)))
-    ;; TODO: there's not a vc command for this, consider replacing using it in
+    ;; TODO: there's now a vc command for this, consider replacing using it in
     ;; this function?
     (vc-git-command nil 0 nil "clone" repository-url
                     (expand-file-name local-dir))
@@ -1464,7 +1464,6 @@ FRAME is ignored."
   :custom
   (modus-themes-completions (quote ((matches . (underline))
                                     (selection . (bold intense))))))
-
 
 ;; Almost tempted to make it a package. But given that I _always_ load this,
 ;; in a normal init, a simple `load-file' will suffice.
