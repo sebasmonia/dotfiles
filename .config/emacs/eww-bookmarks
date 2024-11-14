@@ -10,10 +10,8 @@
  (:url "https://burgundywave.com/category/colorado-rapids/" :title
        "Colorado Rapids Archives - Burgundy Wave" :time
        "2024-07-27 06:58:18 PM")
- (:url "https://thejollyteapot.com/archives" :title
+ (:url "https://thejollyteapot.com/" :title
        "Archives - The Jolly Teapot" :time "Fri Sep 27 09:27:44 2024")
- (:url "https://brokensandals.net/" :title "brokensandals.net" :time
-       "Wed Oct 16 13:46:10 2024")
  (:url "https://netigen.com/tags" :title "Netigen: Tags (volume-5)"
        :time "Wed Oct  2 17:14:47 2024")
  (:url "http://starbreaker.org/index.html" :title

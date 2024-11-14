@@ -37,6 +37,7 @@
         ;; But, just in case:
         gnus-startup-file "~/.gnus.d/.newsrc"
         gnus-dribble-directory "~/.gnus.d/"
+        gnus-use-dribble-file nil
         gnus-always-read-dribble-file nil)
   :custom
   ;; the first four are not really Gnus values, but this is a sensible place

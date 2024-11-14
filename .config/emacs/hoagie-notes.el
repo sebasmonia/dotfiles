@@ -33,12 +33,6 @@ This file is meant to be used for quick, uncategorized notes.")
 ;; (defvar hoagie-notes-diary-file "~/.emacs.d/diary-notes"
 ;;   "Location of the diary file to export note-related tasks.")
 
-(defvar-keymap eww-textarea-map
-  :parent text-mode-map
-  :doc "Keymap for the eww text area."
-  "RET" #'forward-line
-  "TAB" #'shr-next-link)
-
 (defvar-keymap hoagie-notes-keymap
   :prefix 'hoagie-notes-keymap
   :doc "Convenience keymap for note-taking commands."

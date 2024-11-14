@@ -75,6 +75,7 @@ Optional argument NEW-BUFFER is passed to `eww' as prefix arg."
                       (remove-hook 'eww-after-render-hook nonce)))))
     (add-hook 'eww-after-render-hook nonce))
   (eww url new-buffer))
+
 (use-package go-mode
   :ensure t
   :hook
@@ -154,15 +155,6 @@ Optional argument NEW-BUFFER is passed to `eww' as prefix arg."
                          :channels ("#emacs" "#emacs-es" "#argentina"))))
   :hook
   (rcirc-mode-hook . (lambda () (rcirc-track-minor-mode 1))))
-
-(use-package shell
-  :config
-  (defun hoagie-shell-mode-setup ()
-    "Setup my `shell-mode' configuration."
-    (toggle-truncate-lines t)
-    (setf comint-process-echoes t))
-  :hook
-  (shell-mode-hook . hoagie-shell-mode-setup))
 
 (use-package terraform-mode
   :ensure t
