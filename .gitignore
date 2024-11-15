@@ -13,3 +13,4 @@
 .config/emacs/tramp
 .config/emacs/transient/*
 .config/emacs/url/*
+.config/emacs/newsticker/*

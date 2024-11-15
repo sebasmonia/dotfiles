@@ -33,14 +33,13 @@ This file is meant to be used for quick, uncategorized notes.")
 ;; (defvar hoagie-notes-diary-file "~/.emacs.d/diary-notes"
 ;;   "Location of the diary file to export note-related tasks.")
 
-(defvar hoagie-notes-keymap
-  (define-prefix-command 'hoagie-notes-keymap)
-  "Convenience keymap for note-taking commands.")
-
-(define-key hoagie-notes-keymap (kbd "3") #'hoagie-notes-open-inbox)
-(define-key hoagie-notes-keymap (kbd "f") #'hoagie-notes-find-by-name)
-(define-key hoagie-notes-keymap (kbd "g") #'hoagie-notes-grep)
-(define-key hoagie-notes-keymap (kbd "n") #'hoagie-notes-new-note)
+(defvar-keymap hoagie-notes-keymap
+  :prefix 'hoagie-notes-keymap
+  :doc "Convenience keymap for note-taking commands."
+  "3" #'hoagie-notes-open-inbox
+  "f" #'hoagie-notes-find-by-name
+  "g" #'hoagie-notes-grep
+  "n" #'hoagie-notes-new-note)
 
 (defun hoagie-notes-open-inbox ()
   "Open notes \"inbox\" file.

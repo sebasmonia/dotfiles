@@ -54,16 +54,17 @@
 ;; eventually I moved away from the menu key to F6, and even later that key
 ;; ended in a very similar place to <menu> but on the other side of the
 ;; keyboard (Dygma Raise)
-(defvar hoagie-keymap
-  (define-prefix-command 'hoagie-keymap)
-  "My custom bindings.")
-(defvar hoagie-second-keymap
-  (define-prefix-command 'hoagie-second-keymap)
-  "Originally a register keymap, now used for other stuff too.")
+(defvar-keymap hoagie-keymap
+  :doc "One of my two sets of custom keybindings."
+  :prefix 'hoagie-keymap)
+(defvar-keymap hoagie-second-keymap
+  :doc "The other of my two sets of custom keybindings."
+  :prefix 'hoagie-second-keymap)
+
 ;; compat Linux-Windows
-(define-key key-translation-map (kbd "<apps>") (kbd "<menu>"))
-(define-key key-translation-map (kbd "<print>") (kbd "<menu>"))
-(global-set-key (kbd "<menu>") 'hoagie-keymap)
+(keymap-set key-translation-map "<apps>" "<menu>")
+(keymap-set key-translation-map "<print>" "<menu>")
+(keymap-global-set "<menu>" 'hoagie-keymap)
 
 ;; In case the config is not running on Silverblue, or if I ever layer Emacs on
 ;; the base system...
@@ -80,8 +81,8 @@
   "Stores the name of the current container, if present.")
 
 ;; these keys are mapped on particular positions in my Dygma Raise
-(global-set-key (kbd "<f6>") 'hoagie-keymap) ;; T1 (next to SPC/Control)
-(global-set-key (kbd "<f5>") 'hoagie-second-keymap) ;; Enter
+(keymap-global-set "<f6>" 'hoagie-keymap) ;; T1 (next to SPC/Control)
+(keymap-global-set "<f5>" 'hoagie-second-keymap) ;; Enter
 
 ;; This package declares commands and macros (!) that I use for general
 ;; editing
@@ -280,17 +281,16 @@ Running in a toolbox is actually the \"common\" case. :)"
   ;; all files marked in dired to the current/a new email
   (dired-mode-hook . turn-on-gnus-dired-mode)
   :config
-  (defvar hoagie-find-keymap
-    (let ((map (make-sparse-keymap "Find...")))
-      (keymap-set map (kbd "g") '("grep dired" . find-grep-dired))
-      (keymap-set map (kbd "n") '("name dired" . find-name-dired))
-      (keymap-set map (kbd "d") '("dired" . find-name-dired))
-      map)
-    "Keymap for Dired find commands.")
+  (defvar-keymap hoagie-find-keymap
+    :doc "Keymap for Dired find commands."
+    :name "Find..."
+    "g" '("grep dired" . find-grep-dired)
+    "n" '("name dired" . find-name-dired)
+    "d" '("dired" . find-name-dired))
   ;; UPDATE 2024-11-04: I saw this technique in "M-o" for sgml-mode, which turn
   ;; uses facemenu.el, but it only works correctly if I assign the binding
   ;; "manually" instead through use-package
-  (define-key hoagie-keymap (kbd "ESC f") hoagie-find-keymap)
+  (keymap-set hoagie-keymap "ESC f" hoagie-find-keymap)
   (setf dired-compress-file-suffixes
         '(("\\.tar\\.gz\\'" #1="" "7z x -aoa -o%o %i")
           ("\\.tgz\\'" #1# "7z x -aoa -o%o %i")
@@ -420,7 +420,7 @@ If REGEXP is not provided, then all emails are printed."
                                                  ediff-control-buffer))))
   (defun add-d-to-ediff-mode-map ()
     "Add key 'd' for 'copy both to C' functionality in ediff."
-    (define-key ediff-mode-map "d" #'ediff-copy-both-to-C))
+    (keymap-set ediff-mode-map "d" #'ediff-copy-both-to-C))
   ;; One minor annoyance of using ediff with built-in vc was
   ;; the window config being altered, so:
   (defvar hoagie-pre-ediff-windows
@@ -544,18 +544,18 @@ external browser and new eww buffer, respectively)."
                             all-links
                             nil nil #'string=)))))
 
-(defvar hoagie-flymake-keymap
-  (define-prefix-command 'hoagie-flymake-keymap)
-  "Custom bindings for `flymake-mode'.")
 (use-package flymake
-  :config
+  ;; TODO: config or init? need to test loading flymake
+  :init
+  (defvar-keymap hoagie-flymake-keymap
+    :doc "Custom bindings for `flymake-mode'."
+    :prefix 'hoagie-flymake-keymap
+    ;; flymake command alternative bindings
+    "l" #'flymake-show-buffer-diagnostics
+    "n" #'flymake-goto-next-error
+    "p" #'flymake-goto-prev-error
+    "s" #'flymake-start)
   :bind
-  (:map hoagie-flymake-keymap
-        ;; flymake command alternative bindings
-        ("l" . flymake-show-buffer-diagnostics)
-        ("n" . flymake-goto-next-error)
-        ("p" . flymake-goto-prev-error)
-        ("s" . flymake-start))
   (:map hoagie-second-keymap
         ("f" . hoagie-flymake-keymap)))
 
@@ -679,6 +679,43 @@ Set `fill-column', `truncate-lines'."
         ("C-p" . minibuffer-previous-completion))
   (:map hoagie-keymap
         ("<f6>" . execute-extended-command)))
+
+;; (use-package newsticker
+;;   :commands
+;;   (newsticker-show-news newsticker-start)
+;;   :custom
+;;   (newsticker-frontend 'newsticker-treeview)
+;;   ;; format: (label url start-time interbal wget-args)
+;;   (newsticker-url-list '(("NPR World News" "https://feeds.npr.org/1004/rss.xml")
+;; 	                     ("NPR National News" "https://feeds.npr.org/1003/rss.xml")
+;; 	                     ("Espejito Espejito" "http://site.sebasmonia.com/feed.xml")
+;; 	                     ("Irreal" "http://irreal.org/blog/?feed=rss2")
+;; 	                     ("Planet Emacslife" "https://planet.emacslife.com/atom.xml")
+;;                          ("Planet Lisp" "http://planet.lisp.org/rss20.xml")
+;;                          ("Fedora Magazine" "https://fedoramagazine.org/feed/")
+;;                          ("Schneier on Security" "https://www.schneier.com/feed/atom")
+;;                          ("Slashdot" "http://rss.slashdot.org/Slashdot/slashdotMain")
+;;                          ("BA Times" "https://www.batimes.com.ar/feed")
+;;                          ("Olé - Fútbol internacional" "https://www.ole.com.ar/rss/futbol-internacional/")
+;;                          ("Olé - Fútbol Primera" "http://www.ole.com.ar/rss/futbol-primera/")
+;;                          ("Olé - Fútbol Ascenso" "http://www.ole.com.ar/rss/futbol-ascenso/")))
+;;   :bind
+;;   (:map newsticker-treeview-mode-map
+;;         ("v" . hoagie-browse-url-newsticker))
+;;   :config
+;;   (defun hoagie-browse-url-newsticker (&optional arg)
+;;     "Call my own browse-url-function from Newsticker.
+;; Function inspired by `newsticker-treeview-browse-url'.
+;; Call with prefix arg to open in Firefox instead of EWW."
+;;     (interactive "P")
+;;     (with-current-buffer (newsticker--treeview-list-buffer)
+;;       (let ((url (get-text-property (point) :nt-link)))
+;;         (when url
+;;           (if arg
+;;               (hoagie-browse-url url)
+;;             (eww-browse-url url))
+;;           (if newsticker-automatically-mark-visited-items-as-old
+;;               (newsticker-treeview-mark-item-old)))))))
 
 (use-package notifications
   ;; this package is used by appt to display
@@ -1111,7 +1148,7 @@ also runs `vc-dir' in the newly cloned directory."
        ;; docs say not to use "initial-input", but it does what I want...
        ;; and the other "default-value" doesn't.
        (list url dir mail)))
-    ;; TODO: there's not a vc command for this, consider replacing using it in
+    ;; TODO: there's now a vc command for this, consider replacing using it in
     ;; this function?
     (vc-git-command nil 0 nil "clone" repository-url
                     (expand-file-name local-dir))
@@ -1437,6 +1474,8 @@ FRAME is ignored."
 ;; let's do our best to keep Gnus files/dir outside of ~
 (load-file "~/sourcehut/dotfiles/.config/gnus/.gnus.el")
 
-(load-file "~/sourcehut/site.sebasmonia/smolsite.el")
+(use-package smolsite
+  :load-path "~/sourcehut/site.sebasmonia"
+  :demand t)
 
 ;;; init.el ends here
