@@ -1412,13 +1412,15 @@ FRAME is ignored."
     ;; has a meaningul value in all cases, so:
     (let* ((monitor-name (alist-get 'name (frame-monitor-attributes)))
            (monitor-font '(("0x0536" . 151) ;; laptop -- maybe 143
-                           ("LG Ultra HD" . 143))) ;; monitor -- also 128 & 135
+                           ("LG Ultra HD" . 158))) ;; monitor -- also 151
            (size (alist-get monitor-name monitor-font
                             180 ;; default size, "big just in case"
                             nil
                             'equal)))
       (set-face-attribute 'default (selected-frame) :height size)))
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
+
+;; (remove-hook 'window-size-change-functions #'hoagie-adjust-font-size)
 
 (use-package modus-themes
   :demand t
@@ -1434,5 +1436,7 @@ FRAME is ignored."
 
 ;; let's do our best to keep Gnus files/dir outside of ~
 (load-file "~/sourcehut/dotfiles/.config/gnus/.gnus.el")
+
+(load-file "~/sourcehut/site.sebasmonia/smolsite.el")
 
 ;;; init.el ends here
