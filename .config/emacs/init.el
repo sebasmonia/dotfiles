@@ -284,7 +284,7 @@ Running in a toolbox is actually the \"common\" case. :)"
   ;; What are the differences between the last two commands?
   ;; (info "(emacs) Dired and Find")
   (defvar-keymap hoagie-find-keymap
-    :doc "Keymap for Dired find commands."    
+    :doc "Keymap for Dired find commands."
     :name "Find..."
     "g" '("grep dired" . find-grep-dired)
     "n" '("name dired" . find-name-dired)
@@ -1444,13 +1444,15 @@ FRAME is ignored."
     ;; has a meaningul value in all cases, so:
     (let* ((monitor-name (alist-get 'name (frame-monitor-attributes)))
            (monitor-font '(("0x0536" . 151) ;; laptop -- maybe 143
-                           ("LG Ultra HD" . 128))) ;; monitor -- also 135 & 143
+                           ("LG Ultra HD" . 158))) ;; monitor -- also 151
            (size (alist-get monitor-name monitor-font
                             180 ;; default size, "big just in case"
                             nil
                             'equal)))
       (set-face-attribute 'default (selected-frame) :height size)))
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
+
+;; (remove-hook 'window-size-change-functions #'hoagie-adjust-font-size)
 
 (use-package modus-themes
   :demand t
