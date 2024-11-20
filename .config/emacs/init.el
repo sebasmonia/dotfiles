@@ -281,12 +281,14 @@ Running in a toolbox is actually the \"common\" case. :)"
   ;; all files marked in dired to the current/a new email
   (dired-mode-hook . turn-on-gnus-dired-mode)
   :config
+  ;; What are the differences between the last two commands?
+  ;; (info "(emacs) Dired and Find")
   (defvar-keymap hoagie-find-keymap
     :doc "Keymap for Dired find commands."    
     :name "Find..."
     "g" '("grep dired" . find-grep-dired)
     "n" '("name dired" . find-name-dired)
-    "d" '("dired" . find-name-dired))
+    "d" '("dired" . find-dired))
   ;; UPDATE 2024-11-04: I saw this technique in "M-o" for sgml-mode, which turn
   ;; uses facemenu.el, but it only works correctly if I assign the binding
   ;; "manually" instead through use-package
@@ -743,9 +745,6 @@ Set `fill-column', `truncate-lines'."
         ("f" . project-find-file))
   :custom
   (project-vc-extra-root-markers '(".emacs-project"))
-  ;; TODO: tried it briefly, not that useful.
-  ;; reconsider in the future
-  (project-mode-line nil)
   ;; go back to old default of "d" for "dired at root"
   (project-switch-commands
    '((project-find-file "Find file" nil)
@@ -1104,7 +1103,7 @@ Time can be anything accepted by `run-at-time'."
         ("e" . vc-ediff)
         ("k" . vc-revert)
         ("r" . hoagie-vc-dir-reset)
-        ("b b" . hoagie-vc-git-show-branches))
+        ("b b" . hoagie-vc-git-list-branches))
   :config
   (defun hoagie-vc-dir-reset (&optional arg)
     "Runs \"git reset\" to unstage all changes.
@@ -1144,27 +1143,23 @@ also runs `vc-dir' in the newly cloned directory."
             (dir (read-directory-name "Target directory: " nil nil nil
                                       (file-name-base url)))
             (mail (completing-read "Email for this repo: "
-                                       hoagie-vc-git-emails)))
-       ;; docs say not to use "initial-input", but it does what I want...
-       ;; and the other "default-value" doesn't.
+                                   hoagie-vc-git-emails)))
        (list url dir mail)))
-    ;; TODO: there's now a vc command for this, consider replacing using it in
-    ;; this function?
-    (vc-git-command nil 0 nil "clone" repository-url
-                    (expand-file-name local-dir))
+    (vc-git-clone repository-url (expand-file-name local-dir) nil)
     (let ((default-directory local-dir))
       (vc-git-command nil 0 nil "config" "user.email" email))
     (when (called-interactively-p 'any)
       (vc-dir local-dir)))
-  (defun hoagie-vc-git-show-branches (&optional arg)
+  (defun hoagie-vc-git-list-branches (&optional arg)
     "Show in a buffer the list of branches in the current repository.
 With prefix ARG show the remote branches."
     (interactive "P")
-    ;; TODO: this is a mix of vc-git stuff and project.el stuff...
-    (let* ((default-directory (project-root (project-current t)))
-           (buffer-name (project-prefixed-buffer-name (if arg
-                                                          "git remote branches"
-                                                        "git local branches"))))
+    (let* ((root-dir-name (file-name-nondirectory
+                           (directory-file-name
+                            (vc-git-root default-directory))))
+           (buffer-name (format "*%s - %s branches*"
+                                root-dir-name
+                                (if arg "remote" "local"))))
       (vc-git-command buffer-name
                       0
                       nil
@@ -1173,14 +1168,14 @@ With prefix ARG show the remote branches."
       (pop-to-buffer buffer-name)
       (goto-char (point-min))
       (special-mode)))
-  (defun hoagie-vc-git-interactive-rebase ()
-    "Do an interactive rebase against another branch.
+    (defun hoagie-vc-git-interactive-rebase ()
+      "Do an interactive rebase against another branch.
 This command needs the Emacs server running and GIT_EDITOR properly set,
 on Windows. And I need to test it on Linux =P"
-    (interactive)
-    (vc-git-command "*git rebase -i*" 'async nil "rebase" "-i"
-                    (completing-read "Rebase target: "
-                                     (cdr (vc-git-branches))))))
+      (interactive)
+      (vc-git-command "*git rebase -i*" 'async nil "rebase" "-i"
+                      (completing-read "Rebase target: "
+                                       (cdr (vc-git-branches))))))
 
 (use-package vc-hooks
   :after (vc vc-git)
@@ -1195,7 +1190,7 @@ on Windows. And I need to test it on Linux =P"
         ;; vc-dir-find-file, but I use project-find-file instead
         ("f" . hoagie-vc-git-fetch-all)
         ;; "l"ist is used for branch-log, use "b"ranches
-        ("b b" . hoagie-vc-git-show-branches)
+        ("b b" . hoagie-vc-git-list-branches)
         ("e" . vc-ediff)))
 
 (use-package vundo
@@ -1475,5 +1470,14 @@ FRAME is ignored."
 (use-package smolsite
   :load-path "~/sourcehut/site.sebasmonia"
   :demand t)
+
+;; nowadays, Windows == work, so:
+(when (eq system-type 'windows-nt)
+  (defvar sc-init-file
+    "~/sourcehut/qontigo-files/.emacs.d/sc-init.el"
+    "Location of the SimCorp init file.")
+  (load sc-init-file)
+  (global-set-key (kbd "ESC S-<f1>")
+                  (lambda () (interactive) (find-file sc-init-file))))
 
 ;;; init.el ends here
