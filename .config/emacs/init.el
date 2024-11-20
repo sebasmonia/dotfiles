@@ -301,8 +301,8 @@ Running in a toolbox is actually the \"common\" case. :)"
           ("\\.tar\\'" ".tgz" nil)
           (":" ".tar.gz" "tar -cf- %i | gzip -c9 > %o"))
         dired-compress-files-alist
-        '(("\\.7z\\'" . "7za a -r %o %i")
-          ("\\.zip\\'" . "7za a -r %o  %i")))
+        '(("\\.7z\\'" . "7z a -r %o %i")
+          ("\\.zip\\'" . "7z a -r %o  %i")))
   (defun hoagie-dired-os-open-file ()
     "Open a file with the default OS program.
 Initial version from EmacsWiki, added macOS & Silverblue toolbox
@@ -1452,8 +1452,6 @@ FRAME is ignored."
       (set-face-attribute 'default (selected-frame) :height size)))
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
 
-;; (remove-hook 'window-size-change-functions #'hoagie-adjust-font-size)
-
 (use-package modus-themes
   :demand t
   :config
@@ -1471,6 +1469,7 @@ FRAME is ignored."
 
 (use-package smolsite
   :load-path "~/sourcehut/site.sebasmonia"
+  :if (locate-library "smolsite.el")
   :demand t)
 
 ;; nowadays, Windows == work, so:
