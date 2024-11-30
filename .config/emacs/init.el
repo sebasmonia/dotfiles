@@ -1444,7 +1444,7 @@ FRAME is ignored."
     ;; has a meaningul value in all cases, so:
     (let* ((monitor-name (alist-get 'name (frame-monitor-attributes)))
            (monitor-font '(("0x0536" . 151) ;; laptop -- maybe 143
-                           ("LG Ultra HD" . 158))) ;; monitor -- also 151
+                           ("LG Ultra HD" . 151))) ;; monitor -- also 158
            (size (alist-get monitor-name monitor-font
                             180 ;; default size, "big just in case"
                             nil
