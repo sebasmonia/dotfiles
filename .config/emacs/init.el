@@ -1099,7 +1099,6 @@ Time can be anything accepted by `run-at-time'."
   ;; shadows `vc-dir'
   ("C-x v d" . vc-dir-root)
   (:map vc-dir-mode-map
-        ("f" . hoagie-vc-git-fetch-all)
         ("e" . vc-ediff)
         ("k" . vc-revert)
         ("r" . hoagie-vc-dir-reset)
@@ -1127,12 +1126,6 @@ With prefix arg, does a hard reset (thus it asks for confirmation)."
     '("code@sebasmonia.com"
       "some.work@email.com :)")
     "List of email addresses that can be associated with a repository")
-  (defun hoagie-vc-git-fetch-all ()
-    "Run \"git fetch --all\" in the current repo.
-No validations, so better be in a git repo when calling this :)."
-    (interactive)
-    (vc-git-command nil 0 nil "fetch" "--all")
-    (message "Completed \"fetch --all\" for current repo."))
   (defun hoagie-vc-git-clone (repository-url local-dir email)
     "Run \"git clone REPOSITORY-URL\" to LOCAL-DIR.
 After cloning, EMAIL is set in the repo.
@@ -1153,6 +1146,7 @@ also runs `vc-dir' in the newly cloned directory."
   (defun hoagie-vc-git-list-branches (&optional arg)
     "Show in a buffer the list of branches in the current repository.
 With prefix ARG show the remote branches."
+    ;; built in vc-git-branches doesn't show remote branches
     (interactive "P")
     (let* ((root-dir-name (file-name-nondirectory
                            (directory-file-name
@@ -1160,18 +1154,14 @@ With prefix ARG show the remote branches."
            (buffer-name (format "*%s - %s branches*"
                                 root-dir-name
                                 (if arg "remote" "local"))))
-      (vc-git-command buffer-name
-                      0
-                      nil
-                      "branch"
-                      (when arg "-r"))
+      (vc-git-command buffer-name 0 nil "branch" (when arg "-r"))
       (pop-to-buffer buffer-name)
       (goto-char (point-min))
       (special-mode)))
     (defun hoagie-vc-git-interactive-rebase ()
       "Do an interactive rebase against another branch.
-This command needs the Emacs server running and GIT_EDITOR properly set,
-on Windows. And I need to test it on Linux =P"
+This command needs the Emacs server running and GIT_EDITOR properly set.
+You can override the branch name to something like \"HEAD~2\", for example."
       (interactive)
       (vc-git-command "*git rebase -i*" 'async nil "rebase" "-i"
                       (completing-read "Rebase target: "
@@ -1187,8 +1177,6 @@ on Windows. And I need to test it on Linux =P"
                                 tramp-file-name-regexp))
   :bind
   (:map vc-prefix-map
-        ;; vc-dir-find-file, but I use project-find-file instead
-        ("f" . hoagie-vc-git-fetch-all)
         ;; "l"ist is used for branch-log, use "b"ranches
         ("b b" . hoagie-vc-git-list-branches)
         ("e" . vc-ediff)))
