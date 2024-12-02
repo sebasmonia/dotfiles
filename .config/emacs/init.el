@@ -688,19 +688,20 @@ Set `fill-column', `truncate-lines'."
 ;;   :custom
 ;;   (newsticker-frontend 'newsticker-treeview)
 ;;   ;; format: (label url start-time interbal wget-args)
-;;   (newsticker-url-list '(("NPR World News" "https://feeds.npr.org/1004/rss.xml")
-;; 	                     ("NPR National News" "https://feeds.npr.org/1003/rss.xml")
-;; 	                     ("Espejito Espejito" "http://site.sebasmonia.com/feed.xml")
-;; 	                     ("Irreal" "http://irreal.org/blog/?feed=rss2")
-;; 	                     ("Planet Emacslife" "https://planet.emacslife.com/atom.xml")
-;;                          ("Planet Lisp" "http://planet.lisp.org/rss20.xml")
-;;                          ("Fedora Magazine" "https://fedoramagazine.org/feed/")
-;;                          ("Schneier on Security" "https://www.schneier.com/feed/atom")
-;;                          ("Slashdot" "http://rss.slashdot.org/Slashdot/slashdotMain")
-;;                          ("BA Times" "https://www.batimes.com.ar/feed")
-;;                          ("Olé - Fútbol internacional" "https://www.ole.com.ar/rss/futbol-internacional/")
-;;                          ("Olé - Fútbol Primera" "http://www.ole.com.ar/rss/futbol-primera/")
-;;                          ("Olé - Fútbol Ascenso" "http://www.ole.com.ar/rss/futbol-ascenso/")))
+;;   (newsticker-url-list
+;;    '(("NPR World News" "https://feeds.npr.org/1004/rss.xml")
+;; 	 ("NPR National News" "https://feeds.npr.org/1003/rss.xml")
+;; 	 ("Espejito Espejito" "http://site.sebasmonia.com/feed.xml")
+;; 	 ("Irreal" "http://irreal.org/blog/?feed=rss2")
+;; 	 ("Planet Emacslife" "https://planet.emacslife.com/atom.xml")
+;;      ("Planet Lisp" "http://planet.lisp.org/rss20.xml")
+;;      ("Fedora Magazine" "https://fedoramagazine.org/feed/")
+;;      ("Schneier on Security" "https://www.schneier.com/feed/atom")
+;;      ("Slashdot" "http://rss.slashdot.org/Slashdot/slashdotMain")
+;;      ("BA Times" "https://www.batimes.com.ar/feed")
+;;      ("Olé - Fútbol inter." "https://www.ole.com.ar/rss/futbol-internacional/")
+;;      ("Olé - Fútbol Primera" "http://www.ole.com.ar/rss/futbol-primera/")
+;;      ("Olé - Fútbol Ascenso" "http://www.ole.com.ar/rss/futbol-ascenso/")))
 ;;   :bind
 ;;   (:map newsticker-treeview-mode-map
 ;;         ("v" . hoagie-browse-url-newsticker))
@@ -1255,8 +1256,9 @@ page."
     (if arg
         (dired-other-window "~/")
       (dired "~/")))
-  ;; Inspired by https://demonastery.org/2013/04/emacs-narrow-to-region-indirect/
-  ;; and modified to DWIM. Also use `pop-to-buffer' instead of `switch-to-buffer'
+  ;; Inspired by
+  ;; https://demonastery.org/2013/04/emacs-narrow-to-region-indirect/ and
+  ;; modified to DWIM. Also use `pop-to-buffer' instead of `switch-to-buffer'
   (defun hoagie-clone-indirect-dwim (&optional arg)
     "Create an indirect buffer, narrow it to defun or active region.
 If ARG, don't prompt for buffer name suffix."
@@ -1440,13 +1442,26 @@ FRAME is ignored."
       (set-face-attribute 'default (selected-frame) :height size)))
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
 
-(use-package modus-themes
-  :demand t
+;; (use-package modus-themes
+;;   :demand t
+;;   :config
+;;   (load-theme 'modus-operandi t)
+;;   :custom
+;;   (modus-themes-completions (quote ((matches . (underline))
+;;                                     (selection . (bold intense))))))
+
+;; (use-package sketch-themes
+;;   :ensure t
+;;   :config
+;;   ;; Load black version
+;;   ;;(load-theme 'sketch-black t)
+;;   ;; Load white version
+;;   (load-theme 'sketch-white t))
+
+(use-package hima-theme
+  :ensure t
   :config
-  (load-theme 'modus-operandi t)
-  :custom
-  (modus-themes-completions (quote ((matches . (underline))
-                                    (selection . (bold intense))))))
+  (load-theme 'hima t))
 
 ;; Almost tempted to make it a package. But given that I _always_ load this,
 ;; in a normal init, a simple `load-file' will suffice.
