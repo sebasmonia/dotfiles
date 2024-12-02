@@ -1,12 +1,13 @@
 ;; Auto-generated file; don't edit -*- mode: lisp-data -*-
 ((:url "https://text.npr.org/" :title "NPR Text news" :time
        "2024-05-29 09:25:17 AM")
+ (:url "https://chotrin.org/writing/" :title
+       "ch√∂trin's wiki: writing." :time "Fri Nov 29 22:32:57 2024")
+ (:url "https://indieblog.page/" :title
+       "Discover the IndieWeb, one blog post at a time." :time
+       "Fri Nov 29 23:18:42 2024")
  (:url "https://legiblenews.com/" :title "Legible News" :time
        "Thu Oct  3 11:49:05 2024")
- (:url "http://68k.news/" :title "68k.news" :time
-       "Fri Aug  2 16:54:46 2024")
- (:url "http://68k.news/index.php?section=nation&loc=AR" :title
-       "68k.news (AR)" :time "Fri Aug  2 16:51:13 2024")
  (:url "https://burgundywave.com/category/colorado-rapids/" :title
        "Colorado Rapids Archives - Burgundy Wave" :time
        "2024-07-27 06:58:18 PM")
@@ -52,7 +53,7 @@
  (:url "https://idle.nprescott.com/" :title "Idle Cycles" :time
        "Mon Sep 16 21:39:23 2024")
  (:url "https://www.filfre.net/sitemap/" :title
-       "ª Table of Contents The Digital Antiquarian" :time
+       "Table of Contents The Digital Antiquarian" :time
        "Fri Oct 18 09:54:58 2024")
  (:url "https://log.schemescape.com/" :title "Schemescape" :time
        "Mon Sep 30 09:18:57 2024")
