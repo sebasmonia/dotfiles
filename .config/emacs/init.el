@@ -1442,26 +1442,13 @@ FRAME is ignored."
       (set-face-attribute 'default (selected-frame) :height size)))
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
 
-;; (use-package modus-themes
-;;   :demand t
-;;   :config
-;;   (load-theme 'modus-operandi t)
-;;   :custom
-;;   (modus-themes-completions (quote ((matches . (underline))
-;;                                     (selection . (bold intense))))))
-
-;; (use-package sketch-themes
-;;   :ensure t
-;;   :config
-;;   ;; Load black version
-;;   ;;(load-theme 'sketch-black t)
-;;   ;; Load white version
-;;   (load-theme 'sketch-white t))
-
-(use-package hima-theme
-  :ensure t
+(use-package modus-themes
+  :demand t
   :config
-  (load-theme 'hima t))
+  (load-theme 'modus-operandi t)
+  :custom
+  (modus-themes-completions (quote ((matches . (underline))
+                                    (selection . (bold intense))))))
 
 ;; Almost tempted to make it a package. But given that I _always_ load this,
 ;; in a normal init, a simple `load-file' will suffice.
