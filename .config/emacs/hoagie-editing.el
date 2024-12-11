@@ -112,7 +112,8 @@ for escaping a line that contains a string literal."
     (?\( . ?\))
     (?\[ . ?\])
     (?\{ . ?\})
-    (?\<  ?\>))
+    (?\% . ?\%) ;; Windows environment variables :)
+    (?\< . ?\>))
   "Alist of pairs to insert for `hoagie-insert-pair'.")
 
 (defun hoagie-insert-pair (&optional arg)
@@ -130,11 +131,12 @@ some of it's behaviours. There's also `insert-pair', but I
 couldn't crack how to use it :("
   (interactive "*P")
   (with-region-or-thing 'sexp
-    (let* ((opener (read-char "Opening char: "))
+    (let* ((preview (mapconcat #'string (mapcar #'car hoagie-pair-chars) ""))
+           (opener (read-char (format "Pick %s :" preview)))
            (closer (alist-get opener hoagie-pair-chars)))
       ;; if the opener isn't from our list of chars, message and do nothing
       (if (not closer)
-          (message "\"%c\" is not in the pair list" opener)
+          (message "\"%c\" is not in the pair opener list" opener)
         (save-excursion
           (goto-char start)
           (insert opener)
