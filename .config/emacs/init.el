@@ -289,8 +289,8 @@ Running in a toolbox is actually the \"common\" case. :)"
     "g" '("grep dired" . find-grep-dired)
     "n" '("name dired" . find-name-dired)
     "d" '("dired" . find-dired))
-  ;; UPDATE 2024-11-04: I saw this technique in "M-o" for sgml-mode, which turn
-  ;; uses facemenu.el, but it only works correctly if I assign the binding
+  ;; UPDATE 2024-11-04: I saw this technique in "M-o" for sgml-mode, which in
+  ;; turn uses facemenu.el, but it only works correctly if I assign the binding
   ;; "manually" instead through use-package
   (keymap-set hoagie-keymap "ESC f" hoagie-find-keymap)
   (setf dired-compress-file-suffixes
@@ -1323,13 +1323,12 @@ If ARG, don't prompt for buffer name suffix."
         ;; ...although I never used it
         ("I" . insert-file))
   :custom
-  ;; experimental, I don't think I have a need for lockfiles...
   (create-lockfiles nil)
   ;; from TRAMP's FAQ
   (remote-file-name-inhibit-locks t)
   (sentence-end-double-space nil)
   (tab-always-indent 'complete)
-  (minibuffer-restore-windows nil) ;; finally...
+  (read-minibuffer-restore-windows nil) ;; finally...
   (tab-width 4) ;; make golang code nicer to read
   (delete-pair-blink-delay 0.1)
   ;; This feature was the culprit of the messages "No matching parenthesis
@@ -1371,8 +1370,7 @@ If ARG, don't prompt for buffer name suffix."
         w32-use-native-image-API t
         inhibit-compacting-font-caches t
         auto-window-vscroll nil
-        compilation-error-regexp-alist
-        (delete 'maven compilation-error-regexp-alist))
+        compilation-error-regexp-alist (delete 'maven compilation-error-regexp-alist))
   ;; https://200ok.ch/posts/2020-09-29_comprehensive_guide_on_handling_long_lines_in_emacs.html
   (setq-default bidi-paragraph-direction 'left-to-right
   ;; from https://github.com/SystemCrafters/rational-emacs/blob/master/modules/rational-defaults.el

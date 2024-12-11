@@ -1,11 +1,6 @@
 ;; Auto-generated file; don't edit -*- mode: lisp-data -*-
 ((:url "https://text.npr.org/" :title "NPR Text news" :time
        "2024-05-29 09:25:17 AM")
- (:url "https://chotrin.org/writing/" :title
-       "chötrin's wiki: writing." :time "Fri Nov 29 22:32:57 2024")
- (:url "https://indieblog.page/" :title
-       "Discover the IndieWeb, one blog post at a time." :time
-       "Fri Nov 29 23:18:42 2024")
  (:url "https://legiblenews.com/" :title "Legible News" :time
        "Thu Oct  3 11:49:05 2024")
  (:url "https://burgundywave.com/category/colorado-rapids/" :title
@@ -34,6 +29,8 @@
  (:url "https://thebloggess.com/" :title
        "The Bloggess - Like Mother Teresa, only better." :time
        "Wed Jul 31 17:50:12 2024")
+ (:url "https://chotrin.org/writing/" :title
+       "chotrin's wiki: writing." :time "Fri Nov 29 22:32:57 2024")
  (:url "https://koldfront.dk/" :title "koldfront" :time
        "Wed Jul 31 17:36:13 2024")
  (:url "https://berthub.eu/articles/" :title "Bert Hubert's writings"
@@ -69,6 +66,9 @@
        :time "Fri Aug  9 09:16:44 2024")
  (:url "https://stevelosh.com/links/" :title "Links / Steve Losh"
        :time "Fri Oct 18 09:46:17 2024")
+ (:url "https://indieblog.page/" :title
+       "Discover the IndieWeb, one blog post at a time." :time
+       "Fri Nov 29 23:18:42 2024")
  (:url "https://1mb.club/" :title "1MB Club" :time
        "2024-06-12 11:55:52 PM")
  (:url "https://search.marginalia.nu/" :title "Marginalia Search"
