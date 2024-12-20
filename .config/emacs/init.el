@@ -556,6 +556,10 @@ external browser and new eww buffer, respectively)."
     "l" #'flymake-show-buffer-diagnostics
     "n" #'flymake-goto-next-error
     "p" #'flymake-goto-prev-error
+    ;; "t" for toggle
+    "t" #'flymake-mode
+    ;; whichever I use the most between t and f will stay long term
+    "f" #'flymake-mode
     "s" #'flymake-start)
   :bind
   (:map hoagie-second-keymap
