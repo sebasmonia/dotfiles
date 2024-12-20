@@ -679,46 +679,6 @@ Set `fill-column', `truncate-lines'."
   (:map hoagie-keymap
         ("<f6>" . execute-extended-command)))
 
-(use-package newsticker
-  :commands
-  (newsticker-show-news newsticker-start)
-  :custom
-  (newsticker-automatically-mark-items-as-old nil)
-  (newsticker-frontend 'newsticker-treeview)
-  (newsticker-new-item-functions '(newsticker-download-images newsticker-download-enclosures))
-  ;; format: (label url start-time interbal wget-args)
-  (newsticker-url-list
-   '(("NPR World News" "https://feeds.npr.org/1004/rss.xml")
-	 ("NPR National News" "https://feeds.npr.org/1003/rss.xml")
-	 ("Espejito Espejito" "http://site.sebasmonia.com/feed.xml")
-	 ("Irreal" "http://irreal.org/blog/?feed=rss2")
-	 ("Planet Emacslife" "https://planet.emacslife.com/atom.xml")
-     ("Planet Lisp" "http://planet.lisp.org/rss20.xml")
-     ("Fedora Magazine" "https://fedoramagazine.org/feed/")
-     ("Schneier on Security" "https://www.schneier.com/feed/atom")
-     ;;("Slashdot" "http://rss.slashdot.org/Slashdot/slashdotMain")
-     ("BA Times" "https://www.batimes.com.ar/feed")
-     ("Olé - Fútbol inter." "https://www.ole.com.ar/rss/futbol-internacional/")
-     ("Olé - Fútbol Primera" "http://www.ole.com.ar/rss/futbol-primera/")
-     ("Olé - Fútbol Ascenso" "http://www.ole.com.ar/rss/futbol-ascenso/")))
-  :bind
-  (:map newsticker-treeview-mode-map
-        ("v" . hoagie-browse-url-newsticker))
-  :config
-  (defun hoagie-browse-url-newsticker (&optional arg)
-    "Call my own browse-url-function from Newsticker.
-Function inspired by `newsticker-treeview-browse-url'.
-Call with prefix arg to open in Firefox instead of EWW."
-    (interactive "P")
-    (with-current-buffer (newsticker--treeview-list-buffer)
-      (let ((url (get-text-property (point) :nt-link)))
-        (when url
-          (if arg
-              (hoagie-browse-url url)
-            (eww-browse-url url))
-          (if newsticker-automatically-mark-visited-items-as-old
-              (newsticker-treeview-mark-item-old)))))))
-
 (use-package notifications
   ;; this package is used by appt to display
   ;; notifications in the desktop
