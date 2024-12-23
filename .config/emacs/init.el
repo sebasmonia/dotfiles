@@ -1274,11 +1274,10 @@ If ARG, don't prompt for buffer name suffix."
         ;; (F6 and C are next to each other in the Raise)
         ("k" . kill-whole-line)
         ("u" . delete-pair))
-  (:map hoagie-second-keymap
-        ;; Used to be C-x n i (narrow indirect) with the enhancement
-        ;; to narrow to defun, it gets a new and shorter binding
-        ("c" . hoagie-clone-indirect-dwim))
   (:map ctl-x-map
+        ;; Back to C-x n i, I simply internalized "C-x n" for all
+        ;; narrowing commands. Now "F5 c" is free again...
+        ("n i" . hoagie-clone-indirect-dwim)
         ;; right next to other-window
         ("i" . other-frame)
         ("ESC i" . make-frame)
