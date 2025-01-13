@@ -1016,7 +1016,7 @@ Inspired by a similar function in Elpher."
     (setf truncate-lines t)
     (setq-local imenu-generic-expression '((nil "^\\(.*\\)" 1)))))
 
-;; connections defined in qontigo-init.el
+;; connections defined in sc-init.el
 (use-package sql-datum
   :load-path "~/github/datum"
   :after sql
@@ -1417,9 +1417,9 @@ FRAME is ignored."
 ;; let's do our best to keep Gnus files/dir outside of ~
 (load-file "~/sourcehut/dotfiles/.config/gnus/.gnus.el")
 
-(use-package smolsite
+(use-package site
   :load-path "~/sourcehut/site.sebasmonia"
-  :if (locate-library "smolsite.el")
+  :if (locate-library "site.el")
   :demand t)
 
 ;; nowadays, Windows == work, so:
