@@ -3,7 +3,7 @@ A place to store my keyboard and Emacs configuration. I used to have more things
 ## Emacs config
 
 A [use-package](https://www.gnu.org/software/emacs/manual/html_mono/use-package.html) based configuration, that tries its best to be platform agnostic.  
-In most cases I prefer smaller packages, if built-in, even better (eg fido-mode over ivy/helm, project.el over projectile, etc.).  
+In most cases I prefer smaller packages, if built-in, even better (eg project.el over projectile).  
 In the same spirit, I use Eglot for my LSP needs.  
 My package of preference for Common Lisp is [Sly](https://github.com/joaotavora/sly), a fork of SLIME.  
 My theme of choice is [modus-operandi](https://gitlab.com/protesilaos/modus-themes). Every once in a while I try other themes, but at most a day later I end up going back to modus.  
@@ -28,13 +28,11 @@ And another legacy setup with [KMonad](https://github.com/kmonad/kmonad) from be
 
 ### Home setup
 
-Lenovo L390 Yoga running Fedora Silverblue, with just a few extensions installed:
+Lenovo L390 Yoga running Fedora Workstation, with just a few extensions installed:
 
 * [Clipboard history](https://extensions.gnome.org//extension/4839/clipboard-history/): I got used to having a clipboard history in Emacs, and in i3, now I need it in Gnome too.  
 * [Tray icons reloaded](https://extensions.gnome.org//extension/2890/tray-icons-reloaded/): For Slack, mostly.  
 * Background logo, because it looks fancy.  
-
-I really like the idea of not layering anything over the base image, so all apps are installed via Flatpak, except Emacs that I compile in each Toolbox.  
 
 ### Work setup
 
