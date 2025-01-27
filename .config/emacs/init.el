@@ -66,20 +66,6 @@
 (keymap-set key-translation-map "<print>" "<menu>")
 (keymap-global-set "<menu>" 'hoagie-keymap)
 
-;; In case the config is not running on Silverblue, or if I ever layer Emacs on
-;; the base system...
-(defvar hoagie-toolbox-name
-  (if (file-exists-p "/run/.containerenv")
-      ;; from http://ergoemacs.org/emacs/elisp_read_file_content.html
-      ;; insert content in temp buffer rather than open a file
-      (with-temp-buffer
-        (insert-file-contents "/run/.containerenv")
-        (search-forward "name=") ;; move point to the line with the name
-        (setf hoagie-container-name
-              (cl-subseq (thing-at-point 'line) 6 -2)))
-    "host")
-  "Stores the name of the current container, if present.")
-
 ;; these keys are mapped on particular positions in my Dygma Raise
 (keymap-global-set "<f6>" 'hoagie-keymap) ;; T1 (next to SPC/Control)
 (keymap-global-set "<f5>" 'hoagie-second-keymap) ;; Enter
@@ -176,7 +162,7 @@
   :custom
   (browse-url-secondary-browser-function #'browse-url-firefox)
   (browse-url-browser-function #'eww-browse-url)
-  (browse-url-new-window-flag t)
+  (browse-url-new-window-flag t))
 
 (use-package calendar
   :demand t
@@ -292,17 +278,13 @@
           ("\\.zip\\'" . "7z a -r %o  %i")))
   (defun hoagie-dired-os-open-file ()
     "Open a file with the default OS program.
-Initial version from EmacsWiki, added macOS & Silverblue toolbox
-support. This could also use `w32-shell-execute' on Windows.
-Also, the binding W `browse-url-of-dired-file' is a valid
-replacement, but not sure about toolboxes..."
+Initial version from EmacsWiki. This could also use `w32-shell-execute'
+on Windows."
     (interactive)
-    (let ((program-name (cond ;; Used to use start "" {path}, but this
-                              ;; one works too
-                              ((eq system-type 'windows-nt) "explorer")
-                              ;; For Linux, change based on toolbox
-                              ;; vs non-toolbox
-                              (t "xdg-open")))
+    ;; Used to use start "" {path}, for Windows, can't recall why I changed it
+    (let ((program-name (if (eq system-type 'windows-nt)
+                            "explorer"
+                          "xdg-open"))
           (target-filename (dired-get-filename nil t)))
       ;; for Windows, replace the slashes in the name for "explorer" to work
       (when (eq system-type 'windows-nt)
@@ -310,8 +292,7 @@ replacement, but not sure about toolboxes..."
         (setf target-filename (subst-char-in-string ?/ ?\\ target-filename)))
       (apply #'call-process
              program-name
-             ;; arguments to `call-process' + args for toolbox when required +
-             ;; target filename
+             ;; arguments to `call-process' + target filename
              `(nil 0 nil
                    ,target-filename))))
   (defun hoagie-kill-buffer-filename ()
@@ -1293,7 +1274,7 @@ If ARG, don't prompt for buffer name suffix."
   (inhibit-startup-screen t)
   (initial-buffer-choice t)
   (initial-scratch-message
-   ";; Il semble que la perfection soit atteinte non quand il n’y a\n;; plus rien à ajouter, mais quand il n’y a plus à retrancher.\n;;                                   - Antoine de Saint Exupéry\n\n;; Misc:\n;; C-x C-k e edit kmacro    ;; (shell) C-c C-o clear last output\n;; C-x / vundo              ;; C-x C-t transpose-lines (0 arg!)\n\n;; During isearch           ;; Query replace\n;; C-w add watp, can repeat ;; C-u M-% to replace words\n;; M-r toggle regex\n\n;; Newlines:\n;; C-o open-line            ;; C-M-o split-line\n;; M-^ join with prev line  ;; M-j default-indent-new-line\n\n;; M-x...\n;; copy-matching-lines (also kill-) ;; (un)highlight-regexp\n;; align-current (or align-regexp)\n\n;; Calendar & Diary\n;; . - go to today          ;; u/m/x - unmark/mark events/holidays\n;; M-= count days region\n\n;; Replace in many files:\n;; 1. multi-occur (if buffers visiting)\n;; 2. in Dired, Q -> regexp replace in marked files\n;; 2. F6-f (find-name-dired, find-grep-dired), then #2\n\n;; Notes prefix <f3> => 3 inbox / n new / g grep / f find by name\n\n")
+   ";; Il semble que la perfection soit atteinte non quand il n’y a\n;; plus rien à ajouter, mais quand il n’y a plus à retrancher.\n;;                                   - Antoine de Saint Exupéry\n\n;; Misc:\n;; C-x C-k e edit kmacro    ;; (shell) C-c C-o clear last output\n;; C-x / vundo              ;; C-x C-t transpose-lines (0 arg!)\n\n;; During isearch           ;; Query replace\n;; C-w add watp, can repeat ;; C-u M-% to replace words\n;; M-r toggle regex\n\n;; Newlines:\n;; C-o open-line            ;; C-M-o split-line\n;; M-^ join with prev line  ;; M-j default-indent-new-line\n\n;; M-x...\n;; copy-matching-lines (also kill-) ;; (un)highlight-regexp\n;; align-current (or align-regexp)\n\n;; Calendar & Diary\n;; . - go to today          ;; u/m/x - unmark/mark events/holidays\n;; M-= count days region\n\n;; Replace in many files:\n;; 1. multi-occur (if buffers visiting)\n;; 2. in Dired, Q -> regexp replace in marked files\n;; 3. F6-f (find-name-dired, find-grep-dired), then #2\n\n;; Notes prefix <f3> => 3 inbox / n new / g grep / f find by name\n\n")
   (save-interprogram-paste-before-kill t)
   (visible-bell nil)
   ;; from https://gitlab.com/jessieh/dot-emacs
@@ -1342,11 +1323,7 @@ If ARG, don't prompt for buffer name suffix."
           `((".*" ,auto-save-dir t)))
     (make-directory backup-dir t)
     (setf backup-directory-alist
-          `((".*" . ,backup-dir))))
-  ;; Identify the toolbox container for this Emacs instance in the frame title
-  ;; (setf frame-title-format '(" %b @ " (:eval hoagie-toolbox-name))
-  ;;       icon-title-format '(" %b @ " (:eval hoagie-toolbox-name)))
-  )
+          `((".*" . ,backup-dir)))))
 
 ;; Per-OS configuration
 
