@@ -174,22 +174,9 @@
 
 (use-package browse-url
   :custom
-  (browse-url-secondary-browser-function #'hoagie-browse-url)
+  (browse-url-secondary-browser-function #'browse-url-firefox)
   (browse-url-browser-function #'eww-browse-url)
   (browse-url-new-window-flag t)
-  :config
-  (defun hoagie-browse-url (url &rest args)
-    "Open Firefox, changing invocation if running in a toolbox.
-Running in a toolbox is actually the \"common\" case. :)"
-    (if (string= hoagie-toolbox-name "host")
-        (browse-url-firefox url args)
-      (call-process "flatpak-spawn"
-                    nil
-                    0
-                    nil
-                    "--host"
-                    "firefox"
-                    url))))
 
 (use-package calendar
   :demand t
@@ -310,15 +297,12 @@ support. This could also use `w32-shell-execute' on Windows.
 Also, the binding W `browse-url-of-dired-file' is a valid
 replacement, but not sure about toolboxes..."
     (interactive)
-    (let ((program-name (cond ((eq system-type 'darwin) "open")
-                              ;; Used to use start "" {path}, but this
+    (let ((program-name (cond ;; Used to use start "" {path}, but this
                               ;; one works too
                               ((eq system-type 'windows-nt) "explorer")
                               ;; For Linux, change based on toolbox
                               ;; vs non-toolbox
-                              (t (if (string= hoagie-toolbox-name "host")
-                                     "xdg-open"
-                                   "flatpak-spawn"))))
+                              (t "xdg-open")))
           (target-filename (dired-get-filename nil t)))
       ;; for Windows, replace the slashes in the name for "explorer" to work
       (when (eq system-type 'windows-nt)
@@ -329,8 +313,6 @@ replacement, but not sure about toolboxes..."
              ;; arguments to `call-process' + args for toolbox when required +
              ;; target filename
              `(nil 0 nil
-                   ,@(unless (string= hoagie-toolbox-name "host")
-                       '("--host" "xdg-open"))
                    ,target-filename))))
   (defun hoagie-kill-buffer-filename ()
     "Sends the current buffer's filename to the kill ring."
@@ -1362,8 +1344,9 @@ If ARG, don't prompt for buffer name suffix."
     (setf backup-directory-alist
           `((".*" . ,backup-dir))))
   ;; Identify the toolbox container for this Emacs instance in the frame title
-  (setf frame-title-format '(" %b @ " (:eval hoagie-toolbox-name))
-        icon-title-format '(" %b @ " (:eval hoagie-toolbox-name))))
+  ;; (setf frame-title-format '(" %b @ " (:eval hoagie-toolbox-name))
+  ;;       icon-title-format '(" %b @ " (:eval hoagie-toolbox-name)))
+  )
 
 ;; Per-OS configuration
 
