@@ -220,7 +220,8 @@
   ("M-#" . dictionary-lookup-definition))
 
 (use-package cdsync :load-path "~/sourcehut/caldav-sync.el"
-  :if (eq system-type 'gnu/linux)
+  :if (and (eq system-type 'gnu/linux)
+           (locate-library "cdsync.el"))
   :demand t
   :custom
   (cdsync-auth-source-host "caldav-fastmail")
@@ -1346,15 +1347,14 @@ If ARG, don't prompt for buffer name suffix."
 (when (eq system-type 'gnu/linux)
   (when (display-graphic-p)
     (set-fontset-font t 'emoji (font-spec :family "Noto Emoji")))
-
   (defun hoagie-adjust-font-size (frame)
     "Inspired by https://emacs.stackexchange.com/a/44930/17066.
 FRAME is ignored."
     ;; 2021-05-22: now I use the pgtk branch everywhere, and the monitor name
     ;; has a meaningul value in all cases, so:
     (let* ((monitor-name (alist-get 'name (frame-monitor-attributes)))
-           (monitor-font '(("0x0536" . 151) ;; laptop -- maybe 143
-                           ("LG Ultra HD" . 151))) ;; monitor -- also 158
+           (monitor-font '(("0x0536" . 143) ;; laptop -- maybe 151?
+                           ("LG Ultra HD" . 181))) ;; 173?
            (size (alist-get monitor-name monitor-font
                             180 ;; default size, "big just in case"
                             nil
