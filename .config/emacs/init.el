@@ -1201,12 +1201,6 @@ If ARG, don't prompt for buffer name suffix."
           (narrow-to-region start end)
           (deactivate-mark))
         (pop-to-buffer buf))))
-  (defun hoagie-kill-buffer (&optional prefix-arg)
-    "Kill the current buffer, with PREFIX-ARG defer to `kill-buffer'."
-    (interactive "P")
-    (if current-prefix-arg
-        (call-interactively #'kill-buffer)
-      (kill-buffer (current-buffer))))
   :bind
   ("<S-f1>" . (lambda () (interactive) (find-file user-init-file)))
   ("<f1>" . hoagie-go-home)
@@ -1227,7 +1221,9 @@ If ARG, don't prompt for buffer name suffix."
   ("M-u" . upcase-dwim)
   ("M-l" . downcase-dwim)
   ("M-z" . zap-up-to-char)
-  ("C-x k" . hoagie-kill-buffer)
+  ("C-x k" . kill-current-buffer)
+  ("C-x ESC k" . kill-buffer)
+  ("<remap> <list-buffers>" . ibuffer)
   ;; it's back...
   ("<remap> <list-buffers>" . ibuffer)
   (:map hoagie-keymap
