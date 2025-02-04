@@ -1,6 +1,9 @@
 ;; Auto-generated file; don't edit -*- mode: lisp-data -*-
 ((:url "https://text.npr.org/" :title "NPR Text news" :time
        "2024-05-29 09:25:17 AM")
+ (:url "https://lucumr.pocoo.org/" :title
+       "Blog | Armin Ronacher's Thoughts and Writings" :time
+       "Tue Feb  4 10:16:02 2025")
  (:url "https://www.csmonitor.com/layout/set/text/textedition" :title
        "Text Edition - CSMonitor.com" :time "Sun Jan  5 22:42:15 2025")
  (:url "https://legiblenews.com/" :title "Legible News" :time
@@ -47,8 +50,6 @@
        "Fri Aug 16 15:14:12 2024")
  (:url "https://fabiensanglard.net/" :title
        "Fabien Sanglard's Website" :time "2024-07-27 07:04:56 PM")
- (:url "https://digdeeper.neocities.org/" :title "Dig Deeper" :time
-       "Mon Sep 16 21:39:37 2024")
  (:url "https://idle.nprescott.com/" :title "Idle Cycles" :time
        "Mon Sep 16 21:39:23 2024")
  (:url "https://www.filfre.net/sitemap/" :title
@@ -68,6 +69,8 @@
        :time "Fri Aug  9 09:16:44 2024")
  (:url "https://stevelosh.com/links/" :title "Links / Steve Losh"
        :time "Fri Oct 18 09:46:17 2024")
+ (:url "https://digdeeper.neocities.org/" :title "Dig Deeper" :time
+       "Mon Sep 16 21:39:37 2024")
  (:url "https://indieblog.page/" :title
        "Discover the IndieWeb, one blog post at a time." :time
        "Fri Nov 29 23:18:42 2024")
