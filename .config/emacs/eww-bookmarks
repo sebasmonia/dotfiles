@@ -1,9 +1,6 @@
 ;; Auto-generated file; don't edit -*- mode: lisp-data -*-
 ((:url "https://text.npr.org/" :title "NPR Text news" :time
        "2024-05-29 09:25:17 AM")
- (:url "https://lucumr.pocoo.org/" :title
-       "Blog | Armin Ronacher's Thoughts and Writings" :time
-       "Tue Feb  4 10:16:02 2025")
  (:url "https://www.csmonitor.com/layout/set/text/textedition" :title
        "Text Edition - CSMonitor.com" :time "Sun Jan  5 22:42:15 2025")
  (:url "https://legiblenews.com/" :title "Legible News" :time
@@ -11,16 +8,17 @@
  (:url "https://burgundywave.com/category/colorado-rapids/" :title
        "Colorado Rapids Archives - Burgundy Wave" :time
        "2024-07-27 06:58:18 PM")
- (:url "https://thejollyteapot.com/" :title
-       "Archives - The Jolly Teapot" :time "Fri Sep 27 09:27:44 2024")
  (:url "https://netigen.com/tags" :title "Netigen: Tags (volume-5)"
        :time "Wed Oct  2 17:14:47 2024")
- (:url "http://starbreaker.org/index.html" :title
-       "welcome | starbreaker.org" :time "Wed Jul 31 17:50:25 2024")
+ (:url "http://starbreaker.org/grimoire/index.html" :title
+       "grimoire | starbreaker.org" :time "Tue Feb  4 11:37:53 2025")
  (:url "https://www.schneier.com/" :title "Schneier on Security" :time
        "2024-07-26 08:36:42 AM")
  (:url "https://taonaw.com/" :title "The Art Of Not Asking Why" :time
        "Fri Aug  9 16:23:47 2024")
+ (:url "https://lucumr.pocoo.org/" :title
+       "Blog | Armin Ronacher's Thoughts and Writings" :time
+       "Tue Feb  4 10:16:02 2025")
  (:url "https://bacardi55.io/posts/" :title "Bacardi55's Web Cave"
        :time "2024-07-18 10:16:05 AM")
  (:url "https://82mhz.net/" :title "82MHz" :time
@@ -31,6 +29,8 @@
        "Fri Aug  9 16:21:34 2024")
  (:url "https://www.archaeoramblings.com/blog/" :title
        "Archeoramblings" :time "2024-07-18 10:15:34 AM")
+ (:url "https://thejollyteapot.com/" :title
+       "Archives - The Jolly Teapot" :time "Fri Sep 27 09:27:44 2024")
  (:url "https://thebloggess.com/" :title
        "The Bloggess - Like Mother Teresa, only better." :time
        "Wed Jul 31 17:50:12 2024")
