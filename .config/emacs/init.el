@@ -84,10 +84,10 @@
         ("q" . hoagie-escape-regexp)
         ("t" . hoagie-insert-datetime))
   (:map hoagie-second-keymap
-        ("q" . hoagie-split-by-newline)
+        ("s" . hoagie-split-by-newline)
         ;; always have a binding for plain old fill-paragraph (it tends to be
         ;; replaced/shadowed in a lot of modes).
-        ("ESC q" . fill-paragraph)))
+        ("q" . fill-paragraph)))
 
 (use-package hoagie-notes
   :load-path "~/sourcehut/dotfiles/.config/emacs"
@@ -719,10 +719,8 @@ Set `fill-column', `truncate-lines'."
         ;; hitting F5 twice to store something sounds like a good
         ;; shortcut to push things semi-constantly
         ("<f5>" . hoagie-push-to-register-dwim)
-        ("s" . copy-to-register)
         ("i" . hoagie-insert-register)
         ("l" . list-registers)
-        ("SPC" . point-to-register)
         ("d" . hoagie-clean-registers)
         ("j" . hoagie-jump-to-register))
   :config
