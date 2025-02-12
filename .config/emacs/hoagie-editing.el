@@ -101,39 +101,37 @@ for escaping a line that contains a string literal."
             (search-backward last-match nil t)
             (delete-char -1)))))))
 
-(defvar hoagie-pair-chars
-  '((?\" . ?\")
-    (?\' . ?\')
-    (?\` . ?\')
-    ;; Silly me! I forgot to add Markdown pairs here :)
-    (?\* . ?\*)
-    (?\_ . ?\_)
-    (?\~ . ?\~)
-    (?\( . ?\))
-    (?\[ . ?\])
-    (?\{ . ?\})
-    (?\% . ?\%) ;; Windows environment variables :)
-    (?\< . ?\>))
-  "Alist of pairs to insert for `hoagie-insert-pair'.")
+(setopt insert-pair-alist
+        '((?\" ?\")
+          (?\' ?\')
+          (?\` ?\')
+          ;; Silly me! I forgot to add Markdown pairs here :)
+          (?\* ?\*)
+          (?\_ ?\_)
+          (?\~ ?\~)
+          (?\( ?\))
+          (?\[ ?\])
+          (?\{ ?\})
+          (?\% ?\%) ;; Windows environment variables :)
+          (?\< ?\>)))
 
-(defun hoagie-insert-pair (&optional arg)
-  "Wrap the region or sexp at point in a pair from `hoagie-pair-chars'.
+(defun hoagie-insert-pair ()
+  "Wrap the region or sexp at point in a pair from `insert-pair-alist'.
 Note that using sexp at point might wrap a symbol, depending on
-point position.
-Point is not modified, unless called with prefix ARG: a negative
-prefix moves point to the opening delimiter; any other value to
-the last one.
+point position. Point is not modified.
 
 This is my own counterpart to `delete-pair' (which see). Emacs
 has a built in mode for this, `electric-pair-mode', but it does
 more than I want, it is more intrusive, and I couldn't get around
-some of it's behaviours. There's also `insert-pair', but I
-couldn't crack how to use it :("
-  (interactive "*P")
+some of it's behaviours.
+I eventually figured out how to use `insert-pair' (by looking at
+`insert-parentheses'), but I prefer how this command works: with
+point over a symbol, it will wrap it. Convenient."
+  (interactive "*")
   (with-region-or-thing 'sexp
     (let* ((preview (mapconcat #'string (mapcar #'car hoagie-pair-chars) ""))
            (opener (read-char (format "Pick %s :" preview)))
-           (closer (alist-get opener hoagie-pair-chars)))
+           (closer (car (assoc opener hoagie-pair-chars))))
       ;; if the opener isn't from our list of chars, message and do nothing
       (if (not closer)
           (message "\"%c\" is not in the pair opener list" opener)
@@ -141,9 +139,7 @@ couldn't crack how to use it :("
           (goto-char start)
           (insert opener)
           (goto-char (+ 1 end))
-          (insert closer))
-        (cond ((eq arg '-) (goto-char start))
-              (arg (goto-char (+ 1 end))))))))
+          (insert closer))))))
 
 (defun hoagie-toggle-backslash ()
   "Toggle slashes-backslashes in the region or line."

@@ -76,11 +76,10 @@
   :load-path "~/sourcehut/dotfiles/.config/emacs"
   :demand t
   :bind
-  ("C-<backspace>" . hoagie-backward-delete-word)
   ("C-z" . hoagie-region-to-char)
   (:map hoagie-keymap
         ("/" . hoagie-toggle-backslash)
-        ("p" . hoagie-insert-pair) ;; and "u" for built-in unpair
+        ("p" . hoagie-insert-pair)
         ("q" . hoagie-escape-regexp)
         ("t" . hoagie-insert-datetime))
   (:map hoagie-second-keymap
