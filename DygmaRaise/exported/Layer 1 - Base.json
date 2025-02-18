@@ -11,7 +11,7 @@
       }
     ]
   },
-  "language": "english",
+  "language": "en-US",
   "layerNames": [
     {
       "id": 0,
@@ -19,11 +19,11 @@
     },
     {
       "id": 1,
-      "name": "Browser - Mouse"
+      "name": "F-Keys/Browser/Mouse"
     },
     {
       "id": 2,
-      "name": "OS - Linux"
+      "name": "OS/Arrows/Media"
     },
     {
       "id": 3,
@@ -31,19 +31,19 @@
     },
     {
       "id": 4,
-      "name": "Shift + Base"
+      "name": "Base + Shift"
     },
     {
       "id": 5,
-      "name": "Excel"
+      "name": "Excel + Numpad"
     },
     {
       "id": 6,
-      "name": "Base - Windows"
+      "name": "Gaming"
     },
     {
       "id": 7,
-      "name": "OS - Windows"
+      "name": "L8"
     },
     {
       "id": 8,
@@ -120,9 +120,9 @@
       "label": "="
     },
     {
-      "keyCode": 17498,
-      "label": "7",
-      "extraLabel": "LOCK"
+      "keyCode": 42,
+      "label": "BACKSPACE",
+      "verbose": "Backspace"
     },
     {
       "keyCode": 43,
@@ -193,8 +193,9 @@
       "label": "F5"
     },
     {
-      "keyCode": 64,
-      "label": "F7"
+      "keyCode": 283,
+      "label": "X",
+      "extraLabel": ""
     },
     {
       "keyCode": 4,
@@ -263,9 +264,17 @@
       "label": "\\"
     },
     {
-      "keyCode": 280,
-      "label": "U",
-      "extraLabel": "C+"
+      "keyCode": 49466,
+      "label": "ESC",
+      "extraLabel": {
+        "key": null,
+        "ref": null,
+        "props": {
+          "modifier": "shift",
+          "size": "sm"
+        },
+        "_owner": null
+      }
     },
     {
       "keyCode": 100,
@@ -331,33 +340,28 @@
       "label": "/"
     },
     {
-      "keyCode": 301,
-      "label": "-",
-      "extraLabel": "C+"
-    },
-    {
-      "keyCode": 49166,
-      "label": "6",
-      "extraLabel": "OSL"
-    },
-    {
-      "keyCode": 227,
-      "label": "LEFT LINUX",
-      "verbose": "Left Linux"
-    },
-    {
-      "keyCode": 226,
-      "label": "LEFT ALT",
-      "verbose": "Left Alt"
-    },
-    {
-      "keyCode": 63,
-      "label": "F6"
-    },
-    {
-      "keyCode": 49213,
-      "label": "SPACE",
-      "extraLabel": "CTRL/"
+      "keyCode": 49154,
+      "label": "",
+      "extraLabel": {
+        "key": null,
+        "ref": null,
+        "props": {
+          "modifier": "shift",
+          "direction": "Left",
+          "size": "sm"
+        },
+        "_owner": null
+      },
+      "verbose": {
+        "key": null,
+        "ref": null,
+        "props": {
+          "modifier": "shift",
+          "direction": "Left",
+          "size": "sm"
+        },
+        "_owner": null
+      }
     },
     {
       "keyCode": 0,
@@ -367,51 +371,151 @@
     },
     {
       "keyCode": 49163,
-      "label": "3",
-      "extraLabel": "OSL"
+      "label": "",
+      "extraLabel": {
+        "key": null,
+        "ref": null,
+        "props": {
+          "layerNumber": 3,
+          "size": "sm"
+        },
+        "_owner": null
+      }
     },
     {
-      "keyCode": 52026,
-      "label": "ENTER",
-      "extraLabel": "L#4/"
+      "keyCode": 227,
+      "label": "LEFT LINUX",
+      "verbose": "Left Linux"
     },
     {
-      "keyCode": 49165,
-      "label": "5",
-      "extraLabel": "OSL"
+      "keyCode": 52049,
+      "label": "F6",
+      "extraLabel": {
+        "key": null,
+        "ref": null,
+        "props": {
+          "layerNumber": 4
+        },
+        "_owner": null
+      }
+    },
+    {
+      "keyCode": 44,
+      "label": "SPACE"
+    },
+    {
+      "keyCode": 0,
+      "label": "KEY",
+      "extraLabel": "NO",
+      "verbose": "Disabled"
+    },
+    {
+      "keyCode": 280,
+      "label": "U",
+      "extraLabel": ""
+    },
+    {
+      "keyCode": 40,
+      "label": "ENTER"
+    },
+    {
+      "keyCode": 49155,
+      "label": "",
+      "extraLabel": {
+        "key": null,
+        "ref": null,
+        "props": {
+          "modifier": "alt",
+          "direction": "Left",
+          "size": "sm"
+        },
+        "_owner": null
+      },
+      "verbose": {
+        "key": null,
+        "ref": null,
+        "props": {
+          "modifier": "alt",
+          "direction": "Left",
+          "size": "sm"
+        },
+        "_owner": null
+      }
+    },
+    {
+      "keyCode": 301,
+      "label": "-",
+      "extraLabel": ""
+    },
+    {
+      "keyCode": 49153,
+      "label": "",
+      "extraLabel": {
+        "key": null,
+        "ref": null,
+        "props": {
+          "modifier": "control",
+          "direction": "Left",
+          "size": "sm"
+        },
+        "_owner": null
+      },
+      "verbose": {
+        "key": null,
+        "ref": null,
+        "props": {
+          "modifier": "control",
+          "direction": "Left",
+          "size": "sm"
+        },
+        "_owner": null
+      }
+    },
+    {
+      "keyCode": 52028,
+      "label": "BACKSPACE",
+      "extraLabel": {
+        "key": null,
+        "ref": null,
+        "props": {
+          "layerNumber": 4
+        },
+        "_owner": null
+      }
     },
     {
       "keyCode": 49162,
-      "label": "2",
-      "extraLabel": "OSL"
+      "label": "",
+      "extraLabel": {
+        "key": null,
+        "ref": null,
+        "props": {
+          "layerNumber": 2,
+          "size": "sm"
+        },
+        "_owner": null
+      }
     },
     {
-      "keyCode": 49210,
-      "label": "ESC",
-      "extraLabel": "CTRL/"
-    },
-    {
-      "keyCode": 42,
-      "label": "BACKSPACE",
-      "verbose": "Backspace"
-    },
-    {
-      "keyCode": 230,
-      "label": "RIGHT ALT",
-      "extraLabel": "",
-      "verbose": "AltGr"
+      "keyCode": 49163,
+      "label": "",
+      "extraLabel": {
+        "key": null,
+        "ref": null,
+        "props": {
+          "layerNumber": 3,
+          "size": "sm"
+        },
+        "_owner": null
+      }
     },
     {
       "keyCode": 101,
       "label": "MENU"
     },
     {
-      "keyCode": 73,
-      "label": "INSERT"
-    },
-    {
       "keyCode": 53982,
-      "label": "Lang+",
+      "label": "Uncom",
       "extraLabel": "SUPER"
     }
   ],
@@ -435,56 +539,56 @@
     1,
     1,
     1,
+    11,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    15,
     3,
+    11,
+    5,
+    1,
+    5,
+    0,
+    10,
+    10,
+    10,
     1,
     1,
     1,
     1,
+    5,
+    10,
+    10,
+    1,
+    1,
+    1,
+    1,
+    1,
+    10,
+    10,
+    10,
+    1,
+    1,
+    1,
+    1,
+    11,
+    10,
+    10,
+    10,
     1,
     1,
     2,
     11,
-    11,
-    5,
-    0,
-    2,
-    0,
-    2,
-    10,
-    10,
-    1,
-    1,
-    1,
-    1,
-    5,
-    10,
-    10,
-    1,
-    1,
-    1,
-    1,
-    1,
-    10,
-    10,
-    10,
-    1,
-    1,
-    1,
-    1,
     3,
-    10,
-    10,
-    10,
-    1,
-    1,
     4,
     5,
     11,
-    14,
     5,
-    0,
-    2,
-    2,
+    11,
     1,
     1,
     1,
@@ -623,10 +727,10 @@
       "rgb": "rgb(255, 9, 0)"
     },
     {
-      "r": 0,
-      "g": 0,
-      "b": 0,
-      "rgb": "rgb(0, 0, 0)"
+      "r": 255,
+      "g": 122,
+      "b": 122,
+      "rgb": "rgb(255, 122, 122)"
     },
     {
       "r": 175,
