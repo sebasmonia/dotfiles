@@ -53,8 +53,7 @@ and ESC/Control on the right spacebar), which is very convenient for Emacs.
 In my updated setup mentioned in the intro, I changed the dual Esc/Control in T3 for a one-shot
 Control, and T7 for one-shot Alt.  
 T1 is F6, which is bound to my personal keymap in Emacs. T4 is backspace. But if I hold either of
-these, I get access the layer for programming symbols. But I use them for prose too, out of muscle 
-memory.  
+these, I access the layer for programming symbols. I use them for prose too, out of muscle memory.  
 Thumb keys T5 and T8 are `C-u` and `C--g`, the Emacs prefix arg and negative arg, respectively.  
 &nbsp;  
 I can repurpose some of the bottom row keys and other modifiers:  
@@ -74,14 +73,14 @@ I can repurpose some of the bottom row keys and other modifiers:
 Since I activate this layer on the right side, it has arrows on left side, but with the Alt modifier
 applied. They can be used to move between chats in Signal and Discord, for example. In addition,
 around the arrows there's a couple Firefox-oriented bindings: Ctrl+Shift+Tab and Ctrl+Tab to move
-between tabs, Ctrl+Shift+T to reopen the last tab, etc. There's also a dedicate Ctrl+Shift+L key for
-Bitwarden's auto-complete in web pages.  
-The right side has mouse keys, which I would use locking the layer (so having both activation and 
-keys on the same side is not as uncomfortable). Mouse buttons to click are on the sides of "up" 
-plus thumb keys, middle click below the arrows, the scrool wheel on the side. After adjusting the 
+between tabs, Ctrl+Shift+T to reopen the last tab, etc. There's also a dedicated Ctrl+Shift+L key
+for Bitwarden's auto-complete in web pages.  
+The right side has mouse keys, which I would use locking the layer (so having both activation and
+keys on the same side is not a problem). Mouse buttons to click are on the sides of "up" , middle
+click below the arrows, the scrool wheel on the side. After adjusting the
 settings for mouse speed and acceleration, this setup has been convenient here and there.  
-Finally, the number row is for F-keys, so this layer has the same modifiers as Layer 1, to allow for
-Ctrl+F1, Shift+F1, etc.
+Finally, the number row is for F-keys, so this layer has all modifiers (in standard position, and
+also in Layer 1 position), to allow for Ctrl+F1, Shift+F1, etc.
 
 ![Layer 2](pictures/Layer-2-FKeys-Browser-Mouse.png)
 
@@ -99,8 +98,8 @@ On the left side there are arrow keys mapped to ESDF, surrounded by Home/End/Pag
 of times, moving with arrows implies expanding text selections (when not in Emacs, at least) so the 
 layer also has an extra thumb shift to extend selections. I am also using more often the "arrows to
 move by word" (with Control modifier applied) right below the regular arrows.  
-Finally since I used the media keys on my MD770 a lot, I am mapping playback and volume in (and 
-around) the T1~4 keys in the top row.  
+Finally since I used the media keys on my MD770 a lot, I am mapping playback and volume in (and
+around) the T1~4 keys.  
 I moved Alt+F4 from T7, where I tapped it accidentally, first to right shift, and now down to right 
 control.  Win/Super is still in T6. Now T7 is Win+Control, lets me use the number keys to "pick the
 other window" for applications with more than one in Windows.  
@@ -115,14 +114,14 @@ MS Teams).
 
 Here I mapped symbols that are useful for programming and moved them to keys close to the home row.
 Braces, parenthesis (obviously), math symbols, all types of quotes, etc.   
-There were rev4 additions to this layer: `'` and `~` are mapped with the compose modifier (the 
-solo `'` has custom location with all other quote types), some more programming symbols, and DEL in
-the position that has Backspace and F6 in layer 1 (T4 key and T1 key, respectively).  
+There were rev4 additions to this layer, the only ones that stuck are additional programming
+symbols, and DEL in the position that has Backspace and F6 in layer 1 (T4 key and T1 key,
+respectively).  
 Revision 6 added more alternatives for symbols that are used with Shift+Number and are common in
-programming or Emacs. For example a lower % sign, or a second @ in the left side. I keep tweaking 
+programming or Emacs. For example a lower % sign, or a second @ in the left side. I keep tweaking
 these over time, depending on how much I use them.  
 The latest addition is a `M-%` key, to run `query-replace` or `query-replace-regexp` directly, plus
-re-arranging all the lower row to have "standard" order.
+re-arranging the bottom row to have "standard" keys.
 
 ![Layer 4](pictures/Layer-4-Symbols.png)
 
