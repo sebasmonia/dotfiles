@@ -626,6 +626,7 @@ Set `fill-column', `truncate-lines'."
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
   (minibuffer-visible-completions t)
+  (minibuffer-message-timeout 1)
   (completions-detailed t)
   (completion-auto-help 'always)
   (completion-auto-select 'second-tab)
