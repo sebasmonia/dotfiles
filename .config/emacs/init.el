@@ -626,7 +626,7 @@ Set `fill-column', `truncate-lines'."
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
   (minibuffer-visible-completions t)
-  (minibuffer-message-timeout 1)
+  (minibuffer-message-timeout 0.5)
   (completions-detailed t)
   (completion-auto-help 'always)
   (completion-auto-select 'second-tab)
@@ -1014,6 +1014,8 @@ Time can be anything accepted by `run-at-time'."
 
 (use-package vc
   :demand t
+  :custom
+  (vc-allow-rewriting-published-history t)
   :bind
   (:map vc-prefix-map
         ;; make it consistent with vc-dir
