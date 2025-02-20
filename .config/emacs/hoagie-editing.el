@@ -129,9 +129,9 @@ I eventually figured out how to use `insert-pair' (by looking at
 point over a symbol, it will wrap it. Convenient."
   (interactive "*")
   (with-region-or-thing 'sexp
-    (let* ((preview (mapconcat #'string (mapcar #'car hoagie-pair-chars) ""))
+    (let* ((preview (mapconcat #'string (mapcar #'car insert-pair-alist) ""))
            (opener (read-char (format "Pick %s :" preview)))
-           (closer (car (assoc opener hoagie-pair-chars))))
+           (closer (car (assoc opener insert-pair-alist))))
       ;; if the opener isn't from our list of chars, message and do nothing
       (if (not closer)
           (message "\"%c\" is not in the pair opener list" opener)
