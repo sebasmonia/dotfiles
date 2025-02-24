@@ -2,7 +2,7 @@
 
 ;; Author: Sebastián Monía <code@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
-;; Version: 30.4
+;; Version: 30.5
 ;; Keywords: tools maint
 
 ;; This file is not part of GNU Emacs.
@@ -11,17 +11,12 @@
 
 ;; My dot Emacs file
 ;; Recent changes:
-;; 2023-08-31: Notifications and appointments setup
-;; 2023-10-09: Move unused languages/tools to purgatory.el
-;; 2023-11-07: Move general editing commands to hoagie-editing.el
-;; 2023-11-24: Remove some bindings, add auth-source customization, add some
-;;             initialization to sql-mode and markdown-mode.
-;; 2023-12-06: Use my own mode-line configuration. Require Emacs 30.
 ;; 2024-02-25: Move from Gnus to mu4e (and elfeed)
 ;; 2024-06-26: Remove howm - I only used like, 3 features from it.
 ;; 2024-07-10: Going back to Gnus with IMAP back end, sending elfeed to
 ;;             purgatory, and putting note comments in a separate package.
 ;; 2024-08-29: Move mode-line setup to separate file.
+;; 2025-02-24: Update for Emacs 30 (new options, remove things now in core)
 ;;; Code:
 
 (setf custom-file (locate-user-emacs-file "custom.el"))
@@ -80,10 +75,11 @@
   (:map hoagie-keymap
         ("/" . hoagie-toggle-backslash)
         ("p" . hoagie-insert-pair)
+        ("u" . hoagie-delete-pair)
         ("q" . hoagie-escape-regexp)
         ("t" . hoagie-insert-datetime))
   (:map hoagie-second-keymap
-        ("s" . hoagie-split-by-newline)
+        ("s" . hoagie-split-by-sep)
         ;; always have a binding for plain old fill-paragraph (it tends to be
         ;; replaced/shadowed in a lot of modes).
         ("q" . fill-paragraph)))
@@ -237,6 +233,7 @@
   (dired-compress-directory-default-suffix ".7z")
   (dired-compress-file-default-suffix ".7z")
   (dired-do-revert-buffer t)
+  (dired-movement-style 'cycle)
   :bind
   ;; The default binding for dired-jump is C-x C-j. I used F6-j for
   ;; dired-jump-other-window.
@@ -246,8 +243,9 @@
   (:map hoagie-keymap
         ;; see definition for F6-f in :config below
         ("n" . hoagie-kill-buffer-filename))
-  (:map dired-mode-map
-        ("C-<return>" . hoagie-dired-os-open-file))
+  ;; NOTE until I remember: Replaced in Emacs 30 by E :)
+  ;; (:map dired-mode-map
+  ;;       ("C-<return>" . hoagie-dired-os-open-file))
   :hook
   (dired-mode-hook . dired-hide-details-mode)
   ;; Enables "C-c C-m a" (yeah, really :) lol) to attach
@@ -276,25 +274,6 @@
         dired-compress-files-alist
         '(("\\.7z\\'" . "7z a -r %o %i")
           ("\\.zip\\'" . "7z a -r %o  %i")))
-  (defun hoagie-dired-os-open-file ()
-    "Open a file with the default OS program.
-Initial version from EmacsWiki. This could also use `w32-shell-execute'
-on Windows."
-    (interactive)
-    ;; Used to use start "" {path}, for Windows, can't recall why I changed it
-    (let ((program-name (if (eq system-type 'windows-nt)
-                            "explorer"
-                          "xdg-open"))
-          (target-filename (dired-get-filename nil t)))
-      ;; for Windows, replace the slashes in the name for "explorer" to work
-      (when (eq system-type 'windows-nt)
-        ;; see https://stackoverflow.com/a/9910097
-        (setf target-filename (subst-char-in-string ?/ ?\\ target-filename)))
-      (apply #'call-process
-             program-name
-             ;; arguments to `call-process' + target filename
-             `(nil 0 nil
-                   ,target-filename))))
   (defun hoagie-kill-buffer-filename ()
     "Sends the current buffer's filename to the kill ring."
     (interactive)
@@ -643,9 +622,7 @@ Set `fill-column', `truncate-lines'."
         ("C-<return>" . minibuffer-force-complete-and-exit))
   (:map completion-in-region-mode-map
         ("C-n" . minibuffer-next-completion)
-        ("C-p" . minibuffer-previous-completion))
-  (:map hoagie-keymap
-        ("<f6>" . execute-extended-command)))
+        ("C-p" . minibuffer-previous-completion)))
 
 (use-package notifications
   ;; this package is used by appt to display
@@ -907,6 +884,8 @@ Use prefix ARG to open the file in another window."
   (sharper-run-only-one t))
 
 (use-package shell
+  :custom
+  (shell-get-old-input-include-continuation-lines t)
   :hook
   (shell-mode-hook . hoagie-shell-mode-setup)
   :config
@@ -1049,6 +1028,7 @@ With prefix arg, does a hard reset (thus it asks for confirmation)."
   :custom
   (vc-git-revision-complete-only-branches t)
   (vc-git-log-switches '("--date=iso-local" "--stat"))
+  ;; (vc-git-shortlog-switches 'TBD)
   :config
   (defvar hoagie-vc-git-emails
     '("code@sebasmonia.com"
@@ -1232,8 +1212,7 @@ If ARG, don't prompt for buffer name suffix."
         ;; C-k kill rest of the line
         ;; <f6>-k kill the whole thing
         ;; (F6 and C are next to each other in the Raise)
-        ("k" . kill-whole-line)
-        ("u" . delete-pair))
+        ("k" . kill-whole-line))
   (:map ctl-x-map
         ;; Back to C-x n i, I simply internalized "C-x n" for all
         ;; narrowing commands. Now "F5 c" is free again...
@@ -1271,7 +1250,7 @@ If ARG, don't prompt for buffer name suffix."
   (inhibit-startup-screen t)
   (initial-buffer-choice t)
   (initial-scratch-message
-   ";; Il semble que la perfection soit atteinte non quand il n’y a\n;; plus rien à ajouter, mais quand il n’y a plus à retrancher.\n;;                                   - Antoine de Saint Exupéry\n\n;; Misc:\n;; C-x C-k e edit kmacro    ;; (shell) C-c C-o clear last output\n;; C-x / vundo              ;; C-x C-t transpose-lines (0 arg!)\n\n;; During isearch           ;; Query replace\n;; C-w add watp, can repeat ;; C-u M-% to replace words\n;; M-r toggle regex\n\n;; Newlines:\n;; C-o open-line            ;; C-M-o split-line\n;; M-^ join with prev line  ;; M-j default-indent-new-line\n\n;; M-x...\n;; copy-matching-lines (also kill-) ;; (un)highlight-regexp\n;; align-current (or align-regexp)\n\n;; Calendar & Diary\n;; . - go to today          ;; u/m/x - unmark/mark events/holidays\n;; M-= count days region\n\n;; Replace in many files:\n;; 1. multi-occur (if buffers visiting)\n;; 2. in Dired, Q -> regexp replace in marked files\n;; 3. F6-f (find-name-dired, find-grep-dired), then #2\n\n;; Notes prefix <f3> => 3 inbox / n new / g grep / f find by name\n\n")
+   ";; Il semble que la perfection soit atteinte non quand il n’y a\n;; plus rien à ajouter, mais quand il n’y a plus à retrancher.\n;;                                   - Antoine de Saint Exupéry\n\n;; C-x C-k e edit kmacro             ;; (shell) C-c C-o clear last output\n;; C-x / vundo                       ;; C-x C-t transpose-lines (0 arg!)\n;; C-o open-line                     ;; C-M-o split-line\n\n;; During isearch                    ;; Less common search/replace\n;; C-w add word at point, can repeat ;; M-s . isearch symbol at point\n;; M-r toggle regex                  ;; C-u M-% to replace words\n\n;; M-x...\n;; copy-matching-lines (also kill-)  ;; (un)highlight-regexp\n;; align-current (or align-regexp)\n\n;; Calendar & Diary\n;; . - go to today                    ;; u/m/x - unmark/mark events/holidays\n\n;; Replace in many files:\n;; 1. multi-occur (if buffers visiting)\n;; 2. in Dired, Q -> regexp replace in marked files\n;; 3. F6-f (find-name-dired, find-grep-dired), then #2\n\n;; Notes prefix <f3> => 3 inbox / n new / g grep / f find by name\n\n;; Source functions (familiarize): help-find-source, find-variable,\n;;                                 find-function, find-function-on-key\n\n;; New commands (replace?): replace-regexp-as-diff,\n;;                          multi-file-replace-regexp-as-diff,\n;;                          dired-do-replace-regexp-as-diff\n\n")
   (save-interprogram-paste-before-kill t)
   (visible-bell nil)
   ;; from https://gitlab.com/jessieh/dot-emacs
