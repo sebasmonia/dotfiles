@@ -101,37 +101,42 @@ for escaping a line that contains a string literal."
             (search-backward last-match nil t)
             (delete-char -1)))))))
 
-(setopt insert-pair-alist
-        '((?\" ?\")
-          (?\' ?\')
-          (?\` ?\')
-          ;; Silly me! I forgot to add Markdown pairs here :)
-          (?\* ?\*)
-          (?\_ ?\_)
-          (?\~ ?\~)
-          (?\( ?\))
-          (?\[ ?\])
-          (?\{ ?\})
-          (?\% ?\%) ;; Windows environment variables :)
-          (?\< ?\>)))
+(defvar hoagie-pair-chars
+  '((?\" . ?\")
+    (?\' . ?\')
+    (?\` . ?\')
+    ;; Silly me! I forgot to add Markdown pairs here :)
+    (?\* . ?\*)
+    (?\_ . ?\_)
+    (?\~ . ?\~)
+    (?\( . ?\))
+    (?\[ . ?\])
+    (?\{ . ?\})
+    (?\% . ?\%) ;; Windows environment variables :)
+    (?\< . ?\>))
+  "Alist of pairs to insert for `hoagie-insert-pair' and
+`hoagie-delete-pair'.")
+
+(defvar hoagie-pair-blink-delay 0.1
+  "Like `delete-pair-blink-delay', but for my own pair functions.")
 
 (defun hoagie-insert-pair ()
-  "Wrap the region or sexp at point in a pair from `insert-pair-alist'.
+  "Wrap the region or sexp at point in a pair from `hoagie-pair-chars'.
 Note that using sexp at point might wrap a symbol, depending on
-point position. Point is not modified.
+point position.
 
-This is my own counterpart to `delete-pair' (which see). Emacs
-has a built in mode for this, `electric-pair-mode', but it does
-more than I want, it is more intrusive, and I couldn't get around
-some of it's behaviours.
-I eventually figured out how to use `insert-pair' (by looking at
-`insert-parentheses'), but I prefer how this command works: with
-point over a symbol, it will wrap it. Convenient."
+This started as my counterpart to `delete-pair', but I ended up
+rewriting that one too.
+Emacs has a built in mode for this, `electric-pair-mode', but it does
+more than I want, it is more intrusive, and I couldn't get around some
+of it's behaviours. I eventually figured out how to use
+`insert-pair' (by looking at `insert-parentheses'), but I prefer how
+this command works."
   (interactive "*")
   (with-region-or-thing 'sexp
     (let* ((preview (mapconcat #'string (mapcar #'car insert-pair-alist) ""))
            (opener (read-char (format "Pick %s :" preview)))
-           (closer (car (assoc opener insert-pair-alist))))
+           (closer (alist-get opener hoagie-pair-chars)))
       ;; if the opener isn't from our list of chars, message and do nothing
       (if (not closer)
           (message "\"%c\" is not in the pair opener list" opener)
@@ -141,22 +146,54 @@ point over a symbol, it will wrap it. Convenient."
           (goto-char (+ 1 end))
           (insert closer))))))
 
+(defun hoagie-delete-pair ()
+  "Delete a pair from `hoagie-pair-chars'."
+  ;; TODO: revisit to make it smarter. Right now it can break stuff, but it
+  ;; works and might be good enough. Time will tell.
+;; If point is on an opener character, use the sexp it delimits and unpair
+;; it. When point isn't under an opener char, prompt for one, then search
+;; backwards for the opener, mark the sexp, and remove the pair.
+;; If a sexp cannot be determined, then just search backward and forward for the
+;; characters, but it risks breaking balance of code."
+  (interactive)
+  (let* ((start-pos (point))
+         (use-point (member (following-char) (mapcar #'car hoagie-pair-chars)))
+         (preview (mapconcat #'string (mapcar #'car insert-pair-alist) ""))
+         (opener (if use-point
+                     (following-char)
+                   (read-char (format "Pick %s :" preview))))
+         (closer (alist-get opener hoagie-pair-chars)))
+    (save-excursion
+      (save-match-data
+        (unless use-point
+          (search-backward (string opener))
+          (sit-for hoagie-pair-blink-delay))
+        (delete-char 1)
+        (search-forward (string closer))
+        (delete-char -1)
+        (sit-for hoagie-pair-blink-delay)
+        (goto-char start-pos)))))
+
 (defun hoagie-toggle-backslash ()
   "Toggle slashes-backslashes in the region or line."
   (interactive)
-  (with-region-or-thing 'line
-    (save-excursion
+  (save-excursion
+    (with-region-or-thing 'line
       (with-restriction start end
-        (goto-char start)
-        (if (save-excursion (search-forward "/" nil t))
-            (while (search-forward "/" nil t) (replace-match "\\\\" 'literal))
-          (while (search-forward "\\" nil t) (replace-match "/")))))))
+        (save-match-data 
+          (let* ((from (if (search-forward "/" nil t) ?/ ?\\))
+                 (to (if (= from ?\\) ?/ ?\\)))
+            (goto-char start)
+            (subst-char-in-region start end from to)))))))
 
-(defun hoagie-split-by-newline (&optional arg)
-  "Split using newlines by a separator, then indent.
+(defun hoagie-split-by-sep (&optional arg)
+  "Split the rest of the line using a separator.
 By default the separator is a single space, and contiguous spaces
 are collapsed to one. With prefix ARG prompt for separator, with
 no collapsing.
+Strings are not broken up. The resulting region is indented after
+splitting.
+
 
 This is based on the super useful package
 \"fill-function-arguments\", which works well but sometimes gets
