@@ -461,7 +461,8 @@ Sets `fill-column'."
         ;; "w" for web.
         ("w" . eww)
         ;; the EWW boormarks are the "personal" ones
-        ("ESC w" . eww-list-bookmarks))
+        ("ESC w" . eww-list-bookmarks)
+        ("C-w" . eww-list-buffers))
   (:map eww-mode-map
         ("m" . hoagie-eww-jump)
         ;; default M-I - but I use this often
@@ -600,7 +601,7 @@ Set `fill-column', `truncate-lines'."
   :custom
   (completions-format 'one-column)
   (completions-max-height 25)
-  (completion-styles '(basic flex))
+  (completion-styles '(flex))
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t)
