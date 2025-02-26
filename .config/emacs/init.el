@@ -17,24 +17,25 @@
 ;;             purgatory, and putting note comments in a separate package.
 ;; 2024-08-29: Move mode-line setup to separate file.
 ;; 2025-02-24: Update for Emacs 30 (new options, remove things now in core)
+;; 2025-02-26: Bring back browse-kill-ring, remove json-mode, dired-narrow,
+;;             re-builder. Remove instances of global-set-key.
 ;;; Code:
 
 (setf custom-file (locate-user-emacs-file "custom.el"))
 
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-;; (setf use-package-compute-statistics t)
-
+;; TODO: do I still need this?
 (when (eq window-system 'pgtk)
   (pgtk-use-im-context t))
 
-(setf comp-deferred-compilation t
-      warning-minimum-level :error)
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+;; (setf use-package-compute-statistics t)
+(setf package-archive-priorities '(("gnu" . 10) ("nongnu" . 5) ("melpa" . 1))
+      package-native-compile t)
 
 (require 'use-package)
-(setf use-package-verbose t)
-(setf use-package-hook-name-suffix nil)
-(setf package-native-compile t)
+(setf use-package-verbose t
+      use-package-hook-name-suffix nil)
 
 (when (display-graphic-p)
   (custom-set-faces
@@ -59,14 +60,16 @@
 ;; compat Linux-Windows
 (keymap-set key-translation-map "<apps>" "<menu>")
 (keymap-set key-translation-map "<print>" "<menu>")
+;; TODO: can try using something else here, even in the laptop
+;; I use F6 and not the menu key!
 (keymap-global-set "<menu>" 'hoagie-keymap)
 
 ;; these keys are mapped on particular positions in my Dygma Raise
-(keymap-global-set "<f6>" 'hoagie-keymap) ;; T1 (next to SPC/Control)
+(keymap-global-set "<f6>" 'hoagie-keymap) ;; T1 (next to SPC)
 (keymap-global-set "<f5>" 'hoagie-second-keymap) ;; Enter
 
-;; This package declares commands and macros (!) that I use for general
-;; editing
+;; This package declares commands and macros (!) that I
+;; use for general editing
 (use-package hoagie-editing
   :load-path "~/sourcehut/dotfiles/.config/emacs"
   :demand t
@@ -80,8 +83,8 @@
         ("t" . hoagie-insert-datetime))
   (:map hoagie-second-keymap
         ("s" . hoagie-split-by-sep)
-        ;; always have a binding for plain old fill-paragraph (it tends to be
-        ;; replaced/shadowed in a lot of modes).
+        ;; always have a binding for plain old fill-paragraph (it tends
+        ;; to be replaced/shadowed in a lot of modes).
         ("q" . fill-paragraph)))
 
 (use-package hoagie-notes
@@ -152,6 +155,14 @@
         ("b b" . bookmark-set)
         ("b j" . bookmark-jump)
         ("b l" . bookmark-bmenu-list)))
+
+;; I can use the built in M-y menu, but for longer text, it isn't
+;; nearly as comfortable to use as this package
+(use-package browse-kill-ring
+  :ensure t
+  :demand t
+  :config
+  (browse-kill-ring-default-keybindings))
 
 (use-package browse-url
   :custom
@@ -284,13 +295,6 @@
           (kill-new name))
         (message (format "Filename: %s"
                          (or name "-No file for this buffer-")))))))
-
-(use-package dired-narrow
-  :ensure t
-  :after dired
-  :bind
-  (:map dired-mode-map
-        ("/" . dired-narrow)))
 
 (use-package ecomplete
   :config
@@ -562,10 +566,6 @@ Set `fill-column' and related modes.'."
   (regexp-search-ring-max 64)
   (search-ring-max 64))
 
-(use-package json-mode
-  :ensure t
-  :mode "\\.json$")
-
 (use-package lisp-mode
   :config
   (defun hoagie-lisp-mode-setup ()
@@ -682,11 +682,6 @@ Set `fill-column', `truncate-lines'."
     "Setup my `python-mode' configuration."
     (setf fill-column 79)
     (display-fill-column-indicator-mode)))
-
-(use-package re-builder
-  :custom
-  ;; let's try this thing...
-  (reb-re-syntax 'rx))
 
 (use-package register
   :demand t
@@ -1318,7 +1313,7 @@ If ARG, don't prompt for buffer name suffix."
                         :height (if (= (face-attribute 'default :height) 120)
                                     181
                                   120)))
-  (global-set-key (kbd "<f7>") #'hoagie-manually-adjust-font-size))
+  (keymap-global-set "<f7>" #'hoagie-manually-adjust-font-size))
 
 (when (eq system-type 'gnu/linux)
   (when (display-graphic-p)
@@ -1364,7 +1359,7 @@ FRAME is ignored."
     "~/sourcehut/qontigo-files/.emacs.d/sc-init.el"
     "Location of the SimCorp init file.")
   (load sc-init-file)
-  (global-set-key (kbd "ESC S-<f1>")
-                  (lambda () (interactive) (find-file sc-init-file))))
+  (keymap-global-set "ESC S-<f1>"
+                     (lambda () (interactive) (find-file sc-init-file))))
 
 ;;; init.el ends here
