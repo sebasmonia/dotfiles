@@ -34,7 +34,7 @@ in my custom commands, that I turned it into a reusable macro."
          (if bounds
              (setf start (car bounds)
                    end (cdr bounds))
-           (error "Couldn't find the %s at point." ,thing))))
+           (error "Couldn't find the %s at point" ,thing))))
      ,@body))
 
 ;; from https://www.emacswiki.org/emacs/BackwardDeleteWord because I
@@ -117,8 +117,14 @@ for escaping a line that contains a string literal."
   "Alist of pairs to insert for `hoagie-insert-pair' and
 `hoagie-delete-pair'.")
 
-(defvar hoagie-pair-blink-delay 0.1
+(defvar hoagie-pair-blink-delay 0.2
   "Like `delete-pair-blink-delay', but for my own pair functions.")
+
+(defun hoagie--pair-read-opener ()
+  (read-char (format "Pick %s :"
+                     (mapconcat #'string
+                                (mapcar #'car hoagie-pair-chars) ""))))
+
 
 (defun hoagie-insert-pair ()
   "Wrap the region or sexp at point in a pair from `hoagie-pair-chars'.
@@ -134,8 +140,7 @@ of it's behaviours. I eventually figured out how to use
 this command works."
   (interactive "*")
   (with-region-or-thing 'sexp
-    (let* ((preview (mapconcat #'string (mapcar #'car insert-pair-alist) ""))
-           (opener (read-char (format "Pick %s :" preview)))
+    (let* ((opener (hoagie--pair-read-opener))
            (closer (alist-get opener hoagie-pair-chars)))
       ;; if the opener isn't from our list of chars, message and do nothing
       (if (not closer)
@@ -147,32 +152,35 @@ this command works."
           (insert closer))))))
 
 (defun hoagie-delete-pair ()
-  "Delete a pair from `hoagie-pair-chars'."
-  ;; TODO: revisit to make it smarter. Right now it can break stuff, but it
-  ;; works and might be good enough. Time will tell.
-;; If point is on an opener character, use the sexp it delimits and unpair
-;; it. When point isn't under an opener char, prompt for one, then search
-;; backwards for the opener, mark the sexp, and remove the pair.
-;; If a sexp cannot be determined, then just search backward and forward for the
-;; characters, but it risks breaking balance of code."
+  "Delete a pair from `hoagie-pair-chars'.
+If point is on an opener character, use the sexp it delimits and unpair
+it. When point isn't under an opener char, prompt for one, then search
+backwards for the opener, and remove the pair."
+  ;; TODO: consider optional feature below
+  ;; If a sexp cannot be determined, then just search backward and forward for the
+  ;; characters, but it risks breaking balance of code."
   (interactive)
   (let* ((start-pos (point))
          (use-point (member (following-char) (mapcar #'car hoagie-pair-chars)))
-         (preview (mapconcat #'string (mapcar #'car insert-pair-alist) ""))
-         (opener (if use-point
-                     (following-char)
-                   (read-char (format "Pick %s :" preview))))
+         (opener (if use-point (following-char) (hoagie--pair-read-opener)))
          (closer (alist-get opener hoagie-pair-chars)))
-    (save-excursion
+    (save-mark-and-excursion
       (save-match-data
+        ;; in case the region was active, so the macro
+        ;; returns the sexp at point
+        (deactivate-mark)
         (unless use-point
-          (search-backward (string opener))
-          (sit-for hoagie-pair-blink-delay))
-        (delete-char 1)
-        (search-forward (string closer))
-        (delete-char -1)
-        (sit-for hoagie-pair-blink-delay)
-        (goto-char start-pos)))))
+          (search-backward (string opener)))
+        (with-region-or-thing 'sexp
+          (unless (and (= (char-after start) opener)
+                       (= (char-before end) closer))
+            (error "Can't delimit a sexp with %c ~ %c" opener closer))
+          (mark-sexp)
+          (sit-for hoagie-pair-blink-delay)
+          (goto-char end)
+          (delete-char -1)
+          (goto-char start)
+          (delete-char 1))))))
 
 (defun hoagie-toggle-backslash ()
   "Toggle slashes-backslashes in the region or line."
