@@ -75,6 +75,8 @@
   :demand t
   :bind
   ("C-z" . hoagie-region-to-char)
+  ("<remap> <delete-word>" . hoagie-delete-word)
+  ("<remap> <backward-kill-word>" . hoagie-backward-delete-word)
   (:map hoagie-keymap
         ("/" . hoagie-toggle-backslash)
         ("p" . hoagie-insert-pair)
