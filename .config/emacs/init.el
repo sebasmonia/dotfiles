@@ -292,11 +292,11 @@
     (interactive)
     (if (derived-mode-p 'dired-mode)
         (dired-copy-filename-as-kill 0)
-      (let ((name (buffer-file-name)))
-        (when name
-          (kill-new name))
-        (message (format "Filename: %s"
-                         (or name "-No file for this buffer-")))))))
+      (if-let* ((name (buffer-file-name)))
+        (progn
+          (kill-new name)
+          (message "Killed filename: %s" name))
+        (error "No file for this buffer")))))
 
 (use-package ecomplete
   :config
@@ -873,6 +873,7 @@ Use prefix ARG to open the file in another window."
 
 (use-package sharper
   :load-path "~/github/sharper"
+  :if (locate-library "sharper.el")
   :bind
   (:map hoagie-keymap
         ;; using "n" for another command now, moving
@@ -901,18 +902,22 @@ Use prefix ARG to open the file in another window."
   (shr-max-image-proportion 0.5)
   :bind
   (:map hoagie-keymap
-        ("ESC b" . hoagie-shr-link-open-or-kill))
+        ;; Tried assigning this in shr-map, but it really needs a
+        ;; global binding. "ESC n" mirrors "n" for filenanes
+        ("ESC n" . hoagie-shr-link-open-or-kill))
   :config
   (setf shr-indentation 2)
   (defun hoagie-shr-link-open-or-kill (&optional arg)
-    "Edit and open the link at point in EWW.
+    "Edit and open the link at point.
 With prefig ARG, put it in the kill ring instead."
     (interactive "P")
-    (when-let ((target-url (get-text-property (point) 'shr-url)))
-      (message "Link: %s" target-url)
-      (if arg
-          (kill-new target-url)
-        (eww (read-string "" target-url)))))
+    (if-let* ((target-url (get-text-property (point) 'shr-url)))
+        (progn
+          (message "Killed link: %s" target-url)
+          (if arg
+              (kill-new target-url)
+            (eww (read-string "" target-url))))
+      (error "No shr link under point")))
   (defun hoagie--collect-shr-links ()
     "Get an alist of all link targets in the current buffer.
 The format returned is (link-text . link-position)
@@ -1069,9 +1074,11 @@ With prefix ARG show the remote branches."
 This command needs the Emacs server running and GIT_EDITOR properly set.
 You can override the branch name to something like \"HEAD~2\", for example."
       (interactive)
-      (vc-git-command "*git rebase -i*" 'async nil "rebase" "-i"
-                      (completing-read "Rebase target: "
-                                       (cdr (vc-git-branches))))))
+      (if (and server-process (getenv "GIT_EDITOR"))
+          (vc-git-command "*git rebase -i*" 'async nil "rebase" "-i"
+                          (completing-read "Rebase target: "
+                                           (cdr (vc-git-branches))))
+        (error "Emacs server not running, or GIT_EDITOR not set"))))
 
 (use-package vc-hooks
   :after (vc vc-git)
@@ -1217,10 +1224,9 @@ If ARG, don't prompt for buffer name suffix."
         ("n i" . hoagie-clone-indirect-dwim)
         ;; right next to other-window
         ("i" . other-frame)
-        ("ESC i" . make-frame)
-        ;; add shift to get the original command for C-x i...
-        ;; ...although I never used it
-        ("I" . insert-file))
+        ;; add meta to get the original command for C-x i...
+        ;; ...although I never used it. UPDATE: used it a couple times :)
+        ("ESC i" . insert-file))
   :custom
   (create-lockfiles nil)
   ;; from TRAMP's FAQ
