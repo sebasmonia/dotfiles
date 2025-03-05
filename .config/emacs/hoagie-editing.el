@@ -1,6 +1,6 @@
-;;; hoagie-editing.el --- Commands for basic editing  -*- lexical-binding: t; -*-
+;;; hoagie-editing.el --- Generict text editing commands -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2023 Sebastián Monía
+;; Copyright (C) 2024-2025 Sebastián Monía
 ;;
 ;; Author: Sebastián Monía <code@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
@@ -76,7 +76,8 @@ With ARG, do this that many times."
 
 (defun hoagie-escape-regexp (&optional arg)
   "Escape a regexp in the region or current line.
-Call with prefix ARG to be prompted a different regexp.
+By default it escapes double quotes and backslashes. Call with prefix
+ARG to be prompted a different regexp.
 Use double prefix to ignore the first and last match, intended
 for escaping a line that contains a string literal."
   (interactive "*P")
@@ -117,7 +118,7 @@ for escaping a line that contains a string literal."
   "Alist of pairs to insert for `hoagie-insert-pair' and
 `hoagie-delete-pair'.")
 
-(defvar hoagie-pair-blink-delay 0.2
+(defvar hoagie-pair-blink-delay 0.3
   "Like `delete-pair-blink-delay', but for my own pair functions.")
 
 (defun hoagie--pair-read-opener ()
