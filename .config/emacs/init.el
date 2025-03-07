@@ -1349,9 +1349,9 @@ FRAME is ignored."
   (modus-themes-completions (quote ((matches . (underline))
                                     (selection . (bold intense))))))
 
-;; Almost tempted to make it a package. But given that I _always_ load this,
-;; in a normal init, a simple `load-file' will suffice.
-(load-file "~/sourcehut/dotfiles/.config/emacs/hoagie-modeline.el")
+;; Almost tempted to make it a package. But given that I _always_
+;; load this, in a normal init, a simple `load-file' will suffice.
+(load-file "~/sourcehut/dotfiles/.config/emacs/hoagie-mode-line.el")
 
 ;; let's do our best to keep Gnus files/dir outside of ~
 (load-file "~/sourcehut/dotfiles/.config/gnus/.gnus.el")
