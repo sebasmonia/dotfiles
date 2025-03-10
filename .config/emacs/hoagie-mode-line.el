@@ -35,9 +35,9 @@
            " "))
 
 (setq-default mode-line-modes
-     (propertize (format-mode-line mode-name)
-                 'face 'mode-line-buffer-id
-                 'help-echo (format-mode-line minor-mode-alist)))
+     '(:propertize mode-name
+                   face mode-line-buffer-id
+                   help-echo (format-mode-line minor-mode-alist)))
 
 (setq-default mode-line-format
      '(" " mode-line-modified
