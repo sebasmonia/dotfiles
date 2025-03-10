@@ -11,7 +11,6 @@
 
 ;; My dot Emacs file
 ;; Recent changes:
-;; 2024-02-25: Move from Gnus to mu4e (and elfeed)
 ;; 2024-06-26: Remove howm - I only used like, 3 features from it.
 ;; 2024-07-10: Going back to Gnus with IMAP back end, sending elfeed to
 ;;             purgatory, and putting note comments in a separate package.
@@ -19,6 +18,7 @@
 ;; 2025-02-24: Update for Emacs 30 (new options, remove things now in core)
 ;; 2025-02-26: Bring back browse-kill-ring, remove json-mode, dired-narrow,
 ;;             re-builder. Remove instances of global-set-key.
+;; 2025-03-10: Change F2, and add repeat-mode.
 ;;; Code:
 
 (setf custom-file (locate-user-emacs-file "custom.el"))
@@ -87,7 +87,10 @@
         ("s" . hoagie-split-by-sep)
         ;; always have a binding for plain old fill-paragraph (it tends
         ;; to be replaced/shadowed in a lot of modes).
-        ("q" . fill-paragraph)))
+        ("q" . fill-paragraph))
+  (:repeat-map hoagie-backward-delete-repeat-map
+               ;; keep using DEL to delete words
+               ("DEL" . hoagie-backward-delete-word)))
 
 (use-package hoagie-notes
   :load-path "~/sourcehut/dotfiles/.config/emacs"
@@ -649,6 +652,8 @@ Set `fill-column', `truncate-lines'."
 (use-package project
   :bind
   (:map hoagie-keymap
+        ;; Since I am using the C-x p prefix more,
+        ;; these two bindings can go? maybe?
         ("g" . project-find-regexp)
         ("f" . project-find-file))
   :custom
@@ -793,13 +798,19 @@ It also deletes the register when called with prefix ARG."
                      "Register to clear (quit to exit): ")
                     nil))))
 
+(use-package repeat
+  :custom
+  (repeat-exit-key "RET")
+  :config
+  (repeat-mode))
+
 (use-package replace
   :bind
   (:map hoagie-keymap
         ("o" . hoagie-occur-symbol-or-region)
         ("ESC o" . multi-occur-in-matching-buffers)
-        ;; good mirror of occur -> occur-dwim, except
-        ;; this built in does have a default binding
+        ;; good mirror of occur -> occur-dwim, except this
+        ;; built in does have a default binding, it is "M-s ."
         ("s" . isearch-forward-thing-at-point))
   :hook
   (occur-hook . hoagie-rename-and-select-occur-buffer)
@@ -1209,6 +1220,23 @@ If ARG, don't prompt for buffer name suffix."
         ;; add meta to get the original command for C-x i...
         ;; ...although I never used it. UPDATE: used it a couple times :)
         ("ESC i" . insert-file))
+  ;; repeat C-x o and C-x i, and even switch between them
+  (:repeat-map hoagie-other-window-frame-repeat-map
+               ("o" . other-window)
+               ("i" . other-frame))
+  ;; extend selections with the last key that activates a mark command:
+  (:repeat-map hoagie-mark-repeat-map
+               ("SPC" . mark-sexp)
+               ("@" . mark-word))
+  ;; use simple SPC keystroke to repeat the cycling
+  (:repeat-map hoagie-cycle-repeat-map
+               ("SPC" . cycle-spacing))
+  ;; repeat a few "C-M-something" movemeent commands
+  (:repeat-map hoagie-sexp-movement-repeat-map
+               ("u" . backward-up-list)
+               ("d" . down-list)
+               ("f" . forward-sexp)
+               ("b" . backward-sexp))
   :custom
   (create-lockfiles nil)
   ;; from TRAMP's FAQ
