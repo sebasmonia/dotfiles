@@ -93,7 +93,7 @@
   :load-path "~/sourcehut/dotfiles/.config/emacs"
   :demand t
   :bind
-  ("<f3>" . hoagie-notes-keymap))
+  ("<f2>" . hoagie-notes-keymap))
 
 (use-package ansi-color
   :commands (ansi-color-apply-buffer)
@@ -829,7 +829,6 @@ Meant to be added to `occur-hook'."
   :mode
   ("\\.http\\'" . restclient-mode)
   :bind
-  ("<f4>" . hoagie-open-restclient)
   (:map restclient-mode-map
         ("C-c r" . rename-buffer)
         ("C-c h" . restclient-toggle-headers))
@@ -841,22 +840,6 @@ Meant to be added to `occur-hook'."
     (message "restclient-response-body-only=%s"
              (setf restclient-response-body-only
                    (not restclient-response-body-only))))
-  (defun hoagie-open-restclient (&optional arg)
-    "Open a file from the restclient \"collection\".
-Use prefix ARG to open the file in another window."
-    (interactive "P")
-    (let ((restclient-file (read-file-name "Open restclient file:"
-                                           "~/restclient/"
-                                           nil
-                                           nil
-                                           nil
-                                           (lambda (name)
-                                             (string-equal
-                                              (file-name-extension name)
-                                              "http")))))
-      (if arg
-          (find-file-other-window restclient-file)
-        (find-file restclient-file))))
   (defun hoagie-restclient-imenu-index ()
     "Configure imenu on the convention \"### Title\"."
     (setq-local imenu-generic-expression '((nil "^### \\(.*\\)$" 1)))))
@@ -1171,7 +1154,7 @@ page."
   ;; Inspired by
   ;; https://demonastery.org/2013/04/emacs-narrow-to-region-indirect/ and
   ;; modified to DWIM. Also use `pop-to-buffer' instead of `switch-to-buffer'
-  (defun hoagie-clone-indirect-dwim (&optional arg)
+  (defun hoagie-narrow-indirect-dwim (&optional arg)
     "Create an indirect buffer, narrow it to defun or active region.
 If ARG, don't prompt for buffer name suffix."
     (interactive "P")
@@ -1189,7 +1172,6 @@ If ARG, don't prompt for buffer name suffix."
   :bind
   ("<S-f1>" . (lambda () (interactive) (find-file user-init-file)))
   ("<f1>" . hoagie-go-home)
-  ("<f2>" . project-switch-project)
   ;; from https://stackoverflow.com/a/6465415
   ("C-x 3" . (lambda () (interactive)(split-window-right) (other-window 1)))
   ("C-x 2" . (lambda () (interactive)(split-window-below) (other-window 1)))
@@ -1221,7 +1203,7 @@ If ARG, don't prompt for buffer name suffix."
   (:map ctl-x-map
         ;; Back to C-x n i, I simply internalized "C-x n" for all
         ;; narrowing commands. Now "F5 c" is free again...
-        ("n i" . hoagie-clone-indirect-dwim)
+        ("n i" . hoagie-narrow-indirect-dwim)
         ;; right next to other-window
         ("i" . other-frame)
         ;; add meta to get the original command for C-x i...
@@ -1254,7 +1236,7 @@ If ARG, don't prompt for buffer name suffix."
   (inhibit-startup-screen t)
   (initial-buffer-choice t)
   (initial-scratch-message
-   ";; Il semble que la perfection soit atteinte non quand il n’y a\n;; plus rien à ajouter, mais quand il n’y a plus à retrancher.\n;;                                   - Antoine de Saint Exupéry\n\n;; C-x C-k e edit kmacro             ;; (shell) C-c C-o clear last output\n;; C-x / vundo                       ;; C-x C-t transpose-lines (0 arg!)\n;; C-o open-line                     ;; C-M-o split-line\n\n;; During isearch                    ;; Less common search/replace\n;; C-w add word at point, can repeat ;; M-s . isearch symbol at point\n;; M-r toggle regex                  ;; C-u M-% to replace words\n\n;; M-x...\n;; copy-matching-lines (also kill-)  ;; (un)highlight-regexp\n;; align-current (or align-regexp)\n\n;; Calendar & Diary\n;; . - go to today                    ;; u/m/x - unmark/mark events/holidays\n\n;; Replace in many files:\n;; 1. multi-occur (if buffers visiting)\n;; 2. in Dired, Q -> regexp replace in marked files\n;; 3. F6-f (find-name-dired, find-grep-dired), then #2\n\n;; Notes prefix <f3> => 3 inbox / n new / g grep / f find by name\n\n;; Source functions (familiarize): help-find-source, find-variable,\n;;                                 find-function, find-function-on-key\n\n;; New commands (replace?): replace-regexp-as-diff,\n;;                          multi-file-replace-regexp-as-diff,\n;;                          dired-do-replace-regexp-as-diff\n\n")
+   ";; Il semble que la perfection soit atteinte non quand il n’y a\n;; plus rien à ajouter, mais quand il n’y a plus à retrancher.\n;;                                   - Antoine de Saint Exupéry\n\n;; C-x C-k e edit kmacro             ;; (shell) C-c C-o clear last output\n;; C-x / vundo                       ;; C-x C-t transpose-lines (0 arg!)\n;; C-o open-line                     ;; C-M-o split-line\n\n;; During isearch                    ;; Less common search/replace\n;; C-w add word at point, can repeat ;; M-s . isearch symbol at point\n;; M-r toggle regex                  ;; C-u M-% to replace words\n\n;; M-x...\n;; copy-matching-lines (also kill-)  ;; (un)highlight-regexp\n;; align-current (or align-regexp)\n\n;; Calendar & Diary\n;; . - go to today                    ;; u/m/x - unmark/mark events/holidays\n\n;; Replace in many files:\n;; 1. multi-occur (if buffers visiting)\n;; 2. in Dired, Q -> regexp replace in marked files\n;; 3. F6-f (find-name-dired, find-grep-dired), then #2\n\n;; Notes prefix <f2> => 2 inbox / n new / g grep / f find by name\n\n;; Source functions (familiarize): help-find-source, find-variable,\n;;                                 find-function, find-function-on-key\n\n;; New commands (replace?): replace-regexp-as-diff,\n;;                          multi-file-replace-regexp-as-diff,\n;;                          dired-do-replace-regexp-as-diff\n\n")
   (save-interprogram-paste-before-kill t)
   (visible-bell nil)
   ;; from https://gitlab.com/jessieh/dot-emacs

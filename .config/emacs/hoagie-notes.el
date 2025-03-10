@@ -36,7 +36,7 @@ This file is meant to be used for quick, uncategorized notes.")
 (defvar-keymap hoagie-notes-keymap
   :prefix 'hoagie-notes-keymap
   :doc "Convenience keymap for note-taking commands."
-  "3" #'hoagie-notes-open-inbox
+  "2" #'hoagie-notes-open-inbox
   "f" #'hoagie-notes-find-by-name
   "g" #'hoagie-notes-grep
   "n" #'hoagie-notes-new-note)
