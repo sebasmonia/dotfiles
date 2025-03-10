@@ -1237,6 +1237,12 @@ If ARG, don't prompt for buffer name suffix."
                ("d" . down-list)
                ("f" . forward-sexp)
                ("b" . backward-sexp))
+  (:repeat-map hoagie-undo-repeat-map
+               ("/" . undo)
+               ("u" . undo)
+               ("r" . undo-redo)
+               :exit
+               ("v" . vundo))
   :custom
   (create-lockfiles nil)
   ;; from TRAMP's FAQ
