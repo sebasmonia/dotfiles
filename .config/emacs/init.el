@@ -820,8 +820,7 @@ It also deletes the register when called with prefix ARG."
 By default, occur _limits the search to the region_ if it is active."
     (interactive)
     (with-region-or-thing 'symbol
-      (occur (buffer-substring-no-properties start
-                                             end)
+      (occur (regexp-quote (buffer-substring-no-properties start end))
              (when current-prefix-arg
 	           (prefix-numeric-value current-prefix-arg)))))
   (defun hoagie-rename-and-select-occur-buffer ()
