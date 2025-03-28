@@ -1365,6 +1365,10 @@ FRAME is ignored."
   (modus-themes-completions (quote ((matches . (underline))
                                     (selection . (bold intense))))))
 
+
+;; (load-file "~/sourcehut/dotfiles/.config/emacs/hoagie-theme.el")
+;; (load-theme 'hoagie t)
+
 ;; Almost tempted to make it a package. But given that I _always_
 ;; load this, in a normal init, a simple `load-file' will suffice.
 (load-file "~/sourcehut/dotfiles/.config/emacs/hoagie-mode-line.el")
