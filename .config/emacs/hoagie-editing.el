@@ -60,19 +60,20 @@ With ARG, do this that many times."
   (interactive (list (prefix-numeric-value current-prefix-arg)
 		             (read-char "Mark to char: " nil 'read-char-history)
                      t))
+  (unless (region-active-p)
+    (set-mark-command nil))
   (let ((direction (if (>= arg 0) 1 -1))
         (case-fold-search (if (and interactive (char-uppercase-p char))
                               nil
                             case-fold-search)))
-    (unless (region-active-p)
-      (set-mark-command nil))
     (goto-char
 	 (progn
 	   (forward-char direction)
 	   (unwind-protect
 		   (search-forward (char-to-string char) nil nil arg)
 		 (backward-char direction))
-	   (point)))))
+	   (point)))
+    (activate-mark)))
 
 (defun hoagie-escape-regexp (&optional arg)
   "Escape a regexp in the region or current line.
