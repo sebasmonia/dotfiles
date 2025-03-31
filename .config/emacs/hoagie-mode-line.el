@@ -16,7 +16,7 @@
                       (when (buffer-narrowed-p) "N")
                       (when (file-remote-p default-directory) "R")
                       " ")
-              'face 'error)))
+              'face '(:inherit error :weight bold))))
 
 ;; same as default, with no tooltip or mouse menu
 (setq-default mode-line-buffer-identification

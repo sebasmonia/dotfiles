@@ -12,21 +12,26 @@ Smalltalk-80.")
        (dim-3  "grey70")
        (dim-4  "grey60")
        (dim-5  "grey50")
-       (string "dark green") ;; hoagie
-       (alt-fg "dark slate grey")) ;; hoagie
+       ;; hoagie
+       (string "green4");; "dark green")
+       (alt-fg "dark slate grey")
+       (alt-bg "lavender")
+       )
 
   (custom-theme-set-faces 'hoagie
 
    ;; Basic faces
    `(default ((t (:foreground ,fg :background ,bg))))
    `(cursor ((t (:background ,alt-fg)))) ;; hoagie
+   `(hl-line ((t (:background ,alt-bg)))) ;; hoagie
    `(highlight ((t (:background ,dim-1))))
    `(trailing-whitespace ((t (:underline t))))
    `(region ((t (:extend t :background ,dim-2))))
    `(secondary-selection ((t (:inherit region))))
-   `(error ((t (:weight bold :foreground "red"))))
-   `(warning ((t (:weight bold :foreground "orange"))))
-   `(success ((t (:weight bold :foreground "green"))))
+   ;; next three where bold in the original theme
+   `(error ((t (:foreground "red"))))
+   `(warning ((t (:foreground "orange"))))
+   `(success ((t (:foreground ,string))))
    `(fringe ((t (nil))))
    `(button ((t (:box 1))))
    `(vertical-border ((t (:foreground ,dim-2))))
@@ -58,7 +63,7 @@ Smalltalk-80.")
    `(font-lock-variable-name-face ((t (nil))))
    `(font-lock-type-face ((t (nil))))
    `(font-lock-constant-face ((t (nil))))
-   `(font-lock-warning-face ((t (:inherit error))))
+   `(font-lock-warning-face ((t (:inherit warning)))) ;; used to inherit from error
    `(font-lock-negation-char-face ((t (nil))))
    `(font-lock-preprocessor-face ((t (:weight bold))))
    `(font-lock-regexp-grouping-backslash ((t (nil))))
@@ -96,12 +101,10 @@ Smalltalk-80.")
    `(markdown-blockquote-face ((t (nil))))
    `(markdown-pre-face ((t (nil))))
 
-   ;; completions
-   `(completions-common-part ((t (:underline t :weight bold)))))
    ;; not in Tok
-   `(fixed-pitch ((t (:background "white smoke"))))
-
-   )
+   `(fixed-pitch ((t (:background ,dim-1))))
+   `(completions-common-part ((t (:underline t :weight bold))))
+   ))
 
 ;;;###autoload
 (when (and (boundp 'custom-theme-load-path) load-file-name)
