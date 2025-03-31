@@ -1,68 +1,111 @@
 (deftheme hoagie
-  "Created using almost-mono-white as a starting point")
+  "My personal theme, just a customized Tok.
+Only light variant.
+https://github.com/topikettunen/tok-theme/:
+Minimal monochromatic theme for Emacs in the spirit of Zmacs and
+Smalltalk-80.")
 
-(custom-theme-set-faces
- 'hoagie
- '(default ((t (:family "Berkeley Mono" :foundry "UKWN" :width normal :height 181 :weight regular :slant normal :underline nil :overline nil :extend nil :strike-through nil :box nil :inverse-video nil :foreground "#000000" :background "#ffffff" :stipple nil :inherit nil))))
- '(cursor ((t (:background "dark slate gray"))))
- '(fixed-pitch ((t (:background "white smoke" :family "Berkeley Mono"))))
- '(variable-pitch ((((type w32)) (:foundry "outline" :family "Arial")) (t (:family "Sans Serif"))))
- '(escape-glyph ((((background dark)) (:foreground "cyan")) (((type pc)) (:foreground "magenta")) (t (:foreground "brown"))))
- '(homoglyph ((((background dark)) (:foreground "cyan")) (((type pc)) (:foreground "magenta")) (t (:foreground "brown"))))
- '(minibuffer-prompt ((t (:weight bold :foreground "black"))))
- '(completions-common-part ((t (:underline t :weight bold))))
- '(highlight ((t (:weight bold))))
- '(region ((t (:background "dim gray" :foreground "white"))))
- '(shadow ((((class color grayscale) (min-colors 88) (background light)) (:foreground "grey50")) (((class color grayscale) (min-colors 88) (background dark)) (:foreground "grey70")) (((class color) (min-colors 8) (background light)) (:foreground "green")) (((class color) (min-colors 8) (background dark)) (:foreground "yellow"))))
- '(secondary-selection ((((class color) (min-colors 88) (background light)) (:extend t :background "yellow1")) (((class color) (min-colors 88) (background dark)) (:extend t :background "SkyBlue4")) (((class color) (min-colors 16) (background light)) (:extend t :background "yellow")) (((class color) (min-colors 16) (background dark)) (:extend t :background "SkyBlue4")) (((class color) (min-colors 8)) (:extend t :foreground "black" :background "cyan")) (t (:inverse-video t))))
- '(trailing-whitespace ((((class color) (background light)) (:background "red1")) (((class color) (background dark)) (:background "red1")) (t (:inverse-video t))))
- '(font-lock-bracket-face ((t (:inherit (font-lock-punctuation-face)))))
- '(font-lock-builtin-face ((t (:weight bold))))
- '(font-lock-comment-delimiter-face ((default (:inherit (font-lock-comment-face)))))
- '(font-lock-comment-face ((t (:foreground "#888888"))))
- '(font-lock-constant-face ((t (:foreground "steel blue"))))
- '(font-lock-delimiter-face ((t (:inherit (font-lock-punctuation-face)))))
- '(font-lock-doc-face ((t (:inherit (font-lock-comment-face)))))
- '(font-lock-doc-markup-face ((t (:inherit (font-lock-constant-face)))))
- '(font-lock-escape-face ((t (:inherit (font-lock-regexp-grouping-backslash)))))
- '(font-lock-function-call-face ((t (:inherit (font-lock-function-name-face)))))
- '(font-lock-function-name-face ((t (:weight bold))))
- '(font-lock-keyword-face ((t (:weight bold))))
- '(font-lock-negation-char-face ((t nil)))
- '(font-lock-number-face ((t nil)))
- '(font-lock-misc-punctuation-face ((t (:inherit (font-lock-punctuation-face)))))
- '(font-lock-operator-face ((t nil)))
- '(font-lock-preprocessor-face ((t (:foreground "dark cyan"))))
- '(font-lock-property-name-face ((t (:inherit (font-lock-variable-name-face)))))
- '(font-lock-property-use-face ((t (:inherit (font-lock-property-name-face)))))
- '(font-lock-punctuation-face ((t nil)))
- '(font-lock-regexp-grouping-backslash ((t (:inherit (bold)))))
- '(font-lock-regexp-grouping-construct ((t (:inherit (bold)))))
- '(font-lock-string-face ((t (:foreground "dark green"))))
- '(font-lock-type-face ((t nil)))
- '(font-lock-variable-name-face ((t nil)))
- '(font-lock-variable-use-face ((t (:inherit (font-lock-variable-name-face)))))
- '(font-lock-warning-face ((t (:foreground "dark red" :weight bold))))
- '(button ((t (:box (:line-width (1 . 1) :color "black" :style released-button)))))
- '(link ((t (:underline (:color foreground-color :style line :position nil)))))
- '(link-visited ((t (:foreground "dark violet" :inherit link))))
- '(fringe ((t (:background "#ffffff"))))
- '(header-line ((t (:foreground "black" :underline t :weight bold))))
- '(tooltip ((((class color)) (:inherit (variable-pitch) :foreground "black" :background "lightyellow")) (t (:inherit (variable-pitch)))))
- '(mode-line ((t (:box (:line-width (1 . 1) :color "#dddddd") :foreground "#000000" :background "#efefef"))))
- '(mode-line ((t (:background "white smoke" :foreground "black" :box (:line-width (1 . 1) :color "black")))))
- '(mode-line-inactive ((t (:background "white smoke" :foreground "#dddddd" :box (:line-width (1 . 1) :color "#dddddd"))))))
- '(mode-line-buffer-id ((t (:weight bold))))
- '(mode-line-emphasis ((t (:weight bold))))
- '(mode-line-highlight ((((supports :box t) (class color grayscale) (min-colors 88)) (:box (:line-width (2 . 2) :color "grey40" :style released-button))) (t (:inherit (highlight)))))
- '(isearch ((t (:weight bold))))
- '(isearch-fail ((t (:inherit shadow))))
- '(lazy-highlight ((t (:background "#dddddd" :foreground "#000000"))))
- '(match ((((class color) (min-colors 88) (background light)) (:background "khaki1")) (((class color) (min-colors 88) (background dark)) (:background "RoyalBlue3")) (((class color) (min-colors 8) (background light)) (:foreground "black" :background "yellow")) (((class color) (min-colors 8) (background dark)) (:foreground "white" :background "blue")) (((type tty) (class mono)) (:inverse-video t)) (t (:background "gray"))))
- '(next-error ((t (:underline "red"))))
- '(query-replace ((t (:inherit lazy-highlight :underline t))))
- ;; things I added after testing
- '(hl-line ((t (:extend t :background "lavender"))))
- )
+(let* ((bg    "white")
+       (fg    "black")
+       (dim-1  "grey90")
+       (dim-2  "grey80")
+       (dim-3  "grey70")
+       (dim-4  "grey60")
+       (dim-5  "grey50")
+       (string "dark green") ;; hoagie
+       (alt-fg "dark slate grey")) ;; hoagie
+
+  (custom-theme-set-faces 'hoagie
+
+   ;; Basic faces
+   `(default ((t (:foreground ,fg :background ,bg))))
+   `(cursor ((t (:background ,alt-fg)))) ;; hoagie
+   `(highlight ((t (:background ,dim-1))))
+   `(trailing-whitespace ((t (:underline t))))
+   `(region ((t (:extend t :background ,dim-2))))
+   `(secondary-selection ((t (:inherit region))))
+   `(error ((t (:weight bold :foreground "red"))))
+   `(warning ((t (:weight bold :foreground "orange"))))
+   `(success ((t (:weight bold :foreground "green"))))
+   `(fringe ((t (nil))))
+   `(button ((t (:box 1))))
+   `(vertical-border ((t (:foreground ,dim-2))))
+   `(minibuffer-prompt ((t (nil))))
+   `(link ((t (:underline t))))
+   `(link-visited ((t (:foreground ,alt-fg :inherit link)))) ;; hoagie
+
+   ;; Line-numbes
+   `(line-number ((t (:foreground ,dim-2))))
+   `(line-number-current-line ((t (:foreground ,fg :background ,dim-1))))
+
+   ;; Mode-line
+   `(mode-line ((t (:foreground ,fg :background ,bg :box (:color ,fg)))))
+   `(mode-line-active ((t (:inherit mode-line))))
+   `(mode-line-inactive ((t (:weight light :foreground ,dim-5 :background ,bg :box (:color ,dim-1)))))
+   `(mode-line-highlight ((t (nil))))
+   `(mode-line-emphasis ((t (:weight bold))))
+   `(mode-line-buffer-id ((t (:weight bold))))
+
+   ;; Font-lock
+   `(font-lock-comment-face ((t (:foreground ,dim-4)))) ;; hoagie
+   `(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
+   `(font-lock-string-face ((t (:foreground ,string))))
+   `(font-lock-doc-face ((t (:foreground ,dim-5))))
+   `(font-lock-doc-markup-face ((t (nil))))
+   `(font-lock-keyword-face ((t (nil))))
+   `(font-lock-builtin-face ((t (nil))))
+   `(font-lock-function-name-face ((t (nil))))
+   `(font-lock-variable-name-face ((t (nil))))
+   `(font-lock-type-face ((t (nil))))
+   `(font-lock-constant-face ((t (nil))))
+   `(font-lock-warning-face ((t (:inherit error))))
+   `(font-lock-negation-char-face ((t (nil))))
+   `(font-lock-preprocessor-face ((t (:weight bold))))
+   `(font-lock-regexp-grouping-backslash ((t (nil))))
+   `(font-lock-regexp-grouping-construct ((t (nil))))
+
+   ;; isearch
+   `(isearch ((t (:foreground ,bg :background ,fg))))
+   `(isearch-group-1 ((t (:background ,dim-5))))
+   `(isearch-group-2 ((t (:background ,dim-4))))
+   `(lazy-highlight ((t (:background ,dim-1))))
+
+   ;; Dired
+   `(dired-directory ((t (:weight bold))))
+   `(dired-broken-symlink ((t (:inherit error))))
+
+   ;; sh
+   `(sh-heredoc ((t (nil))))
+   `(sh-quoted-exec ((t (nil))))
+
+   ;; Org
+   `(org-agenda-structure ((t (nil))))
+   `(org-block ((t (nil))))
+   `(org-headline-done ((t (nil))))
+   `(org-special-keyword ((t (:foreground ,dim-5))))
+
+   ;; Terraform
+   `(terraform--resource-name-face ((t (nil))))
+   `(terraform--resource-type-face ((t (nil))))
+
+   ;; Markdown
+   `(markdown-header-face ((t (:inherit outline-1))))
+   `(markdown-header-delimiter-face ((t (nil))))
+   `(markdown-metadata-key-face ((t (:inherit font-lock-comment-face))))
+   `(markdown-metadata-value-face ((t (:inherit font-lock-comment-face))))
+   `(markdown-blockquote-face ((t (nil))))
+   `(markdown-pre-face ((t (nil))))
+
+   ;; completions
+   `(completions-common-part ((t (:underline t :weight bold)))))
+   ;; not in Tok
+   `(fixed-pitch ((t (:background "white smoke"))))
+
+   )
+
+;;;###autoload
+(when (and (boundp 'custom-theme-load-path) load-file-name)
+  (add-to-list 'custom-theme-load-path
+               (file-name-as-directory (file-name-directory load-file-name))))
 
 (provide-theme 'hoagie)
