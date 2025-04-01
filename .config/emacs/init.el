@@ -1062,16 +1062,20 @@ With prefix ARG show the remote branches."
       (pop-to-buffer buffer-name)
       (goto-char (point-min))
       (special-mode)))
-  (defun hoagie-vc-git-interactive-rebase ()
+  (defun hoagie-vc-git-interactive-rebase (&optional arg)
     "Do an interactive rebase against another branch.
+With prefig ARG,
 This command needs the Emacs server running and GIT_EDITOR properly set.
 You can override the branch name to something like \"HEAD~2\", for example."
-    (interactive)
+    (interactive "P")
     (if (and server-process (getenv "GIT_EDITOR"))
         (vc-git-command "*git rebase -i*" 'async nil "rebase" "-i"
-                        (completing-read "Rebase target: "
-                                         (cdr (vc-git-branches))))
-      (error "Emacs server not running, or GIT_EDITOR not set"))))
+                        (when arg "--onto")
+                        (completing-read (if arg "New base: "
+                                           "Rebase target: ")
+                                         (cdr (vc-git-branches)))
+                        (read-string "Commit spec (eg \"HEAD~5")
+      (error "Emacs server not running, or GIT_EDITOR not set")))))
 
 (use-package vc-hooks
   :after (vc vc-git)
@@ -1363,7 +1367,6 @@ FRAME is ignored."
 ;;   :custom
 ;;   (modus-themes-completions (quote ((matches . (underline))
 ;;                                     (selection . (bold intense))))))
-
 
 (load-file "~/sourcehut/dotfiles/.config/emacs/hoagie-theme.el")
 (load-theme 'hoagie t)
