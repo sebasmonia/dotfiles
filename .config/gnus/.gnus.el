@@ -66,14 +66,10 @@
   (gnus-summary-display-arrow nil)
   ;; http://groups.google.com/group/gnu.emacs.gnus/browse_thread/thread/a673a74356e7141f
   (gnus-summary-line-format (concat
-                             "%0{%U%R%z%}"
-                             "%3{│%}%1{%&user-date;%}%3{│%}" ;; date
-                             " "
-                             "%4{%-25,25f%}" ;; name
-                             " "
-                             "%3{│%}"
-                             " "
-                             "%1{%B%}"
+                             "%U%R | "
+                             "%&user-date; │ " ;; date
+                             "%-25,25f | " ;; name
+                             "%B | "
                              "%s\n"))
   (gnus-user-date-format-alist '((t . "%Y-%m-%d (%a) %H:%M")
                                  gnus-thread-sort-functions '(gnus-thread-sort-by-date)
