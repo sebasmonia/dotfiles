@@ -104,6 +104,7 @@ Smalltalk-80.")
    ;; not in Tok
    `(fixed-pitch ((t (:background ,dim-1))))
    `(completions-common-part ((t (:underline t :weight bold))))
+   `(log-view-commit-body ((t (:foreground ,alt-fg))))
    ))
 
 ;;;###autoload
