@@ -105,6 +105,12 @@ Smalltalk-80.")
    `(fixed-pitch ((t (:background ,dim-1))))
    `(completions-common-part ((t (:underline t :weight bold))))
    `(log-view-commit-body ((t (:foreground ,alt-fg))))
+
+   ;; gnus
+   `(gnus-group-mail-3-empty ((t (:inherit default)))) ;; email dirs
+   `(gnus-summary-normal-ticked ((t (:foreground ,string)))) ;; marked !
+   `(gnus-summary-normal-ancient ((t (:inherit default)))) ;; read
+   `(gnus-summary-normal-unread ((t (:weight bold)))) ;; unread
    ))
 
 ;;;###autoload
