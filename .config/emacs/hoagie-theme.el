@@ -19,6 +19,8 @@ Smalltalk-80.")
        )
 
   (custom-theme-set-faces 'hoagie
+  ;; for live testing
+  ;; (custom-set-faces
 
    ;; Basic faces
    `(default ((t (:foreground ,fg :background ,bg))))
@@ -107,10 +109,33 @@ Smalltalk-80.")
    `(log-view-commit-body ((t (:foreground ,alt-fg))))
 
    ;; gnus
-   `(gnus-group-mail-3-empty ((t (:inherit default)))) ;; email dirs
+   `(gnus-group-mail-3-empty ((t (:inherit default)))) ;; email directories
    `(gnus-summary-normal-ticked ((t (:foreground ,string)))) ;; marked !
+   `(gnus-summary-normal-read ((t (:inherit default)))) ;; read
    `(gnus-summary-normal-ancient ((t (:inherit default)))) ;; read
    `(gnus-summary-normal-unread ((t (:weight bold)))) ;; unread
+   `(gnus-button ((t (:underline t))))
+   `(gnus-header-name ((t (:inherit default)))) ;; all "Header:" text
+   `(gnus-header-from ((t (:inherit default :underline t)))) ;; text of "From: "
+   `(gnus-header-subject ((t (:inherit default)))) ;; text of "Subject: "
+   `(gnus-header-content ((t (:inherit default)))) ;; other header text/values
+
+   ;; maybe I do need some more "fg" colors...
+   `(gnus-cite-1 ((t (:foreground ,alt-fg))))
+   `(gnus-cite-2 ((t (:foreground ,string))))
+   `(gnus-cite-3 ((t (:foreground "orange"))))
+   `(gnus-cite-4 ((t (:foreground ,fg :slate t))))
+   `(gnus-cite-5 ((t (:foreground ,alt-fg :slate t))))
+   `(gnus-cite-6 ((t (:foreground ,string :slate t))))
+
+   ;; message
+   `(message-header-name ((t (:inherit default))))
+   `(message-header-to ((t (:weight bold))))
+   `(message-header-subject ((t (:inherit default))))
+   `(message-header-other ((t (:inherit default))))
+   `(message-header-cc ((t (:inherit default))))
+   `(message-separator ((t (:inherit highlight))))
+   `(message-signature-separator ((t (:inherit highlight))))
    ))
 
 ;;;###autoload

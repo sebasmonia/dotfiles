@@ -68,8 +68,8 @@
   (gnus-summary-line-format (concat
                              "%U%R | "
                              "%&user-date; │ " ;; date
-                             "%-25,25f | " ;; name
-                             "%B | "
+                             "%-25,25f |" ;; name
+                             "%B "
                              "%s\n"))
   (gnus-user-date-format-alist '((t . "%Y-%m-%d (%a) %H:%M")
                                  gnus-thread-sort-functions '(gnus-thread-sort-by-date)
