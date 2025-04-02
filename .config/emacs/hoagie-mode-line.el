@@ -6,8 +6,8 @@
 ;; TODO: is there a way to get this concatenated without :eval?
 (setq-default mode-line-modified
      '(:eval (propertize
-              (concat (if buffer-read-only "/"
-                        ;; since it's not read-only, show
+              (concat (if buffer-read-only "×"
+                        ;; since it is not read-only, show
                         ;; the modified flag
                         (if (and (buffer-modified-p)
                                  (not (derived-mode-p 'comint-mode)))
@@ -16,11 +16,10 @@
                       (when (buffer-narrowed-p) "N")
                       (when (file-remote-p default-directory) "R")
                       " ")
-              'face '(:inherit error :weight bold))))
+              'face 'mode-line-emphasis)))
 
-;; same as default, with no tooltip or mouse menu
-(setq-default mode-line-buffer-identification
-     '(:propertize "%12b" face mode-line-buffer-id))
+;; same as default, with no tooltip, mouse menu nor face
+(setq-default mode-line-buffer-identification '("%12b"))
 
 (setq-default mode-line-position
      (list "%l:%c"
@@ -36,7 +35,6 @@
 
 (setq-default mode-line-modes
      '(:propertize mode-name
-                   face mode-line-buffer-id
                    help-echo (format-mode-line minor-mode-alist)))
 
 (setq-default mode-line-format
@@ -45,11 +43,11 @@
        "  " mode-line-position
        "  " (:eval (when overwrite-mode
                      (propertize "OVERWRITE"
-                                 'face 'warning)))
+                                 'face 'mode-line-highlight)))
        mode-line-format-right-align
        (:eval (when defining-kbd-macro
                 (propertize "REC"
-                            'face 'warning)))
+                            'face 'mode-line-highlight)))
        " " (vc-mode vc-mode)
        " " mode-line-misc-info
        "  " mode-line-process
