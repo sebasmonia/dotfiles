@@ -6,6 +6,7 @@ tries to minimize the use of bolds and slate/italics too.")
 
 (let* ((bg    "white")
        (fg    "black")
+       (dim-0  "grey95")
        (dim-1  "grey90")
        (dim-2  "grey80")
        (dim-3  "grey70")
@@ -15,7 +16,6 @@ tries to minimize the use of bolds and slate/italics too.")
        (string "dark green")
        (alt-fg "dark slate grey")
        (alt-bg "lavender")
-       (subtle-bg "ghost white")
        (error "dark red")
        (warning "dark orange")
        )
@@ -32,14 +32,14 @@ tries to minimize the use of bolds and slate/italics too.")
    `(trailing-whitespace ((t (:underline t))))
    `(region ((t (:extend t :background ,dim-2))))
    `(secondary-selection ((t (:inherit region))))
-   `(fixed-pitch ((t (:background ,dim-1))))
-   `(shadow ((t (:foreground ,dim-3))))
+   `(fixed-pitch ((t (:background ,dim-0))))
+   `(shadow ((t (:foreground ,dim-2))))
    ;; next three where bold in the original theme
    `(error ((t (:foreground ,error))))
    `(warning ((t (:foreground ,warning))))
    `(success ((t (:foreground ,string))))
    `(fringe ((t (nil))))
-   `(button ((t (:box t :background ,dim-1))))
+   `(button ((t (:box t :background ,dim-0))))
    `(vertical-border ((t (:foreground ,dim-2))))
    `(minibuffer-prompt ((t (nil))))
    `(link ((t (:underline t))))
@@ -147,12 +147,12 @@ tries to minimize the use of bolds and slate/italics too.")
    ;; eww & shr
    `(eww-valid-certificate ((t (:foreground ,fg))))
    `(eww-invalid-certificate ((t (:inherit error))))
-   `(eww-form-text ((t (:inherit button :background ,dim-1))))
-   `(eww-form-checkbox ((t (:inherit button :background ,dim-1))))
-   `(eww-form-submit ((t (:inherit button :background ,dim-1))))
+   `(eww-form-text ((t (:inherit button :background ,dim-0))))
+   `(eww-form-checkbox ((t (:inherit button :background ,dim-0))))
+   `(eww-form-submit ((t (:inherit button :background ,dim-0))))
    ;; TODO: find a way to show a box around the text area, but not
    ;;       in every single line
-   `(eww-form-textarea ((t (:background ,dim-1))))
+   `(eww-form-textarea ((t (:background ,dim-0))))
    ;; for markdown, it is simpler to let the "#" characters state the header
    ;;  depth, but for rendered HTML, there's no visual indication. So use a
    ;;  little color and bold/slate properties
@@ -171,6 +171,10 @@ tries to minimize the use of bolds and slate/italics too.")
    `(diff-header ((t (:background ,dim-1))))
    `(diff-file-header((t (:background ,dim-1))))
    ;; TODO: ediff
+
+   ;; help - who knew
+   `(help-key-binding ((t (:inherit fixed-pitch))))
+
    ))
 ;;;###autoload
 (when (and (boundp 'custom-theme-load-path) load-file-name)
