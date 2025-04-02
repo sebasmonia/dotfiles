@@ -1386,7 +1386,7 @@ FRAME is ignored."
 ;; nowadays, Windows == work, so:
 (when (eq system-type 'windows-nt)
   (defvar sc-init-file
-    "~/sourcehut/qontigo-files/.emacs.d/sc-init.el"
+    "~/sourcehut/simcorp-files/.emacs.d/sc-init.el"
     "Location of the SimCorp init file.")
   (load sc-init-file)
   (keymap-global-set "ESC S-<f1>"
