@@ -68,7 +68,7 @@
   (gnus-summary-line-format (concat
                              "%U%R | "
                              "%&user-date; │ " ;; date
-                             "%-25,25f |" ;; name
+                             "%-25,25f | " ;; name
                              "%B "
                              "%s\n"))
   (gnus-user-date-format-alist '((t . "%Y-%m-%d (%a) %H:%M")
@@ -81,8 +81,8 @@
   (gnus-sum-thread-tree-root nil)
   (gnus-sum-thread-tree-indent " ")
   (gnus-sum-thread-tree-vertical        "│")
-  (gnus-sum-thread-tree-leaf-with-other "├─► ")
-  (gnus-sum-thread-tree-single-leaf     "╰─► ")
+  (gnus-sum-thread-tree-leaf-with-other "├─>")
+  (gnus-sum-thread-tree-single-leaf     "└─>")
   :config
   (defun hoagie-summary-spam ()
     "Move the current or marked mails to Spam in Fastmail."
