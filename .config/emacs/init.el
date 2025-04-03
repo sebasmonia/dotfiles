@@ -1361,16 +1361,18 @@ FRAME is ignored."
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
 
 (if (display-graphic-p)
+    (progn
+      ;; until I fix the theme to work in terminals...
+      (load-file "~/sourcehut/dotfiles/.config/emacs/hoagie-theme.el")
+      (load-theme 'hoagie t))
   (use-package modus-themes
     :demand t
     :config
     (load-theme 'modus-operandi t)
     :custom
     (modus-themes-completions (quote ((matches . (underline))
-                                      (selection . (bold intense))))))
-  ;; until I fix the theme to work in terminals...
-  (load-file "~/sourcehut/dotfiles/.config/emacs/hoagie-theme.el")
-  (load-theme 'hoagie t))
+                                      (selection . (bold intense)))))))
+
 
 ;; Almost tempted to make it a package. But given that I _always_
 ;; load this, in a normal init, a simple `load-file' will suffice.
