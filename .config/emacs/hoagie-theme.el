@@ -2,7 +2,9 @@
   "My personal theme, using Tok as a starting point.
 See https://github.com/topikettunen/tok-theme
 This is a variant that has some more colors, but as few as possible. And
-tries to minimize the use of bolds and slate/italics too.")
+tries to minimize the use of bolds and slate/italics too."
+  :background-mode 'light
+  :kind 'color-scheme)
 
 (let* ((bg    "white")
        (fg    "black")

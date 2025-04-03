@@ -1360,16 +1360,17 @@ FRAME is ignored."
       (set-face-attribute 'default (selected-frame) :height size)))
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
 
-;; (use-package modus-themes
-;;   :demand t
-;;   :config
-;;   (load-theme 'modus-operandi t)
-;;   :custom
-;;   (modus-themes-completions (quote ((matches . (underline))
-;;                                     (selection . (bold intense))))))
-
-(load-file "~/sourcehut/dotfiles/.config/emacs/hoagie-theme.el")
-(load-theme 'hoagie t)
+(if (display-graphic-p)
+  (use-package modus-themes
+    :demand t
+    :config
+    (load-theme 'modus-operandi t)
+    :custom
+    (modus-themes-completions (quote ((matches . (underline))
+                                      (selection . (bold intense))))))
+  ;; until I fix the theme to work in terminals...
+  (load-file "~/sourcehut/dotfiles/.config/emacs/hoagie-theme.el")
+  (load-theme 'hoagie t))
 
 ;; Almost tempted to make it a package. But given that I _always_
 ;; load this, in a normal init, a simple `load-file' will suffice.
@@ -1383,8 +1384,8 @@ FRAME is ignored."
   :if (locate-library "site.el")
   :demand t)
 
-;; nowadays, Windows == work, so:
-(when (eq system-type 'windows-nt)
+;; is it a work computer...?
+(when (file-exists-p "~/sourcehut/simcorp-files/.emacs.d/sc-init.el")
   (defvar sc-init-file
     "~/sourcehut/simcorp-files/.emacs.d/sc-init.el"
     "Location of the SimCorp init file.")
