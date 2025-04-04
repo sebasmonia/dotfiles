@@ -230,11 +230,12 @@ predictable."
 
 (defun hoagie-insert-datetime (&optional arg)
   "Insert ISO8601 date at point.
-With prefix ARG, include the time."
+With prefix ARG, don't use dashes (useful for backup files, for
+example). With double prefix, include the time."
   (interactive "P")
-  (insert (format-time-string (if arg
-                                  "%F %T"
-                                  "%F"))))
+  (insert (format-time-string (cond ((equal arg '(4)) "%Y%m%d")
+                                    ((equal arg '(16)) "%F %T")
+                                    (t "%F")))))
 
 (provide 'hoagie-editing)
 ;;; hoagie-editing.el ends here
