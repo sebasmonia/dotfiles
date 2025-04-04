@@ -2,16 +2,11 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("Schneier on Security" (front-context-string . "  Schneier on Se")
- (rear-context-string) (position . 1)
- (last-modified 26275 39002 43793 0)
- (location . "https://www.schneier.com/")
- (handler . eww-bookmark-jump))
-("EmacsWiki: Regular Expression"
- (front-context-string . "[Home]\n  SiteMap") (rear-context-string)
- (position . 1) (last-modified 26057 38347 876773 178000)
- (location . "https://www.emacswiki.org/emacs/RegularExpression")
- (handler . eww-bookmark-jump))
+(("Transfer framework overview"
+ (front-context-string . "  Transfer frame") (rear-context-string)
+ (position . 1) (last-modified 26394 16559 218790 0)
+ (location . "Page ID: 554434580") (page-id . "554434580")
+ (handler . confluence-bookmark-jump))
 ("DBT Patterns for IC Proc Migration"
  (front-context-string . "  DBT Patterns f") (rear-context-string)
  (position . 1) (last-modified 26255 65224 910622 0)
