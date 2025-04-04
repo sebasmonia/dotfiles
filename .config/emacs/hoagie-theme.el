@@ -6,20 +6,20 @@ tries to minimize the use of bolds and slate/italics too."
   :background-mode 'light
   :kind 'color-scheme)
 
-(let* ((bg    "white")
-       (fg    "black")
-       (dim-0  "grey95")
-       (dim-1  "grey90")
-       (dim-2  "grey80")
-       (dim-3  "grey70")
-       (dim-4  "grey60")
-       (dim-5  "grey50")
+(let* ((bg    "#ffffff")
+       (fg    "#000000")
+       (dim-0 "#f2f2f2") ;; grey95
+       (dim-1 "#e5e5e5") ;; grey90
+       (dim-2 "#cccccc") ;; grey80
+       (dim-3 "#b3b3b3") ;; grey70
+       (dim-4 "#999999") ;; grey60
+       (dim-5 "#7f7f7f") ;; grey50
        ;; Additional colors
-       (string "dark green")
-       (alt-fg "dark slate grey")
-       (alt-bg "lavender")
-       (error "dark red")
-       (warning "dark orange")
+       (string "#006400") ;; dark green
+       (alt-fg "#2f4f4f") ;; dark slate grey
+       (alt-bg "#e6e6fa") ;; lavender
+       (error "#8b0000") ;; dark red
+       (warning "#ff8c00") ;; dark orange
        )
 
   (custom-theme-set-faces 'hoagie
