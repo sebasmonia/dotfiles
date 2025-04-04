@@ -387,7 +387,7 @@ If REGEXP is not provided, then all emails are printed."
     (set-window-configuration hoagie-pre-ediff-windows)))
 
 (use-package eglot
-  :commands (eglot eglot-ensure)
+  :commands (eglot)
   :custom
   (eglot-events-buffer-config '(:size 0 :format full))
   (eglot-ignored-server-capabilities '(:codeLensProvider
@@ -396,9 +396,11 @@ If REGEXP is not provided, then all emails are printed."
                                        :documentRangeFormattingProvider
                                        :documentOnTypeFormattingProvider
                                        :foldingRangeProvider))
-  :hook
-  ((python-mode-hook . eglot-ensure)
-   (go-mode-hook . eglot-ensure))
+  ;; Was trying to make sure eglot wasn't used in remote files, and per its
+  ;; manual, `eglot-ensure` is not recommended!
+  ;; :hook
+  ;; ((python-mode-hook . eglot-ensure)
+  ;;  (go-mode-hook . eglot-ensure))
   :bind
   (:map hoagie-keymap
         ;; "l" for LSP
