@@ -20,7 +20,9 @@ tries to minimize the use of bolds and slate/italics too."
        (alt-bg "#e6e6fa") ;; lavender
        (error "#8b0000") ;; dark red
        (warning "#ff8c00") ;; dark orange
-       )
+       (bg-mode-line (if (display-graphic-p)
+                         "#ffffff"
+                       "#f2f2f2")))
 
   (custom-theme-set-faces 'hoagie
   ;; for live testing
@@ -48,11 +50,10 @@ tries to minimize the use of bolds and slate/italics too."
    `(link-visited ((t (:underline t :foreground ,alt-fg))))
 
    ;; Mode-line
-   `(mode-line ((t (:foreground ,fg :background ,bg))))
+   `(mode-line ((t (:foreground ,fg :background ,bg-mode-line))))
    `(mode-line-active ((t (:inherit mode-line :box (:color ,fg)))))
    `(mode-line-inactive ((t (:foreground ,dim-3 :box (:color ,dim-1)))))
    `(mode-line-highlight ((t (:foreground ,error))))
-   ;; not used? will know when I see slated text
    `(mode-line-emphasis ((t (:weight bold))))
 
    ;; Font-lock
@@ -171,12 +172,20 @@ tries to minimize the use of bolds and slate/italics too."
 
    ;; diff
    `(diff-header ((t (:background ,dim-1))))
-   `(diff-file-header((t (:background ,dim-1))))
+   `(diff-file-header ((t (:background ,dim-1))))
    ;; TODO: ediff
 
    ;; help - who knew
    `(help-key-binding ((t (:inherit fixed-pitch))))
 
+   ;; make terminal look the same as GUI - for default faces
+   ;; (I guess I could set these unconditionally too...since I am
+   ;; going to use the default values anyway)
+   (unless (display-graphic-p)
+     `(diff-removed ((t (:background "ffeeee" :extend t))))
+     `(diff-refine-removed ((t (:background "#ffcccc"))))
+     `(diff-added ((t (:background "#eeffee" :extend t))))
+     `(diff-refine-added ((t (:background "#bbddbb")))))
    ))
 ;;;###autoload
 (when (and (boundp 'custom-theme-load-path) load-file-name)
