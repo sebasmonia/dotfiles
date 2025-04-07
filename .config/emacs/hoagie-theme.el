@@ -116,6 +116,7 @@ tries to minimize the use of bolds and slate/italics too."
    `(gnus-summary-normal-ticked ((t (:foreground ,string)))) ;; marked !
    `(gnus-summary-normal-read ((t (:inherit default)))) 
    `(gnus-summary-normal-ancient ((t (:inherit default)))) ;; read too
+   `(gnus-summary-cancelled ((t (:foreground ,dim-3)))) ;; deleted
    ;; experiment: no more bold for unread, use the mark on the left
    ;; `(gnus-summary-normal-unread ((t (:weight bold))))
    `(gnus-summary-normal-unread ((t (:weight normal))))
