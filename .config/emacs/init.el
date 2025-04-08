@@ -23,7 +23,6 @@
 
 (setf custom-file (locate-user-emacs-file "custom.el"))
 
-;; TODO: do I still need this?
 (when (eq window-system 'pgtk)
   (pgtk-use-im-context t))
 
@@ -38,13 +37,9 @@
       use-package-hook-name-suffix nil)
 
 (when (display-graphic-p)
-  (custom-set-faces
-   '(default ((t (:family "Berkeley Mono"
-                          :slant normal
-                          :weight regular
-                          :height 120
-                          :width normal
-                          :foundry "outline"))))))
+  (custom-set-faces '(default ((t (:family "Berkeley Mono"
+                                           :height 120
+                                           :foundry "outline"))))))
 
 ;; Based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html I
 ;; eventually I moved away from the menu key to F6, and even later that key
@@ -161,8 +156,8 @@
         ("b j" . bookmark-jump)
         ("b l" . bookmark-bmenu-list)))
 
-;; I can use the built in M-y menu, but for longer text, it isn't
-;; nearly as comfortable to use as this package
+;; I can use built in M-y, which offers completion. But for longer text, it
+;; isn't nearly as comfortable to use as this package
 (use-package browse-kill-ring
   :ensure t
   :demand t
@@ -1362,19 +1357,9 @@ FRAME is ignored."
       (set-face-attribute 'default (selected-frame) :height size)))
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
 
-(if (display-graphic-p)
-    (progn
-      ;; until I fix the theme to work in terminals...
-      (load-file "~/sourcehut/dotfiles/.config/emacs/hoagie-theme.el")
-      (load-theme 'hoagie t))
-  (use-package modus-themes
-    :demand t
-    :config
-    (load-theme 'modus-operandi t)
-    :custom
-    (modus-themes-completions (quote ((matches . (underline))
-                                      (selection . (bold intense)))))))
-
+;; until I fix the theme to work in terminals...
+(load-file "~/sourcehut/dotfiles/.config/emacs/hoagie-theme.el")
+(load-theme 'hoagie t)
 
 ;; Almost tempted to make it a package. But given that I _always_
 ;; load this, in a normal init, a simple `load-file' will suffice.

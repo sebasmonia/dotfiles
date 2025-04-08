@@ -81,7 +81,7 @@ It is lowercased and with dashes replacing spaces in the filename."
   ;; Want to reuse project.el's find file with completion, I like it :) for
   ;; that, bind `project-prompter' to a function that returns the notes
   ;; directory as if it were the current project, and change the default
-  ;; directory so that it works even if I call the command from within a
+  ;; directory so that it works even if I call the command from within another
   ;; project
   (let ((default-directory hoagie-notes-directory)
         (project-prompter (lambda () hoagie-notes-directory)))

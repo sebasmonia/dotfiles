@@ -16,7 +16,7 @@ tries to minimize the use of bolds and slate/italics too."
        (dim-5 "#7f7f7f") ;; grey50
        ;; Additional colors
        (string "#006400") ;; dark green
-       (alt-fg "#2f4f4f") ;; dark slate grey
+       (alt-fg "#68228b") ;; dark orchid 4
        (alt-bg "#e6e6fa") ;; lavender
        (error "#8b0000") ;; dark red
        (warning "#ff8c00") ;; dark orange
@@ -45,9 +45,14 @@ tries to minimize the use of bolds and slate/italics too."
    `(fringe ((t (nil))))
    `(button ((t (:box t :background ,dim-0))))
    `(vertical-border ((t (:foreground ,dim-2))))
-   `(minibuffer-prompt ((t (nil))))
    `(link ((t (:underline t))))
    `(link-visited ((t (:underline t :foreground ,alt-fg))))
+
+   `(minibuffer-prompt ((t (nil))))
+   `(completions-common-part ((t (:underline t :weight bold))))
+
+   `(log-view-commit-body ((t (:foreground ,alt-fg))))
+   `(diary ((t (:foreground ,alt-fg))))
 
    ;; Mode-line
    `(mode-line ((t (:foreground ,fg :background ,bg-mode-line))))
@@ -76,24 +81,15 @@ tries to minimize the use of bolds and slate/italics too."
 
    ;; isearch
    `(isearch ((t (:foreground ,bg :background ,fg))))
-   `(isearch-group-1 ((t (:background ,dim-5))))
-   `(isearch-group-2 ((t (:background ,dim-4))))
+   `(isearch-group-1 ((t (:background ,dim-2))))
+   `(isearch-group-2 ((t (:background ,dim-3))))
    `(lazy-highlight ((t (:background ,dim-1))))
+   `(match ((t (:background ,dim-2))))
 
    ;; Dired
    `(dired-directory ((t (:foreground ,string))))
    `(dired-broken-symlink ((t (:inherit error))))
    `(dired-marked ((t (:background ,dim-1))))
-
-   ;; Org
-   `(org-agenda-structure ((t (nil))))
-   `(org-block ((t (nil))))
-   `(org-headline-done ((t (nil))))
-   `(org-special-keyword ((t (:foreground ,dim-5))))
-
-   ;; Terraform - leaving it just in case...
-   ;; `(terraform--resource-name-face ((t (nil))))
-   ;; `(terraform--resource-type-face ((t (nil))))
 
    ;; Markdown
    `(markdown-header-face ((t :inherit font-lock-function-name-face)))
@@ -104,9 +100,6 @@ tries to minimize the use of bolds and slate/italics too."
    `(markdown-pre-face ((t (nil))))
    `(markdown-code-face ((t (:foreground ,string))))
    `(markdown-markup-face ((t (:inherit ,font-lock-comment-face))))
-
-   `(completions-common-part ((t (:underline t :weight bold))))
-   `(log-view-commit-body ((t (:foreground ,alt-fg))))
 
    ;; message, gnus (only email)
    `(gnus-group-mail-3-empty ((t (:inherit default)))) ;; email directories
