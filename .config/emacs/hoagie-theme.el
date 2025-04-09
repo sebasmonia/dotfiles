@@ -53,6 +53,13 @@ tries to minimize the use of bolds and slate/italics too."
 
    `(log-view-commit-body ((t (:foreground ,alt-fg))))
    `(diary ((t (:foreground ,alt-fg))))
+   `(show-paren-match ((t (:background ,dim-3))))
+   ;; won't be used unless I set again
+   ;; (show-paren-when-point-inside-paren 'mixed)
+   ;; in my init file
+   `(show-paren-match-expression ((t (:background ,dim-1))))
+   ;; TODO: consider not using this face at all
+   `(show-paren-mismatch ((t (:background ,warning))))
 
    ;; Mode-line
    `(mode-line ((t (:foreground ,fg :background ,bg-mode-line))))
@@ -99,7 +106,7 @@ tries to minimize the use of bolds and slate/italics too."
    `(markdown-blockquote-face ((t (nil))))
    `(markdown-pre-face ((t (nil))))
    `(markdown-code-face ((t (:foreground ,string))))
-   `(markdown-markup-face ((t (:inherit ,font-lock-comment-face))))
+   `(markdown-markup-face ((t (:inherit font-lock-function-name-face))))
 
    ;; message, gnus (only email)
    `(gnus-group-mail-3-empty ((t (:inherit default)))) ;; email directories
@@ -124,8 +131,14 @@ tries to minimize the use of bolds and slate/italics too."
    `(gnus-cite-2 ((t (:foreground ,string))))
    `(gnus-cite-3 ((t (:foreground ,warning))))
    `(gnus-cite-4 ((t (:foreground ,error))))
-   `(gnus-cite-5 ((t (:foreground ,fg :slate t))))
-   `(gnus-cite-6 ((t (:foreground ,alt-fg :slate t))))
+   `(gnus-cite-5 ((t (:foreground ,fg))))
+   `(gnus-cite-6 ((t (:foreground ,alt-fg))))
+   `(gnus-cite-7 ((t (:foreground ,string))))
+   `(gnus-cite-8 ((t (:foreground ,warning))))
+   `(gnus-cite-9 ((t (:foreground ,error))))
+   `(gnus-cite-10 ((t (:foreground ,fg))))
+   `(gnus-cite-11 ((t (:foreground ,alt-fg))))
+
    `(message-header-name ((t (:inherit default))))
    `(message-header-to ((t (:weight bold))))
    `(message-header-subject ((t (:inherit default))))
@@ -135,7 +148,7 @@ tries to minimize the use of bolds and slate/italics too."
    `(message-signature-separator ((t (:inherit highlight))))
 
    ;; comint (add ansi-color?)
-   `(comint-highlight-input ((t (:foreground ,alt-fg))))
+   `(comint-highlight-input ((t (:foreground ,fg))))
 
    ;; customize and widgets
    `(custom-button ((t (:inherit button))))

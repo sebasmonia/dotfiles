@@ -1,5 +1,7 @@
 ;; Auto-generated file; don't edit -*- mode: lisp-data -*-
-((:url "https://text.npr.org/" :title "NPR Text news" :time
+((:url "https://brandons-journal.com/" :title "Brandon's Journal"
+       :time "Wed Apr  9 11:01:16 2025")
+ (:url "https://text.npr.org/" :title "NPR Text news" :time
        "2024-05-29 09:25:17 AM")
  (:url "https://www.csmonitor.com/layout/set/text/textedition" :title
        "Text Edition - CSMonitor.com" :time "Sun Jan  5 22:42:15 2025")
