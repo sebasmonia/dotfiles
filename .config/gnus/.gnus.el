@@ -162,3 +162,93 @@ This is C-u M-g but I figured I would put it in a simpler binding."
   (smtpmail-default-smtp-server "smtp.fastmail.com")
   (smtpmail-stream-type 'ssl)
   (smtpmail-smtp-service 465))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Based on this post:                                                         ;;
+;; https://me.literatelisp.eu/my-gnus-workflow-for-working-with-ios-notes.html ;;
+;; I created my commands for Fastmail Notes w/Gnus below                       ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; But first, one function from the post...
+(defun wilko/makeshift-uuid ()
+  "Generate a UUID (version 4) somewhat randomly."
+  (let ((template "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx")
+        (pos 0)
+        (entropy (secure-hash 'sha1 (mapconcat #'prin1-to-string
+                           (list (user-uid)
+                             (emacs-pid)
+                             (current-time)
+                             (random (expt 2 32)))
+                           "-"))))
+    (replace-regexp-in-string
+     "[xy]"
+     (lambda (c)
+       (let ((char (aref entropy pos)))
+     (setq pos (1+ pos))
+     (cond
+          ((char-equal (aref c 0) ?x) (char-to-string char))
+          ((char-equal (aref c 0) ?y)
+           (format "%x" (+ #x8 (random 4))))
+          (t ""))))
+     template)))
+
+(defvar fmnotes--previous-windows nil
+  "Window configuration to restore after finishing some task.")
+
+(defun fmnotes--save-windows ()
+  "Store the current window configuration."
+  (setf fmnotes--previous-windows (current-window-configuration)))
+
+(defun fmnotes--restore-windows ()
+  "Restore a stored window configuration.
+Probably used in tandem with `fmnotes--save-windows'."
+  (interactive)
+  (set-window-configuration fmnotes--previous-windows))
+
+(defun fmnotes-list ()
+  "Pop a buffer with a list of Fastmail notes.
+It is actually Gnus's summary buffer of the Notes directory in Fastmail."
+  (interactive)
+  (unless (gnus-alive-p)
+    (gnus))
+  (gnus-group-read-group nil t "nnimap+fastmail:Notes"))
+
+(defun fmnotes-create (title)
+  "Pop a buffer to write a new note."
+  (interactive "sTitle: ")
+  (let ((created-date (message-make-date))
+        (uuid (wilko/makeshift-uuid)))
+  (fmnotes--save-windows)
+  (with-current-buffer (get-buffer-create "*fmnotes - new note*")
+    (erase-buffer)
+    (pop-to-buffer (current-buffer))
+    (delete-other-windows)
+    (insert "From: " "Sebastián Monía <sebasmonia@fastmail.com>\n"
+            "Subject: " title "\n"
+            "Date: " created-date "\n"
+            "X-Uniform-Type-Identifier: com.apple.mail-note\n"
+            "X-Mail-Created-Date: " created-date "\n"
+            "X-Universally-Unique-Identifier: " uuid "\n\n")
+    (local-set-key (kbd "C-c C-k") #'fmnotes--restore-windows)
+    (local-set-key (kbd "C-c C-c") #'fmnotes--submit))
+  (message "C-c C-k to abort. C-c C-c to submit.")))
+
+(defun fmnotes--submit ()
+  "Create a new note from the current buffer.
+The note is actually a new Gnus article."
+  (interactive)
+  (fmnotes-list) ;; will start Gnus if needed
+  (let ((group gnus-newsgroup-name)
+        group-art
+        (created-date (message-make-date))
+        (uuid (wilko/makeshift-uuid)))
+    (with-current-buffer (gnus-get-buffer-create " *import file*")
+      (erase-buffer)
+      (goto-char (point-min))
+      (insert-buffer-substring "*fmnotes - new note*")
+      (setq group-art (gnus-request-accept-article group nil t))
+      (kill-buffer (current-buffer)))
+    (setq gnus-newsgroup-active (gnus-activate-group group))
+    (forward-line 1)
+    (gnus-summary-goto-article (cdr group-art) nil t)
+    (gnus-summary-edit-article)))
