@@ -1176,12 +1176,23 @@ If ARG, don't prompt for buffer name suffix."
           (narrow-to-region start end)
           (deactivate-mark))
         (pop-to-buffer buf))))
+  (defun hoagie-split-window-right (&optional arg)
+    "Like `split-window-right', but select the new window.
+With prefix ARG, use `split-root-window-right' instead"
+    (interactive "P")
+    (select-window (if arg
+                       (split-root-window-right)
+                     (split-window-right))))
+  (defun hoagie-split-window-below (&optional arg)
+    "Like `split-window-below', but select the new window.
+With prefix ARG, use `split-root-window-below' instead"
+    (interactive "P")
+    (select-window (if arg
+                       (split-root-window-below)
+                     (split-window-below))))
   :bind
   ("<S-f1>" . (lambda () (interactive) (find-file user-init-file)))
   ("<f1>" . hoagie-go-home)
-  ;; from https://stackoverflow.com/a/6465415
-  ("C-x 3" . (lambda () (interactive)(split-window-right) (other-window 1)))
-  ("C-x 2" . (lambda () (interactive)(split-window-below) (other-window 1)))
   ;; Window management
   ("S-<left>" . (lambda () (interactive)(shrink-window-horizontally 5)))
   ("S-<right>" . (lambda () (interactive)(enlarge-window-horizontally 5)))
@@ -1215,11 +1226,17 @@ If ARG, don't prompt for buffer name suffix."
         ("i" . other-frame)
         ;; add meta to get the original command for C-x i...
         ;; ...although I never used it. UPDATE: used it a couple times :)
-        ("ESC i" . insert-file))
+        ("ESC i" . insert-file)
+        ;; combines https://stackoverflow.com/a/6465415 with
+        ;; https://www.reddit.com/r/emacs/comments/1juhasp/comment/mm2m4ne/
+        ;; by using prefix-arg UPDATE: improves on the SO answer :D
+        ("3" . #'hoagie-split-window-right)
+        ("2" . #'hoagie-split-window-below))
   ;; repeat C-x o and C-x i, and even switch between them
   (:repeat-map hoagie-other-window-frame-repeat-map
                ("o" . other-window)
-               ("i" . other-frame))
+               ("i" . other-frame)
+               ("0" . delete-window))
   ;; extend selections with the last key that activates a mark command:
   (:repeat-map hoagie-mark-repeat-map
                ("SPC" . mark-sexp)
@@ -1266,7 +1283,7 @@ If ARG, don't prompt for buffer name suffix."
   (inhibit-startup-screen t)
   (initial-buffer-choice t)
   (initial-scratch-message
-   ";; Il semble que la perfection soit atteinte non quand il n’y a\n;; plus rien à ajouter, mais quand il n’y a plus à retrancher.\n;;                                   - Antoine de Saint Exupéry\n\n;; C-x C-k e edit kmacro             ;; (shell) C-c C-o clear last output\n;; C-x / vundo                       ;; C-x C-t transpose-lines (0 arg!)\n;; C-o open-line                     ;; C-M-o split-line\n\n;; During isearch                    ;; Less common search/replace\n;; C-w add word at point, can repeat ;; M-s . isearch symbol at point\n;; M-r toggle regex                  ;; C-u M-% to replace words\n\n;; M-x...\n;; copy-matching-lines (also kill-)  ;; (un)highlight-regexp\n;; align-current (or align-regexp)\n\n;; Calendar & Diary\n;; . - go to today                    ;; u/m/x - unmark/mark events/holidays\n\n;; Replace in many files:\n;; 1. multi-occur (if buffers visiting)\n;; 2. in Dired, Q -> regexp replace in marked files\n;; 3. F6-f (find-name-dired, find-grep-dired), then #2\n\n;; Notes prefix <f2> => 2 inbox / n new / g grep / f find by name\n\n;; Source functions (familiarize): help-find-source, find-variable,\n;;                                 find-function, find-function-on-key\n\n;; New commands (replace?): replace-regexp-as-diff,\n;;                          multi-file-replace-regexp-as-diff,\n;;                          dired-do-replace-regexp-as-diff\n\n")
+   ";; Il semble que la perfection soit atteinte non quand il n’y a\n;; plus rien à ajouter, mais quand il n’y a plus à retrancher.\n;;                                   - Antoine de Saint Exupéry\n\n;; C-x C-k e edit kmacro             ;; (shell) C-c C-o clear last output\n;; C-x / vundo                       ;; C-x C-t transpose-lines (0 arg!)\n;; C-x ESC ESC repeat command        ;; C-o / C-M-o   open / split line\n\n;; During isearch                    ;; Less common search/replace\n;; C-w add word at point, can repeat ;; M-s . isearch symbol at point\n;; M-r toggle regex                  ;; C-u M-% to replace words\n\n;; M-x...\n;; copy-matching-lines (also kill-)  ;; (un)highlight-regexp\n;; align-current (or align-regexp)\n\n;; Calendar & Diary\n;; . - go to today                    ;; u/m/x - unmark/mark events/holidays\n\n;; Replace in many files:\n;; 1. multi-occur (if buffers visiting)\n;; 2. in Dired, Q -> regexp replace in marked files\n;; 3. F6-f (find-name-dired, find-grep-dired), then #2\n\n;; Notes prefix <f2> => 2 inbox / n new / g grep / f find by name\n\n;; Source functions (familiarize): help-find-source, find-variable,\n;;                                 find-function, find-function-on-key\n\n;; New commands (replace?): replace-regexp-as-diff,\n;;                          multi-file-replace-regexp-as-diff,\n;;                          dired-do-replace-regexp-as-diff\n\n\n")
   (save-interprogram-paste-before-kill t)
   (visible-bell nil)
   ;; from https://gitlab.com/jessieh/dot-emacs

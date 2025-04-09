@@ -53,6 +53,13 @@ tries to minimize the use of bolds and slate/italics too."
 
    `(log-view-commit-body ((t (:foreground ,alt-fg))))
    `(diary ((t (:foreground ,alt-fg))))
+   `(show-paren-match ((t (:background ,dim-3))))
+   ;; won't be used unless I set again
+   ;; (show-paren-when-point-inside-paren 'mixed)
+   ;; in my init file
+   `(show-paren-match-expression ((t (:background ,dim-1))))
+   ;; TODO: consider not using this face at all
+   `(show-paren-mismatch ((t (:background ,warning))))
 
    ;; Mode-line
    `(mode-line ((t (:foreground ,fg :background ,bg-mode-line))))
@@ -99,7 +106,7 @@ tries to minimize the use of bolds and slate/italics too."
    `(markdown-blockquote-face ((t (nil))))
    `(markdown-pre-face ((t (nil))))
    `(markdown-code-face ((t (:foreground ,string))))
-   `(markdown-markup-face ((t (:inherit ,font-lock-comment-face))))
+   `(markdown-markup-face ((t (:inherit font-lock-function-name-face))))
 
    ;; message, gnus (only email)
    `(gnus-group-mail-3-empty ((t (:inherit default)))) ;; email directories
