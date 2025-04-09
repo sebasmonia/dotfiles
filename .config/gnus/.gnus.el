@@ -5,6 +5,7 @@
   (:map hoagie-second-keymap
         ;; for "email"
         ("e" . gnus))
+  ;; can't recall where I read that "v" is for user bindings
   (:map gnus-summary-mode-map
         ("v t" . hoagie-summary-trash)
         ("v a" . hoagie-summary-archive)
@@ -17,7 +18,10 @@
         ("v #" . gnus-uu-mark-thread)
         ;; originally T n or M-<down> or C-M-f
         ;; instead, get more Thread commands under "v"
-        ("v n" . gnus-summary-next-thread))
+        ("v n" . gnus-summary-next-thread)
+        ;; find messages in a thread - including sent ones
+        ("v s" . gnus-summary-refer-thread))
+
   :init
   ;; let's do our best to keep Gnus files/dir outside of ~
   ;; some of these are not really Gnus vars, but declared in
@@ -83,6 +87,9 @@
   (gnus-sum-thread-tree-vertical        "│")
   (gnus-sum-thread-tree-leaf-with-other "├─>")
   (gnus-sum-thread-tree-single-leaf     "└─>")
+  ;; search all directories (groups) when looking for more messages
+  ;; in the same thread (defaul A T, v s for me)
+  (gnus-refer-thread-use-search t)
   :config
   (defun hoagie-summary-spam ()
     "Move the current or marked mails to Spam in Fastmail."
