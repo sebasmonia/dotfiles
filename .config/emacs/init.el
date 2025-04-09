@@ -1059,20 +1059,16 @@ With prefix ARG show the remote branches."
       (pop-to-buffer buffer-name)
       (goto-char (point-min))
       (special-mode)))
-  (defun hoagie-vc-git-interactive-rebase (&optional arg)
+  (defun hoagie-vc-git-interactive-rebase ()
     "Do an interactive rebase against another branch.
-With prefig ARG,
 This command needs the Emacs server running and GIT_EDITOR properly set.
 You can override the branch name to something like \"HEAD~2\", for example."
     (interactive "P")
     (if (and server-process (getenv "GIT_EDITOR"))
         (vc-git-command "*git rebase -i*" 'async nil "rebase" "-i"
-                        (when arg "--onto")
-                        (completing-read (if arg "New base: "
-                                           "Rebase target: ")
-                                         (cdr (vc-git-branches)))
-                        (read-string "Commit spec (eg \"HEAD~5")
-      (error "Emacs server not running, or GIT_EDITOR not set")))))
+                        (completing-read "Rebase target (branch or commit): "
+                                         (cdr (vc-git-branches))))
+      (error "Emacs server not running, or GIT_EDITOR not set"))))
 
 (use-package vc-hooks
   :after (vc vc-git)
