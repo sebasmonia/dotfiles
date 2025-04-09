@@ -131,8 +131,14 @@ tries to minimize the use of bolds and slate/italics too."
    `(gnus-cite-2 ((t (:foreground ,string))))
    `(gnus-cite-3 ((t (:foreground ,warning))))
    `(gnus-cite-4 ((t (:foreground ,error))))
-   `(gnus-cite-5 ((t (:foreground ,fg :slate t))))
-   `(gnus-cite-6 ((t (:foreground ,alt-fg :slate t))))
+   `(gnus-cite-5 ((t (:foreground ,fg))))
+   `(gnus-cite-6 ((t (:foreground ,alt-fg))))
+   `(gnus-cite-7 ((t (:foreground ,string))))
+   `(gnus-cite-8 ((t (:foreground ,warning))))
+   `(gnus-cite-9 ((t (:foreground ,error))))
+   `(gnus-cite-10 ((t (:foreground ,fg))))
+   `(gnus-cite-11 ((t (:foreground ,alt-fg))))
+
    `(message-header-name ((t (:inherit default))))
    `(message-header-to ((t (:weight bold))))
    `(message-header-subject ((t (:inherit default))))
@@ -142,7 +148,7 @@ tries to minimize the use of bolds and slate/italics too."
    `(message-signature-separator ((t (:inherit highlight))))
 
    ;; comint (add ansi-color?)
-   `(comint-highlight-input ((t (:foreground ,alt-fg))))
+   `(comint-highlight-input ((t (:foreground ,fg))))
 
    ;; customize and widgets
    `(custom-button ((t (:inherit button))))
