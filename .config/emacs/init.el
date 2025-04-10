@@ -1044,6 +1044,15 @@ also runs `vc-dir' in the newly cloned directory."
       (vc-git-command nil 0 nil "config" "user.email" email))
     (when (called-interactively-p 'any)
       (vc-dir local-dir)))
+  (defun hoagie-vc-git-amend ()
+    "Unconditionally amend the last commit.
+Use this for cases where you fumbled the last commit message AND don't
+need any other changes (if there are code changes, you can use the
+regular vc-mode flow)."
+    (interactive)
+    (if (and server-process (getenv "GIT_EDITOR"))
+        (vc-git-command "*git commit amend*" 'async nil "commit" "--amend")
+      (error "Emacs server not running, or GIT_EDITOR not set")))
   (defun hoagie-vc-git-list-branches (&optional arg)
     "Show in a buffer the list of branches in the current repository.
 With prefix ARG show the remote branches."
