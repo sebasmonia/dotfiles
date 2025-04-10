@@ -1,7 +1,5 @@
 ;; Auto-generated file; don't edit -*- mode: lisp-data -*-
-((:url "https://brandons-journal.com/" :title "Brandon's Journal"
-       :time "Wed Apr  9 11:01:16 2025")
- (:url "https://text.npr.org/" :title "NPR Text news" :time
+((:url "https://text.npr.org/" :title "NPR Text news" :time
        "2024-05-29 09:25:17 AM")
  (:url "https://www.csmonitor.com/layout/set/text/textedition" :title
        "Text Edition - CSMonitor.com" :time "Sun Jan  5 22:42:15 2025")
@@ -31,6 +29,8 @@
        "Fri Aug  9 16:21:34 2024")
  (:url "https://www.archaeoramblings.com/blog/" :title
        "Archeoramblings" :time "2024-07-18 10:15:34 AM")
+ (:url "https://brandons-journal.com/" :title "Brandon's Journal"
+       :time "Wed Apr  9 11:01:16 2025")
  (:url "https://thejollyteapot.com/" :title
        "Archives - The Jolly Teapot" :time "Fri Sep 27 09:27:44 2024")
  (:url "https://thebloggess.com/" :title
