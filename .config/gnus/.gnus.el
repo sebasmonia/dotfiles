@@ -112,10 +112,10 @@ This is C-u M-g but I figured I would put it in a simpler binding."
 (use-package message
   :bind
   (:map message-mode-map
-        ;; shadows `message-elide-region' :shrug:
-        ("C-c C-e" . hoagie-confirm-encrypt))
-  :hook
-  (message-setup-hook . hoagie-message-change-from)
+        ("C-c e" . hoagie-confirm-encrypt)
+        ;; used to set this in a hook, but truth is, 99% of my email
+        ;; is sent from the main address
+        ("C-c f" . hoagie-change-from))
   :custom
   ;; actually part of simple.el, but putting it here because
   ;; it is relevant to message.el behaviour for C-x m
