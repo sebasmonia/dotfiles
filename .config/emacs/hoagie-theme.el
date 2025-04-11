@@ -22,7 +22,13 @@ tries to minimize the use of bolds and slate/italics too."
        (warning "#ff8c00") ;; dark orange
        (bg-mode-line (if (display-graphic-p)
                          "#ffffff"
-                       "#f2f2f2")))
+                       "#f2f2f2"))
+       ;; restating the diff colors (since I like the defaults)
+       ;; so I can use them in ediff too
+       (diff-added "#eeffee")
+       (diff-refine-added "#bbffbb")
+       (diff-removed "#ffeeee")
+       (diff-refine-removed "#ffcccc"))
 
   (custom-theme-set-faces 'hoagie
   ;; for live testing
