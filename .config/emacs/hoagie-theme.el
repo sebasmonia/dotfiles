@@ -22,13 +22,7 @@ tries to minimize the use of bolds and slate/italics too."
        (warning "#ff8c00") ;; dark orange
        (bg-mode-line (if (display-graphic-p)
                          "#ffffff"
-                       "#f2f2f2"))
-       ;; restating the diff colors (since I like the defaults)
-       ;; so I can use them in ediff too
-       (diff-added "#eeffee")
-       (diff-refine-added "#bbffbb")
-       (diff-removed "#ffeeee")
-       (diff-refine-removed "#ffcccc"))
+                       "#f2f2f2")))
 
   (custom-theme-set-faces 'hoagie
   ;; for live testing
@@ -186,7 +180,15 @@ tries to minimize the use of bolds and slate/italics too."
    ;; diff
    `(diff-header ((t (:background ,dim-1))))
    `(diff-file-header ((t (:background ,dim-1))))
-   ;; TODO: ediff
+   ;; ediff - only some faces. Most are ok.
+   `(ediff-even-diff-A ((t (:background ,dim-1 :extend t))))
+   `(ediff-even-diff-B ((t (:background ,dim-1 :extend t))))
+   `(ediff-even-diff-C ((t (:background ,dim-1 :extend t))))
+   `(ediff-even-diff-Ancestor ((t (:background ,dim-1 :extend t))))
+   `(ediff-odd-diff-A ((t (:background ,dim-2 :extend t))))
+   `(ediff-odd-diff-B ((t (:background ,dim-2 :extend t))))
+   `(ediff-odd-diff-C ((t (:background ,dim-2 :extend t))))
+   `(ediff-odd-diff-Ancestor ((t (:background ,dim-2 :extend t))))
 
    ;; help - who knew
    `(help-key-binding ((t (:inherit fixed-pitch))))
