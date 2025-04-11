@@ -54,7 +54,7 @@
 
 ;; compat Linux-Windows
 (keymap-set key-translation-map "<apps>" "<menu>")
-(keymap-set key-translation-map "<print>" "<menu>")
+(keymap-set key-translation-map "<print>" "<menu>") ;; Thinkpad's PrintScr
 ;; TODO: can try using something else here, even in the laptop
 ;; I use F6 and not the menu key!
 (keymap-global-set "<menu>" 'hoagie-keymap)
@@ -70,7 +70,7 @@
   :demand t
   :bind
   ("C-z" . hoagie-region-to-char)
-  ("<remap> <delete-word>" . hoagie-delete-word)
+  ("<remap> <kill-word>" . hoagie-delete-word)
   ("<remap> <backward-kill-word>" . hoagie-backward-delete-word)
   (:map hoagie-keymap
         ("/" . hoagie-toggle-backslash)
@@ -82,10 +82,7 @@
         ("s" . hoagie-split-by-sep)
         ;; always have a binding for plain old fill-paragraph (it tends
         ;; to be replaced/shadowed in a lot of modes).
-        ("q" . fill-paragraph))
-  (:repeat-map hoagie-backward-delete-repeat-map
-               ;; keep using DEL to delete words
-               ("DEL" . hoagie-backward-delete-word)))
+        ("q" . fill-paragraph)))
 
 (use-package hoagie-notes
   :load-path "~/sourcehut/dotfiles/.config/emacs"
@@ -179,8 +176,8 @@
   (calendar-longitude -73.9)
   (calendar-location-name "New York, NY")
   (calendar-setup 'one-frame)
-  ;; show events for the next 7 days when the calendar opens
-  (diary-number-of-entries 7)
+  ;; show events for the next 3 days when the calendar opens
+  (diary-number-of-entries 3)
   :hook
   (calendar-today-visible-hook . calendar-mark-today)
   (calendar-mode-hook . diary-mark-entries))
@@ -246,17 +243,14 @@
   (dired-do-revert-buffer t)
   (dired-movement-style 'cycle)
   :bind
-  ;; The default binding for dired-jump is C-x C-j. I used F6-j for
-  ;; dired-jump-other-window.
+  ;; The default binding for dired-jump is C-x C-j. I used to use
+  ;; F6-j for dired-jump-other-window.
   ;; Adding C-x j to jump to other window, freeing j on my personal keymap.
   (:map ctl-x-map
         ("j" . dired-jump-other-window))
   (:map hoagie-keymap
         ;; see definition for F6-f in :config below
         ("n" . hoagie-kill-buffer-filename))
-  ;; NOTE until I remember: Replaced in Emacs 30 by E :)
-  ;; (:map dired-mode-map
-  ;;       ("C-<return>" . hoagie-dired-os-open-file))
   :hook
   (dired-mode-hook . dired-hide-details-mode)
   ;; Enables "C-c C-m a" (yeah, really :) lol) to attach
@@ -391,11 +385,6 @@ If REGEXP is not provided, then all emails are printed."
                                        :documentRangeFormattingProvider
                                        :documentOnTypeFormattingProvider
                                        :foldingRangeProvider))
-  ;; Was trying to make sure eglot wasn't used in remote files, and per its
-  ;; manual, `eglot-ensure` is not recommended!
-  ;; :hook
-  ;; ((python-mode-hook . eglot-ensure)
-  ;;  (go-mode-hook . eglot-ensure))
   :bind
   (:map hoagie-keymap
         ;; "l" for LSP
@@ -885,7 +874,6 @@ Meant to be added to `occur-hook'."
 
 (use-package shr
   :custom
-  ;; (shr-use-fonts nil)
   (shr-use-colors t)
   (shr-bullet "• ")
   (shr-discard-aria-hidden t)
@@ -1343,27 +1331,10 @@ With prefix ARG, use `split-root-window-below' instead"
     (setf backup-directory-alist
           `((".*" . ,backup-dir)))))
 
-;; Per-OS configuration
 
-(when (eq system-type 'windows-nt)
-  (require 'ls-lisp)
-  (customize-set-value 'ls-lisp-use-insert-directory-program nil)
+(when (and (eq system-type 'gnu/linux) (display-graphic-p))
+  (set-fontset-font t 'emoji (font-spec :family "Noto Emoji"))
 
-  (set-fontset-font t 'emoji (font-spec :family "Segoe UI Emoji"))
-
-  (defun hoagie-manually-adjust-font-size ()
-    "Something fishy is going on with font sizes...set them manually for now."
-    (interactive)
-    ;; nil for "all frames"
-    (set-face-attribute 'default nil
-                        :height (if (= (face-attribute 'default :height) 120)
-                                    181
-                                  120)))
-  (keymap-global-set "<f7>" #'hoagie-manually-adjust-font-size))
-
-(when (eq system-type 'gnu/linux)
-  (when (display-graphic-p)
-    (set-fontset-font t 'emoji (font-spec :family "Noto Emoji")))
   (defun hoagie-adjust-font-size (frame)
     "Inspired by https://emacs.stackexchange.com/a/44930/17066.
 FRAME is ignored."
@@ -1379,12 +1350,9 @@ FRAME is ignored."
       (set-face-attribute 'default (selected-frame) :height size)))
   (add-hook 'window-size-change-functions #'hoagie-adjust-font-size))
 
-;; until I fix the theme to work in terminals...
 (load-file "~/sourcehut/dotfiles/.config/emacs/hoagie-theme.el")
 (load-theme 'hoagie t)
 
-;; Almost tempted to make it a package. But given that I _always_
-;; load this, in a normal init, a simple `load-file' will suffice.
 (load-file "~/sourcehut/dotfiles/.config/emacs/hoagie-mode-line.el")
 
 ;; let's do our best to keep Gnus files/dir outside of ~
