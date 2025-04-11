@@ -29,7 +29,7 @@ in my custom commands, that I turned it into a reusable macro."
      (if (use-region-p)
          (setf start (region-beginning)
                end (region-end))
-       ;; try to get the limits THING
+       ;; try to get the limits of THING
        (let ((bounds (bounds-of-thing-at-point ,thing)))
          (if bounds
              (setf start (car bounds)
@@ -127,7 +127,6 @@ for escaping a line that contains a string literal."
                      (mapconcat #'string
                                 (mapcar #'car hoagie-pair-chars) ""))))
 
-
 (defun hoagie-insert-pair ()
   "Wrap the region or sexp at point in a pair from `hoagie-pair-chars'.
 Note that using sexp at point might wrap a symbol, depending on
@@ -137,9 +136,8 @@ This started as my counterpart to `delete-pair', but I ended up
 rewriting that one too.
 Emacs has a built in mode for this, `electric-pair-mode', but it does
 more than I want, it is more intrusive, and I couldn't get around some
-of it's behaviours. I eventually figured out how to use
-`insert-pair' (by looking at `insert-parentheses'), but I prefer how
-this command works."
+of its behaviours. I eventually figured out how to use `insert-pair' (by
+looking at `insert-parentheses'), but I prefer how this command works."
   (interactive "*")
   (with-region-or-thing 'sexp
     (let* ((opener (hoagie--pair-read-opener))
@@ -203,7 +201,6 @@ are collapsed to one. With prefix ARG prompt for separator, with
 no collapsing.
 Strings are not broken up. The resulting region is indented after
 splitting.
-
 
 This is based on the super useful package
 \"fill-function-arguments\", which works well but sometimes gets
