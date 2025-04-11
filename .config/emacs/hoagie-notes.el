@@ -78,6 +78,7 @@ It is lowercased and with dashes replacing spaces in the filename."
 (defun hoagie-notes-find-by-name ()
   "Open a note, by filename, with completion."
   (interactive)
+  (require 'project)
   ;; Want to reuse project.el's find file with completion, I like it :) for
   ;; that, bind `project-prompter' to a function that returns the notes
   ;; directory as if it were the current project, and change the default
