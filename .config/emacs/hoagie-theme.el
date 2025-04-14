@@ -37,7 +37,7 @@ tries to minimize the use of bolds and slate/italics too."
    `(region ((t (:extend t :background ,dim-2))))
    `(secondary-selection ((t (:inherit region))))
    `(fixed-pitch ((t (:background ,dim-0))))
-   `(shadow ((t (:foreground ,dim-2))))
+   `(shadow ((t (:foreground ,dim-4))))
    ;; next three where bold in the original theme
    `(error ((t (:foreground ,error))))
    `(warning ((t (:foreground ,warning))))
@@ -50,6 +50,7 @@ tries to minimize the use of bolds and slate/italics too."
 
    `(minibuffer-prompt ((t (nil))))
    `(completions-common-part ((t (:underline t :weight bold))))
+   `(completions-annotations ((t (:inherit shadow))))
 
    `(log-view-commit-body ((t (:foreground ,alt-fg))))
    `(diary ((t (:foreground ,alt-fg))))
