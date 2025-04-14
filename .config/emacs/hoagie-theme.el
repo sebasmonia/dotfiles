@@ -109,13 +109,13 @@ tries to minimize the use of bolds and slate/italics too."
    `(markdown-markup-face ((t (:inherit font-lock-function-name-face))))
 
    ;; message, gnus (only email)
-   `(gnus-group-mail-3-empty ((t (:inherit default)))) ;; email directories
+   `(gnus-group-mail-3-empty ((t nil))) ;; email directories
    ;; email directories with unread items: don't use bold, directories with no
    ;; new items are hidden by default anyway
-   `(gnus-group-mail-3 ((t (:inherit default))))
+   `(gnus-group-mail-3 ((t nil)))
    `(gnus-summary-normal-ticked ((t (:foreground ,string)))) ;; marked !
-   `(gnus-summary-normal-read ((t (:inherit default)))) 
-   `(gnus-summary-normal-ancient ((t (:inherit default)))) ;; read too
+   `(gnus-summary-normal-read ((t nil)))
+   `(gnus-summary-normal-ancient ((t nil))) ;; read too
    `(gnus-summary-cancelled ((t (:foreground ,dim-3)))) ;; deleted
    ;; experiment: no more bold for unread, use the mark on the left
    ;; `(gnus-summary-normal-unread ((t (:weight bold))))
@@ -123,10 +123,10 @@ tries to minimize the use of bolds and slate/italics too."
    ;; buttons that appear in email addresses. I never use them, so I might end
    ;; up removing even the underline
    `(gnus-button ((t (:underline t))))
-   `(gnus-header-name ((t (:inherit default)))) ;; all "Header:" text
+   `(gnus-header-name ((t nil))) ;; all "Header:" text
    `(gnus-header-from ((t (:inherit default :underline t)))) ;; value of "From: "
-   `(gnus-header-subject ((t (:inherit default)))) ;; value of "Subject: "
-   `(gnus-header-content ((t (:inherit default)))) ;; other header text/values
+   `(gnus-header-subject ((t nil))) ;; value of "Subject: "
+   `(gnus-header-content ((t nil))) ;; other header text/values
    `(gnus-cite-1 ((t (:foreground ,alt-fg))))
    `(gnus-cite-2 ((t (:foreground ,string))))
    `(gnus-cite-3 ((t (:foreground ,warning))))
@@ -139,11 +139,11 @@ tries to minimize the use of bolds and slate/italics too."
    `(gnus-cite-10 ((t (:foreground ,fg))))
    `(gnus-cite-11 ((t (:foreground ,alt-fg))))
 
-   `(message-header-name ((t (:inherit default))))
+   `(message-header-name ((t nil)))
    `(message-header-to ((t (:weight bold))))
-   `(message-header-subject ((t (:inherit default))))
-   `(message-header-other ((t (:inherit default))))
-   `(message-header-cc ((t (:inherit default))))
+   `(message-header-subject ((t nil)))
+   `(message-header-other ((t nil)))
+   `(message-header-cc ((t nil)))
    `(message-separator ((t (:inherit highlight))))
    `(message-signature-separator ((t (:inherit highlight))))
 
@@ -201,6 +201,9 @@ tries to minimize the use of bolds and slate/italics too."
      `(diff-refine-removed ((t (:background "#ffcccc"))))
      `(diff-added ((t (:background "#eeffee" :extend t))))
      `(diff-refine-added ((t (:background "#bbddbb")))))
+
+   ;; org-mode
+   '(org-table ((t nil)))
    ))
 ;;;###autoload
 (when (and (boundp 'custom-theme-load-path) load-file-name)
