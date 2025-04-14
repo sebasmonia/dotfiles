@@ -94,7 +94,7 @@ tries to minimize the use of bolds and slate/italics too."
    `(match ((t (:background ,dim-2))))
 
    ;; Dired
-   `(dired-directory ((t (:foreground ,string))))
+   `(dired-directory ((t (:foreground ,alt-fg))))
    `(dired-broken-symlink ((t (:inherit error))))
    `(dired-marked ((t (:background ,dim-1))))
 
@@ -105,9 +105,8 @@ tries to minimize the use of bolds and slate/italics too."
    `(markdown-metadata-value-face ((t (:inherit font-lock-comment-face))))
    `(markdown-blockquote-face ((t (nil))))
    `(markdown-pre-face ((t (nil))))
-   `(markdown-code-face ((t (:foreground ,string))))
+   `(markdown-code-face ((t (:foreground ,alt-fg))))
    `(markdown-markup-face ((t (:inherit font-lock-function-name-face))))
-
    ;; message, gnus (only email)
    `(gnus-group-mail-3-empty ((t nil))) ;; email directories
    ;; email directories with unread items: don't use bold, directories with no
@@ -203,7 +202,7 @@ tries to minimize the use of bolds and slate/italics too."
      `(diff-refine-added ((t (:background "#bbddbb")))))
 
    ;; org-mode
-   '(org-table ((t nil)))
+   `(org-table ((t (:foreground ,alt-fg))))
    ))
 ;;;###autoload
 (when (and (boundp 'custom-theme-load-path) load-file-name)
