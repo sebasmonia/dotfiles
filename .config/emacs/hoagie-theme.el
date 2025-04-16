@@ -50,25 +50,24 @@ tries to minimize the use of bolds and slate/italics too."
 
    `(minibuffer-prompt ((t (nil))))
    `(completions-common-part ((t (:underline t :weight bold))))
-
-   `(log-view-commit-body ((t (:foreground ,alt-fg))))
+   `(log-view-commit-body ((t (:inherit default))))
+   `(change-log-date ((t (:inherit default))))
    `(diary ((t (:foreground ,alt-fg))))
+
    `(show-paren-match ((t (:background ,dim-3))))
-   ;; won't be used unless I set again
+   ;; next face won't be used unless I set again
    ;; (show-paren-when-point-inside-paren 'mixed)
    ;; in my init file
    `(show-paren-match-expression ((t (:background ,dim-1))))
    ;; TODO: consider not using this face at all
    `(show-paren-mismatch ((t (:background ,warning))))
 
-   ;; Mode-line
    `(mode-line ((t (:foreground ,fg :background ,bg-mode-line))))
    `(mode-line-active ((t (:inherit mode-line :box (:color ,fg)))))
    `(mode-line-inactive ((t (:foreground ,dim-3 :box (:color ,dim-1)))))
    `(mode-line-highlight ((t (:foreground ,error))))
    `(mode-line-emphasis ((t (:weight bold))))
 
-   ;; Font-lock
    `(font-lock-comment-face ((t (:foreground ,dim-4))))
    `(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
    `(font-lock-string-face ((t (:foreground ,string))))
@@ -86,19 +85,16 @@ tries to minimize the use of bolds and slate/italics too."
    `(font-lock-regexp-grouping-backslash ((t (nil))))
    `(font-lock-regexp-grouping-construct ((t (nil))))
 
-   ;; isearch
    `(isearch ((t (:foreground ,bg :background ,fg))))
    `(isearch-group-1 ((t (:background ,dim-2))))
    `(isearch-group-2 ((t (:background ,dim-3))))
    `(lazy-highlight ((t (:background ,dim-1))))
    `(match ((t (:background ,dim-2))))
 
-   ;; Dired
    `(dired-directory ((t (:foreground ,string))))
    `(dired-broken-symlink ((t (:inherit error))))
    `(dired-marked ((t (:background ,dim-1))))
 
-   ;; Markdown
    `(markdown-header-face ((t :inherit font-lock-function-name-face)))
    `(markdown-header-delimiter-face ((t (nil))))
    `(markdown-metadata-key-face ((t (:inherit font-lock-comment-face))))
@@ -108,7 +104,7 @@ tries to minimize the use of bolds and slate/italics too."
    `(markdown-code-face ((t (:foreground ,string))))
    `(markdown-markup-face ((t (:inherit font-lock-function-name-face))))
 
-   ;; message, gnus (only email)
+   ;; gnus (only what is used for emails)
    `(gnus-group-mail-3-empty ((t (:inherit default)))) ;; email directories
    ;; email directories with unread items: don't use bold, directories with no
    ;; new items are hidden by default anyway
@@ -117,8 +113,6 @@ tries to minimize the use of bolds and slate/italics too."
    `(gnus-summary-normal-read ((t (:inherit default)))) 
    `(gnus-summary-normal-ancient ((t (:inherit default)))) ;; read too
    `(gnus-summary-cancelled ((t (:foreground ,dim-3)))) ;; deleted
-   ;; experiment: no more bold for unread, use the mark on the left
-   ;; `(gnus-summary-normal-unread ((t (:weight bold))))
    `(gnus-summary-normal-unread ((t (:weight normal))))
    ;; buttons that appear in email addresses. I never use them, so I might end
    ;; up removing even the underline
@@ -147,14 +141,9 @@ tries to minimize the use of bolds and slate/italics too."
    `(message-separator ((t (:inherit highlight))))
    `(message-signature-separator ((t (:inherit highlight))))
 
-   ;; comint (add ansi-color?)
+   ;; TODO: add ansi-color?
    `(comint-highlight-input ((t (:foreground ,fg))))
 
-   ;; customize and widgets
-   `(custom-button ((t (:inherit button))))
-   `(widget-field ((t (:box t :background ,bg))))
-
-   ;; eww & shr
    `(eww-valid-certificate ((t (:foreground ,fg))))
    `(eww-invalid-certificate ((t (:inherit error))))
    `(eww-form-text ((t (:inherit button :background ,dim-0))))
@@ -164,8 +153,8 @@ tries to minimize the use of bolds and slate/italics too."
    ;;       in every single line
    `(eww-form-textarea ((t (:background ,dim-0))))
    ;; for markdown, it is simpler to let the "#" characters state the header
-   ;;  depth, but for rendered HTML, there's no visual indication. So use a
-   ;;  little color and bold/slate properties
+   ;; depth, but for rendered HTML, there's no visual indication. So use a
+   ;; little color and bold/underline properties
    `(shr-h1 ((t (:foreground ,fg :weight bold :underline t))))
    `(shr-h2 ((t (:foreground ,alt-fg :weight bold :underline t))))
    `(shr-h3 ((t (:foreground ,string :weight bold :underline t))))
@@ -176,11 +165,20 @@ tries to minimize the use of bolds and slate/italics too."
    ;; custom.el
    `(custom-group-tag ((t (:foreground ,fg :weight bold :underline t))))
    `(custom-variable-tag ((t (:foreground ,fg))))
+   `(custom-button ((t (:inherit button))))
+   `(widget-field ((t (:box t :background ,bg))))
 
-   ;; diff
    `(diff-header ((t (:background ,dim-1))))
    `(diff-file-header ((t (:background ,dim-1))))
-   ;; ediff - only some faces. Most are ok.
+   ;; make terminal diff look the same as GUI - for default faces
+   ;; (I guess I could set these unconditionally too...since I am
+   ;; going to use the default values anyway)
+   (unless (display-graphic-p)
+     `(diff-removed ((t (:background "ffeeee" :extend t))))
+     `(diff-refine-removed ((t (:background "#ffcccc"))))
+     `(diff-added ((t (:background "#eeffee" :extend t))))
+     `(diff-refine-added ((t (:background "#bbddbb")))))
+
    `(ediff-even-diff-A ((t (:background ,dim-1 :extend t))))
    `(ediff-even-diff-B ((t (:background ,dim-1 :extend t))))
    `(ediff-even-diff-C ((t (:background ,dim-1 :extend t))))
@@ -190,20 +188,15 @@ tries to minimize the use of bolds and slate/italics too."
    `(ediff-odd-diff-C ((t (:background ,dim-2 :extend t))))
    `(ediff-odd-diff-Ancestor ((t (:background ,dim-2 :extend t))))
 
-   ;; help - who knew
    `(help-key-binding ((t (:inherit fixed-pitch))))
 
-   ;; make terminal look the same as GUI - for default faces
-   ;; (I guess I could set these unconditionally too...since I am
-   ;; going to use the default values anyway)
-   (unless (display-graphic-p)
-     `(diff-removed ((t (:background "ffeeee" :extend t))))
-     `(diff-refine-removed ((t (:background "#ffcccc"))))
-     `(diff-added ((t (:background "#eeffee" :extend t))))
-     `(diff-refine-added ((t (:background "#bbddbb")))))
+   `(dictionary-word-definition-face ((t (:inherit variable-pitch))))
+   `(dictionary-word-entry-face ((t (:inherit dictionary-word-definition-face :background ,dim-1))))
+   `(dictionary-button-face ((t (:inherit button))))
+   `(dictionary-reference-face ((t (:inherit dictionary-word-definition-face :underline t :background ,dim-0))))
    ))
 ;;;###autoload
-(when (and (boundp 'custom-theme-load-path) load-file-name)
+(when load-file-name
   (add-to-list 'custom-theme-load-path
                (file-name-as-directory (file-name-directory load-file-name))))
 
