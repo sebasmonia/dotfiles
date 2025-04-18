@@ -632,8 +632,11 @@ Set `fill-column', `truncate-lines'."
 
 (use-package proced
   :custom
+  (proced-auto-update-flag t) ;; default is 5 seconds
   (proced-show-remote-processes t)
-  (proced-filter 'all))
+  (proced-filter 'all)
+  ;; (proced-enable-color-flag t) ;; worth it? then I need to define faces =P
+  )
 
 (use-package project
   :bind
