@@ -162,6 +162,7 @@ This is C-u M-g but I figured I would put it in a simpler binding."
   ;; actually part of simple.el, but putting it here because
   ;; it is relevant to message.el behaviour for C-x m
   (mail-user-agent 'gnus-user-agent)
+  (read-mail-command 'gnus)
   ;; integrate with ecomplete. Press TAB to get email completion
   (message-mail-alias-type 'ecomplete)
   (message-self-insert-commands nil)
