@@ -1,5 +1,17 @@
 ;; Auto-generated file; don't edit -*- mode: lisp-data -*-
-((:url "https://text.npr.org/" :title "NPR Text news" :time
+((:url "https://brandons-journal.com/blog/" :title
+       "Blog | Brandon's Journal" :time "Sun Apr 20 11:42:31 2025")
+ (:url "https://basic.bearblog.dev/blog/" :title
+       "Blog | Welcome to BASIC" :time "Sun Apr 20 11:40:27 2025")
+ (:url "https://urgente24.com/" :title "Urgente24 - diario online"
+       :time "Sun Apr 20 11:26:57 2025")
+ (:url "https://www.infonews.com/" :title
+       "infonews.com - Noticias de Argentina" :time
+       "Sun Apr 20 11:25:10 2025")
+ (:url "https://elintransigente.com/" :title
+       "Últimas Noticias de Argentina" :time
+       "Sun Apr 20 11:19:31 2025")
+ (:url "https://text.npr.org/" :title "NPR Text news" :time
        "2024-05-29 09:25:17 AM")
  (:url "https://www.csmonitor.com/layout/set/text/textedition" :title
        "Text Edition - CSMonitor.com" :time "Sun Jan  5 22:42:15 2025")
