@@ -1,5 +1,47 @@
 ;; Attempt to get all email-related configuration in a single place
 
+(use-package ecomplete
+  :custom
+  ;; would like to sync my address book (lost it once already!)
+  ;; but also don't want it to be public. Best balance?
+  (ecomplete-database-file "~/.gnus.d/ecomplete.gpg")
+  :config
+  (ecomplete-setup)
+  (defun ecomplete-add-email (email name)
+    "Add email address to ecomplete's database.
+Inspired by oantolin's ecomplete-extras."
+    (interactive "sEmail: \nsName: ")
+    (ecomplete-add-item 'mail
+                        email
+                        (concat name " <" email ">")))
+      ;;(ecomplete-save))
+  (defun ecomplete-list-emails (&optional regexp)
+    "Pretty print the ecomplete emails that match REGEXP.
+If REGEXP is not provided, then all emails are printed."
+    (interactive "sMatch text (empty for no filter): ")
+    ;; since splitting the name isn't exactly precise,
+    ;; and we already have the keys available, let's extract
+    ;; only the name from the display text
+    (with-current-buffer (get-buffer-create "*ecomplete emails*")
+      (require 'vtable)
+      (erase-buffer)
+      (make-vtable
+       :columns '("Name" "Email")
+       :objects (cl-loop for (email _count _time display) in
+                         (alist-get 'mail ecomplete-database)
+		                 when (or (null regexp)
+                                  (string-match regexp email)
+                                  (string-match regexp display))
+		                 collect (list
+                                  (car (split-string display
+                                                     " <"))
+                                  email))
+       ;; force fixed width face
+       :face 'default
+       ;; sort by display text (or, name)
+       :sort-by '((0 . ascend))))
+    (pop-to-buffer "*ecomplete emails*")))
+
 (use-package gnus
   :bind
   (:map hoagie-second-keymap
