@@ -151,15 +151,18 @@ tries to minimize the use of bolds and slate/italics too."
    ;; TODO: find a way to show a box around the text area, but not
    ;;       in every single line
    `(eww-form-textarea ((t (:background ,dim-0))))
-   ;; for markdown, it is simpler to let the "#" characters state the header
-   ;; depth, but for rendered HTML, there's no visual indication. So use a
-   ;; little color and bold/underline properties
-   `(shr-h1 ((t (:foreground ,fg :weight bold :underline t))))
-   `(shr-h2 ((t (:foreground ,alt-fg :weight bold :underline t))))
-   `(shr-h3 ((t (:foreground ,string :weight bold :underline t))))
-   `(shr-h4 ((t (:foreground ,fg :weight bold))))
-   `(shr-h5 ((t (:foreground ,alt-fg :weight bold))))
-   `(shr-h6 ((t (:foreground ,string :weight bold))))
+   ;; For markdown, it is simple: let the "#" characters state the header
+   ;; depth. But for rendered HTML, there's no visual indication. So use a
+   ;; little color (for "stronger" to "weaker"). Add bold and underline to
+   ;; differentiate it from regular text.
+   ;; TODO: There's overlap between shr-h5/shr-h6 and links/visited links.
+   ;;       We'll see if it's a problem in the future...
+   `(shr-h1 ((t (:foreground ,string :bold t))))
+   `(shr-h2 ((t (:foreground ,alt-fg :bold t))))
+   `(shr-h3 ((t (:foreground ,fg :bold t))))
+   `(shr-h4 ((t (:foreground ,string :underline t))))
+   `(shr-h5 ((t (:foreground ,alt-fg :underline t))))
+   `(shr-h6 ((t (:foreground ,fg :underline t))))
 
    `(custom-group-tag ((t (:foreground ,fg :weight bold :underline t))))
    `(custom-variable-tag ((t (:foreground ,fg))))
