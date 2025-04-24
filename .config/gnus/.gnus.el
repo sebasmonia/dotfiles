@@ -6,7 +6,6 @@
   ;; but also don't want it to be public. Best balance?
   (ecomplete-database-file "~/.gnus.d/ecomplete.gpg")
   :config
-  (ecomplete-setup)
   (defun ecomplete-add-email (email name)
     "Add email address to ecomplete's database.
 Inspired by oantolin's ecomplete-extras."
@@ -43,6 +42,9 @@ If REGEXP is not provided, then all emails are printed."
     (pop-to-buffer "*ecomplete emails*")))
 
 (use-package gnus
+  :hook
+  ;; so the ecomplete setup happens when opening Gnus, not before
+  (gnus-started-hook . ecomplete-setup)
   :bind
   (:map hoagie-second-keymap
         ;; for "email"
