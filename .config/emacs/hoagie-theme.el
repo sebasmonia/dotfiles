@@ -195,6 +195,11 @@ tries to minimize the use of bolds and slate/italics too."
    `(dictionary-word-entry-face ((t (:inherit dictionary-word-definition-face :background ,dim-1))))
    `(dictionary-button-face ((t (:inherit button))))
    `(dictionary-reference-face ((t (:inherit dictionary-word-definition-face :underline t :background ,dim-0))))
+
+   `(epa-validity-high ((t (:inherit success))))
+   `(epa-validity-medium ((t (:inherit warning))))
+   `(epa-validity-low ((t (:inherit default))))
+   `(epa-validity-disabled ((t (:inherit shadow))))
    ))
 ;;;###autoload
 (when load-file-name
