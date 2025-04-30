@@ -1,15 +1,8 @@
 ;; Auto-generated file; don't edit -*- mode: lisp-data -*-
-((:url "https://brandons-journal.com/blog/" :title
-       "Blog | Brandon's Journal" :time "Sun Apr 20 11:42:31 2025")
- (:url "https://basic.bearblog.dev/blog/" :title
-       "Blog | Welcome to BASIC" :time "Sun Apr 20 11:40:27 2025")
- (:url "https://urgente24.com/" :title "Urgente24 - diario online"
-       :time "Sun Apr 20 11:26:57 2025")
- (:url "https://www.infonews.com/" :title
-       "infonews.com - Noticias de Argentina" :time
-       "Sun Apr 20 11:25:10 2025")
+((:url "https://apod.nasa.gov/apod/astropix.html" :title
+       "Astronomy Picture of the Day" :time "Wed Apr 30 08:30:01 2025")
  (:url "https://elintransigente.com/" :title
-       "Últimas Noticias de Argentina" :time
+       "Noticias de Argentina" :time
        "Sun Apr 20 11:19:31 2025")
  (:url "https://text.npr.org/" :title "NPR Text news" :time
        "2024-05-29 09:25:17 AM")
@@ -20,10 +13,10 @@
  (:url "https://burgundywave.com/category/colorado-rapids/" :title
        "Colorado Rapids Archives - Burgundy Wave" :time
        "2024-07-27 06:58:18 PM")
+ (:url "https://basic.bearblog.dev/blog/" :title
+       "Blog | Welcome to BASIC" :time "Sun Apr 20 11:40:27 2025")
  (:url "https://netigen.com/tags" :title "Netigen: Tags (volume-5)"
        :time "Wed Oct  2 17:14:47 2024")
- (:url "http://starbreaker.org/grimoire/index.html" :title
-       "grimoire | starbreaker.org" :time "Tue Feb  4 11:37:53 2025")
  (:url "https://www.schneier.com/" :title "Schneier on Security" :time
        "2024-07-26 08:36:42 AM")
  (:url "https://taonaw.com/" :title "The Art Of Not Asking Why" :time
@@ -33,23 +26,17 @@
        "Tue Feb  4 10:16:02 2025")
  (:url "https://bacardi55.io/posts/" :title "Bacardi55's Web Cave"
        :time "2024-07-18 10:16:05 AM")
- (:url "https://82mhz.net/" :title "82MHz" :time
-       "2024-07-18 10:21:35 AM")
- (:url "https://manuelmoreale.com/" :title "Manu - I write" :time
-       "Fri Aug  9 16:22:35 2024")
- (:url "https://kevquirk.com/" :title "Blog | Kev Quirk" :time
-       "Fri Aug  9 16:21:34 2024")
  (:url "https://www.archaeoramblings.com/blog/" :title
        "Archeoramblings" :time "2024-07-18 10:15:34 AM")
  (:url "https://brandons-journal.com/" :title "Brandon's Journal"
        :time "Wed Apr  9 11:01:16 2025")
  (:url "https://thejollyteapot.com/" :title
        "Archives - The Jolly Teapot" :time "Fri Sep 27 09:27:44 2024")
+ (:url "http://starbreaker.org/grimoire/index.html" :title
+       "grimoire | starbreaker.org" :time "Tue Feb  4 11:37:53 2025")
  (:url "https://thebloggess.com/" :title
        "The Bloggess - Like Mother Teresa, only better." :time
        "Wed Jul 31 17:50:12 2024")
- (:url "https://chotrin.org/writing/" :title
-       "chotrin's wiki: writing." :time "Fri Nov 29 22:32:57 2024")
  (:url "https://koldfront.dk/" :title "koldfront" :time
        "Wed Jul 31 17:36:13 2024")
  (:url "https://berthub.eu/articles/" :title "Bert Hubert's writings"
@@ -64,8 +51,6 @@
        "Fri Aug 16 15:14:12 2024")
  (:url "https://fabiensanglard.net/" :title
        "Fabien Sanglard's Website" :time "2024-07-27 07:04:56 PM")
- (:url "https://idle.nprescott.com/" :title "Idle Cycles" :time
-       "Mon Sep 16 21:39:23 2024")
  (:url "https://www.filfre.net/sitemap/" :title
        "Table of Contents The Digital Antiquarian" :time
        "Fri Oct 18 09:54:58 2024")
