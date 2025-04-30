@@ -1109,7 +1109,6 @@ page."
   :hook
   (prog-mode-hook . ws-butler-mode))
 
-;; Everything that is not part of a particular feature to require
 (use-package emacs
   :init
   (defun hoagie-go-home (arg)
@@ -1265,12 +1264,11 @@ With prefix ARG, use `split-root-window-below' instead"
         inhibit-compacting-font-caches t
         auto-window-vscroll nil
         compilation-error-regexp-alist (delete 'maven compilation-error-regexp-alist))
-  ;; https://200ok.ch/posts/2020-09-29_comprehensive_guide_on_handling_long_lines_in_emacs.html
-  (setq-default bidi-paragraph-direction 'left-to-right
-  ;; from https://github.com/SystemCrafters/rational-emacs/blob/master/modules/rational-defaults.el
-                bidi-inhibit-bpa t
-  ;; from https://blogs.dgplug.org/sandeepk/no-newline-at-the-end-of-file-_-tsu-_
-                require-final-newline t)
+  (setq-default
+   ;; from https://github.com/SystemCrafters/rational-emacs/blob/master/modules/rational-defaults.el
+   bidi-inhibit-bpa t
+   ;; from https://blogs.dgplug.org/sandeepk/no-newline-at-the-end-of-file-_-tsu-_
+   require-final-newline t)
   (delete-selection-mode)
   (blink-cursor-mode -1)
   (column-number-mode 1)
