@@ -1,9 +1,8 @@
 ;; Auto-generated file; don't edit -*- mode: lisp-data -*-
 ((:url "https://apod.nasa.gov/apod/astropix.html" :title
        "Astronomy Picture of the Day" :time "Wed Apr 30 08:30:01 2025")
- (:url "https://elintransigente.com/" :title
-       "Noticias de Argentina" :time
-       "Sun Apr 20 11:19:31 2025")
+ (:url "https://elintransigente.com/" :title "Noticias de Argentina"
+       :time "Sun Apr 20 11:19:31 2025")
  (:url "https://text.npr.org/" :title "NPR Text news" :time
        "2024-05-29 09:25:17 AM")
  (:url "https://www.csmonitor.com/layout/set/text/textedition" :title
@@ -19,8 +18,6 @@
        :time "Wed Oct  2 17:14:47 2024")
  (:url "https://www.schneier.com/" :title "Schneier on Security" :time
        "2024-07-26 08:36:42 AM")
- (:url "https://taonaw.com/" :title "The Art Of Not Asking Why" :time
-       "Fri Aug  9 16:23:47 2024")
  (:url "https://lucumr.pocoo.org/" :title
        "Blog | Armin Ronacher's Thoughts and Writings" :time
        "Tue Feb  4 10:16:02 2025")
@@ -28,8 +25,6 @@
        :time "2024-07-18 10:16:05 AM")
  (:url "https://www.archaeoramblings.com/blog/" :title
        "Archeoramblings" :time "2024-07-18 10:15:34 AM")
- (:url "https://brandons-journal.com/" :title "Brandon's Journal"
-       :time "Wed Apr  9 11:01:16 2025")
  (:url "https://thejollyteapot.com/" :title
        "Archives - The Jolly Teapot" :time "Fri Sep 27 09:27:44 2024")
  (:url "http://starbreaker.org/grimoire/index.html" :title
