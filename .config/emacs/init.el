@@ -1115,9 +1115,17 @@ page."
   (defun hoagie-go-home (arg)
     "Open ~. Prefix ARG to open in other window."
     (interactive "P")
-    (if arg
-        (dired-other-window "~/")
-      (dired "~/")))
+    (let ((home-dir (expand-file-name "~/")))
+      (if arg
+          (dired-other-window home-dir)
+        (dired home-dir))))
+  (defun hoagie-open-init ()
+    "Open my init file.
+Instead of using `user-init-file', it goes to the \"dotfiles\"
+repository."
+    (interactive)
+    (find-file
+     (expand-file-name "~/sourcehut/dotfiles/.config/emacs/init.el")))
   ;; Inspired by
   ;; https://demonastery.org/2013/04/emacs-narrow-to-region-indirect/ and
   ;; modified to DWIM. Also use `pop-to-buffer' instead of `switch-to-buffer'
@@ -1173,7 +1181,7 @@ With prefix ARG, use `split-root-window-below' instead"
                        (split-root-window-below)
                      (split-window-below))))
   :bind
-  ("<S-f1>" . (lambda () (interactive) (find-file user-init-file)))
+  ("<S-f1>" . hoagie-open-init)
   ("<f1>" . hoagie-go-home)
   ;; Window management
   ("S-<left>" . (lambda () (interactive)(shrink-window-horizontally 5)))
