@@ -2,9 +2,7 @@
 
 (use-package ecomplete
   :custom
-  ;; would like to sync my address book (lost it once already!)
-  ;; but also don't want it to be public. Best balance?
-  (ecomplete-database-file "~/.gnus.d/ecomplete.gpg")
+  (ecomplete-database-file "~/.gnus.d/ecomplete")
   :config
   (defun ecomplete-add-email (email name)
     "Add email address to ecomplete's database.
