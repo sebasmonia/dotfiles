@@ -413,8 +413,9 @@ Sets `fill-column'."
   (eww-mode-hook . visual-line-mode)
   :bind
   (:map hoagie-second-keymap
-        ;; "w" for web.
-        ("w" . eww)
+        ;; "w" for web, and use eww-search-words (with no region, it is
+        ;; equivalent to plain `eww')
+        ("w" . eww-search-words)
         ;; the EWW boormarks are the "personal" ones
         ("ESC w" . eww-list-bookmarks)
         ("C-w" . eww-list-buffers))
@@ -1135,6 +1136,28 @@ If ARG, don't prompt for buffer name suffix."
           (narrow-to-region start end)
           (deactivate-mark))
         (pop-to-buffer buf))))
+  (defvar-local hoagie-narrow-toggle-markers nil
+    "A cons cell (beginning . end) that is updated when using `hoagie-narrow-toggle'.")
+  (defun hoagie-narrow-toggle (&optional arg)
+    "Toggle widening/narrowing of the current buffer.
+If the buffer is narrowed, store the boundaries in
+`hoagie-narrow-toggle-markers' and widen.
+If the buffer is widened, then narrow to region if
+`hoagie-narrow-toggle-markers' is non nil (and then discard those
+markers, resetting the state)."
+    (interactive)
+    (if (buffer-narrowed-p)
+        (progn
+          (setf hoagie-narrow-toggle-markers (cons (point-min)
+                                                   (point-max)))
+          (widen))
+      ;; check for toggle markers
+      (if (not hoagie-narrow-toggle-markers)
+          (message "No narrow toggle markers.")
+        ;; do the thing
+        (narrow-to-region (car hoagie-narrow-toggle-markers)
+                          (cdr hoagie-narrow-toggle-markers))
+        (setf hoagie-narrow-toggle-markers nil))))
   (defun hoagie-split-window-right (&optional arg)
     "Like `split-window-right', but select the new window.
 With prefix ARG, use `split-root-window-right' instead"
@@ -1178,9 +1201,6 @@ With prefix ARG, use `split-root-window-below' instead"
         ;; (F6 and C are next to each other in the Raise)
         ("k" . kill-whole-line))
   (:map ctl-x-map
-        ;; Back to C-x n i, I simply internalized "C-x n" for all
-        ;; narrowing commands. Now "F5 c" is free again...
-        ("n i" . hoagie-narrow-indirect-dwim)
         ;; right next to other-window
         ("i" . other-frame)
         ;; add meta to get the original command for C-x i...
@@ -1191,7 +1211,10 @@ With prefix ARG, use `split-root-window-below' instead"
         ;; by using prefix-arg UPDATE: improves on the SO answer :D
         ("3" . #'hoagie-split-window-right)
         ("2" . #'hoagie-split-window-below))
-  ;; repeat C-x o and C-x i, and even switch between them
+  (:map narrow-map
+        ("i" . hoagie-narrow-indirect-dwim)
+        ("t" . hoagie-narrow-toggle))
+  ;; narrow C-x o and C-x i, and even switch between them
   (:repeat-map hoagie-other-window-frame-repeat-map
                ("o" . other-window)
                ("i" . other-frame)
