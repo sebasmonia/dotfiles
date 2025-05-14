@@ -2,7 +2,7 @@
 
 ;; Author: Sebastián Monía <code@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
-;; Version: 30.5
+;; Version: 30.6
 ;; Keywords: tools maint
 
 ;; This file is not part of GNU Emacs.
@@ -19,6 +19,8 @@
 ;; 2025-02-26: Bring back browse-kill-ring, remove json-mode, dired-narrow,
 ;;             re-builder. Remove instances of global-set-key.
 ;; 2025-03-10: Change F2, and add repeat-mode.
+;; 2025-05-14: Clean up and standarize bindings: replace F1 with C-c g, and F2
+;;             with C-c n. Use more <remap> when applicable.
 ;;; Code:
 
 (setf custom-file (locate-user-emacs-file "custom.el"))
@@ -88,7 +90,7 @@
   :load-path "~/sourcehut/dotfiles/.config/emacs"
   :demand t
   :bind
-  ("<f2>" . hoagie-notes-keymap))
+  ("C-c n" . hoagie-notes-keymap))
 
 (use-package ansi-color
   :commands (ansi-color-apply-buffer)
@@ -352,11 +354,6 @@
          ("l f" . eglot-format)
          ("l h" . eldoc)
          ("l a" . eglot-code-actions)))
-  (:map eglot-mode-map
-        (("C-c C-e r" . eglot-rename)
-         ("C-c C-e f" . eglot-format)
-         ("C-c C-e h" . eldoc)
-         ("C-c C-e a" . eglot-code-actions)))
   :config
   ;; from https://dawranliou.com/blog/xref-with-eglot-and-project/
   (defun xref-find-references-with-eglot (orig-fun &rest args)
@@ -1126,6 +1123,11 @@ repository."
     (interactive)
     (find-file
      (expand-file-name "~/sourcehut/dotfiles/.config/emacs/init.el")))
+  (defvar-keymap hoagie-goto-keymap
+    :doc "Keymap to go to places (like, home dir, init file, etc."
+    :name "Go to..."
+    "h" '("home directory" . hoagie-go-home)
+    "i" '("init file" . hoagie-open-init))
   ;; Inspired by
   ;; https://demonastery.org/2013/04/emacs-narrow-to-region-indirect/ and
   ;; modified to DWIM. Also use `pop-to-buffer' instead of `switch-to-buffer'
@@ -1180,24 +1182,24 @@ With prefix ARG, use `split-root-window-below' instead"
     (select-window (if arg
                        (split-root-window-below)
                      (split-window-below))))
+  :bind-keymap
+  ("C-c g" . hoagie-goto-keymap)
   :bind
-  ("<S-f1>" . hoagie-open-init)
-  ("<f1>" . hoagie-go-home)
   ;; Window management
-  ("S-<left>" . (lambda () (interactive)(shrink-window-horizontally 5)))
-  ("S-<right>" . (lambda () (interactive)(enlarge-window-horizontally 5)))
-  ("S-<up>" . (lambda () (interactive)(shrink-window 5)))
-  ("S-<down>" . (lambda () (interactive)(shrink-window -5)))
+  ;; ("S-<left>" . (lambda () (interactive)(shrink-window-horizontally 5)))
+  ;; ("S-<right>" . (lambda () (interactive)(enlarge-window-horizontally 5)))
+  ;; ("S-<up>" . (lambda () (interactive)(shrink-window 5)))
+  ;; ("S-<down>" . (lambda () (interactive)(shrink-window -5)))
   ;; from https://emacsredux.com/blog/2020/06/10/comment-commands-redux/
   ("<remap> <comment-dwim>" . comment-line)
   ;; replace delete-char, as recommended in the docs
-  ("C-d" . delete-forward-char)
-  ("M-c" . capitalize-dwim)
-  ("M-u" . upcase-dwim)
-  ("M-l" . downcase-dwim)
-  ("M-z" . zap-up-to-char)
+  ("<remap> <delete-char>" . delete-forward-char)
+  ("<remap> <capitalize-word>" . capitalize-dwim)
+  ("<remap> <upcase-word>" . upcase-dwim)
+  ("<remap> <downcase-word>" . downcase-dwim)
+  ("<remap> <zap-to-char>" . zap-up-to-char)
   ("C-x k" . kill-current-buffer)
-  ("C-x ESC k" . kill-buffer)
+  ("C-x M-k" . kill-buffer)
   ("<remap> <list-buffers>" . ibuffer)
   ;; it's back...
   ("<remap> <list-buffers>" . ibuffer)
@@ -1361,7 +1363,9 @@ FRAME is ignored."
     "~/sourcehut/simcorp-files/.emacs.d/sc-init.el"
     "Location of the SimCorp init file.")
   (load sc-init-file)
-  (keymap-global-set "ESC S-<f1>"
-                     (lambda () (interactive) (find-file sc-init-file))))
+  (keymap-set
+   hoagie-goto-keymap
+   "s"
+   '("sc init" . (lambda () (interactive) (find-file sc-init-file)))))
 
 ;;; init.el ends here
