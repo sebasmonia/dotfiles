@@ -89,7 +89,7 @@
 (use-package hoagie-notes
   :load-path "~/sourcehut/dotfiles/.config/emacs"
   :demand t
-  :bind
+  :bind-keymap
   ("C-c n" . hoagie-notes-keymap))
 
 (use-package ansi-color

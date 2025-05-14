@@ -34,12 +34,12 @@ This file is meant to be used for quick, uncategorized notes.")
 ;;   "Location of the diary file to export note-related tasks.")
 
 (defvar-keymap hoagie-notes-keymap
-  :prefix 'hoagie-notes-keymap
   :doc "Convenience keymap for note-taking commands."
-  "i" #'hoagie-notes-open-inbox
-  "f" #'hoagie-notes-find-by-name
-  "g" #'hoagie-notes-grep
-  "n" #'hoagie-notes-new-note)
+  :name "Notes: "
+  "g" '("grep" . hoagie-notes-grep)
+  "f" '("find" . hoagie-notes-find-by-name)
+  "n" '("new" . hoagie-notes-new-note)
+  "i" '("inbox" . hoagie-notes-open-inbox))
 
 (defun hoagie-notes-open-inbox ()
   "Open notes \"inbox\" file.
