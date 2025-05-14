@@ -776,7 +776,7 @@ By default, occur _limits the search to the region_ if it is active."
   (defun hoagie-rename-and-select-occur-buffer ()
     "Renames the current buffer to *Occur: [term] [buffer]*.
 Meant to be added to `occur-hook'."
-    (cl-destructuring-bind (search-term _ (buffer-name &rest _))
+    (cl-destructuring-bind (search-term _ (buffer-name &rest other-bufs))
         occur-revert-arguments
       (pop-to-buffer
        (rename-buffer (format "*Occur: %s %s*" search-term buffer-name) t)))))
