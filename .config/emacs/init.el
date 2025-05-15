@@ -263,7 +263,7 @@
   ;; (info "(emacs) Dired and Find")
   (defvar-keymap hoagie-find-keymap
     :doc "Keymap for Dired find commands."
-    :name "Find..."
+    :name "Find variants"
     "g" '("grep dired" . find-grep-dired)
     "n" '("name dired" . find-name-dired)
     "d" '("dired" . find-dired))
@@ -1124,10 +1124,15 @@ repository."
     (find-file
      (expand-file-name "~/sourcehut/dotfiles/.config/emacs/init.el")))
   (defvar-keymap hoagie-goto-keymap
-    :doc "Keymap to go to places (like, home dir, init file, etc."
-    :name "Go to..."
+    :doc "Keymap to go to places (like, home dir, init file, etc)."
+    :name "Go to"
     "h" '("home directory" . hoagie-go-home)
-    "i" '("init file" . hoagie-open-init))
+    "i" '("init file" . hoagie-open-init)
+    ;; alternatives - I don't have a need to release w and e from the secondary
+    ;; keymap, but it is an interesting experiment
+    "w" '("www" . eww-search-words)
+    "e" '("email(gnus)" . gnus)
+    )
   ;; Inspired by
   ;; https://demonastery.org/2013/04/emacs-narrow-to-region-indirect/ and
   ;; modified to DWIM. Also use `pop-to-buffer' instead of `switch-to-buffer'
