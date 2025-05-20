@@ -117,7 +117,7 @@ tries to minimize the use of bolds and slate/italics too."
    ;; up removing even the underline
    `(gnus-button ((t (:underline t))))
    `(gnus-header-name ((t nil))) ;; all "Header:" text
-   `(gnus-header-from ((t (:inherit default :underline t)))) ;; value of "From: "
+   `(gnus-header-from ((t (:inherit default)))) ;; value of "From: "
    `(gnus-header-subject ((t nil))) ;; value of "Subject: "
    `(gnus-header-content ((t nil))) ;; other header text/values
    `(gnus-cite-1 ((t (:foreground ,alt-fg))))
