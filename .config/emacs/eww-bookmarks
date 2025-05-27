@@ -12,8 +12,6 @@
  (:url "https://burgundywave.com/category/colorado-rapids/" :title
        "Colorado Rapids Archives - Burgundy Wave" :time
        "2024-07-27 06:58:18 PM")
- (:url "https://basic.bearblog.dev/blog/" :title
-       "Blog | Welcome to BASIC" :time "Sun Apr 20 11:40:27 2025")
  (:url "https://netigen.com/tags" :title "Netigen: Tags (volume-5)"
        :time "Wed Oct  2 17:14:47 2024")
  (:url "https://www.schneier.com/" :title "Schneier on Security" :time
@@ -23,10 +21,10 @@
        "Tue Feb  4 10:16:02 2025")
  (:url "https://bacardi55.io/posts/" :title "Bacardi55's Web Cave"
        :time "2024-07-18 10:16:05 AM")
- (:url "https://82mhz.net/" :title "82MHz"
-       :time "Mon May 19 13:03:19 2025")
- (:url "https://manuelmoreale.com/" :title "Manu – I write"
-       :time "Thu May 15 09:56:44 2025")
+ (:url "https://82mhz.net/" :title "82MHz" :time
+       "Mon May 19 13:03:19 2025")
+ (:url "https://manuelmoreale.com/" :title "Manu – I write" :time
+       "Thu May 15 09:56:44 2025")
  (:url "https://thejollyteapot.com/" :title
        "Archives - The Jolly Teapot" :time "Fri Sep 27 09:27:44 2024")
  (:url "http://starbreaker.org/grimoire/index.html" :title
