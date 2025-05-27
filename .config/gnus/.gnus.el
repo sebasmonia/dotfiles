@@ -116,7 +116,7 @@ If REGEXP is not provided, then all emails are printed."
   ;; http://groups.google.com/group/gnu.emacs.gnus/browse_thread/thread/a673a74356e7141f
   (gnus-summary-line-format (concat
                              "%U%R | "
-                             "%&user-date; │ " ;; date
+                             "%&user-date; | " ;; date
                              "%-25,25f | " ;; name
                              "%B "
                              "%s\n"))
