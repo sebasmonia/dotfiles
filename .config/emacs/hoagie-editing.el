@@ -2,11 +2,9 @@
 
 ;; Copyright (C) 2024-2025 Sebastián Monía
 ;;
-;; Author: Sebastián Monía <code@sebasmonia.com>
+;; Author: Sebastián Monía <sebastian@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
-;; Package-Requires: ((emacs "29.1"))
-;; Version: 1.0
-;; Keywords: convenience
+;; Keywords: local convenience abbrev text
 
 ;; This file is not part of GNU Emacs.
 
@@ -233,6 +231,6 @@ example). With double prefix, include the time."
   (insert (format-time-string (cond ((equal arg '(4)) "%Y%m%d")
                                     ((equal arg '(16)) "%F %T")
                                     (t "%F")))))
-
 (provide 'hoagie-editing)
+
 ;;; hoagie-editing.el ends here

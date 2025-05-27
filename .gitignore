@@ -17,3 +17,4 @@
 .config/emacs/newsticker/*
 .config/emacs/org-persist/*
 .config/gnus/.newsrc.eld
+.config/gnus/ecomplete

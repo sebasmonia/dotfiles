@@ -1,8 +1,29 @@
+;;; hoagie-theme.el --- My custom theme -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2024-2025 Sebastián Monía
+;;
+;; Author: Sebastián Monía <sebastian@sebasmonia.com>
+;; URL: https://git.sr.ht/~sebasmonia/dotfiles
+;; Keywords: local faces
+
+;; This file is not part of GNU Emacs.
+
+;;; Commentary:
+;; My personal theme, using Tok (https://github.com/topikettunen/tok-theme) as
+;; a starting point.
+;;
+;; This is a variant that has some more colors, but as few as possible: dark
+;; and light purple, dark green, dark orange, and dark red. Then a few greys
+;; here and there. The theme's base is white background, and most faces are
+;; simply plain black.
+
+;;; Code:
+
 (deftheme hoagie
-  "My personal theme, using Tok as a starting point.
-See https://github.com/topikettunen/tok-theme
-This is a variant that has some more colors, but as few as possible. And
-tries to minimize the use of bolds and slate/italics too."
+  "My personal theme.
+Uses five colors, a bunch of greys, and mostly black text on a white
+background. It also tries to minimize the use of bolds and
+slate/italics."
   :background-mode 'light
   :kind 'color-scheme)
 
@@ -207,3 +228,4 @@ tries to minimize the use of bolds and slate/italics too."
                (file-name-as-directory (file-name-directory load-file-name))))
 
 (provide-theme 'hoagie)
+;;; hoagie-theme.el ends here

@@ -1,4 +1,19 @@
-;; Attempt to get all email-related configuration in a single place
+;;; .gnus.el --- Email configuration (with small extras) -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2025 Sebastián Monía
+;;
+;; Author: Sebastián Monía <sebastian@sebasmonia.com>
+;; URL: https://git.sr.ht/~sebasmonia/dotfiles
+;; Keywords: local mail
+
+;; This file is not part of GNU Emacs.
+
+;;; Commentary:
+
+;; My email configuration. Gnus, message, ecomplete. Some custom functions to
+;; edit Fastmail's notes using some scaffolding from gnus.
+
+;;; Code:
 
 (use-package ecomplete
   :custom
@@ -260,7 +275,7 @@ It is actually Gnus's summary buffer of the Notes directory in Fastmail."
   (gnus-group-read-group nil t "nnimap+fastmail:Notes"))
 
 (defun fmnotes-create (title)
-  "Pop a buffer to write a new note."
+  "Pop a buffer to write a new note with TITLE."
   (interactive "sTitle: ")
   (let ((created-date (message-make-date))
         (uuid (wilko/makeshift-uuid)))
@@ -298,3 +313,5 @@ The note is actually a new Gnus article."
     (forward-line 1)
     (gnus-summary-goto-article (cdr group-art) nil t)
     (gnus-summary-edit-article)))
+
+;;; .gnus.el ends here
