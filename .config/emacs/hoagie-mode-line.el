@@ -1,7 +1,22 @@
-;; These are based on my mood-line configuration. The package broke a few times
-;; after updates, plus it kept growing in size, and I had my own customizations
-;; on top of it.
-;; So I decided to setup my own mode-line from scratch.
+;;; hoagie-mode-line.el --- My mode-line -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2025 Sebastián Monía
+;;
+;; Author: Sebastián Monía <sebastian@sebasmonia.com>
+;; URL: https://git.sr.ht/~sebasmonia/dotfiles
+;; Keywords: local tools
+
+;; This file is not part of GNU Emacs.
+
+;;; Commentary:
+
+;; My own mode-line.
+;; It is based on my mood-line configuration.
+;; The package broke a few times after updates, plus it kept growing in size,
+;; and I had my own customizations on top of it. So I decided to setup my own
+;; mode-line from scratch and stop using it.
+
+;;; Code:
 
 ;; TODO: is there a way to get this concatenated without :eval?
 (setq-default mode-line-modified
@@ -52,3 +67,5 @@
        " " mode-line-misc-info
        "  " mode-line-process
        "  " mode-line-modes "   "))
+
+;;; hoagie-mode-line.el ends here

@@ -1,12 +1,10 @@
 ;;; hoagie-notes.el --- Commands for note taking  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2024 Sebastián Monía
+;; Copyright (C) 2024-2025 Sebastián Monía
 ;;
-;; Author: Sebastián Monía <code@sebasmonia.com>
+;; Author: Sebastián Monía <sebastian@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
-;; Package-Requires: ((emacs "29.1"))
-;; Version: 1.0
-;; Keywords: convenience
+;; Keywords: local convenience text
 
 ;; This file is not part of GNU Emacs.
 

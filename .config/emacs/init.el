@@ -1,9 +1,9 @@
-;;; .emacs --- My dot emacs file  -*- lexical-binding: t; -*-
+;;; init.el --- My dot emacs file  -*- lexical-binding: t; -*-
 
 ;; Author: Sebastián Monía <code@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
 ;; Version: 30.6
-;; Keywords: tools maint
+;; Keywords: local tools processes vc files
 
 ;; This file is not part of GNU Emacs.
 
