@@ -25,8 +25,14 @@
        "Mon May 19 13:03:19 2025")
  (:url "https://manuelmoreale.com/" :title "Manu Moreale" :time
        "Thu May 15 09:56:44 2025")
+ (:url "https://nicolalosito.it/blog/" :title "Nicola Losito" :time
+       "Sat Jun  7 19:15:42 2025")
+ (:url "https://www.archaeoramblings.com/blog/" :title
+       "Archeoramblings" :time "2024-07-18 10:15:34 AM")
  (:url "https://thejollyteapot.com/" :title
        "Archives - The Jolly Teapot" :time "Fri Sep 27 09:27:44 2024")
+ (:url "https://kevquirk.com/" :title "Kev Quirk" :time
+       "Sat Jun  7 19:17:29 2025")
  (:url "http://starbreaker.org/grimoire/index.html" :title
        "grimoire | starbreaker.org" :time "Tue Feb  4 11:37:53 2025")
  (:url "https://kevquirk.com/" :title "Blog | Kev Quirk" :time
