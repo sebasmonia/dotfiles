@@ -84,7 +84,16 @@
         ("s" . hoagie-split-by-sep)
         ;; always have a binding for plain old fill-paragraph (it tends
         ;; to be replaced/shadowed in a lot of modes).
-        ("q" . fill-paragraph)))
+        ("q" . fill-paragraph))
+  ;; I think this should be in the package "emacs", but I want to revisit all
+  ;; editing bindings - use C-c [letter] or consolidate them in some way
+  :config
+  (defvar-keymap hoagie-copydupe-keymap
+    :doc "Keymap for copy/duplication commands."
+    :name "Copy/dupe command"
+    "d" '("dupe region/line" . duplicate-dwim)
+    "c" '("copy from above" . copy-from-above-command))
+  (keymap-set hoagie-second-keymap "c" hoagie-copydupe-keymap))
 
 (use-package hoagie-notes
   :load-path "~/sourcehut/dotfiles/.config/emacs"
