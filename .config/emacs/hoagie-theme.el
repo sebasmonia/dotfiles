@@ -39,7 +39,6 @@ slate/italics."
        (string "#006400") ;; dark green
        (alt-fg "#68228b") ;; dark orchid 4
        (alt-bg "#e6e6fa") ;; lavender
-       ;; (error "#8b0000") ;; dark red
        (error "#ee0000") ;; red
        (warning "#ff8c00") ;; dark orange
        (bg-mode-line (if (display-graphic-p)
@@ -110,10 +109,10 @@ slate/italics."
 
    `(isearch ((t (:foreground ,bg :background ,fg))))
    `(isearch-fail ((t (:inherit warning))))
-   `(isearch-group-1 ((t (:foreground ,error :background ,dim-0))))
+   `(isearch-group-1 ((t (:foreground ,alt-fg :background ,dim-0))))
    `(isearch-group-2 ((t (:foreground ,warning :background ,dim-0))))
-   `(lazy-highlight ((t (:foreground ,bg :background ,dim-2))))
-   `(match ((t (:foreground ,bg :background ,dim-2))))
+   `(lazy-highlight ((t (:foreground ,alt-fg :background ,dim-2))))
+   `(match ((t (:foreground ,alt-fg :background ,dim-2))))
 
    `(dired-directory ((t (:foreground ,alt-fg))))
    `(dired-broken-symlink ((t (:inherit error))))
