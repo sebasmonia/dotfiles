@@ -111,8 +111,8 @@ slate/italics."
    `(isearch-fail ((t (:inherit warning))))
    `(isearch-group-1 ((t (:foreground ,alt-fg :background ,dim-0))))
    `(isearch-group-2 ((t (:foreground ,warning :background ,dim-0))))
-   `(lazy-highlight ((t (:foreground ,alt-fg :background ,dim-2))))
-   `(match ((t (:foreground ,alt-fg :background ,dim-2))))
+   `(lazy-highlight ((t (:foreground ,fg :background ,dim-1))))
+   `(match ((t (:foreground ,fg :background ,dim-1))))
 
    `(dired-directory ((t (:foreground ,alt-fg))))
    `(dired-broken-symlink ((t (:inherit error))))
