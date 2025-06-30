@@ -28,13 +28,20 @@
                                  (not (derived-mode-p 'comint-mode)))
                             "!"
                           "-"))
-                      (when (buffer-narrowed-p) "N")
-                      (when (file-remote-p default-directory) "R")
-                      " ")
+                      ;; not really about "modified", but I like this
+                      ;; in the first few chars of the mode line
+                      (when (buffer-narrowed-p) "N"))
               'face 'mode-line-emphasis)))
 
+(setq-default mode-line-remote
+              '(:eval (propertize
+                       (concat (when (file-remote-p default-directory) "R")
+                               ;; trailing space here
+                               " ")
+                       'face 'mode-line-emphasis)))
+
 ;; same as default, with no tooltip, mouse menu nor face
-(setq-default mode-line-buffer-identification '("%12b"))
+(setq-default mode-line-buffer-identification '("%12b "))
 
 (setq-default mode-line-position
      (list "%l:%c"
@@ -53,19 +60,20 @@
                    help-echo (format-mode-line minor-mode-alist)))
 
 (setq-default mode-line-format
-     '(" " mode-line-modified
-       "  " mode-line-buffer-identification
-       "  " mode-line-position
-       "  " (:eval (when overwrite-mode
-                     (propertize "OVERWRITE"
-                                 'face 'mode-line-highlight)))
+     '(" " mode-line-modified mode-line-remote
+       " " mode-line-buffer-identification
+       " " mode-line-position
+       " " (:eval (when overwrite-mode
+                    (propertize "OVERWRITE"
+                                'face 'mode-line-highlight)))
+       " %[%] " ;; Experimental - show recursive edit level
        mode-line-format-right-align
        (:eval (when defining-kbd-macro
                 (propertize "REC"
                             'face 'mode-line-highlight)))
        " " (vc-mode vc-mode)
        " " mode-line-misc-info
-       "  " mode-line-process
-       "  " mode-line-modes "   "))
+       " " mode-line-process
+       " " mode-line-modes "   "))
 
 ;;; hoagie-mode-line.el ends here
