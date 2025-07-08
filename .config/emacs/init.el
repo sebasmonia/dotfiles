@@ -71,7 +71,7 @@
   :load-path "~/sourcehut/dotfiles/.config/emacs"
   :demand t
   :bind
-  ("C-z" . hoagie-region-to-char)
+  ("C-z" . hoagie-mark-to-char)
   ("<remap> <kill-word>" . hoagie-delete-word)
   ("<remap> <backward-kill-word>" . hoagie-backward-delete-word)
   (:map hoagie-keymap
@@ -948,14 +948,12 @@ Time can be anything accepted by `run-at-time'."
   (vc-allow-rewriting-published-history t)
   :bind
   (:map vc-prefix-map
-        ;; make it consistent with vc-dir
-        ("k" . vc-revert)))
+        ("k" . vc-revert))) ;; make it consistent with vc-dir
 
 (use-package vc-dir
   :after (vc project vc-git)
   :bind
-  ;; shadows `vc-dir'
-  ("C-x v d" . vc-dir-root)
+  ("C-x v d" . vc-dir-root)  ;; shadows `vc-dir'
   (:map vc-dir-mode-map
         ("e" . vc-ediff)
         ("k" . vc-revert)
@@ -963,8 +961,8 @@ Time can be anything accepted by `run-at-time'."
         ("b b" . hoagie-vc-git-list-branches))
   :config
   (defun hoagie-vc-dir-reset (&optional arg)
-    "Runs \"git reset\" to unstage all changes.
-With prefix arg, does a hard reset (thus it asks for confirmation)."
+    "Run \"git reset\" to unstage all changes.
+With prefix arg, do a hard reset, with confirmation."
     (interactive "P")
     (if arg
         (when (y-or-n-p "Perform a hard reset? ")

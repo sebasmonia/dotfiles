@@ -53,7 +53,7 @@ With ARG, do this that many times."
   (interactive "*p")
   (hoagie-delete-word (- arg)))
 
-(defun hoagie-region-to-char (arg char &optional interactive)
+(defun hoagie-mark-to-char (arg char &optional interactive)
   "A copy of `zap-to-char' that activates or expands the region."
   (interactive (list (prefix-numeric-value current-prefix-arg)
 		             (read-char "Mark to char: " nil 'read-char-history)
