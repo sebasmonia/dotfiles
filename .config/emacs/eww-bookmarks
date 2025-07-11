@@ -18,6 +18,8 @@
        :time "Wed Oct  2 17:14:47 2024")
  (:url "https://mtwb.blog/" :title "Matt's Blog" :time
        "Mon Jun  9 09:46:19 2025")
+ (:url "https://slrncl.com/blog/" :title "slrncl / blog" :time
+       "Fri Jul 11 16:31:59 2025")
  (:url "https://lucumr.pocoo.org/" :title
        "Blog | Armin Ronacher's Thoughts and Writings" :time
        "Tue Feb  4 10:16:02 2025")
