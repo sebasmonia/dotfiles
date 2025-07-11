@@ -43,8 +43,8 @@
                                            :height 120
                                            :foundry "outline"))))))
 
-;; Based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html I
-;; eventually I moved away from the menu key to F6, and even later that key
+;; Based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html
+;; Eventually moved away from the menu key to F6, and even later that key
 ;; ended in a very similar place to <menu> but on the other side of the
 ;; keyboard (Dygma Raise)
 (defvar-keymap hoagie-keymap
@@ -830,6 +830,23 @@ Meant to be added to `occur-hook'."
         ("c" . sharper-main-transient))
   :custom
   (sharper-run-only-one t))
+
+;; experimental...
+(use-package eshell
+  :custom
+  (eshell-prefer-lisp-functions t)
+  (eshell-modules-list
+   '(eshell-alias eshell-banner eshell-basic eshell-cmpl eshell-dirs
+     eshell-elecslash eshell-extpipe eshell-glob eshell-hist eshell-ls
+     eshell-pred eshell-prompt eshell-script eshell-term eshell-tramp
+     eshell-unix eshell-xtra))
+  :hook
+  (eshell-mode-hook . hoagie-eshell-mode-setup)
+  :config
+  (defun hoagie-eshell-mode-setup ()
+    "Configure eshell buffers."
+    (toggle-truncate-lines t)
+    ))
 
 (use-package shell
   :custom

@@ -6,6 +6,7 @@
 .config/emacs/ecompleterc
 .config/emacs/eln-cache/*
 .config/emacs/elpa/*
+.config/emacs/eshell/*
 .config/emacs/history
 .config/emacs/multisession/*
 .config/emacs/network-security.data

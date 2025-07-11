@@ -223,6 +223,19 @@ slate/italics."
    `(epa-validity-medium ((t (:inherit warning))))
    `(epa-validity-low ((t (:inherit default))))
    `(epa-validity-disabled ((t (:inherit shadow))))
+
+   `(eshell-prompt ((t (:foreground ,fg))))
+   `(eshell-ls-executable ((t (:foreground ,alt-fg))))
+   `(eshell-ls-archive ((t (:foreground ,fg))))
+   `(eshell-ls-readonly ((t (:foreground ,fg))))
+   `(eshell-ls-special ((t (:foreground ,fg))))
+   `(eshell-ls-unreadable ((t (:inherit warning))))
+   ;; it is used for "missing", so it inherited from "error"
+   ;; but was also used to mark symlink targets, so...?
+   `(eshell-ls-missing ((t (:foreground ,alt-fg))))
+
+   `(sh-quoted-exec ((t (:foreground ,fg))))
+   `(sh-heredoc ((t (:foreground ,fg))))
    ))
 ;;;###autoload
 (when load-file-name
