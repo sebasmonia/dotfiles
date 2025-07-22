@@ -3,17 +3,15 @@ simplified a lot of my setup.
 
 ## Emacs config
 
+![Screenshot of my Emacs](emacs-screenshot.png)
+
 A [use-package](https://www.gnu.org/software/emacs/manual/html_mono/use-package.html) based
 configuration, that tries its best to be platform agnostic.  
-In most cases I prefer smaller packages, if built-in, even better (eg project.el over projectile).  
+In most cases I prefer smaller packages, if built-in, even better (eg project.el over projectile). 
 In the same spirit, I use Eglot for my LSP needs.  
-My package of preference for Common Lisp is [Sly](https://github.com/joaotavora/sly), a fork of
-SLIME.  
 
 I use my own theme, you can read a pseudo-justification [here, on my
-blog](https://site.sebasmonia.com/posts/2025-04-15-why-i-wrote-my-own-emacs-theme.html). It looks
-like this:  
-![Screenshot of hoagie-theme](hoagie-theme.png)  
+blog](https://site.sebasmonia.com/posts/2025-04-15-why-i-wrote-my-own-emacs-theme.html).  
 It has minimal syntax highlighting. Uses about 4 colors outside white, black and greys. And as
 little as possible.
 
