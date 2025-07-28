@@ -640,6 +640,12 @@ Set `fill-column', `truncate-lines'."
   (python-shell-font-lock-enable nil)
   (python-shell-interpreter "ipython")
   (python-shell-interpreter-args "--pprint --simple-prompt")
+  :bind
+  (:repeat-map hoagie-python-repeat-map
+               ("a" . python-nav-backward-block)
+               ("e" . python-nav-forward-block)
+               ("u" . python-nav-backward-up-list)
+               ("d" . down-list))
   :config
   (defun hoagie-python-mode-setup ()
     "Setup my `python-mode' configuration."
