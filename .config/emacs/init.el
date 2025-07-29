@@ -649,7 +649,8 @@ Set `fill-column', `truncate-lines'."
   :config
   (defun hoagie-python-mode-setup ()
     "Setup my `python-mode' configuration."
-    (setf fill-column 79)
+    (setf fill-column 100) ;; I prefer 79, but at work 100 is more convenient
+    ;; (And I rarely code Python at home)
     (display-fill-column-indicator-mode)))
 
 (use-package register
