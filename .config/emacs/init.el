@@ -497,9 +497,7 @@ Set `fill-column' and related modes.'."
   :demand t
   :custom
   (imenu-auto-rescan t)
-  (imenu-flatten 'annotation)
-  :bind
-  ("M-i" . imenu))
+  (imenu-flatten 'annotation))
 
 ;; From Steve Yegge's post:
 ;; Info files out of the docs for just about anything. I have a custom "dir"...
