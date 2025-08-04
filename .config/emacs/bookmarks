@@ -2,7 +2,15 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("PEP257"
+(("Setup Django local"
+ (front-context-string . " Setup Django Co")
+ (rear-context-string)
+ (position . 1)
+ (last-modified 26713 38807 701841 0)
+ (location . "Page ID: 31588558")
+ (page-id . "31588558")
+ (handler . confluence-bookmark-jump))
+("PEP257"
  (front-context-string . " —Tim Peters on ")
  (rear-context-string . "hat’s Python!”\n\n")
  (position . 1223)
@@ -189,11 +197,11 @@
  (location . "Page ID: 48301072")
  (page-id . "48301072")
  (handler . confluence-bookmark-jump))
-("DR Checklist"
- (front-context-string . " Previous switch")
+("DR server list"
+ (front-context-string . " DR Checklist - ")
  (rear-context-string)
  (position . 1)
- (last-modified 25977 62914 176321 0)
+ (last-modified 26750 37830 235119 0)
  (location . "Page ID: 31588408")
  (page-id . "31588408")
  (handler . confluence-bookmark-jump))

@@ -20,6 +20,10 @@
        "Mon Jun  9 09:46:19 2025")
  (:url "https://slrncl.com/blog/" :title "slrncl / blog" :time
        "Fri Jul 11 16:31:59 2025")
+ (:url "https://forkingmad.blog/" :title "Forking Mad+" :time
+       "Mon Aug  4 12:00:43 2025")
+ (:url "https://forkingmad.uk/" :title "Forking Mad" :time
+       "Mon Aug  4 11:57:46 2025")
  (:url "https://lucumr.pocoo.org/" :title
        "Blog | Armin Ronacher's Thoughts and Writings" :time
        "Tue Feb  4 10:16:02 2025")
