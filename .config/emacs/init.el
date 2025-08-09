@@ -517,9 +517,7 @@ Set `fill-column' and related modes.'."
   :demand t
   :custom
   (imenu-auto-rescan t)
-  (imenu-flatten 'annotation)
-  :bind
-  ("M-i" . imenu))
+  (imenu-flatten 'annotation))
 
 ;; From Steve Yegge's post:
 ;; Info files out of the docs for just about anything. I have a custom "dir"...
@@ -660,10 +658,17 @@ Set `fill-column', `truncate-lines'."
   (python-shell-font-lock-enable nil)
   (python-shell-interpreter "ipython")
   (python-shell-interpreter-args "--pprint --simple-prompt")
+  :bind
+  (:repeat-map hoagie-python-repeat-map
+               ("a" . python-nav-backward-block)
+               ("e" . python-nav-forward-block)
+               ("u" . python-nav-backward-up-list)
+               ("d" . down-list))
   :config
   (defun hoagie-python-mode-setup ()
     "Setup my `python-mode' configuration."
-    (setf fill-column 79)
+    (setf fill-column 100) ;; I prefer 79, but at work 100 is more convenient
+    ;; (And I rarely code Python at home)
     (display-fill-column-indicator-mode)))
 
 (use-package register
@@ -1234,11 +1239,6 @@ With prefix ARG, use `split-root-window-below' instead"
   :bind-keymap
   ("C-c g" . hoagie-goto-keymap)
   :bind
-  ;; Window management
-  ;; ("S-<left>" . (lambda () (interactive)(shrink-window-horizontally 5)))
-  ;; ("S-<right>" . (lambda () (interactive)(enlarge-window-horizontally 5)))
-  ;; ("S-<up>" . (lambda () (interactive)(shrink-window 5)))
-  ;; ("S-<down>" . (lambda () (interactive)(shrink-window -5)))
   ;; from https://emacsredux.com/blog/2020/06/10/comment-commands-redux/
   ("<remap> <comment-dwim>" . comment-line)
   ;; replace delete-char, as recommended in the docs
@@ -1250,14 +1250,9 @@ With prefix ARG, use `split-root-window-below' instead"
   ("C-x k" . kill-current-buffer)
   ("C-x M-k" . kill-buffer)
   ("<remap> <list-buffers>" . ibuffer)
-  ;; it's back...
-  ("<remap> <list-buffers>" . ibuffer)
   (:map hoagie-keymap
-        ;; this is much easier to type than C-S-backspace
-        ;; and mirrors C-k nicely.
-        ;; C-k kill rest of the line
-        ;; <f6>-k kill the whole thing
-        ;; (F6 and C are next to each other in the Raise)
+        ;; Easier to type than C-S-backspace, and mirrors C-k nicely.
+        ;; C-k kill rest of the line --> <f6>-k kill the whole thing
         ("k" . kill-whole-line))
   (:map ctl-x-map
         ;; right next to other-window
@@ -1273,7 +1268,7 @@ With prefix ARG, use `split-root-window-below' instead"
   (:map narrow-map
         ("i" . hoagie-narrow-indirect-dwim)
         ("t" . hoagie-narrow-toggle))
-  ;; narrow C-x o and C-x i, and even switch between them
+  ;; repeat C-x o and C-x i, and even switch between them
   (:repeat-map hoagie-other-window-frame-repeat-map
                ("o" . other-window)
                ("i" . other-frame)
@@ -1290,7 +1285,9 @@ With prefix ARG, use `split-root-window-below' instead"
                ("u" . backward-up-list)
                ("d" . down-list)
                ("f" . forward-sexp)
-               ("b" . backward-sexp))
+               ("b" . backward-sexp)
+               ("a" . beginning-of-defun)
+               ("e" . end-of-defun))
   (:repeat-map hoagie-undo-repeat-map
                ("/" . undo)
                ("u" . undo)
@@ -1382,7 +1379,7 @@ With prefix ARG, use `split-root-window-below' instead"
     "Inspired by https://emacs.stackexchange.com/a/44930/17066.
 FRAME is ignored."
     ;; 2021-05-22: now I use the pgtk branch everywhere, and the monitor name
-    ;; has a meaningul value in all cases, so:
+    ;; has a meaningful value in all cases, so:
     (let* ((monitor-name (alist-get 'name (frame-monitor-attributes)))
            (monitor-font '(("0x0536" . 143) ;; laptop -- maybe 151?
                            ("LG Ultra HD" . 181))) ;; 173?
