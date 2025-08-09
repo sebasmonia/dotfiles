@@ -173,8 +173,28 @@
   (browse-kill-ring-default-keybindings))
 
 (use-package browse-url
+  :config
+  (defun browse-url-firefox-flatpak (url &optional new-window)
+    "Duplicate of `browse-url-firefox' for Fedora Silverblue.
+For details on URL and NEW-WINDOW, check the original function."
+    (interactive (browse-url-interactive-arg "URL: "))
+    (setq url (browse-url-encode-url url))
+    (let* ((process-environment (browse-url-process-environment)))
+      (apply #'start-process
+             (concat "flatpak run firefox " url) nil
+             browse-url-firefox-program
+             (append
+              browse-url-firefox-arguments
+              (if (browse-url-maybe-new-window new-window)
+		          (if browse-url-firefox-new-window-is-tab
+		              '("-new-tab")
+		            '("-new-window")))
+              (list url)))))
   :custom
-  (browse-url-secondary-browser-function #'browse-url-firefox)
+  (browse-url-secondary-browser-function
+   (if (eq system-type 'gnu/linux)
+       #'browse-url-firefox-flatpak
+   #'browse-url-firefox))
   (browse-url-browser-function #'eww-browse-url)
   (browse-url-new-window-flag t))
 
