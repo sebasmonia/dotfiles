@@ -70,7 +70,6 @@ slate/italics."
    `(minibuffer-prompt ((t (nil))))
    `(completions-common-part ((t (:underline t :weight bold))))
    `(completions-annotations ((t (:inherit shadow))))
-   `(log-view-commit-body ((t (:inherit default))))
    `(change-log-date ((t (:inherit default))))
    `(diary ((t (:foreground ,alt-fg))))
 
@@ -236,6 +235,10 @@ slate/italics."
 
    `(sh-quoted-exec ((t (:foreground ,fg))))
    `(sh-heredoc ((t (:foreground ,fg))))
+
+   `(log-view-commit-body ((t (:inherit default))))
+   `(log-view-file ((t (:background ,dim-1))))
+   `(log-view-message ((t (:background ,dim-1))))
    ))
 ;;;###autoload
 (when load-file-name

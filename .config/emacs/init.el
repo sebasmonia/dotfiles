@@ -1070,7 +1070,7 @@ With prefix ARG show the remote branches."
     "Do an interactive rebase against another branch.
 This command needs the Emacs server running and GIT_EDITOR properly set.
 You can override the branch name to something like \"HEAD~2\", for example."
-    (interactive "P")
+    (interactive)
     (if (and server-process (getenv "GIT_EDITOR"))
         (vc-git-command "*git rebase -i*" 'async nil "rebase" "-i"
                         (completing-read "Rebase target (branch or commit): "
