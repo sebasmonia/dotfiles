@@ -24,6 +24,10 @@
        "Mon Aug  4 12:00:43 2025")
  (:url "https://forkingmad.uk/" :title "Forking Mad" :time
        "Mon Aug  4 11:57:46 2025")
+ (:url "https://alicebartlett.co.uk/blog/weaknotes" :title
+       "Alice Weaknotes" :time "Fri Aug 15 22:45:04 2025")
+ (:url "https://walknotes.com/" :title "Walknotes" :time
+       "Fri Aug 15 22:38:47 2025")
  (:url "https://bacardi55.io/posts/" :title "Bacardi55's Web Cave"
        :time "2024-07-18 10:16:05 AM")
  (:url "https://82mhz.net/" :title "82MHz" :time
