@@ -772,12 +772,18 @@ It also deletes the register when called with prefix ARG."
       (insert-register reg)
       (when arg
         (set-register reg nil))))
-  (defun hoagie-clean-registers ()
-    (interactive)
-    (while t
-      (set-register (register-read-with-preview
-                     "Register to clear (quit to exit): ")
-                    nil))))
+  (defun hoagie-clean-registers (arg)
+    "Remove data from a register.
+With prefix ARG, delete all registers"
+    (interactive "P")
+    (if (not arg)
+        (while t
+          (set-register (register-read-with-preview
+                         "Register to clear (quit to exit): ")
+                        nil))
+      ;; No need to ask, but show a message
+      (setf register-alist nil)
+      (message "All registers cleared."))))
 
 (use-package repeat
   :custom

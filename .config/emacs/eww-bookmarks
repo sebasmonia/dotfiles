@@ -42,6 +42,11 @@
        "Sat Jun  7 19:17:29 2025")
  (:url "http://starbreaker.org/grimoire/index.html" :title
        "grimoire | starbreaker.org" :time "Tue Feb  4 11:37:53 2025")
+ (:url "https://notes.jeddacp.com/archive/" :title
+       "Notes by JCProbably" :time
+       "Mon Aug 18 13:07:15 2025")
+ (:url "https://pablos.live/writings/" :title "writings | pablos"
+       :time "Mon Aug 18 13:02:35 2025")
  (:url "https://koldfront.dk/" :title "koldfront" :time
        "Wed Jul 31 17:36:13 2024")
  (:url "https://berthub.eu/articles/" :title "Bert Hubert's writings"
