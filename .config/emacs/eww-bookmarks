@@ -22,8 +22,6 @@
        "Fri Jul 11 16:31:59 2025")
  (:url "https://forkingmad.blog/" :title "Forking Mad+" :time
        "Mon Aug  4 12:00:43 2025")
- (:url "https://forkingmad.uk/" :title "Forking Mad" :time
-       "Mon Aug  4 11:57:46 2025")
  (:url "https://alicebartlett.co.uk/blog/weaknotes" :title
        "Alice Weaknotes" :time "Fri Aug 15 22:45:04 2025")
  (:url "https://walknotes.com/" :title "Walknotes" :time
@@ -43,8 +41,7 @@
  (:url "http://starbreaker.org/grimoire/index.html" :title
        "grimoire | starbreaker.org" :time "Tue Feb  4 11:37:53 2025")
  (:url "https://notes.jeddacp.com/archive/" :title
-       "Notes by JCProbably" :time
-       "Mon Aug 18 13:07:15 2025")
+       "Notes by JCProbably" :time "Mon Aug 18 13:07:15 2025")
  (:url "https://pablos.live/writings/" :title "writings | pablos"
        :time "Mon Aug 18 13:02:35 2025")
  (:url "https://koldfront.dk/" :title "koldfront" :time

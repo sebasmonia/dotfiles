@@ -998,6 +998,13 @@ Time can be anything accepted by `run-at-time'."
   (:map vc-prefix-map
         ("k" . vc-revert))) ;; make it consistent with vc-dir
 
+
+(use-package stubvex
+  :load-path "~/sourcehut/stubvex"
+  :demand t
+  :commands
+  (stubvex-reset stubvex-list-branches stubvex-amend-message)
+
 (use-package vc-dir
   :after (vc project vc-git)
   :bind
@@ -1005,8 +1012,8 @@ Time can be anything accepted by `run-at-time'."
   (:map vc-dir-mode-map
         ("e" . vc-ediff)
         ("k" . vc-revert)
-        ("r" . hoagie-vc-dir-reset)
-        ("b b" . hoagie-vc-git-list-branches))
+        ("r" . stubvex-reset)
+        ("b b" . stubvex-list-branches))
   :config
   (defun hoagie-vc-dir-reset (&optional arg)
     "Run \"git reset\" to unstage all changes.
@@ -1047,41 +1054,7 @@ also runs `vc-dir' in the newly cloned directory."
     (let ((default-directory local-dir))
       (vc-git-command nil 0 nil "config" "user.email" email))
     (when (called-interactively-p 'any)
-      (vc-dir local-dir)))
-  (defun hoagie-vc-git-amend ()
-    "Unconditionally amend the last commit.
-Use this for cases where you fumbled the last commit message AND don't
-need any other changes (if there are code changes, you can use the
-regular vc-mode flow)."
-    (interactive)
-    (if (and server-process (getenv "GIT_EDITOR"))
-        (vc-git-command "*git commit amend*" 'async nil "commit" "--amend")
-      (error "Emacs server not running, or GIT_EDITOR not set")))
-  (defun hoagie-vc-git-list-branches (&optional arg)
-    "Show in a buffer the list of branches in the current repository.
-With prefix ARG show the remote branches."
-    ;; built in vc-git-branches doesn't show remote branches
-    (interactive "P")
-    (let* ((root-dir-name (file-name-nondirectory
-                           (directory-file-name
-                            (vc-git-root default-directory))))
-           (buffer-name (format "*%s - %s branches*"
-                                root-dir-name
-                                (if arg "remote" "local"))))
-      (vc-git-command buffer-name 0 nil "branch" (when arg "-r"))
-      (pop-to-buffer buffer-name)
-      (goto-char (point-min))
-      (special-mode)))
-  (defun hoagie-vc-git-interactive-rebase ()
-    "Do an interactive rebase against another branch.
-This command needs the Emacs server running and GIT_EDITOR properly set.
-You can override the branch name to something like \"HEAD~2\", for example."
-    (interactive)
-    (if (and server-process (getenv "GIT_EDITOR"))
-        (vc-git-command "*git rebase -i*" 'async nil "rebase" "-i"
-                        (completing-read "Rebase target (branch or commit): "
-                                         (cdr (vc-git-branches))))
-      (error "Emacs server not running, or GIT_EDITOR not set"))))
+      (vc-dir local-dir))))
 
 (use-package vc-hooks
   :after (vc vc-git)
@@ -1094,7 +1067,7 @@ You can override the branch name to something like \"HEAD~2\", for example."
   :bind
   (:map vc-prefix-map
         ;; "l"ist is used for branch-log, use "b"ranches
-        ("b b" . hoagie-vc-git-list-branches)
+        ("b b" . stubvex-list-branches)
         ("e" . vc-ediff)))
 
 (use-package vundo
