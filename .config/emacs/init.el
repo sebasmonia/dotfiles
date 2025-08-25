@@ -1,4 +1,4 @@
-;;; init.el --- My dot emacs file  -*- lexical-binding: t; -*-
+i;;; init.el --- My dot emacs file  -*- lexical-binding: t; -*-
 
 ;; Author: Sebastián Monía <code@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
@@ -1002,7 +1002,8 @@ Time can be anything accepted by `run-at-time'."
   :load-path "~/sourcehut/stubvex"
   :demand t
   :commands
-  (stubvex-reset stubvex-list-branches stubvex-amend-message))
+  (stubvex-reset stubvex-list-branches stubvex-amend-message
+   stubvex-interactive-rebase))
 
 (use-package vc-dir
   :after (vc project vc-git)
