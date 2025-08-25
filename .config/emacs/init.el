@@ -998,12 +998,11 @@ Time can be anything accepted by `run-at-time'."
   (:map vc-prefix-map
         ("k" . vc-revert))) ;; make it consistent with vc-dir
 
-
 (use-package stubvex
   :load-path "~/sourcehut/stubvex"
   :demand t
   :commands
-  (stubvex-reset stubvex-list-branches stubvex-amend-message)
+  (stubvex-reset stubvex-list-branches stubvex-amend-message))
 
 (use-package vc-dir
   :after (vc project vc-git)
