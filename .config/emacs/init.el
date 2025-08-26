@@ -1,4 +1,4 @@
-i;;; init.el --- My dot emacs file  -*- lexical-binding: t; -*-
+;;; init.el --- My dot emacs file  -*- lexical-binding: t; -*-
 
 ;; Author: Sebastián Monía <code@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
@@ -57,9 +57,8 @@ i;;; init.el --- My dot emacs file  -*- lexical-binding: t; -*-
 ;; compat Linux-Windows
 (keymap-set key-translation-map "<apps>" "<menu>")
 (keymap-set key-translation-map "<print>" "<menu>") ;; Thinkpad's PrintScr
-;; TODO: can try using something else here, even in the laptop
-;; I use F6 and not the menu key!
-(keymap-global-set "<menu>" 'hoagie-keymap)
+;; TODO: what can I use the menu key for?
+;; (keymap-global-set "<menu>" 'hoagie-keymap)
 
 ;; these keys are mapped on particular positions in my Dygma Raise
 (keymap-global-set "<f6>" 'hoagie-keymap) ;; T1 (next to SPC)
@@ -1003,7 +1002,7 @@ Time can be anything accepted by `run-at-time'."
   :demand t
   :commands
   (stubvex-reset stubvex-list-branches stubvex-amend-message
-   stubvex-interactive-rebase))
+   stubvex-interactive-rebase stubvex-diff-to-branch))
 
 (use-package vc-dir
   :after (vc project vc-git)
