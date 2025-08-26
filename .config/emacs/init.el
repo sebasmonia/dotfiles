@@ -1002,7 +1002,7 @@ Time can be anything accepted by `run-at-time'."
   :demand t
   :commands
   (stubvex-reset stubvex-list-branches stubvex-amend-message
-   stubvex-interactive-rebase stubvex-diff-to-branch))
+   stubvex-interactive-rebase))
 
 (use-package vc-dir
   :after (vc project vc-git)
@@ -1012,36 +1012,24 @@ Time can be anything accepted by `run-at-time'."
         ("e" . vc-ediff)
         ("k" . vc-revert)
         ("r" . stubvex-reset)
-        ("b b" . stubvex-list-branches))
-  :config
-  (defun hoagie-vc-dir-reset (&optional arg)
-    "Run \"git reset\" to unstage all changes.
-With prefix arg, do a hard reset, with confirmation."
-    (interactive "P")
-    (if arg
-        (when (y-or-n-p "Perform a hard reset? ")
-          (vc-git-command nil 0 nil "reset" "--hard")
-          (message "Completed. All pending changes are lost."))
-      (vc-git-command nil 0 nil "reset")
-      (message "All changes are unstaged."))
-    (vc-dir-refresh)))
+        ("b b" . stubvex-list-branches)))
 
 (use-package vc-git
   :after vc
   :custom
-  (vc-git-revision-complete-only-branches t)
+  ;; (vc-git-revision-complete-only-branches t)
   (vc-git-log-switches '("--date=iso-local" "--stat"))
   ;; (vc-git-shortlog-switches 'TBD)
   :config
   (defvar hoagie-vc-git-emails
-    '("code@sebasmonia.com"
+    '("sebastian@sebasmonia.com"
       "some.work@email.com :)")
     "List of email addresses that can be associated with a repository")
   (defun hoagie-vc-git-clone (repository-url local-dir email)
     "Run \"git clone REPOSITORY-URL\" to LOCAL-DIR.
 After cloning, EMAIL is set in the repo.
-Interactively, the email is read from `hoagie-vc-git-emails', and it
-also runs `vc-dir' in the newly cloned directory."
+Interactively, reads the email from `hoagie-vc-git-emails', and then
+calls `vc-dir' in the newly cloned directory."
     (interactive
      (let* ((url (read-string "Repository URL: "))
             (dir (read-directory-name "Target directory: " nil nil nil
