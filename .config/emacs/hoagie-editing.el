@@ -53,26 +53,6 @@ With ARG, do this that many times."
   (interactive "*p")
   (hoagie-delete-word (- arg)))
 
-(defun hoagie-mark-to-char (arg char &optional interactive)
-  "A copy of `zap-to-char' that activates or expands the region."
-  (interactive (list (prefix-numeric-value current-prefix-arg)
-		             (read-char "Mark to char: " nil 'read-char-history)
-                     t))
-  (unless (region-active-p)
-    (set-mark-command nil))
-  (let ((direction (if (>= arg 0) 1 -1))
-        (case-fold-search (if (and interactive (char-uppercase-p char))
-                              nil
-                            case-fold-search)))
-    (goto-char
-	 (progn
-	   (forward-char direction)
-	   (unwind-protect
-		   (search-forward (char-to-string char) nil nil arg)
-		 (backward-char direction))
-	   (point)))
-    (activate-mark)))
-
 (defun hoagie-escape-regexp (&optional arg)
   "Escape a regexp in the region or current line.
 By default it escapes double quotes and backslashes. Call with prefix

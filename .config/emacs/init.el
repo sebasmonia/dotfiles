@@ -70,7 +70,6 @@
   :load-path "~/sourcehut/dotfiles/.config/emacs"
   :demand t
   :bind
-  ("C-z" . hoagie-mark-to-char)
   ("<remap> <kill-word>" . hoagie-delete-word)
   ("<remap> <backward-kill-word>" . hoagie-backward-delete-word)
   (:map hoagie-keymap
