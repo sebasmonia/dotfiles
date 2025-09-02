@@ -77,8 +77,9 @@ If REGEXP is not provided, then all emails are printed."
         ;; instead, get more Thread commands under "v"
         ("v n" . gnus-summary-next-thread)
         ;; find messages in a thread - including sent ones
-        ("v s" . gnus-summary-refer-thread))
-
+        ;; UPDATE 2025-08-26: change binding from s to r.
+        ;; I have no idea why I used s. "r" for "refer".
+        ("v r" . gnus-summary-refer-thread))
   :init
   ;; let's do our best to keep Gnus files/dir outside of ~
   ;; some of these are not really Gnus vars, but declared in
