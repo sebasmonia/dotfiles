@@ -74,8 +74,6 @@
   ("<remap> <backward-kill-word>" . hoagie-backward-delete-word)
   (:map hoagie-keymap
         ("/" . hoagie-toggle-backslash)
-        ("p" . hoagie-insert-pair)
-        ("u" . hoagie-delete-pair)
         ("q" . hoagie-escape-regexp)
         ("t" . hoagie-insert-datetime))
   (:map hoagie-second-keymap
@@ -92,6 +90,22 @@
     "d" '("dupe region/line" . duplicate-dwim)
     "c" '("copy from above" . copy-from-above-command))
   (keymap-set hoagie-second-keymap "c" hoagie-copydupe-keymap))
+
+;; NOTE: trying to replace my custom code with built-in behaviour
+;; Markdown pairs
+(add-to-list 'insert-pair-alist (list ?\* ?\*))
+(add-to-list 'insert-pair-alist (list ?\_ ?\_))
+(add-to-list 'insert-pair-alist (list ?\~ ?\~))
+;; Environment variables
+(add-to-list 'insert-pair-alist (list ?\% ?\%))
+(add-to-list 'insert-pair-alist (list ?\% ?\%))
+(dolist (pair insert-pair-alist)
+  ;; NOTE: Assumes all elements are pairs (they _could_ be triples)
+  (define-key 'hoagie-keymap (format "%c" (car pair)) #'insert-pair))
+  ;; some conflicting bindings when using M-...
+  ;;(keymap-global-set (format "M-%c" (car pair)) #'insert-pair))
+(define-key 'hoagie-keymap "u" #'delete-pair)
+(setopt delete-pair-blink-delay 0.3)
 
 (use-package hoagie-notes
   :load-path "~/sourcehut/dotfiles/.config/emacs"
@@ -1267,7 +1281,6 @@ With prefix ARG, use `split-root-window-below' instead"
   (tab-always-indent 'complete)
   (read-minibuffer-restore-windows nil) ;; finally...
   (tab-width 4) ;; make golang code nicer to read
-  (delete-pair-blink-delay 0.1)
   ;; This feature was the culprit of the messages "No matching parenthesis
   ;; found" in the minibuffer, an annoyance in `zap-up-to-char' - and probably
   ;; other commands. With `show-paren-mode', it feels superfluous.
