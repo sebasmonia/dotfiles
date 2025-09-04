@@ -81,6 +81,85 @@ for escaping a line that contains a string literal."
             (search-backward last-match nil t)
             (delete-char -1)))))))
 
+(defvar hoagie-pair-chars
+  '((?\" . ?\")
+    (?\' . ?\')
+    (?\` . ?\')
+    ;; Silly me! I forgot to add Markdown pairs here :)
+    (?\* . ?\*)
+    (?\_ . ?\_)
+    (?\~ . ?\~)
+    (?\( . ?\))
+    (?\[ . ?\])
+    (?\{ . ?\})
+    (?\% . ?\%) ;; Windows environment variables :)
+    (?\< . ?\>))
+  "Alist of pairs to insert for `hoagie-insert-pair' and
+`hoagie-delete-pair'.")
+
+(defvar hoagie-pair-blink-delay 0.3
+  "Like `delete-pair-blink-delay', but for my own pair functions.")
+
+(defun hoagie--pair-read-opener ()
+  (read-char (format "Pick %s :"
+                     (mapconcat #'string
+                                (mapcar #'car hoagie-pair-chars) ""))))
+
+(defun hoagie-insert-pair ()
+  "Wrap the region or sexp at point in a pair from `hoagie-pair-chars'.
+Note that using sexp at point might wrap a symbol, depending on
+point position.
+
+This started as my counterpart to `delete-pair', but I ended up
+rewriting that one too.
+Emacs has a built in mode for this, `electric-pair-mode', but it does
+more than I want, it is more intrusive, and I couldn't get around some
+of its behaviours. I eventually figured out how to use `insert-pair' (by
+looking at `insert-parentheses'), but I prefer how this command works."
+  (interactive "*")
+  (with-region-or-thing 'sexp
+    (let* ((opener (hoagie--pair-read-opener))
+           (closer (alist-get opener hoagie-pair-chars)))
+      ;; if the opener isn't from our list of chars, message and do nothing
+      (if (not closer)
+          (message "\"%c\" is not in the pair opener list" opener)
+        (save-excursion
+          (goto-char start)
+          (insert opener)
+          (goto-char (+ 1 end))
+          (insert closer))))))
+
+(defun hoagie-delete-pair ()
+  "Delete a pair from `hoagie-pair-chars'.
+If point is on an opener character, use the sexp it delimits and unpair
+it. When point isn't under an opener char, prompt for one, then search
+backwards for the opener, and remove the pair."
+  ;; TODO: consider optional feature below
+  ;; If a sexp cannot be determined, then just search backward and forward for the
+  ;; characters, but it risks breaking balance of code."
+  (interactive)
+  (let* ((start-pos (point))
+         (use-point (member (following-char) (mapcar #'car hoagie-pair-chars)))
+         (opener (if use-point (following-char) (hoagie--pair-read-opener)))
+         (closer (alist-get opener hoagie-pair-chars)))
+    (save-mark-and-excursion
+      (save-match-data
+        ;; in case the region was active, so the macro
+        ;; returns the sexp at point
+        (deactivate-mark)
+        (unless use-point
+          (search-backward (string opener)))
+        (with-region-or-thing 'sexp
+          (unless (and (= (char-after start) opener)
+                       (= (char-before end) closer))
+            (error "Can't delimit a sexp with %c ~ %c" opener closer))
+          (mark-sexp)
+          (sit-for hoagie-pair-blink-delay)
+          (goto-char end)
+          (delete-char -1)
+          (goto-char start)
+          (delete-char 1))))))
+
 (defun hoagie-toggle-backslash ()
   "Toggle slashes-backslashes in the region or line."
   (interactive)

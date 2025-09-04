@@ -75,6 +75,8 @@
   (:map hoagie-keymap
         ("/" . hoagie-toggle-backslash)
         ("q" . hoagie-escape-regexp)
+        ("p" . hoagie-insert-pair)
+        ("u" . hoagie-delete-pair)
         ("t" . hoagie-insert-datetime))
   (:map hoagie-second-keymap
         ("s" . hoagie-split-by-sep)
@@ -90,22 +92,6 @@
     "d" '("dupe region/line" . duplicate-dwim)
     "c" '("copy from above" . copy-from-above-command))
   (keymap-set hoagie-second-keymap "c" hoagie-copydupe-keymap))
-
-;; NOTE: trying to replace my custom code with built-in behaviour
-;; Markdown pairs
-(add-to-list 'insert-pair-alist (list ?\* ?\*))
-(add-to-list 'insert-pair-alist (list ?\_ ?\_))
-(add-to-list 'insert-pair-alist (list ?\~ ?\~))
-;; Environment variables
-(add-to-list 'insert-pair-alist (list ?\% ?\%))
-(add-to-list 'insert-pair-alist (list ?\% ?\%))
-(dolist (pair insert-pair-alist)
-  ;; NOTE: Assumes all elements are pairs (they _could_ be triples)
-  (define-key 'hoagie-keymap (format "%c" (car pair)) #'insert-pair))
-  ;; some conflicting bindings when using M-...
-  ;;(keymap-global-set (format "M-%c" (car pair)) #'insert-pair))
-(define-key 'hoagie-keymap "u" #'delete-pair)
-(setopt delete-pair-blink-delay 0.3)
 
 (use-package hoagie-notes
   :load-path "~/sourcehut/dotfiles/.config/emacs"
