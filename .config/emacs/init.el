@@ -1,4 +1,4 @@
-i;;; init.el --- My dot emacs file  -*- lexical-binding: t; -*-
+;;; init.el --- My dot emacs file  -*- lexical-binding: t; -*-
 
 ;; Author: Sebastián Monía <code@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
@@ -609,6 +609,15 @@ Set `fill-column', `truncate-lines'."
 (use-package package-lint
   :ensure t
   :commands package-lint-current-buffer)
+
+(use-package page-ext
+  ;; from https://www.reddit.com/r/emacs/comments/1mopid1/comment/n8klhdu/
+  :demand t
+  :custom
+  (pages-directory-buffer-narrowing-p nil)
+  (pages-directory-for-adding-addresses-narrowing-p nil)
+  (pages-directory-for-adding-new-page-before-current-page-p nil)
+  (pages-directory-for-adding-page-narrowing-p nil))
 
 (use-package paren
   :custom
