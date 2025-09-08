@@ -509,13 +509,8 @@ external browser and new eww buffer, respectively)."
 Set `fill-column' and related modes.'."
     (setf fill-column 100)
     (display-fill-column-indicator-mode)
-    (auto-fill-mode)))
-
-(use-package imenu
-  :demand t
-  :custom
-  (imenu-auto-rescan t)
-  (imenu-flatten 'annotation))
+    (auto-fill-mode)
+    (setf page-delimiter " *<h[[:digit:]]")))
 
 ;; From Steve Yegge's post:
 ;; Info files out of the docs for just about anything. I have a custom "dir"...
@@ -608,6 +603,14 @@ Set `fill-column', `truncate-lines'."
   :ensure t
   :commands package-lint-current-buffer)
 
+(use-package page-ext
+  :demand t
+  :custom
+  (pages-directory-for-adding-addresses-narrowing-p nil)
+  (pages-directory-for-adding-new-page-before-current-page-p nil)
+  (pages-directory-for-adding-page-narrowing-p nil)
+  (pages-directory-for-addresses-goto-narrowing-p nil))
+
 (use-package paren
   :custom
   ;; (show-paren-style 'mixed)
@@ -667,7 +670,8 @@ Set `fill-column', `truncate-lines'."
     "Setup my `python-mode' configuration."
     (setf fill-column 100) ;; I prefer 79, but at work 100 is more convenient
     ;; (And I rarely code Python at home)
-    (display-fill-column-indicator-mode)))
+    (display-fill-column-indicator-mode)
+    (setf page-delimiter "^\\(def\\|class\\) ")))
 
 (use-package register
   :demand t
@@ -827,17 +831,12 @@ Meant to be added to `occur-hook'."
   (:map restclient-mode-map
         ("C-c r" . rename-buffer)
         ("C-c h" . restclient-toggle-headers))
-  :hook
-  (restclient-mode-hook . hoagie-restclient-imenu-index)
   :config
   (defun restclient-toggle-headers ()
     (interactive)
     (message "restclient-response-body-only=%s"
              (setf restclient-response-body-only
-                   (not restclient-response-body-only))))
-  (defun hoagie-restclient-imenu-index ()
-    "Configure imenu on the convention \"### Title\"."
-    (setq-local imenu-generic-expression '((nil "^### \\(.*\\)$" 1)))))
+                   (not restclient-response-body-only)))))
 
 (use-package savehist
   :custom
@@ -874,8 +873,7 @@ Meant to be added to `occur-hook'."
   :config
   (defun hoagie-eshell-mode-setup ()
     "Configure eshell buffers."
-    (toggle-truncate-lines t)
-    ))
+    (toggle-truncate-lines t)))
 
 (use-package shell
   :custom
@@ -952,7 +950,7 @@ Inspired by a similar function in Elpher."
   (defun hoagie-sql-interactive-setup ()
     "Configure SQLi."
     (setf truncate-lines t)
-    (setq-local imenu-generic-expression '((nil "^\\(.*\\)" 1)))))
+    (setf page-delimiter "^\\(.*\\)")))
 
 ;; connections defined in sc-init.el
 (use-package sql-datum
