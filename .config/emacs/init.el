@@ -99,6 +99,17 @@
   :bind-keymap
   ("C-c n" . hoagie-notes-keymap))
 
+(use-package hoagie-pages
+  :load-path "~/sourcehut/dotfiles/.config/emacs"
+  :demand t
+  :bind
+  (:map ctl-x-map
+        ;; I think it is better to have easy access to the listing...
+        ("C-p" . hoagie-list-pages)
+        ;; ...but keep mark-page around just in case (I might start using it
+        ;; more going forward)
+        ("M-p" . mark-page)))
+
 (use-package ansi-color
   :commands (ansi-color-apply-buffer)
   :init
@@ -251,7 +262,8 @@ For details on URL and NEW-WINDOW, check the original function."
   ;; suggested in Mastering Emacs: this nicely mirrors M-$ for spellchecking
   ("M-#" . dictionary-lookup-definition))
 
-(use-package cdsync :load-path "~/sourcehut/caldav-sync.el"
+(use-package cdsync
+  :load-path "~/sourcehut/caldav-sync.el"
   :if (and (eq system-type 'gnu/linux)
            (locate-library "cdsync.el"))
   :demand t
@@ -602,14 +614,6 @@ Set `fill-column', `truncate-lines'."
 (use-package package-lint
   :ensure t
   :commands package-lint-current-buffer)
-
-(use-package page-ext
-  :demand t
-  :custom
-  (pages-directory-for-adding-addresses-narrowing-p nil)
-  (pages-directory-for-adding-new-page-before-current-page-p nil)
-  (pages-directory-for-adding-page-narrowing-p nil)
-  (pages-directory-for-addresses-goto-narrowing-p nil))
 
 (use-package paren
   :custom
@@ -1210,8 +1214,10 @@ With prefix ARG, use `split-root-window-below' instead"
   ("<remap> <upcase-word>" . upcase-dwim)
   ("<remap> <downcase-word>" . downcase-dwim)
   ("<remap> <zap-to-char>" . zap-up-to-char)
-  ("C-x k" . kill-current-buffer)
-  ("C-x M-k" . kill-buffer)
+  ("C-z" .  nil)
+  ;; It's just an extra RET to kill a buffer - does it matter?
+  ;; ("C-x k" . kill-current-buffer)
+  ;; ("C-x M-k" . kill-buffer)
   ("<remap> <list-buffers>" . ibuffer)
   (:map hoagie-keymap
         ;; Easier to type than C-S-backspace, and mirrors C-k nicely.
