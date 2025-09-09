@@ -57,9 +57,8 @@
 ;; compat Linux-Windows
 (keymap-set key-translation-map "<apps>" "<menu>")
 (keymap-set key-translation-map "<print>" "<menu>") ;; Thinkpad's PrintScr
-;; TODO: can try using something else here, even in the laptop
-;; I use F6 and not the menu key!
-(keymap-global-set "<menu>" 'hoagie-keymap)
+;; TODO: what can I use the menu key for?
+;; (keymap-global-set "<menu>" 'hoagie-keymap)
 
 ;; these keys are mapped on particular positions in my Dygma Raise
 (keymap-global-set "<f6>" 'hoagie-keymap) ;; T1 (next to SPC)
@@ -71,14 +70,13 @@
   :load-path "~/sourcehut/dotfiles/.config/emacs"
   :demand t
   :bind
-  ("C-z" . hoagie-mark-to-char)
   ("<remap> <kill-word>" . hoagie-delete-word)
   ("<remap> <backward-kill-word>" . hoagie-backward-delete-word)
   (:map hoagie-keymap
         ("/" . hoagie-toggle-backslash)
+        ("q" . hoagie-escape-regexp)
         ("p" . hoagie-insert-pair)
         ("u" . hoagie-delete-pair)
-        ("q" . hoagie-escape-regexp)
         ("t" . hoagie-insert-datetime))
   (:map hoagie-second-keymap
         ("s" . hoagie-split-by-sep)
@@ -511,13 +509,8 @@ external browser and new eww buffer, respectively)."
 Set `fill-column' and related modes.'."
     (setf fill-column 100)
     (display-fill-column-indicator-mode)
-    (auto-fill-mode)))
-
-(use-package imenu
-  :demand t
-  :custom
-  (imenu-auto-rescan t)
-  (imenu-flatten 'annotation))
+    (auto-fill-mode)
+    (setf page-delimiter " *<h[[:digit:]]")))
 
 ;; From Steve Yegge's post:
 ;; Info files out of the docs for just about anything. I have a custom "dir"...
@@ -615,7 +608,6 @@ Set `fill-column', `truncate-lines'."
   :demand t
   :custom
   (pages-directory-buffer-narrowing-p nil)
-  (pages-directory-for-adding-addresses-narrowing-p nil)
   (pages-directory-for-adding-new-page-before-current-page-p nil)
   (pages-directory-for-adding-page-narrowing-p nil))
 
@@ -678,7 +670,8 @@ Set `fill-column', `truncate-lines'."
     "Setup my `python-mode' configuration."
     (setf fill-column 100) ;; I prefer 79, but at work 100 is more convenient
     ;; (And I rarely code Python at home)
-    (display-fill-column-indicator-mode)))
+    (display-fill-column-indicator-mode)
+    (setf page-delimiter "^\\(def\\|class\\) ")))
 
 (use-package register
   :demand t
@@ -838,17 +831,12 @@ Meant to be added to `occur-hook'."
   (:map restclient-mode-map
         ("C-c r" . rename-buffer)
         ("C-c h" . restclient-toggle-headers))
-  :hook
-  (restclient-mode-hook . hoagie-restclient-imenu-index)
   :config
   (defun restclient-toggle-headers ()
     (interactive)
     (message "restclient-response-body-only=%s"
              (setf restclient-response-body-only
-                   (not restclient-response-body-only))))
-  (defun hoagie-restclient-imenu-index ()
-    "Configure imenu on the convention \"### Title\"."
-    (setq-local imenu-generic-expression '((nil "^### \\(.*\\)$" 1)))))
+                   (not restclient-response-body-only)))))
 
 (use-package savehist
   :custom
@@ -885,8 +873,7 @@ Meant to be added to `occur-hook'."
   :config
   (defun hoagie-eshell-mode-setup ()
     "Configure eshell buffers."
-    (toggle-truncate-lines t)
-    ))
+    (toggle-truncate-lines t)))
 
 (use-package shell
   :custom
@@ -963,7 +950,7 @@ Inspired by a similar function in Elpher."
   (defun hoagie-sql-interactive-setup ()
     "Configure SQLi."
     (setf truncate-lines t)
-    (setq-local imenu-generic-expression '((nil "^\\(.*\\)" 1)))))
+    (setf page-delimiter "^\\(.*\\)")))
 
 ;; connections defined in sc-init.el
 (use-package sql-datum
@@ -1022,36 +1009,24 @@ Time can be anything accepted by `run-at-time'."
         ("e" . vc-ediff)
         ("k" . vc-revert)
         ("r" . stubvex-reset)
-        ("b b" . stubvex-list-branches))
-  :config
-  (defun hoagie-vc-dir-reset (&optional arg)
-    "Run \"git reset\" to unstage all changes.
-With prefix arg, do a hard reset, with confirmation."
-    (interactive "P")
-    (if arg
-        (when (y-or-n-p "Perform a hard reset? ")
-          (vc-git-command nil 0 nil "reset" "--hard")
-          (message "Completed. All pending changes are lost."))
-      (vc-git-command nil 0 nil "reset")
-      (message "All changes are unstaged."))
-    (vc-dir-refresh)))
+        ("b b" . stubvex-list-branches)))
 
 (use-package vc-git
   :after vc
   :custom
-  (vc-git-revision-complete-only-branches t)
+  ;; (vc-git-revision-complete-only-branches t)
   (vc-git-log-switches '("--date=iso-local" "--stat"))
   ;; (vc-git-shortlog-switches 'TBD)
   :config
   (defvar hoagie-vc-git-emails
-    '("code@sebasmonia.com"
+    '("sebastian@sebasmonia.com"
       "some.work@email.com :)")
     "List of email addresses that can be associated with a repository")
   (defun hoagie-vc-git-clone (repository-url local-dir email)
     "Run \"git clone REPOSITORY-URL\" to LOCAL-DIR.
 After cloning, EMAIL is set in the repo.
-Interactively, the email is read from `hoagie-vc-git-emails', and it
-also runs `vc-dir' in the newly cloned directory."
+Interactively, reads the email from `hoagie-vc-git-emails', and then
+calls `vc-dir' in the newly cloned directory."
     (interactive
      (let* ((url (read-string "Repository URL: "))
             (dir (read-directory-name "Target directory: " nil nil nil
@@ -1290,7 +1265,6 @@ With prefix ARG, use `split-root-window-below' instead"
   (tab-always-indent 'complete)
   (read-minibuffer-restore-windows nil) ;; finally...
   (tab-width 4) ;; make golang code nicer to read
-  (delete-pair-blink-delay 0.1)
   ;; This feature was the culprit of the messages "No matching parenthesis
   ;; found" in the minibuffer, an annoyance in `zap-up-to-char' - and probably
   ;; other commands. With `show-paren-mode', it feels superfluous.

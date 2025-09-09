@@ -18,6 +18,10 @@
        :time "Wed Oct  2 17:14:47 2024")
  (:url "https://mtwb.blog/" :title "Matt's Blog" :time
        "Mon Jun  9 09:46:19 2025")
+ (:url "https://baty.net/" :title "Baty.net" :time
+       "Tue Aug 26 11:44:31 2025")
+ (:url "https://joelchrono.xyz/" :title "Joel's Homepage" :time
+       "Tue Aug 26 11:44:11 2025")
  (:url "https://slrncl.com/blog/" :title "slrncl / blog" :time
        "Fri Jul 11 16:31:59 2025")
  (:url "https://forkingmad.blog/" :title "Forking Mad+" :time

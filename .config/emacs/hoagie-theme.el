@@ -142,6 +142,7 @@ slate/italics."
    `(gnus-header-from ((t (:inherit default)))) ;; value of "From: "
    `(gnus-header-subject ((t nil))) ;; value of "Subject: "
    `(gnus-header-content ((t nil))) ;; other header text/values
+   `(gnus-cite-attribution ((t nil)))
    `(gnus-cite-1 ((t (:foreground ,alt-fg))))
    `(gnus-cite-2 ((t (:foreground ,string))))
    `(gnus-cite-3 ((t (:foreground ,warning))))
