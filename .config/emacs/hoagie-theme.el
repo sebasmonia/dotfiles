@@ -66,6 +66,8 @@ slate/italics."
    `(vertical-border ((t (:foreground ,dim-2))))
    `(link ((t (:underline t))))
    `(link-visited ((t (:underline t :foreground ,alt-fg))))
+   `(escape-glyph ((t (:inherit error))))
+   `(homoglyph ((t (:inherit error))))
 
    `(minibuffer-prompt ((t (nil))))
    `(completions-common-part ((t (:underline t :weight bold))))
