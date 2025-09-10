@@ -935,7 +935,7 @@ Inspired by a similar function in Elpher."
   (defun hoagie-sql-interactive-setup ()
     "Configure SQLi."
     (setf truncate-lines t)
-    (setq-local page-delimiter "^\\(.*\\)")))
+    (setq-local page-delimiter "^>")))
 
 ;; connections defined in sc-init.el
 (use-package sql-datum
