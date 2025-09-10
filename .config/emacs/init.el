@@ -575,7 +575,8 @@ Set `fill-column', `truncate-lines'."
     (setf fill-column 100
           truncate-lines t)
     (display-fill-column-indicator-mode)
-    (auto-fill-mode)))
+    (auto-fill-mode)
+    (setq-local page-delimiter "^#\\{1,6\\} "))
 
 (use-package minibuffer
   :demand t
