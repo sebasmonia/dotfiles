@@ -205,3 +205,19 @@ If the parameter is not provided use word at point."
                                   (string-to-number to-convert)))
              millis)))
 (define-key hoagie-keymap (kbd "t") #'hoagie-convert-timestamp)
+
+;; Some day...
+(use-package eshell
+  :custom
+  (eshell-prefer-lisp-functions t)
+  (eshell-modules-list
+   '(eshell-alias eshell-banner eshell-basic eshell-cmpl eshell-dirs
+     eshell-elecslash eshell-extpipe eshell-glob eshell-hist eshell-ls
+     eshell-pred eshell-prompt eshell-script eshell-term eshell-tramp
+     eshell-unix eshell-xtra))
+  :hook
+  (eshell-mode-hook . hoagie-eshell-mode-setup)
+  :config
+  (defun hoagie-eshell-mode-setup ()
+    "Configure eshell buffers."
+    (toggle-truncate-lines t)))

@@ -612,10 +612,6 @@ Set `fill-column', `truncate-lines'."
   ;; notifications in the desktop
   :demand t)
 
-(use-package package-lint
-  :ensure t
-  :commands package-lint-current-buffer)
-
 (use-package paren
   :custom
   ;; (show-paren-style 'mixed)
@@ -863,22 +859,6 @@ Meant to be added to `occur-hook'."
         ("c" . sharper-main-transient))
   :custom
   (sharper-run-only-one t))
-
-;; experimental...
-(use-package eshell
-  :custom
-  (eshell-prefer-lisp-functions t)
-  (eshell-modules-list
-   '(eshell-alias eshell-banner eshell-basic eshell-cmpl eshell-dirs
-     eshell-elecslash eshell-extpipe eshell-glob eshell-hist eshell-ls
-     eshell-pred eshell-prompt eshell-script eshell-term eshell-tramp
-     eshell-unix eshell-xtra))
-  :hook
-  (eshell-mode-hook . hoagie-eshell-mode-setup)
-  :config
-  (defun hoagie-eshell-mode-setup ()
-    "Configure eshell buffers."
-    (toggle-truncate-lines t)))
 
 (use-package shell
   :custom

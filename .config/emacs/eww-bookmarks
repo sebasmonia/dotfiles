@@ -14,6 +14,8 @@
  (:url "https://burgundywave.com/category/colorado-rapids/" :title
        "Colorado Rapids - Burgundy Wave" :time
        "2024-07-27 06:58:18 PM")
+ (:url "https://risingthumb.xyz/Writing/Blog/" :title "Writing - Blog"
+       :time "Wed Sep 10 13:30:54 2025")
  (:url "https://netigen.com/tags" :title "Netigen: Tags (volume-5)"
        :time "Wed Oct  2 17:14:47 2024")
  (:url "https://mtwb.blog/" :title "Matt's Blog" :time
@@ -26,12 +28,6 @@
        "Fri Jul 11 16:31:59 2025")
  (:url "https://forkingmad.blog/" :title "Forking Mad+" :time
        "Mon Aug  4 12:00:43 2025")
- (:url "https://alicebartlett.co.uk/blog/weaknotes" :title
-       "Alice Weaknotes" :time "Fri Aug 15 22:45:04 2025")
- (:url "https://walknotes.com/" :title "Walknotes" :time
-       "Fri Aug 15 22:38:47 2025")
- (:url "https://bacardi55.io/posts/" :title "Bacardi55's Web Cave"
-       :time "2024-07-18 10:16:05 AM")
  (:url "https://82mhz.net/" :title "82MHz" :time
        "Mon May 19 13:03:19 2025")
  (:url "https://manuelmoreale.com/" :title "Manu Moreale" :time
@@ -71,6 +67,12 @@
        "Fri Aug 16 17:00:55 2024")
  (:url "https://peopleandblogs.com/" :title "People and Blogs" :time
        "2024-07-27 07:04:19 PM")
+ (:url "https://alicebartlett.co.uk/blog/weaknotes" :title
+       "Alice Weaknotes" :time "Fri Aug 15 22:45:04 2025")
+ (:url "https://walknotes.com/" :title "Walknotes" :time
+       "Fri Aug 15 22:38:47 2025")
+ (:url "https://bacardi55.io/posts/" :title "Bacardi55's Web Cave"
+       :time "2024-07-18 10:16:05 AM")
  (:url "https://sjmulder.nl/en/textonly.html" :title
        "Sijmen plain text links" :time "2024-07-24 08:44:01 AM")
  (:url "https://www.fromjason.xyz/me/bookmarks/" :title "Bookmarks"
