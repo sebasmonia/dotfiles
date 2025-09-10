@@ -1,6 +1,6 @@
 ;;; hoagie-pages.el --- Little page-related functions -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2025 Sebastián Moníab
+;; Copyright (C) 2025 Sebastián Monía
 ;;
 ;; Author: Sebastián Monía <sebastian@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
@@ -42,14 +42,6 @@ Return a list of lists (marker page-title line total-lines)."
                 headers))
         (nreverse headers)))))
 
-(defvar-keymap hoagie-list-pages-mode-map
-  :doc "Keymap for buffers showing the pages of another buffer."
-  "RET" #'hoagie-pages--goto
-  "n" #'hoagie-pages--next-other-window
-  "p" #'hoagie-pages--prev-other-window)
-
-(define-derived-mode hoagie-list-pages-mode special-mode "List pages mode")
-
 (defun hoagie-pages--next-other-window ()
   "Move point to the next line, and open that page in a new window."
   (interactive)
@@ -78,14 +70,22 @@ new window."
     (goto-char page-marker)
     (select-window me)))
 
-(defun hoagie-list-pages (&optional other-window)
-  "Display the pages of the current buffer.
-The listing replaces the current buffer. Call with prefix arg
-OTHER-WINDOW to use `pop-to-buffer' instead."
+(defvar-keymap hoagie-list-pages-mode-map
+  :doc "Keymap for buffers showing the pages of another buffer."
+  "RET" #'hoagie-pages--goto
+  "n" #'hoagie-pages--next-other-window
+  "p" #'hoagie-pages--prev-other-window)
+
+(define-derived-mode hoagie-list-pages-mode special-mode "List pages mode")
+
+(defun hoagie-list-pages (&optional same-window)
+  "Pop a buffer listin the pages of the current buffer.
+Call with prefix arg SAME-WINDOW to re-use the same window."
   (interactive "P")
+  ;; get all these values before changing to the output buffer
   (let ((pages (hoagie-pages--list))
         (target (buffer-name))
-        (delimiter page-delimiter) ;; store it before changing buffer
+        (delimiter page-delimiter)
         (buf-name (format "*pages %s*" (buffer-name))))
     (with-current-buffer (get-buffer-create buf-name)
       (let ((inhibit-read-only t))
@@ -110,9 +110,9 @@ OTHER-WINDOW to use `pop-to-buffer' instead."
     ;; Show the buffer in the current window:
     ;; -if jumping to another page, it happens in the same buffer
     ;; -if quitting (via "q"), then we go back to the original buffer
-    (if other-window
-        (pop-to-buffer buf-name)
-      (switch-to-buffer buf-name))))
+    (if same-window
+        (switch-to-buffer buf-name)
+      (pop-to-buffer buf-name))))
 
 (defun hoagie-pages--goto ()
   "Go to the page at point.

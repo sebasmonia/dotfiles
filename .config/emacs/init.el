@@ -522,7 +522,7 @@ Set `fill-column' and related modes.'."
     (setf fill-column 100)
     (display-fill-column-indicator-mode)
     (auto-fill-mode)
-    (setf page-delimiter " *<h[[:digit:]]")))
+    (setq-local page-delimiter " *<h[[:digit:]]")))
 
 ;; From Steve Yegge's post:
 ;; Info files out of the docs for just about anything. I have a custom "dir"...
@@ -675,7 +675,7 @@ Set `fill-column', `truncate-lines'."
     (setf fill-column 100) ;; I prefer 79, but at work 100 is more convenient
     ;; (And I rarely code Python at home)
     (display-fill-column-indicator-mode)
-    (setf page-delimiter "^\\(def\\|class\\) ")))
+    (setq-local page-delimiter "^\\(def\\|class\\) ")))
 
 (use-package register
   :demand t
@@ -954,7 +954,7 @@ Inspired by a similar function in Elpher."
   (defun hoagie-sql-interactive-setup ()
     "Configure SQLi."
     (setf truncate-lines t)
-    (setf page-delimiter "^\\(.*\\)")))
+    (setq-local page-delimiter "^\\(.*\\)")))
 
 ;; connections defined in sc-init.el
 (use-package sql-datum
@@ -1214,10 +1214,9 @@ With prefix ARG, use `split-root-window-below' instead"
   ("<remap> <upcase-word>" . upcase-dwim)
   ("<remap> <downcase-word>" . downcase-dwim)
   ("<remap> <zap-to-char>" . zap-up-to-char)
-  ("C-z" .  nil)
-  ;; It's just an extra RET to kill a buffer - does it matter?
-  ;; ("C-x k" . kill-current-buffer)
-  ;; ("C-x M-k" . kill-buffer)
+  ("C-z" .  nil) ;; TODO: find someting useful :)
+  ("C-x k" . kill-current-buffer)
+  ("C-x M-k" . kill-buffer)
   ("<remap> <list-buffers>" . ibuffer)
   (:map hoagie-keymap
         ;; Easier to type than C-S-backspace, and mirrors C-k nicely.
