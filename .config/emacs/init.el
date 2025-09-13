@@ -80,6 +80,7 @@
         ("q" . fill-paragraph)
         ("d" . duplicate-dwim)
         ("c" . copy-from-above-command)
+        ("a" . copy-from-above-command) ;; alt binding - easier on the fingers
         ("k" . kill-whole-line)))
 
 (use-package hoagie-notes
