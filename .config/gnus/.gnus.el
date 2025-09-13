@@ -59,7 +59,7 @@ If REGEXP is not provided, then all emails are printed."
   ;; so the ecomplete setup happens when opening Gnus, not before
   (gnus-started-hook . ecomplete-setup)
   :bind
-  (:map hoagie-second-keymap
+  (:map hoagie-eww-keymap
         ;; for "email"
         ("e" . gnus))
   ;; can't recall where I read that "v" is for user bindings

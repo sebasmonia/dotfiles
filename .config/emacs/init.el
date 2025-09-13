@@ -43,15 +43,11 @@
                                            :height 120
                                            :foundry "outline"))))))
 
-;; Based on http://www.ergoemacs.org/emacs/emacs_menu_app_keys.html
-;; Eventually moved away from the menu key to F6, and even later that key
-;; ended in a very similar place to <menu> but on the other side of the
-;; keyboard (Dygma Raise)
 (defvar-keymap hoagie-keymap
-  :doc "One of my two sets of custom keybindings."
+  :doc "Keybindings for general, non-editing features."
   :prefix 'hoagie-keymap)
 (defvar-keymap hoagie-second-keymap
-  :doc "The other of my two sets of custom keybindings."
+  :doc "Keybindings that deal directly with text manipulation."
   :prefix 'hoagie-second-keymap)
 
 ;; compat Linux-Windows
@@ -61,37 +57,30 @@
 ;; (keymap-global-set "<menu>" 'hoagie-keymap)
 
 ;; these keys are mapped on particular positions in my Dygma Raise
-(keymap-global-set "<f6>" 'hoagie-keymap) ;; T1 (next to SPC)
-(keymap-global-set "<f5>" 'hoagie-second-keymap) ;; Enter
+(keymap-global-set "<f5>" 'hoagie-keymap) ;; Enter
+(keymap-global-set "<f6>" 'hoagie-second-keymap) ;; T1 (next to SPC)
 
-;; This package declares commands and macros (!) that I
-;; use for general editing
+;; This package declares commands that I use for general text editing.
+;; This declaration also sets bindings for pure-editing built-ins.
 (use-package hoagie-editing
   :load-path "~/sourcehut/dotfiles/.config/emacs"
   :demand t
   :bind
   ("<remap> <kill-word>" . hoagie-delete-word)
   ("<remap> <backward-kill-word>" . hoagie-backward-delete-word)
-  (:map hoagie-keymap
+  (:map hoagie-second-keymap
         ("/" . hoagie-toggle-backslash)
         ("q" . hoagie-escape-regexp)
         ("p" . hoagie-insert-pair)
         ("u" . hoagie-delete-pair)
-        ("t" . hoagie-insert-datetime))
-  (:map hoagie-second-keymap
+        ("t" . hoagie-insert-datetime)
         ("s" . hoagie-split-by-sep)
         ;; always have a binding for plain old fill-paragraph (it tends
         ;; to be replaced/shadowed in a lot of modes).
-        ("q" . fill-paragraph))
-  ;; I think this should be in the package "emacs", but I want to revisit all
-  ;; editing bindings - use C-c [letter] or consolidate them in some way
-  :config
-  (defvar-keymap hoagie-copydupe-keymap
-    :doc "Keymap for copy/duplication commands."
-    :name "Copy/dupe command"
-    "d" '("dupe region/line" . duplicate-dwim)
-    "c" '("copy from above" . copy-from-above-command))
-  (keymap-set hoagie-second-keymap "c" hoagie-copydupe-keymap))
+        ("q" . fill-paragraph)
+        ("d" . duplicate-dwim)
+        ("c" . copy-from-above-command)
+        ("k" . kill-whole-line)))
 
 (use-package hoagie-notes
   :load-path "~/sourcehut/dotfiles/.config/emacs"
@@ -165,13 +154,20 @@
   (auth-sources '("~/.authinfo.gpg" "~/.authinfo" "~/.netrc")))
 
 (use-package bookmark
-  :bind
+  :init
   ;; trying to make these more memorable than C-x r m/b/l
-  ;; I associate C-x r with registers, not bookmarks
-  (:map hoagie-second-keymap
-        ("b b" . bookmark-set)
-        ("b j" . bookmark-jump)
-        ("b l" . bookmark-bmenu-list)))
+  ;; I associate C-x r with registers, not bookmarks - and I don't
+  ;; even use those bindings
+  (defvar-keymap hoagie-bookmark-keymap
+    :doc "Keymap to global bookmark commands"
+    :name "Bookmarks"
+    "l" '("list". bookmark-bmenu-list)
+    "j" '("jump to..." . bookmark-jump)
+    "b" '("add" . bookmark-set))
+  :bind-keymap
+  ("C-c b" . hoagie-bookmark-keymap))
+
+
 
 ;; I can use built in M-y, which offers completion. But for longer text, it
 ;; isn't nearly as comfortable to use as this package
@@ -292,12 +288,14 @@ For details on URL and NEW-WINDOW, check the original function."
   (:map hoagie-keymap
         ;; see definition for F6-f in :config below
         ("n" . hoagie-kill-buffer-filename))
+  :bind-keymap
+  ("C-c f" . hoagie-find-keymap)
   :hook
   (dired-mode-hook . dired-hide-details-mode)
   ;; Enables "C-c C-m a" (yeah, really :) lol) to attach
   ;; all files marked in dired to the current/a new email
   (dired-mode-hook . turn-on-gnus-dired-mode)
-  :config
+  :init
   ;; What are the differences between the last two commands?
   ;; (info "(emacs) Dired and Find")
   (defvar-keymap hoagie-find-keymap
@@ -306,10 +304,7 @@ For details on URL and NEW-WINDOW, check the original function."
     "g" '("grep dired" . find-grep-dired)
     "n" '("name dired" . find-name-dired)
     "d" '("dired" . find-dired))
-  ;; UPDATE 2024-11-04: I saw this technique in "M-o" for sgml-mode, which in
-  ;; turn uses facemenu.el, but it only works correctly if I assign the binding
-  ;; "manually" instead through use-package
-  (keymap-set hoagie-keymap "ESC f" hoagie-find-keymap)
+  :config
   (setf dired-compress-file-suffixes
         '(("\\.tar\\.gz\\'" #1="" "7z x -aoa -o%o %i")
           ("\\.tgz\\'" #1# "7z x -aoa -o%o %i")
@@ -335,7 +330,7 @@ For details on URL and NEW-WINDOW, check the original function."
   :bind
   (:map hoagie-keymap
         ("e" . ediff-buffers)
-        ("ESC e" . ediff-current-file))
+        ("M-e" . ediff-current-file))
   :custom
   ;; from https://emacs.stackexchange.com/a/9411/17066
   (ediff-forward-word-function 'forward-char)
@@ -448,18 +443,22 @@ Sets `fill-column'."
   (eww-mode-hook . toggle-word-wrap)
   (eww-mode-hook . visual-line-mode)
   :bind
-  (:map hoagie-second-keymap
-        ;; "w" for web, and use eww-search-words (with no region, it is
-        ;; equivalent to plain `eww')
-        ("w" . eww-search-words)
-        ;; the EWW boormarks are the "personal" ones
-        ("ESC w" . eww-list-bookmarks)
-        ("C-w" . eww-list-buffers))
   (:map eww-mode-map
         ("m" . hoagie-eww-jump)
         ;; default M-I - but I use this often
         ;; using uppercase to mirror F to toggle fonts
         ("I" . eww-toggle-images))
+  :bind-keymap
+  ("C-c w" . hoagie-eww-keymap)
+  :init
+  (defvar-keymap hoagie-eww-keymap
+    :doc "Keymap to global eww commands"
+    :name "EWW"
+    ;; this keymap has additional bindings setup in my work configuration
+    "w" '("EWW (search words)" . eww-search-words)
+    ;; mirror "S" in eww-mode-map
+    "s" '("buffers" . eww-list-buffers)
+    "b" '("bookmarks". eww-list-bookmarks))
   :config
   (defun hoagie-eww-rename-buffer ()
     "Rename EWW buffers like \"title\", but put title last.
@@ -497,7 +496,7 @@ external browser and new eww buffer, respectively)."
     "f" #'flymake-mode
     "s" #'flymake-start)
   :bind
-  (:map hoagie-second-keymap
+  (:map hoagie-keymap
         ("f" . hoagie-flymake-keymap)))
 
 (use-package grep
@@ -506,7 +505,7 @@ external browser and new eww buffer, respectively)."
   (grep-use-null-device nil)
   :bind
   (:map hoagie-keymap
-        ("ESC g" . rgrep)))
+        ("g" . rgrep)))
 
 (use-package hl-line
   :hook
@@ -576,7 +575,7 @@ Set `fill-column', `truncate-lines'."
           truncate-lines t)
     (display-fill-column-indicator-mode)
     (auto-fill-mode)
-    (setq-local page-delimiter "^#\\{1,6\\} "))
+    (setq-local page-delimiter "^#\\{1,6\\} ")))
 
 (use-package minibuffer
   :demand t
@@ -626,12 +625,6 @@ Set `fill-column', `truncate-lines'."
   )
 
 (use-package project
-  :bind
-  (:map hoagie-keymap
-        ;; Since I am using the C-x p prefix more,
-        ;; these two bindings can go? maybe?
-        ("g" . project-find-regexp)
-        ("f" . project-find-file))
   :custom
   (project-vc-extra-root-markers '(".emacs-project"))
   ;; go back to old default of "d" for "dired at root"
@@ -678,15 +671,19 @@ Set `fill-column', `truncate-lines'."
   :demand t
   :custom
   (register-preview-delay 0.1)
-  :bind
-  (:map hoagie-second-keymap
-        ;; hitting F5 twice to store something sounds like a good
-        ;; shortcut to push things semi-constantly
-        ("<f5>" . hoagie-push-to-register-dwim)
-        ("i" . hoagie-insert-register)
-        ("l" . list-registers)
-        ("d" . hoagie-clean-registers)
-        ("j" . hoagie-jump-to-register))
+  :init
+  (defvar-keymap hoagie-register-keymap
+    :doc "Keymap for my own register commands."
+    :name "Registers"
+    "z" '("push-dwim" . hoagie-push-to-register-dwim)
+    ;; in case I don't release Control - maybe I won't need it.
+    "C-z" '("push-dwim2". hoagie-push-to-register-dwim)
+    "i" '("insert" . hoagie-insert-register)
+    "l" '("list" . list-registers)
+    "d" '("delete" . hoagie-clean-registers)
+    "j" '("jump" . hoagie-jump-to-register))
+  :bind-keymap
+  ("C-z" . hoagie-register-keymap)
   :config
   ;; BRITTLENESS WARNING: this re-defines a built-in method, there's
   ;; a high risk it breaks when moving Emacs versions
@@ -1046,12 +1043,8 @@ calls `vc-dir' in the newly cloned directory."
 
 (use-package window
   :config
-  ;; Stores the window setup before focusing on a single window, and restore it
-  ;; on a "mirror" binding: C-x 1 vs F6 1. Simplified version of the idea at
+  ;; Simplified version of the idea at
   ;; https://erick.navarro.io/blog/save-and-restore-window-configuration-in-emacs/
-  ;; Update: made it so I can manually push a config too. Maybe the alternative
-  ;; command is superflous? or maybe I will need multiple window configuration
-  ;; slots.
   (defvar hoagie-window-configuration nil
     "Window configuration saved manually, or before deleting other windows.")
   (defun hoagie-store-window-configuration (&optional silent)
@@ -1066,17 +1059,15 @@ calls `vc-dir' in the newly cloned directory."
       (set-window-configuration hoagie-window-configuration)
       (setf hoagie-window-configuration nil)))
   (defun hoagie-delete-other-windows ()
-    "Custom `delete-other-windows' that stores the current setup in
-`hoagie-window-configuration'.
-Adding an advice to the existing command was finicky."
+    "Custom `delete-other-windows' command.
+It that stores the current setup in `hoagie-window-configuration'."
     (interactive)
     (hoagie-store-window-configuration t)
     (delete-other-windows))
   (defun hoagie-toggle-frame-split ()
     "Toggle orientation, just like ediff's |.
-See https://www.emacswiki.org/emacs/ToggleWindowSplit for
-sources, this version is my own spin of the first two in the
-page."
+See https://www.emacswiki.org/emacs/ToggleWindowSplit for sources, this
+version is my own spin of the first two in the page."
     (interactive)
     (unless (= (count-windows) 2)
       (error "Can only toggle a frame split in two"))
@@ -1123,13 +1114,9 @@ repository."
   (defvar-keymap hoagie-goto-keymap
     :doc "Keymap to go to places (like, home dir, init file, etc)."
     :name "Go to"
+    ;; this keymap has additional bindings setup in my work configuration
     "h" '("home directory" . hoagie-go-home)
-    "i" '("init file" . hoagie-open-init)
-    ;; alternatives - I don't have a need to release w and e from the secondary
-    ;; keymap, but it is an interesting experiment
-    "w" '("www" . eww-search-words)
-    "e" '("email(gnus)" . gnus)
-    )
+    "i" '("init file" . hoagie-open-init))
   ;; Inspired by
   ;; https://demonastery.org/2013/04/emacs-narrow-to-region-indirect/ and
   ;; modified to DWIM. Also use `pop-to-buffer' instead of `switch-to-buffer'
@@ -1199,10 +1186,6 @@ With prefix ARG, use `split-root-window-below' instead"
   ("C-x k" . kill-current-buffer)
   ("C-x M-k" . kill-buffer)
   ("<remap> <list-buffers>" . ibuffer)
-  (:map hoagie-keymap
-        ;; Easier to type than C-S-backspace, and mirrors C-k nicely.
-        ;; C-k kill rest of the line --> <f6>-k kill the whole thing
-        ("k" . kill-whole-line))
   (:map ctl-x-map
         ;; right next to other-window
         ("i" . other-frame)
