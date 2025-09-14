@@ -407,7 +407,7 @@ buffer name when eglot is enabled."
   :custom
   (eldoc-echo-area-use-multiline-p nil)
   :bind
-  (:map hoagie-second-keymap
+  (:map hoagie-keymap
         ;; "h" for "help"
         ("h" . hoagie-toggle-eldoc-buffer))
   :config
