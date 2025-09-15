@@ -168,8 +168,6 @@
   :bind-keymap
   ("C-c b" . hoagie-bookmark-keymap))
 
-
-
 ;; I can use built in M-y, which offers completion. But for longer text, it
 ;; isn't nearly as comfortable to use as this package
 (use-package browse-kill-ring
@@ -1183,7 +1181,6 @@ With prefix ARG, use `split-root-window-below' instead"
   ("<remap> <upcase-word>" . upcase-dwim)
   ("<remap> <downcase-word>" . downcase-dwim)
   ("<remap> <zap-to-char>" . zap-up-to-char)
-  ("C-z" .  nil) ;; TODO: find someting useful :)
   ("C-x k" . kill-current-buffer)
   ("C-x M-k" . kill-buffer)
   ("<remap> <list-buffers>" . ibuffer)
