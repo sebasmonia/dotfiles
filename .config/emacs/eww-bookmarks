@@ -1,9 +1,9 @@
 ;; Auto-generated file; don't edit -*- mode: lisp-data -*-
 ((:url "https://apod.nasa.gov/apod/astropix.html" :title
-       "Astronomy Picture of the Day" :time "Wed Apr 30 08:30:01 2025")
+       "Astronomy PotD" :time "Wed Apr 30 08:30:01 2025")
  (:url "https://www.schneier.com/" :title "Schneier on Security" :time
        "2024-07-26 08:36:42 AM")
- (:url "https://elintransigente.com/" :title "Noticias de Argentina"
+ (:url "https://elintransigente.com/" :title "Noticias AR"
        :time "Sun Apr 20 11:19:31 2025")
  (:url "https://text.npr.org/" :title "NPR Text news" :time
        "2024-05-29 09:25:17 AM")
@@ -12,30 +12,33 @@
  (:url "https://legiblenews.com/" :title "Legible News" :time
        "Thu Oct  3 11:49:05 2024")
  (:url "https://burgundywave.com/category/colorado-rapids/" :title
-       "Colorado Rapids - Burgundy Wave" :time
+       "Burgundy Wave" :time
        "2024-07-27 06:58:18 PM")
  (:url "https://risingthumb.xyz/Writing/Blog/" :title "Writing - Blog"
        :time "Wed Sep 10 13:30:54 2025")
- (:url "https://netigen.com/tags" :title "Netigen: Tags (volume-5)"
+ (:url "https://netigen.com/tags" :title "Netigen"
        :time "Wed Oct  2 17:14:47 2024")
  (:url "https://mtwb.blog/" :title "Matt's Blog" :time
        "Mon Jun  9 09:46:19 2025")
+ (:url "https://lars.ingebrigtsen.no/"  :title "Lars I" :time "2024-02-13 12:21:28 PM")
  (:url "https://baty.net/" :title "Baty.net" :time
        "Tue Aug 26 11:44:31 2025")
+ (:url "https://daily.baty.net/"  :title "Baty Daily" :time "2024-02-13 12:21:28 PM")
  (:url "https://joelchrono.xyz/" :title "Joel's Homepage" :time
        "Tue Aug 26 11:44:11 2025")
+ (:url "https://www.mgmarlow.com/archive/"  :title "mgmarlow.com" :time "2024-02-13 12:21:28 PM")
  (:url "https://slrncl.com/blog/" :title "slrncl / blog" :time
        "Fri Jul 11 16:31:59 2025")
  (:url "https://forkingmad.blog/" :title "Forking Mad+" :time
        "Mon Aug  4 12:00:43 2025")
  (:url "https://82mhz.net/" :title "82MHz" :time
        "Mon May 19 13:03:19 2025")
- (:url "https://manuelmoreale.com/" :title "Manu Moreale" :time
+ (:url "https://manuelmoreale.com/" :title "Manu" :time
        "Thu May 15 09:56:44 2025")
  (:url "https://nicolalosito.it/blog/" :title "Nicola Losito" :time
        "Sat Jun  7 19:15:42 2025")
  (:url "https://thejollyteapot.com/" :title
-       "Archives - The Jolly Teapot" :time "Fri Sep 27 09:27:44 2024")
+       "The Jolly Teapot" :time "Fri Sep 27 09:27:44 2024")
  (:url "https://kevquirk.com/" :title "Kev Quirk" :time
        "Sat Jun  7 19:17:29 2025")
  (:url "http://starbreaker.org/grimoire/index.html" :title
@@ -46,22 +49,29 @@
        :time "Mon Aug 18 13:02:35 2025")
  (:url "https://koldfront.dk/" :title "koldfront" :time
        "Wed Jul 31 17:36:13 2024")
- (:url "https://berthub.eu/articles/" :title "Bert Hubert's writings"
+ (:url "https://berthub.eu/articles/" :title "Bert Hubert"
        :time "Thu Aug  8 13:53:45 2024")
  (:url "https://kwon.nyc/" :title "Kwon.nyc" :time
        "Fri Aug  9 08:55:25 2024")
- (:url "https://ohhelloana.blog/posts/" :title "Oh Hello Ana - Blog"
+ (:url "https://ohhelloana.blog/posts/" :title "Oh Hello Ana"
        :time "Fri Aug 16 16:38:38 2024")
  (:url "https://btxx.org/" :title "~bt" :time
        "Fri Aug 16 15:14:12 2024")
  (:url "https://fabiensanglard.net/" :title
-       "Fabien Sanglard's Website" :time "2024-07-27 07:04:56 PM")
+       "Fabien Sanglard" :time "2024-07-27 07:04:56 PM")
+ (:url "https://unfiltered.pagecord.com/"  :title "unfiltered thoughts" :time "2024-02-13 12:21:28 PM")
+ (:url "https://www.lkhrs.com/blog/"  :title "Luke Wild" :time "2024-02-13 12:21:28 PM")
+ (:url "https://nthp.me/blog/"  :title "Blog | NTHP" :time "2024-02-13 12:21:28 PM")
+ (:url "https://explodingcomma.com/posts"  :title "Exploding Comma" :time "2024-02-13 12:21:28 PM")
+ (:url "https://louplummer.lol/blog/"  :title "Living Out Loud" :time "2024-02-13 12:21:28 PM")
+ (:url "https://tadaima.bearblog.dev/blog/"  :title "Tadaima." :time "2024-02-13 12:21:28 PM")
+ (:url "https://sals.place/blog/"  :title "Blog | Sal&#39;s" :time "2024-02-13 12:21:28 PM")
  (:url "https://www.filfre.net/sitemap/" :title
-       "Table of Contents The Digital Antiquarian" :time
+       "The Digital Antiquarian" :time
        "Fri Oct 18 09:54:58 2024")
  (:url "https://log.schemescape.com/" :title "Schemescape" :time
        "Mon Sep 30 09:18:57 2024")
- (:url "https://localghost.dev/blog/" :title "Blog - localghost" :time
+ (:url "https://localghost.dev/blog/" :title "localghost" :time
        "Thu Sep 26 09:18:29 2024")
  (:url "https://www.rousette.org.uk" :title "BSAG" :time
        "Fri Aug 16 17:00:55 2024")
@@ -71,7 +81,7 @@
        "Alice Weaknotes" :time "Fri Aug 15 22:45:04 2025")
  (:url "https://walknotes.com/" :title "Walknotes" :time
        "Fri Aug 15 22:38:47 2025")
- (:url "https://bacardi55.io/posts/" :title "Bacardi55's Web Cave"
+ (:url "https://bacardi55.io/posts/" :title "Bacardi55"
        :time "2024-07-18 10:16:05 AM")
  (:url "https://sjmulder.nl/en/textonly.html" :title
        "Sijmen plain text links" :time "2024-07-24 08:44:01 AM")
