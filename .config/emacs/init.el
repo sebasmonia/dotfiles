@@ -1350,14 +1350,8 @@ FRAME is ignored."
   :demand t)
 
 ;; is it a work computer...?
-(when (file-exists-p "~/sourcehut/simcorp-files/.emacs.d/sc-init.el")
-  (defvar sc-init-file
-    "~/sourcehut/simcorp-files/.emacs.d/sc-init.el"
-    "Location of the SimCorp init file.")
-  (load sc-init-file)
-  (keymap-set
-   hoagie-goto-keymap
-   "s"
-   '("sc init" . (lambda () (interactive) (find-file sc-init-file)))))
+(let ((sc-init "~/sourcehut/simcorp-files/.emacs.d/sc-init.el"))
+  (when (file-exists-p sc-init)
+    (load sc-init)))
 
 ;;; init.el ends here
