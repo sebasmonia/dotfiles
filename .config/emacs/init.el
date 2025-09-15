@@ -506,6 +506,23 @@ external browser and new eww buffer, respectively)."
   (:map hoagie-keymap
         ("g" . rgrep)))
 
+;; TODO: under consideration
+(use-package hi-lock
+  :demand t
+  :custom
+  (hi-lock-auto-select-face t)
+  :config
+  (defvar-keymap hoagie-hi-lock-keymap
+    :doc "Keymap for `hi-lock' commands."
+    :name "Highlight..."
+    "u" '("unhighlight" . unhighlight-regexp)
+    "l" '("lines" . highlight-lines-matching-regexp)
+    "p" '("phrase" . highlight-phrase)
+    "r" '("regexp" . highlight-regexp)
+    "." '("symbol at point" . highlight-symbol-at-point))
+  :bind-keymap
+  ("C-c h" . hoagie-hi-lock-keymap))
+
 (use-package hl-line
   :hook
   (after-init-hook . global-hl-line-mode))
