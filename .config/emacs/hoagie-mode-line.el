@@ -44,25 +44,30 @@
 (setq-default mode-line-buffer-identification '("%12b "))
 
 (setq-default mode-line-position
-     (list "%l:%c"
-           '(:propertize " %p%  %I" face shadow)
-           '(:eval
-             (when (use-region-p)
-               (propertize (format " (%sL:%sC)"
-                                   (count-lines (region-beginning)
-                                                (region-end))
-                                   (if rectangle-mark-mode
-                                       ;; in rectangle mode, counting the
-                                       ;; characters is a bit more involved...
-                                       (seq-reduce
-                                        (lambda (counter line)
-                                          (+ counter (length line)))
-                                        (extract-rectangle (region-beginning)
-                                                           (region-end))
-                                        0)
-                                     (- (region-end) (region-beginning)))
-                           'face 'shadow))))
-           " "))
+  (list "%l:%c"
+        '(:propertize " %p%  %I" face shadow)
+        '(:eval
+          (when (use-region-p)
+            (propertize (apply #'format
+                               " (%sL:%sC)"
+                               (hoagie--mode-line-region-size))
+                        'face 'shadow))
+           " ")))
+
+(defun hoagie--mode-line-region-size ()
+  "Helper to calculate the region size to display in the mode line.
+Returns a list with the number of lines, and the number of characters.
+For the latter, it uses a more involved calculation for rectangle selections."
+  (let ((lines (count-lines (region-beginning) (region-end))))
+    (list lines
+          (if rectangle-mark-mode
+              ;; first line or last line, both have the same amount of
+              ;; characters.
+              (* (length (car (extract-rectangle (region-beginning)
+                                                 (region-end))))
+                 lines)
+            ;; regular region
+            (- (region-end) (region-beginning))))))
 
 (setq-default mode-line-modes
      '(:propertize mode-name
