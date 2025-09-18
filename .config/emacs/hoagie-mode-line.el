@@ -51,8 +51,17 @@
                (propertize (format " (%sL:%sC)"
                                    (count-lines (region-beginning)
                                                 (region-end))
-                                   (- (region-end) (region-beginning)))
-                           'face 'shadow)))
+                                   (if rectangle-mark-mode
+                                       ;; in rectangle mode, counting the
+                                       ;; characters is a bit more involved...
+                                       (seq-reduce
+                                        (lambda (counter line)
+                                          (+ counter (length line)))
+                                        (extract-rectangle (region-beginning)
+                                                           (region-end))
+                                        0)
+                                     (- (region-end) (region-beginning)))
+                           'face 'shadow))))
            " "))
 
 (setq-default mode-line-modes
