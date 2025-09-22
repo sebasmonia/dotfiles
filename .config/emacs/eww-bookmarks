@@ -31,8 +31,8 @@
        "Wed Sep 17 11:55:02 2025")
  (:url "https://rubenerd.com/" :title "Rubenerd" :time
        "Wed Sep 17 11:16:46 2025")
- (:url "https://kandr3s.co/posts" :title "Andrés Cárdenas"
-       :time "Mon Sep 15 12:04:12 2025")
+ (:url "https://kandr3s.co/posts" :title "Andrés Cárdenas" :time
+       "Mon Sep 15 12:04:12 2025")
  (:url "https://www.mgmarlow.com/archive/" :title "mgmarlow.com" :time
        "2024-02-13 12:21:28 PM")
  (:url "https://slrncl.com/blog/" :title "slrncl / blog" :time
@@ -43,6 +43,8 @@
        "Mon May 19 13:03:19 2025")
  (:url "https://manuelmoreale.com/" :title "Manu" :time
        "Thu May 15 09:56:44 2025")
+ (:url "https://underlap.org/blog/" :title "underlap" :time
+       "Fri Sep 19 09:18:55 2025")
  (:url "https://nicolalosito.it/blog/" :title "Nicola Losito" :time
        "Sat Jun  7 19:15:42 2025")
  (:url "https://thejollyteapot.com/" :title "The Jolly Teapot" :time
