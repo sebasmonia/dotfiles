@@ -211,6 +211,26 @@ example). With double prefix, include the time."
   (insert (format-time-string (cond ((equal arg '(4)) "%Y%m%d")
                                     ((equal arg '(16)) "%F %T")
                                     (t "%F")))))
+
+;; I add this thinking of `transpose-lines', `transpose-words' and friends,
+;; which use 0 prefix arg to exchange elements between point and mark.
+(require 'pulse)
+(defun hoagie-flash-mark ()
+  "Briefly flash the mark position."
+  ;; using an overlay because that's what my old pal "visible-mark" uses
+  ;; (and yes, this is yet another instance of "custom code inspired by
+  ;; an existing package")
+  (interactive)
+  (let ((curr-mark (mark-marker))
+        (pulse-delay 0.1)
+        mark-overlay)
+    (if (eq (point) (marker-position curr-mark))
+        (message "Same position for point and mark!!!")
+      (setf mark-overlay (make-overlay curr-mark (+ 1 curr-mark) nil))
+      (pulse-momentary-highlight-overlay mark-overlay)
+      ;; delete the overlay after flashing it
+      (run-with-idle-timer 4 nil #'delete-overlay mark-overlay))))
+
 (provide 'hoagie-editing)
 
 ;;; hoagie-editing.el ends here

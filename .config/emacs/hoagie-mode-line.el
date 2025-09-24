@@ -60,7 +60,7 @@ Returns a list with the number of lines, and the number of characters.
 For the latter, it uses a more involved calculation for rectangle selections."
   (let ((lines (count-lines (region-beginning) (region-end))))
     (list lines
-          (if rectangle-mark-mode
+          (if (and (boundp rectangle-mark-mode) rectangle-mark-mode)
               ;; first line or last line, both have the same amount of
               ;; characters.
               (* (length (car (extract-rectangle (region-beginning)

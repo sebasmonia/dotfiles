@@ -242,6 +242,8 @@ slate/italics."
    `(log-view-commit-body ((t (:inherit default))))
    `(log-view-file ((t (:background ,dim-1))))
    `(log-view-message ((t (:background ,dim-1))))
+
+   `(pulse-highlight-start-face ((t (:background ,error))))
    ))
 ;;;###autoload
 (when load-file-name

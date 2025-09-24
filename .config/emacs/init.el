@@ -65,12 +65,15 @@
 (use-package hoagie-editing
   :load-path "~/sourcehut/dotfiles/.config/emacs"
   :demand t
+  :custom
+  ;; part of misc.el, but since the binding is set here:
+  (duplicate-line-final-position -1)
   :bind
   ("<remap> <kill-word>" . hoagie-delete-word)
   ("<remap> <backward-kill-word>" . hoagie-backward-delete-word)
   (:map hoagie-second-keymap
         ("/" . hoagie-toggle-backslash)
-        ("q" . hoagie-escape-regexp)
+        ("e" . hoagie-escape-regexp)
         ("p" . hoagie-insert-pair)
         ("u" . hoagie-delete-pair)
         ("t" . hoagie-insert-datetime)
@@ -81,7 +84,8 @@
         ("d" . duplicate-dwim)
         ("c" . copy-from-above-command)
         ("a" . copy-from-above-command) ;; alt binding - easier on the fingers
-        ("k" . kill-whole-line)))
+        ("k" . kill-whole-line)
+        ("m" . hoagie-flash-mark)))
 
 (use-package hoagie-notes
   :load-path "~/sourcehut/dotfiles/.config/emacs"
@@ -578,9 +582,6 @@ Set `fill-column' and setup indent to CL style."
   :ensure t
   :init
   (setq markdown-command "pandoc")
-  :bind
-  (:map markdown-mode-map
-        ("C-c C-e" . markdown-do))
   :hook
   (markdown-mode-hook . hoagie-markdown-mode-setup)
   :config
