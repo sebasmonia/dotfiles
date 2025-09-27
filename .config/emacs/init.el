@@ -670,6 +670,7 @@ Set `fill-column', `truncate-lines'."
   (python-shell-font-lock-enable nil)
   (python-shell-interpreter "ipython")
   (python-shell-interpreter-args "--pprint --simple-prompt")
+  (python-check-command "python3 -m pylint")
   :bind
   (:repeat-map hoagie-python-repeat-map
                ("a" . python-nav-backward-block)
@@ -969,7 +970,7 @@ calls `vc-dir' in the newly cloned directory."
   (defvar hoagie-window-configuration nil
     "Window configuration saved manually, or before deleting other windows.")
   (defun hoagie-store-window-configuration (&optional silent)
-    (interactive)
+    (interactive "P")
     (setf hoagie-window-configuration (current-window-configuration))
     (unless silent
       (message "Stored current window configuration")))
