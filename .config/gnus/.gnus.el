@@ -59,9 +59,6 @@ If REGEXP is not provided, then all emails are printed."
   ;; so the ecomplete setup happens when opening Gnus, not before
   (gnus-started-hook . ecomplete-setup)
   :bind
-  (:map hoagie-eww-keymap
-        ;; for "email"
-        ("e" . gnus))
   ;; can't recall where I read that "v" is for user bindings
   (:map gnus-summary-mode-map
         ("v t" . hoagie-summary-trash)
@@ -152,6 +149,7 @@ If REGEXP is not provided, then all emails are printed."
   ;; in the same thread (defaul A T, v s for me)
   (gnus-refer-thread-use-search t)
   :config
+  (keymap-set hoagie-eww-keymap "e" '("email" . gnus))
   (defun hoagie-summary-spam ()
     "Move the current or marked mails to Spam in Fastmail."
     (interactive)

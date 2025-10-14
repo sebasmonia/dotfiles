@@ -77,13 +77,12 @@ slate/italics."
 
    `(org-table ((t (:foreground ,alt-fg))))
 
-   `(show-paren-match ((t (:background ,dim-3))))
+   `(show-paren-match ((t (:background ,dim-2))))
    ;; next face won't be used unless I set again
    ;; (show-paren-when-point-inside-paren 'mixed)
    ;; in my init file
    `(show-paren-match-expression ((t (:background ,dim-1))))
-   ;; TODO: consider not using this face at all
-   `(show-paren-mismatch ((t (:background ,warning))))
+   `(show-paren-mismatch ((t (:foreground ,warning :background ,dim-2))))
 
    `(mode-line ((t (:foreground ,fg :background ,bg-mode-line))))
    `(mode-line-active ((t (:inherit mode-line :box (:color ,fg)))))
@@ -242,6 +241,8 @@ slate/italics."
    `(log-view-commit-body ((t (:inherit default))))
    `(log-view-file ((t (:background ,dim-1))))
    `(log-view-message ((t (:background ,dim-1))))
+
+   `(pulse-highlight-start-face ((t (:background ,error))))
    ))
 ;;;###autoload
 (when load-file-name

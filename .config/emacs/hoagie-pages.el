@@ -24,6 +24,12 @@
 
 ;;; Code:
 
+(defun hoagie-pages-set-delimiter (regexp)
+  "Set buffer local value of `page-delimiter' to REGEXP."
+  (interactive (list (read-regexp "New page-delimiter regexp" page-delimiter)))
+  (setq-local page-delimiter regexp)
+  (message "The value of `page-delimiter' is now: %s" page-delimiter))
+
 (defun hoagie-pages--list ()
   "Get the pages in the current buffer, ignoring narrowing.
 Return a list of lists (marker page-title line total-lines)."

@@ -65,12 +65,15 @@
 (use-package hoagie-editing
   :load-path "~/sourcehut/dotfiles/.config/emacs"
   :demand t
+  :custom
+  ;; part of misc.el, but since the binding is set here:
+  (duplicate-line-final-position -1)
   :bind
   ("<remap> <kill-word>" . hoagie-delete-word)
   ("<remap> <backward-kill-word>" . hoagie-backward-delete-word)
   (:map hoagie-second-keymap
         ("/" . hoagie-toggle-backslash)
-        ("q" . hoagie-escape-regexp)
+        ("e" . hoagie-escape-regexp)
         ("p" . hoagie-insert-pair)
         ("u" . hoagie-delete-pair)
         ("t" . hoagie-insert-datetime)
@@ -81,7 +84,8 @@
         ("d" . duplicate-dwim)
         ("c" . copy-from-above-command)
         ("a" . copy-from-above-command) ;; alt binding - easier on the fingers
-        ("k" . kill-whole-line)))
+        ("k" . kill-whole-line)
+        ("m" . hoagie-flash-mark)))
 
 (use-package hoagie-notes
   :load-path "~/sourcehut/dotfiles/.config/emacs"
@@ -506,6 +510,23 @@ external browser and new eww buffer, respectively)."
   (:map hoagie-keymap
         ("g" . rgrep)))
 
+;; TODO: under consideration
+(use-package hi-lock
+  :demand t
+  :custom
+  (hi-lock-auto-select-face t)
+  :config
+  (defvar-keymap hoagie-hi-lock-keymap
+    :doc "Keymap for `hi-lock' commands."
+    :name "Highlight..."
+    "u" '("unhighlight" . unhighlight-regexp)
+    "l" '("lines" . highlight-lines-matching-regexp)
+    "p" '("phrase" . highlight-phrase)
+    "r" '("regexp" . highlight-regexp)
+    "." '("symbol at point" . highlight-symbol-at-point))
+  :bind-keymap
+  ("C-c h" . hoagie-hi-lock-keymap))
+
 (use-package hl-line
   :hook
   (after-init-hook . global-hl-line-mode))
@@ -561,9 +582,6 @@ Set `fill-column' and setup indent to CL style."
   :ensure t
   :init
   (setq markdown-command "pandoc")
-  :bind
-  (:map markdown-mode-map
-        ("C-c C-e" . markdown-do))
   :hook
   (markdown-mode-hook . hoagie-markdown-mode-setup)
   :config
@@ -652,6 +670,7 @@ Set `fill-column', `truncate-lines'."
   (python-shell-font-lock-enable nil)
   (python-shell-interpreter "ipython")
   (python-shell-interpreter-args "--pprint --simple-prompt")
+  (python-check-command "python3 -m pylint")
   :bind
   (:repeat-map hoagie-python-repeat-map
                ("a" . python-nav-backward-block)
@@ -666,6 +685,10 @@ Set `fill-column', `truncate-lines'."
     (display-fill-column-indicator-mode)
     (setq-local page-delimiter "^\\(def\\|class\\) ")))
 
+(use-package hoagie-registers
+  :load-path "~/sourcehut/dotfiles/.config/emacs"
+  :demand t)
+
 (use-package register
   :demand t
   :custom
@@ -674,115 +697,15 @@ Set `fill-column', `truncate-lines'."
   (defvar-keymap hoagie-register-keymap
     :doc "Keymap for my own register commands."
     :name "Registers"
-    "z" '("push-dwim" . hoagie-push-to-register-dwim)
-    ;; in case I don't release Control - maybe I won't need it.
-    "C-z" '("push-dwim2". hoagie-push-to-register-dwim)
+    "<menu>" '("push-dwim" . hoagie-push-to-register-dwim)
     "i" '("insert" . hoagie-insert-register)
     "l" '("list" . list-registers)
     "d" '("delete" . hoagie-clean-registers)
     "j" '("jump" . hoagie-jump-to-register))
   :bind-keymap
-  ("C-z" . hoagie-register-keymap)
-  :config
-  ;; BRITTLENESS WARNING: this re-defines a built-in method, there's
-  ;; a high risk it breaks when moving Emacs versions
-  (cl-defmethod register-val-describe ((val marker) _verbose)
-    (let ((buf (marker-buffer val)))
-      (if (null buf)
-	      (princ "a marker in no buffer")
-        (princ (hoagie--text-around-marker val))
-        (princ "   -- buffer ")
-        (princ (buffer-name buf))
-        (princ ", pos ")
-        (princ (marker-position val)))))
-  (defun hoagie--text-around-marker (marker-val)
-    "Get the line around MARKER.
-Some inspiration from the package Consult."
-    (with-current-buffer (marker-buffer marker-val)
-      (save-excursion
-        (without-restriction
-          (goto-char marker-val)
-          (string-trim (thing-at-point 'line))))))
-  ;; There are a bunch of packages that do this or similar things,
-  ;; but I have an interest on developing my own clunky, bug ridden,
-  ;; and, I can only hope, flexible system
-  (defun hoagie-push-to-register-dwim ()
-    "If the region is active, store it in the next register. Else push point.
-See `hoagie-get-next-register' for \"next register\" selection."
-    (interactive)
-    (if (use-region-p)
-        (hoagie-copy-to-next-register)
-      (hoagie-point-to-next-register)))
-  (defvar hoagie-registers-order
-    "asdfgqwertzxcvbyuiophjklnm;',./-=`?\"[](){}"
-    "The order in which to walk the registers in `hoagie-next-register'")
-  (defun hoagie-next-register ()
-    "Return the next char from `hoagie-registers-order' that is empty.
-Silently returns nil if none is available."
-    (cl-loop for reg-key across hoagie-registers-order
-             unless (get-register reg-key)
-             return reg-key))
-  (defun hoagie-copy-to-next-register ()
-    "Copies the region to the register returned by `hoagie-next-register'.
-The values passed to `copy-to-register' are based on its
-interactive declaration."
-    (interactive)
-    (let ((register (hoagie-next-register)))
-      (copy-to-register register
-                        (region-beginning)
-                        (region-end)
-                        current-prefix-arg
-                        t)
-      (message "Text to register: %c" register)))
-  (defun hoagie-point-to-next-register ()
-    "Stores point in the register returned by `hoagie-next-register'.
-The values passed to `point-to-register' are based on its
-interactive declaration."
-    (interactive)
-    ;; I never want to store frame configurations...but in a future version
-    ;; I could do window configurations? My current setup for windows stores
-    ;; ONE window config and that seems to be enough, though.
-    (let ((register (hoagie-next-register)))
-      (point-to-register (hoagie-next-register) nil)
-      (message "Point to register: %c" register)))
-  (defun hoagie-jump-to-register (&optional arg)
-    "Almost like `jump-to-register' but filters the alist for better preview.
-It also deletes the register if called with prefix ARG."
-    (interactive "P")
-    (let* ((register-alist (cl-loop for reg in register-alist
-                                    when (markerp (cdr reg))
-                                    collect reg))
-           (reg (register-read-with-preview "Jump to: ")))
-      (jump-to-register reg)
-      (when arg
-        (set-register reg nil))))
-  (defun hoagie-insert-register (&optional arg)
-    "Almost like `insert-register' but filters the alist for better preview.
-It also deletes the register when called with prefix ARG."
-    (interactive "P")
-    (let* ((register-alist (cl-loop for reg in register-alist
-                                    when (stringp (cdr reg))
-                                    collect reg))
-           (reg (register-read-with-preview "Insert text: ")))
-      (when (use-region-p)
-        ;; when there's an active region, delete it first
-        ;; NOTE: maybe I want to consider _killing_ instead of _deleting_?
-        (delete-region (region-beginning) (region-end)))
-      (insert-register reg)
-      (when arg
-        (set-register reg nil))))
-  (defun hoagie-clean-registers (arg)
-    "Remove data from a register.
-With prefix ARG, delete all registers"
-    (interactive "P")
-    (if (not arg)
-        (while t
-          (set-register (register-read-with-preview
-                         "Register to clear (quit to exit): ")
-                        nil))
-      ;; No need to ask, but show a message
-      (setf register-alist nil)
-      (message "All registers cleared."))))
+  ("C-z" . hoagie-register-keymap) ;; can be repurposed
+  ;; experimental
+  ("<menu>" . hoagie-register-keymap))
 
 (use-package repeat
   :custom
@@ -1047,7 +970,7 @@ calls `vc-dir' in the newly cloned directory."
   (defvar hoagie-window-configuration nil
     "Window configuration saved manually, or before deleting other windows.")
   (defun hoagie-store-window-configuration (&optional silent)
-    (interactive)
+    (interactive "P")
     (setf hoagie-window-configuration (current-window-configuration))
     (unless silent
       (message "Stored current window configuration")))
@@ -1333,14 +1256,8 @@ FRAME is ignored."
   :demand t)
 
 ;; is it a work computer...?
-(when (file-exists-p "~/sourcehut/simcorp-files/.emacs.d/sc-init.el")
-  (defvar sc-init-file
-    "~/sourcehut/simcorp-files/.emacs.d/sc-init.el"
-    "Location of the SimCorp init file.")
-  (load sc-init-file)
-  (keymap-set
-   hoagie-goto-keymap
-   "s"
-   '("sc init" . (lambda () (interactive) (find-file sc-init-file)))))
+(let ((sc-init "~/sourcehut/simcorp-files/.emacs.d/sc-init.el"))
+  (when (file-exists-p sc-init)
+    (load sc-init)))
 
 ;;; init.el ends here
