@@ -178,14 +178,14 @@
 
 (use-package browse-url
   :config
-  (defun browse-url-firefox-flatpak (url &optional new-window)
-    "Duplicate of `browse-url-firefox' for Fedora Silverblue.
+  (defun browse-url-vivaldi-flatpak (url &optional new-window)
+    "Duplicate of `browse-url-firefox' that uses Flatpak and Vivaldi.
 For details on URL and NEW-WINDOW, check the original function."
     (interactive (browse-url-interactive-arg "URL: "))
     (setq url (browse-url-encode-url url))
     (let* ((process-environment (browse-url-process-environment)))
       (apply #'start-process
-             (concat "flatpak run firefox " url) nil
+             (concat "flatpak run com.vivaldi.Vivaldi " url) nil
              browse-url-firefox-program
              (append
               browse-url-firefox-arguments
@@ -197,7 +197,7 @@ For details on URL and NEW-WINDOW, check the original function."
   :custom
   (browse-url-secondary-browser-function
    (if (eq system-type 'gnu/linux)
-       #'browse-url-firefox-flatpak
+       #'browse-url-vivaldi-flatpak
    #'browse-url-firefox))
   (browse-url-browser-function #'eww-browse-url)
   (browse-url-new-window-flag t))
@@ -258,7 +258,7 @@ For details on URL and NEW-WINDOW, check the original function."
   ("M-#" . dictionary-lookup-definition))
 
 (use-package cdsync
-  :load-path "~/sourcehut/caldav-sync.el"
+  :load-path "~/sourcehut/cdsync"
   :if (and (eq system-type 'gnu/linux)
            (locate-library "cdsync.el"))
   :demand t
