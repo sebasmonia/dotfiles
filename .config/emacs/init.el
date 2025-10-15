@@ -685,6 +685,20 @@ Set `fill-column', `truncate-lines'."
     (display-fill-column-indicator-mode)
     (setq-local page-delimiter "^\\(def\\|class\\) ")))
 
+(use-package rcirc
+  :commands rcirc
+  :custom
+  (rcirc-server-alist '(("chat.sr.ht"
+                         :port 6697
+                         :encryption tls
+                         :server-alias "sr.ht"
+                         :nick "hoagie"
+                         :full-name "Sebastián Monía"
+                         :user-name "sebasmonia/liberachat"
+                         :channels ("#emacs" "#emacs-es" "#argentina"))))
+  :hook
+  (rcirc-mode-hook . (lambda () (rcirc-track-minor-mode 1))))
+
 (use-package hoagie-registers
   :load-path "~/sourcehut/dotfiles/.config/emacs"
   :demand t)
