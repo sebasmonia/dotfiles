@@ -38,7 +38,9 @@
                        (concat (when (file-remote-p default-directory) "R")
                                ;; trailing space here
                                " ")
-                       'face 'mode-line-emphasis)))
+                       ;; 'face 'mode-line-emphasis)))
+                       ;; experimental - red & bold
+                       'face '(:inherit error :weight bold))))
 
 ;; same as default, with no tooltip, mouse menu nor face
 (setq-default mode-line-buffer-identification '("%12b "))
