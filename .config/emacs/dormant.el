@@ -142,20 +142,6 @@ Optional argument NEW-BUFFER is passed to `eww' as prefix arg."
           (pop-to-buffer output-buffer))
       (find-file-other-window output)))))
 
-(use-package rcirc
-  :commands rcirc
-  :custom
-  (rcirc-server-alist '(("irc.libera.chat"
-                         :port 7000
-                         :encryption tls
-                         :server-alias "libera"
-                         :nick "hoagie"
-                         :full-name "Sebastián Monía"
-                         :user-name "seb.hoagie@outlook.com"
-                         :channels ("#emacs" "#emacs-es" "#argentina"))))
-  :hook
-  (rcirc-mode-hook . (lambda () (rcirc-track-minor-mode 1))))
-
 (use-package terraform-mode
   :ensure t
   :mode "\\.tf$")
