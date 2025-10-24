@@ -73,9 +73,11 @@ It is lowercased and with dashes replacing spaces in the filename."
                                 (region-beginning) (region-end))))))
   (rgrep regexp "*" hoagie-notes-directory))
 
-(defun hoagie-notes-find-by-name ()
-  "Open a note, by filename, with completion."
-  (interactive)
+(defun hoagie-notes-find-by-name (&optional other-window)
+  "Open a note, by filename, with completion.
+When OTHER-WINDOW is non-nil (interactively, the prefix arg) it does
+what you would think it does :)"
+  (interactive "P")
   (require 'project)
   ;; Want to reuse project.el's find file with completion, I like it :) for
   ;; that, bind `project-prompter' to a function that returns the notes
@@ -83,7 +85,10 @@ It is lowercased and with dashes replacing spaces in the filename."
   ;; directory so that it works even if I call the command from within another
   ;; project
   (let ((default-directory hoagie-notes-directory)
-        (project-prompter (lambda () hoagie-notes-directory)))
+        (project-prompter (lambda () hoagie-notes-directory))
+        )
+    (when other-window
+      (other-window-prefix))
     (project-find-file-in nil (list hoagie-notes-directory)
                           (project-current))))
 
