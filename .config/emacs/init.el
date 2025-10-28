@@ -288,11 +288,6 @@ For details on URL and NEW-WINDOW, check the original function."
   ;; Adding C-x j to jump to other window, freeing j on my personal keymap.
   (:map ctl-x-map
         ("j" . dired-jump-other-window))
-  (:map hoagie-keymap
-        ;; see definition for F6-f in :config below
-        ("n" . hoagie-kill-buffer-filename))
-  :bind-keymap
-  ("C-c f" . hoagie-find-keymap)
   :hook
   (dired-mode-hook . dired-hide-details-mode)
   ;; Enables "C-c C-m a" (yeah, really :) lol) to attach
@@ -318,16 +313,8 @@ For details on URL and NEW-WINDOW, check the original function."
         dired-compress-files-alist
         '(("\\.7z\\'" . "7z a -r %o %i")
           ("\\.zip\\'" . "7z a -r %o  %i")))
-  (defun hoagie-kill-buffer-filename ()
-    "Sends the current buffer's filename to the kill ring."
-    (interactive)
-    (if (derived-mode-p 'dired-mode)
-        (dired-copy-filename-as-kill 0)
-      (if-let* ((name (buffer-file-name)))
-        (progn
-          (kill-new name)
-          (message "Killed filename: %s" name))
-        (error "No file for this buffer")))))
+  :config
+  (keymap-set hoagie-keymap "f" hoagie-find-keymap))
 
 (use-package ediff
   :bind
@@ -498,9 +485,8 @@ external browser and new eww buffer, respectively)."
     ;; whichever I use the most between t and f will stay long term
     "f" #'flymake-mode
     "s" #'flymake-start)
-  :bind
-  (:map hoagie-keymap
-        ("f" . hoagie-flymake-keymap)))
+  :bind-keymap
+  ("C-c f" . hoagie-flymake-keymap))
 
 (use-package grep
   :custom
@@ -712,12 +698,15 @@ Set `fill-column', `truncate-lines'."
     :doc "Keymap for my own register commands."
     :name "Registers"
     "<menu>" '("push-dwim" . hoagie-push-to-register-dwim)
+    "C-z" '("push-dwim1" . hoagie-push-to-register-dwim)
+    "z" '("push-dwim2" . hoagie-push-to-register-dwim)
     "i" '("insert" . hoagie-insert-register)
     "l" '("list" . list-registers)
     "d" '("delete" . hoagie-clean-registers)
     "j" '("jump" . hoagie-jump-to-register))
   :bind-keymap
-  ("C-z" . hoagie-register-keymap) ;; can be repurposed
+  ;; can NOT be repurposed - Menu key doens't work in mintty
+  ("C-z" . hoagie-register-keymap)
   ;; experimental
   ("<menu>" . hoagie-register-keymap))
 
@@ -1135,6 +1124,8 @@ With prefix ARG, use `split-root-window-below' instead"
   (:map narrow-map
         ("i" . hoagie-narrow-indirect-dwim)
         ("t" . hoagie-narrow-toggle))
+  (:map hoagie-keymap
+        ("n" . hoagie-kill-buffer-source))
   ;; repeat C-x o and C-x i, and even switch between them
   (:repeat-map hoagie-other-window-frame-repeat-map
                ("o" . other-window)
@@ -1211,9 +1202,7 @@ With prefix ARG, use `split-root-window-below' instead"
         compilation-error-regexp-alist (delete 'maven compilation-error-regexp-alist))
   (setq-default
    ;; from https://github.com/SystemCrafters/rational-emacs/blob/master/modules/rational-defaults.el
-   bidi-inhibit-bpa t
-   ;; from https://blogs.dgplug.org/sandeepk/no-newline-at-the-end-of-file-_-tsu-_
-   require-final-newline t)
+   bidi-inhibit-bpa t)
   (delete-selection-mode)
   (blink-cursor-mode -1)
   (column-number-mode 1)
@@ -1235,7 +1224,20 @@ With prefix ARG, use `split-root-window-below' instead"
           `((".*" ,auto-save-dir t)))
     (make-directory backup-dir t)
     (setf backup-directory-alist
-          `((".*" . ,backup-dir)))))
+          `((".*" . ,backup-dir))))
+  (defun hoagie-kill-buffer-source ()
+    "Sends the current buffer's \"source\" to the kill ring.
+The source means: buffer-filename, URL (eww), dired filename, [more to come]."
+    (interactive)
+    (let ((source (cond ((derived-mode-p 'dired-mode)
+                         (dired-copy-filename-as-kill 0))
+                        ((derived-mode-p 'eww-mode) (eww-current-url))
+                        (t (buffer-file-name)))))
+      (if source
+          (progn
+            (kill-new source)
+            (message "Killed source: %s" source))
+        (error "No source for this buffer")))))
 
 
 (when (and (eq system-type 'gnu/linux) (display-graphic-p))
