@@ -68,6 +68,8 @@ slate/italics."
    `(link-visited ((t (:underline t :foreground ,alt-fg))))
    `(escape-glyph ((t (:inherit error))))
    `(homoglyph ((t (:inherit error))))
+   ;; It seems this one is only used in the Terminal
+   `(separator-line ((t (:inherit default))))
 
    `(minibuffer-prompt ((t (nil))))
    `(completions-common-part ((t (:underline t :weight bold))))
