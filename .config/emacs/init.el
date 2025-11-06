@@ -184,20 +184,14 @@
   :config
   (defun browse-url-vivaldi-flatpak (url &optional new-window)
     "Duplicate of `browse-url-firefox' that uses Flatpak and Vivaldi.
-For details on URL and NEW-WINDOW, check the original function."
+For details on URL, check the original function. NEW-WINDOW is ignored."
     (interactive (browse-url-interactive-arg "URL: "))
     (setq url (browse-url-encode-url url))
     (let* ((process-environment (browse-url-process-environment)))
       (apply #'start-process
-             (concat "flatpak run com.vivaldi.Vivaldi " url) nil
-             browse-url-firefox-program
-             (append
-              browse-url-firefox-arguments
-              (if (browse-url-maybe-new-window new-window)
-		          (if browse-url-firefox-new-window-is-tab
-		              '("-new-tab")
-		            '("-new-window")))
-              (list url)))))
+             (concat "vivaldi " url) nil
+             "flatpak-spawn"
+             (list "--host" "flatpak" "run" "com.vivaldi.Vivaldi" url))))
   :custom
   (browse-url-secondary-browser-function
    (if (eq system-type 'gnu/linux)
