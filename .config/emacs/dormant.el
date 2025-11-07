@@ -1,4 +1,4 @@
-;; purgatory.el --- Things that I used to use  -*- lexical-binding: t; -*-
+;; dormant.el --- Things that I might revisit  -*- lexical-binding: t; -*-
 
 ;; Author: Sebastian Monia <code@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
@@ -13,6 +13,7 @@
 ;; I have done it!). But I want to try a different approach as I move here
 ;; things that I suspect I might need, vs deleted code that I am trying not to
 ;; rely on anymore.
+;; Includes some things I tried but didn't quite stick. Maybe they come back...
 
 ;;; Code:
 
@@ -59,6 +60,22 @@
         ("l" . elfeed-show-prev))
   (:map hoagie-second-keymap
         ("r" . elfeed)))
+
+(use-package hi-lock
+  :demand t
+  :custom
+  (hi-lock-auto-select-face t)
+  :config
+  (defvar-keymap hoagie-hi-lock-keymap
+    :doc "Keymap for `hi-lock' commands."
+    :name "Highlight..."
+    "u" '("unhighlight" . unhighlight-regexp)
+    "l" '("lines" . highlight-lines-matching-regexp)
+    "p" '("phrase" . highlight-phrase)
+    "r" '("regexp" . highlight-regexp)
+    "." '("symbol at point" . highlight-symbol-at-point))
+  :bind-keymap
+  ("C-c h" . hoagie-hi-lock-keymap))
 
 ;; from https://emacs.stackexchange.com/a/36287 I want this for a
 ;; function to open the gcloud docs but I think it is useful as a
@@ -142,6 +159,49 @@ Optional argument NEW-BUFFER is passed to `eww' as prefix arg."
           (pop-to-buffer output-buffer))
       (find-file-other-window output)))))
 
+(use-package rcirc
+  :commands rcirc
+  :custom
+  (rcirc-server-alist '(("chat.sr.ht"
+                         :port 6697
+                         :encryption tls
+                         :server-alias "sr.ht"
+                         :nick "hoagie"
+                         :full-name "Sebastián Monía"
+                         :user-name "sebasmonia/liberachat"
+                         :channels ("#emacs" "#emacs-es" "#argentina"))))
+  :hook
+  (rcirc-mode-hook . (lambda () (rcirc-track-minor-mode 1))))
+
+(use-package restclient
+  :ensure t
+  :custom
+  (restclient-same-buffer-response nil)
+  (restclient-response-body-only nil)
+  :mode
+  ("\\.http\\'" . restclient-mode)
+  :bind
+  (:map restclient-mode-map
+        ("C-c r" . rename-buffer)
+        ("C-c h" . restclient-toggle-headers))
+  :config
+  (defun restclient-toggle-headers ()
+    (interactive)
+    (message "restclient-response-body-only=%s"
+             (setf restclient-response-body-only
+                   (not restclient-response-body-only)))))
+
+(use-package sharper
+  :load-path "~/github/sharper"
+  :if (locate-library "sharper.el")
+  :bind
+  (:map hoagie-keymap
+        ;; using "n" for another command now, moving
+        ;; this to "c" for C#
+        ("c" . sharper-main-transient))
+  :custom
+  (sharper-run-only-one t))
+
 (use-package terraform-mode
   :ensure t
   :mode "\\.tf$")
@@ -207,3 +267,28 @@ If the parameter is not provided use word at point."
   (defun hoagie-eshell-mode-setup ()
     "Configure eshell buffers."
     (toggle-truncate-lines t)))
+
+;; I used this command extensively for like, 4 days, and never again :shrug:
+(defvar-local hoagie-narrow-toggle-markers nil
+  "A cons cell (beginning . end) that is updated when using
+`hoagie-narrow-toggle'.")
+(defun hoagie-narrow-toggle (&optional arg)
+  "Toggle widening/narrowing of the current buffer.
+If the buffer is narrowed, store the boundaries in
+`hoagie-narrow-toggle-markers' and widen.
+If the buffer is widened, then narrow to region if
+`hoagie-narrow-toggle-markers' is non nil (and then discard those
+markers, resetting the state)."
+  (interactive)
+  (if (buffer-narrowed-p)
+      (progn
+        (setf hoagie-narrow-toggle-markers (cons (point-min)
+                                                 (point-max)))
+        (widen))
+    ;; check for toggle markers
+    (if (not hoagie-narrow-toggle-markers)
+        (message "No narrow toggle markers.")
+      ;; do the thing
+      (narrow-to-region (car hoagie-narrow-toggle-markers)
+                        (cdr hoagie-narrow-toggle-markers))
+      (setf hoagie-narrow-toggle-markers nil))))
