@@ -1,6 +1,6 @@
 ;;; init.el --- My dot emacs file  -*- lexical-binding: t; -*-
 
-;; Author: Sebastián Monía <code@sebasmonia.com>
+;; Author: Sebastián Monía <sebastian@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
 ;; Version: 30.6
 ;; Keywords: local tools processes vc files
@@ -115,21 +115,7 @@ _CURRENT-TIME and APPOINTMENT-TEXT."
 (browse-kill-ring-default-keybindings)
 
 (require 'browse-url)
-
-(defun browse-url-vivaldi-flatpak (url &optional new-window)
-  "Duplicate of `browse-url-firefox' that uses Flatpak and Vivaldi.
-For details on URL, check the original function. NEW-WINDOW is ignored."
-  (interactive (browse-url-interactive-arg "URL: "))
-  (setq url (browse-url-encode-url url))
-  (let* ((process-environment (browse-url-process-environment)))
-    (apply #'start-process
-           (concat "vivaldi " url) nil
-           "flatpak-spawn"
-           (list "--host" "flatpak" "run" "com.vivaldi.Vivaldi" url))))
-
-(setopt browse-url-secondary-browser-function (if (eq system-type 'gnu/linux)
-                                                  #'browse-url-vivaldi-flatpak
-                                                #'browse-url-firefox)
+(setopt browse-url-secondary-browser-function #'browse-url-firefox
         browse-url-browser-function #'eww-browse-url
         browse-url-new-window-flag t)
 
@@ -168,10 +154,6 @@ For details on URL, check the original function. NEW-WINDOW is ignored."
 ;; it is definitely overkill
 (setopt dictionary-server "dict.org"
         dictionary-port 2628)
-
-(require 'cdsync)
-(setopt cdsync-auth-source-host "caldav-fastmail")
-(cdsync-setup-calendar-integration)
 
 (require 'dired)
 (require 'dired-aux) ;; for dired-compress-*
@@ -774,13 +756,12 @@ The source means: buffer-filename, URL (eww), dired filename, [more to come]."
 
 
 ;; Load theme, modeline and bindings, after all other packages are require'd
+(load-file "~/sourcehut/dotfiles/.config/emacs/lisp/mode-line.el")
+(load-file "~/sourcehut/dotfiles/.config/emacs/lisp/bindings.el")
 (load-file "~/sourcehut/dotfiles/.config/emacs/lisp/hoagie-theme.el")
 (load-theme 'hoagie t)
-(load-file "~/sourcehut/dotfiles/.config/emacs/lisp/hoagie-mode-line.el")
-(load-file "~/sourcehut/dotfiles/.config/emacs/lisp/hoagie-bindings.el")
 
 ;; Optional packages
-;; TODO: revisit how these are loaded
 ;; let's do our best to keep Gnus files/dir outside of ~
 (load-file "~/sourcehut/dotfiles/.config/gnus/.gnus.el")
 
@@ -788,7 +769,7 @@ The source means: buffer-filename, URL (eww), dired filename, [more to come]."
   (load-file "~/sourcehut/site.sebasmonia/site.el")
   (require 'site))
 
-;; is it a work computer...?
+(when-let* (getenv "MACHINE_CONFIG")
 (let ((sc-init "~/sourcehut/simcorp-files/.emacs.d/sc-init.el"))
   (when (file-exists-p sc-init)
     (load sc-init)))
