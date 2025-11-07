@@ -40,7 +40,6 @@
           ws-butler))       ;; nongnu
 
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp/"))
-(add-to-list 'load-path (expand-file-name "~/sourcehut/cambalache"))
 (add-to-list 'load-path (expand-file-name "~/sourcehut/cdsync"))
 (add-to-list 'load-path (expand-file-name "~/github/datum"))
 (add-to-list 'load-path (expand-file-name "~/sourcehut/stubvex"))
@@ -128,9 +127,6 @@ _CURRENT-TIME and APPOINTMENT-TEXT."
         calendar-setup 'one-frame)
 (add-hook 'calendar-today-visible-hook #'calendar-mark-today)
 (add-hook 'calendar-mode-hook #'diary-mark-entries)
-
-(require 'cambalache)
-(setopt cambalache-root-url "https://myfiles.fastmail.com/")
 
 (require 'comint)
 (setopt comint-prompt-read-only t
