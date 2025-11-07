@@ -761,15 +761,5 @@ The source means: buffer-filename, URL (eww), dired filename, [more to come]."
 (load-file "~/sourcehut/dotfiles/.config/emacs/lisp/hoagie-theme.el")
 (load-theme 'hoagie t)
 
-;; Optional packages
-;; let's do our best to keep Gnus files/dir outside of ~
-(load-file "~/sourcehut/dotfiles/.config/gnus/.gnus.el")
-
-(when (file-exists-p "~/sourcehut/site.sebasmonia/site.el")
-  (load-file "~/sourcehut/site.sebasmonia/site.el")
-  (require 'site))
-
-(when-let* (getenv "MACHINE_CONFIG")
-(let ((sc-init "~/sourcehut/simcorp-files/.emacs.d/sc-init.el"))
-  (when (file-exists-p sc-init)
-    (load sc-init)))
+;; Load local configuration
+(load-file "~/sourcehut/dotfiles/.config/emacs/machine-config.el")
