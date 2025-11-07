@@ -63,7 +63,7 @@
 ;; This package declares commands that I use for general text editing.
 ;; This declaration also sets bindings for pure-editing built-ins.
 (use-package hoagie-editing
-  :load-path "~/sourcehut/dotfiles/.config/emacs"
+  :load-path "~/sourcehut/dotfiles/.config/emacs/lisp"
   :demand t
   :custom
   ;; part of misc.el, but since the binding is set here:
@@ -88,13 +88,13 @@
         ("m" . hoagie-flash-mark)))
 
 (use-package hoagie-notes
-  :load-path "~/sourcehut/dotfiles/.config/emacs"
+  :load-path "~/sourcehut/dotfiles/.config/emacs/lisp"
   :demand t
   :bind-keymap
   ("C-c n" . hoagie-notes-keymap))
 
 (use-package hoagie-pages
-  :load-path "~/sourcehut/dotfiles/.config/emacs"
+  :load-path "~/sourcehut/dotfiles/.config/emacs/lisp"
   :demand t
   :bind
   (:map ctl-x-map
