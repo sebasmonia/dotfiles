@@ -1,4 +1,4 @@
-;;; hoagie-bindings.el --- All key bindings in one place -*- lexical-binding: t; -*-
+;;; bindings.el --- All key bindings in one place -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025 Sebastián Monía
 ;;
@@ -266,4 +266,4 @@ It has additional bindings setup in each local configuration."
   "r" #'undo-redo
   "v" #'vundo)
 
-;;; hoagie-bindings.el ends here
+;;; bindings.el ends here

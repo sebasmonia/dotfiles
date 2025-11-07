@@ -1,6 +1,6 @@
 ;; dormant.el --- Things that I might revisit  -*- lexical-binding: t; -*-
 
-;; Author: Sebastian Monia <code@sebasmonia.com>
+;; Author: Sebastian Monia <sebastian@sebasmonia.com>
 ;; URL: https://git.sr.ht/~sebasmonia/dotfiles
 ;; Version: 1.0
 ;; Keywords: tools maint

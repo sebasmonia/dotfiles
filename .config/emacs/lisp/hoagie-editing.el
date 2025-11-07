@@ -232,5 +232,4 @@ example). With double prefix, include the time."
       (run-with-idle-timer 4 nil #'delete-overlay mark-overlay))))
 
 (provide 'hoagie-editing)
-
 ;;; hoagie-editing.el ends here
