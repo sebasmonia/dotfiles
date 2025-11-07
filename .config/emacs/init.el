@@ -39,7 +39,7 @@
           vundo             ;; gnu
           ws-butler))       ;; nongnu
 
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp/"))
+(add-to-list 'load-path (expand-file-name "~/sourcehut/dotfiles/.config/emacs/lisp"))
 (add-to-list 'load-path (expand-file-name "~/sourcehut/cdsync"))
 (add-to-list 'load-path (expand-file-name "~/github/datum"))
 (add-to-list 'load-path (expand-file-name "~/sourcehut/stubvex"))
