@@ -748,12 +748,11 @@ The source means: buffer-filename, URL (eww), dired filename, [more to come]."
                                      user-emacs-directory
                                      "backups/"))))
   (make-directory auto-save-dir t)
-  (make-directory backup-dir t)
   (setf auto-save-list-file-prefix auto-save-dir
         auto-save-file-name-transforms
         `((".*" ,auto-save-dir t)))
   (make-directory backup-dir t)
-  (setf backup-directory-alistn
+  (setf backup-directory-alist
         `((".*" . ,backup-dir))))
 
 
