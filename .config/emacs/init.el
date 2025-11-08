@@ -409,6 +409,9 @@ Set `fill-column', `truncate-lines'."
 
 (add-hook 'python-mode-hook #'hoagie-python-mode-setup)
 
+(require 're-builder)
+(setq reb-re-syntax 'string)
+
 (require 'register)
 (setopt register-preview-delay 0.1)
 
@@ -712,7 +715,9 @@ The source means: buffer-filename, URL (eww), dired filename, [more to come]."
 
 ;; TODO: Load from file?
 (setopt initial-scratch-message
- ";; Il semble que la perfection soit atteinte non quand il n’y a\n;; plus rien à ajouter, mais quand il n’y a plus à retrancher.\n;;                                   - Antoine de Saint Exupéry\n\n;; C-x C-k e edit kmacro             ;; (shell) C-c C-o clear last output\n;; C-x / vundo                       ;; C-x C-t transpose-lines (0 arg!)\n;; C-x ESC ESC repeat command        ;; C-o / C-M-o   open / split line\n\n;; During isearch                    ;; Less common search/replace\n;; C-w add word at point, can repeat ;; M-s . isearch symbol at point\n;; M-r toggle regex                  ;; C-u M-% to replace words\n\n;; M-x...\n;; copy-matching-lines (also kill-)  ;; (un)highlight-regexp\n;; align-current (or align-regexp)\n\n;; Calendar & Diary\n;; . - go to today                   ;; u/m/x - unmark/mark events/holidays\n\n;; Replace in many files:\n;; 1. multi-occur (if buffers visiting)\n;; 2. in Dired, Q -> regexp replace in marked files\n;; 3. F6-f (find-name-dired, find-grep-dired), then #2\n\n;; Notes prefix C-c n                ;; Go to prefix C-c g\n\n;; Source functions (familiarize): help-find-source, find-variable,\n;;                                 find-function, find-function-on-key\n\n;; New commands (replace?): replace-regexp-as-diff,\n;;                          multi-file-replace-regexp-as-diff,\n;;                          dired-do-replace-regexp-as-diff\n\n")
+        (with-temp-buffer
+          (insert-file-contents "scratch-message.txt")
+          (buffer-string)))
 
 ;; see https://emacs.stackexchange.com/a/28746/17066 and
 ;; https://blog.danielgempesaw.com/post/129841682030/fixing-a-laggy-compilation-buffer
@@ -758,4 +763,4 @@ The source means: buffer-filename, URL (eww), dired filename, [more to come]."
 (load-theme 'hoagie t)
 
 ;; Load local configuration
-(load-file "~/sourcehut/dotfiles/.config/emacs/machine-config.el")
+(load-file "~/sourcehut/dotfiles/.config/emacs/lisp/machine-config.el")

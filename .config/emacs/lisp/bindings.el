@@ -218,8 +218,8 @@ It has additional bindings setup in each local configuration."
 ;; combines https://stackoverflow.com/a/6465415 with
 ;; https://www.reddit.com/r/emacs/comments/1juhasp/comment/mm2m4ne/
 ;; by using prefix-arg UPDATE: improves on the SO answer :D
-(keymap-set ctl-x-map "2" #'#'hoagie-split-window-below)
-(keymap-set ctl-x-map "3" #'#'hoagie-split-window-right)
+(keymap-set ctl-x-map "2" #'hoagie-split-window-below)
+(keymap-set ctl-x-map "3" #'hoagie-split-window-right)
 
 ;; Repeat keymaps
 (defvar-keymap hoagie-python-repeat-map
