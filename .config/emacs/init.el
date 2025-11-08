@@ -716,7 +716,8 @@ The source means: buffer-filename, URL (eww), dired filename, [more to come]."
 ;; TODO: Load from file?
 (setopt initial-scratch-message
         (with-temp-buffer
-          (insert-file-contents "scratch-message.txt")
+          (insert-file-contents
+           "~/sourcehut/dotfiles/.config/emacs/scratch-message.txt")
           (buffer-string)))
 
 ;; see https://emacs.stackexchange.com/a/28746/17066 and
@@ -757,10 +758,10 @@ The source means: buffer-filename, URL (eww), dired filename, [more to come]."
 
 
 ;; Load theme, modeline and bindings, after all other packages are require'd
-(load-file "~/sourcehut/dotfiles/.config/emacs/lisp/mode-line.el")
-(load-file "~/sourcehut/dotfiles/.config/emacs/lisp/bindings.el")
-(load-file "~/sourcehut/dotfiles/.config/emacs/lisp/hoagie-theme.el")
+(load "mode-line.el")
+(load "bindings.el")
+(load "hoagie-theme.el")
 (load-theme 'hoagie t)
 
 ;; Load local configuration
-(load-file "~/sourcehut/dotfiles/.config/emacs/lisp/machine-config.el")
+(load "machine-config.el")
