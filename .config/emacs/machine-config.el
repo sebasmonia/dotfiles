@@ -8,11 +8,14 @@
 
 ;;; Commentary:
 
-;; This file is in .gitignore
-;; I drop here things that I need to setup per-computer. I used to do it by OS
-;; (Windows = work, Linux = home) but nowadays I also use Linux at work for
-;; some tasks.
-;; I was going to use environment variables, but I think might be simpler.
+;; I am supposed to run
+;;     git update-index --assume-unchanged machine-config.el
+;; in every computer I cloned my config.
+;;
+;; I drop here things that I need to setup per-machine, as the name implies. I
+;; used to do this kind of thing by OS (Windows = work, Linux = home), but
+;; nowadays I also use Linux at work for some tasks.
+;; I was going to use environment variables, but I suspect this can be simpler.
 ;;; Code:
 
 
