@@ -25,76 +25,73 @@
 ;; (keymap-global-set "<menu>" 'hoagie-shortcut-keymap)
 
 
+;; Custom prefix keymaps: editing and shortcuts
 (defvar-keymap hoagie-editing-keymap
   :doc "Keybindings that deal directly with text manipulation."
-  :prefix 'hoagie-editing-keymap)
-(keymap-set hoagie-editing-keymap "/" #'hoagie-toggle-backslash)
-(keymap-set hoagie-editing-keymap "e" #'hoagie-escape-regexp)
-(keymap-set hoagie-editing-keymap "p" #'hoagie-insert-pair)
-(keymap-set hoagie-editing-keymap "u" #'hoagie-delete-pair)
-(keymap-set hoagie-editing-keymap "t" #'hoagie-insert-datetime)
-(keymap-set hoagie-editing-keymap "s" #'hoagie-split-by-sep)
-;; always have a binding for plain old fill-paragraph (it tends
-;; to be replaced/shadowed in a lot of modes).
-(keymap-set hoagie-editing-keymap "q" #'fill-paragraph)
-(keymap-set hoagie-editing-keymap "d" #'duplicate-dwim)
-(keymap-set hoagie-editing-keymap "c" #'copy-from-above-command)
-;; alt binding - easier on the fingers
-(keymap-set hoagie-editing-keymap "a" #'copy-from-above-command)
-(keymap-set hoagie-editing-keymap "k" #'kill-whole-line)
-(keymap-set hoagie-editing-keymap "m" #'hoagie-flash-mark)
-
+  :prefix 'hoagie-editing-keymap
+  "/" #'hoagie-toggle-backslash
+  "e" #'hoagie-escape-regexp
+  "p" #'hoagie-insert-pair
+  "u" #'hoagie-delete-pair
+  "t" #'hoagie-insert-datetime
+  "s" #'hoagie-split-by-sep
+  ;; always have a binding for plain old fill-paragraph (it tends
+  ;; to be replaced/shadowed in a lot of modes)
+  "q" #'fill-paragraph
+  "d" #'duplicate-dwim
+  "c" #'copy-from-above-command
+  ;; alt binding - easier on the fingers
+  "a" #'copy-from-above-command
+  "k" #'kill-whole-line
+  "m" #'hoagie-flash-mark)
 (keymap-global-set "<f6>" hoagie-editing-keymap) ;; T1 (next to SPC)
 
-
 (defvar-keymap hoagie-shortcut-keymap
   :doc "Keybindings for general, non-editing features."
-  :prefix 'hoagie-shortcut-keymap)
+  :prefix 'hoagie-shortcut-keymap
+  "e" #'ediff-buffers
+  "M-e" #'ediff-current-file
+  ;; "h" for "help"
+  "h" #'hoagie-toggle-eldoc-buffer
+  "g" #'rgrep
+  "o" #'hoagie-occur-symbol-or-region
+  "ESC o" #'multi-occur-in-matching-buffers
+  ;; good mirror of occur -> occur-dwim, except this built in does
+  ;; have a default binding, it is "M-s ."
+  "s" #'isearch-forward-thing-at-point
 
-(keymap-set hoagie-shortcut-keymap "e" #'ediff-buffers)
-(keymap-set hoagie-shortcut-keymap "M-e" #'ediff-current-file)
-;; "h" for "help"
-(keymap-set hoagie-shortcut-keymap "h" #'hoagie-toggle-eldoc-buffer)
-(keymap-set hoagie-shortcut-keymap "g" #'rgrep)
-(keymap-set hoagie-shortcut-keymap "o" #'hoagie-occur-symbol-or-region)
-(keymap-set hoagie-shortcut-keymap "ESC o" #'multi-occur-in-matching-buffers)
-;; good mirror of occur -> occur-dwim, except this built in does
-;; have a default binding, it is "M-s ."
-(keymap-set hoagie-shortcut-keymap "s" #'isearch-forward-thing-at-point)
-
-(keymap-set hoagie-shortcut-keymap "n" #'hoagie-kill-buffer-source)
-(keymap-set hoagie-shortcut-keymap "ESC n" #'hoagie-shr-link-open-or-kill)
-;; Experimental: store window setup manually.
-;; Use case: I'm reading email in Gnus, and want to look at calendar or world
-;; clock or diary
-(keymap-set hoagie-shortcut-keymap "ESC 1" #'hoagie-store-window-configuration)
-(keymap-set hoagie-shortcut-keymap "1" #'hoagie-restore-window-configuration)
-(keymap-set hoagie-shortcut-keymap "|" #'hoagie-toggle-frame-split)
-
+  "n" #'hoagie-kill-buffer-source
+  "ESC n" #'hoagie-shr-link-open-or-kill
+  ;; Experimental: store window setup manually.
+  ;; Use case: I'm reading email in Gnus, and want to look at calendar or world
+  ;; clock or diary
+  "ESC 1" #'hoagie-store-window-configuration
+  "1" #'hoagie-restore-window-configuration
+  "|" #'hoagie-toggle-frame-split)
 (keymap-global-set "<f5>" hoagie-shortcut-keymap) ;; Enter
+
+;; Other custom keymaps
+;; Exception repeat keymaps, at the bottom of the file.
 
 ;; What are the differences between the last two commands?
 ;; (info "(emacs) Dired and Find")
 (defvar-keymap hoagie-find-keymap
   :doc "Keymap for Dired find commands."
   :name "Find variants"
-  "g" '("grep dired" #'find-grep-dired)
-  "n" '("name dired" #'find-name-dired)
-  "d" '("dired" #'find-dired))
+  "g" '("grep dired" . find-grep-dired)
+  "n" '("name dired"  . find-name-dired)
+  "d" '("dired"  . find-dired))
 (keymap-set hoagie-shortcut-keymap "f" hoagie-find-keymap)
 
 (defvar-keymap hoagie-eglot-keymap
   :doc "Keymap for Eglot commands."
   :name "Eglot"
-  "r" '("rename" #'eglot-rename)
-  "h" '("help" #'eldoc)
-  "c" '("code actions" #'eglot-code-actions))
+  "r" '("rename" . eglot-rename)
+  "h" '("help"  . eldoc)
+  "c" '("code actions" . eglot-code-actions))
 ;; "l" for LSP
-(keymap-set hoagie-shortcut-keymap "l" hoagie-find-keymap)
+(keymap-set hoagie-shortcut-keymap "l" hoagie-eglot-keymap)
 
-
-;; Personal keymaps
-;; Exceptions: find and eglot, above. Repeats, at the bottom.
 (keymap-global-set "C-c n" hoagie-notes-keymap)
 
 ;; Trying to make these more memorable than C-x r m/b/l
@@ -103,19 +100,19 @@
 (defvar-keymap hoagie-bookmark-keymap
   :name "Bookmarks"
   :doc "Keymap to global bookmark commands"
-  "l" '("list"#'bookmark-bmenu-list)
-  "j" '("jump to..." #'bookmark-jump)
-  "b" '("add" #'bookmark-set))
+  "l" '("list" . bookmark-bmenu-list)
+  "j" '("jump to..." . bookmark-jump)
+  "b" '("add" . bookmark-set))
 (keymap-global-set "C-c b" hoagie-bookmark-keymap)
 
 (defvar-keymap hoagie-eww-keymap
   :doc "Keymap to global eww commands"
   :name "EWW"
   ;; this keymap has additional bindings setup in my work configuration
-  "w" '("EWW (search words)" #'eww-search-words)
+  "w" '("EWW (search words)" . eww-search-words)
   ;; mirror "S" in eww-mode-map
-  "s" '("buffers" #'eww-list-buffers)
-  "b" '("bookmarks"#'eww-list-bookmarks))
+  "s" '("buffers" . eww-list-buffers)
+  "b" '("bookmarks" . eww-list-bookmarks))
 (keymap-global-set "C-c w" hoagie-eww-keymap)
 
 (defvar-keymap hoagie-flymake-keymap
@@ -135,13 +132,13 @@
 (defvar-keymap hoagie-register-keymap
   :doc "Keymap for my own register commands."
   :name "Registers"
-  "<menu>" '("push-dwim" #'hoagie-push-to-register-dwim)
-  "C-z" '("push-dwim1" #'hoagie-push-to-register-dwim)
-  "z" '("push-dwim2" #'hoagie-push-to-register-dwim)
-  "i" '("insert" #'hoagie-insert-register)
-  "l" '("list" #'list-registers)
-  "d" '("delete" #'hoagie-clean-registers)
-  "j" '("jump" #'hoagie-jump-to-register))
+  "<menu>" '("push-dwim" . hoagie-push-to-register-dwim)
+  "C-z" '("push-dwim1" . hoagie-push-to-register-dwim)
+  "z" '("push-dwim2" . hoagie-push-to-register-dwim)
+  "i" '("insert" . hoagie-insert-register)
+  "l" '("list" . list-registers)
+  "d" '("delete" . hoagie-clean-registers)
+  "j" '("jump" . hoagie-jump-to-register))
 ; can NOT be repurposed - Menu key doens't work in mintty
 (keymap-global-set "C-z" hoagie-register-keymap)
 (keymap-global-set "<menu>" hoagie-register-keymap)
@@ -150,8 +147,9 @@
   :doc "Keymap to go to \"places\": home dir, init file, etc.
 It has additional bindings setup in each local configuration."
   :name "Go to"
-  "h" '("home directory" #'hoagie-go-home)
-  "i" '("init file" #'hoagie-open-init))
+  "h" '("home directory" . hoagie-go-home)
+  "i" '("init file" . hoagie-open-init)
+  "m" '("machine config" . hoagie-open-machine))
 (keymap-global-set "C-c g" hoagie-goto-keymap)
 
 ;; Mode-specific bindings
@@ -195,7 +193,7 @@ It has additional bindings setup in each local configuration."
 ; replace delete-char, as recommended in the docs
 (keymap-global-set "<remap> <delete-char>" #'delete-forward-char)
 ;; THIS ISN'T A REMAP...but I don't have another section to put it in...
-;; Suggested in Mastering Emacs: this nicely mirrors M-$ for spellchecking
+;; Suggested in Mastering Emacs: it nicely mirrors M-$ for spellchecking
 (keymap-global-set "M-#" #'dictionary-lookup-definition)
 
 ;; ctl-x-map
