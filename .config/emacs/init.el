@@ -625,6 +625,11 @@ repository."
   (interactive)
   (find-file
    (expand-file-name "~/sourcehut/dotfiles/.config/emacs/init.el")))
+(defun hoagie-open-machine ()
+  "Open the local init file (machine-config)."
+  (interactive)
+  (find-file
+   (expand-file-name "~/sourcehut/dotfiles/.config/emacs/lisp/machine-config.el")))
 ;; Inspired by
 ;; https://demonastery.org/2013/04/emacs-narrow-to-region-indirect/ and
 ;; modified to DWIM. Also use `pop-to-buffer' instead of `switch-to-buffer'
