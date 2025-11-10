@@ -235,7 +235,7 @@ It has additional bindings setup in each local configuration."
   "i" #'other-frame
   "0" #'delete-window)
 
-(defvar-keymap hoagie-other-window-frame-repeat-map
+(defvar-keymap hoagie-mark-repeat-map
   :doc "Keymap to extend selections after a mark command"
   :repeat t
   "SPC" #'mark-sexp
