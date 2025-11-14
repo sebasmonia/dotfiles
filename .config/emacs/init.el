@@ -40,7 +40,6 @@
           ws-butler))       ;; nongnu
 
 (add-to-list 'load-path (expand-file-name "~/sourcehut/dotfiles/.config/emacs/lisp"))
-(add-to-list 'load-path (expand-file-name "~/sourcehut/cdsync"))
 (add-to-list 'load-path (expand-file-name "~/github/datum"))
 (add-to-list 'load-path (expand-file-name "~/sourcehut/stubvex"))
 
@@ -313,7 +312,9 @@ Set `fill-column' and related modes.'."
   (setf fill-column 100)
   (display-fill-column-indicator-mode)
   (auto-fill-mode)
-  (setq-local page-delimiter " *<h[[:digit:]]"))
+  (setq-local page-delimiter " *<h[[:digit:]]")
+  ;; I don't want newlines in my <code> tags
+  (add-to-list 'sgml-tag-alist '("code")))
 (add-hook 'mhtml-mode-hook #'hoagie-mhtml-mode-setup)
 
 (require 'info)

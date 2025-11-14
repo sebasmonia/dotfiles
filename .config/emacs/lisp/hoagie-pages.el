@@ -12,7 +12,7 @@
 ;; Yet again, copying an existing Emacs feature and making my own version, like
 ;; I did with insert/removing pairs. In this case, it is `page-ext'.
 ;;
-;; The base commands to move to throught the pages are good enough ("C-x [" and
+;; The base commands to move throught the pages are good enough ("C-x [" and
 ;; "C-x ]"), even more so with `repeat' enabled.
 ;; And page-ext has an obsession with narrowing to page. Even if most of it can
 ;; be turned off in the customization options, I also dislike how it changes

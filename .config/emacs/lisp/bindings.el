@@ -239,7 +239,8 @@ It has additional bindings setup in each local configuration."
   :doc "Keymap to extend selections after a mark command"
   :repeat t
   "SPC" #'mark-sexp
-  "@" #'mark-word)
+  "@" #'mark-word
+  "h" #'mark-paragraph)
 
 (defvar-keymap hoagie-cycle-repeat-map
     :doc "Keymap to use SPC to repeat cycle-spacing."
