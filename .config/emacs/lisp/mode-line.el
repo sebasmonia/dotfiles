@@ -1,4 +1,4 @@
-;;; hoagie-mode-line.el --- My mode-line -*- lexical-binding: t; -*-
+;;; mode-line.el --- My mode-line -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025 Sebastián Monía
 ;;
@@ -92,4 +92,4 @@ For the latter, it uses a more involved calculation for rectangle selections."
        " " mode-line-process
        " " mode-line-modes "   "))
 
-;;; hoagie-mode-line.el ends here
+;;; mode-line.el ends here

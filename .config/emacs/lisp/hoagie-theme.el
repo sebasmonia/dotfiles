@@ -43,7 +43,7 @@ slate/italics."
        (warning "#ff8c00") ;; dark orange
        (bg-mode-line (if (display-graphic-p)
                          "#ffffff"
-                       "#f2f2f2")))
+                       "#e5e5e5")))
 
   (custom-theme-set-faces 'hoagie
   ;; for live testing

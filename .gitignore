@@ -17,5 +17,6 @@
 .config/emacs/url/*
 .config/emacs/newsticker/*
 .config/emacs/org-persist/*
+.config/emacs/machine-config.el
 .config/gnus/.newsrc.eld
 .config/gnus/ecomplete

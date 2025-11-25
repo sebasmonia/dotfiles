@@ -1,0 +1,23 @@
+;; Il semble que la perfection soit atteinte non quand il n’y a
+;; plus rien à ajouter, mais quand il n’y a plus à retrancher.
+;;                                   - Antoine de Saint Exupéry
+
+;; C-x C-k e edit kmacro             ;; (shell) C-c C-o clear last output
+;; C-o / C-M-o   open / split line   ;; C-x C-t transpose-lines (0 arg!)
+
+;; During isearch                    ;; Less common search/replace
+;; C-w add word at point, can repeat ;; M-s . isearch symbol at point
+;; M-r toggle regex                  ;; C-u M-% to replace words
+
+;; Calendar & Diary: . - go to today  u/m/x - unmark/mark events/holidays
+
+;; Replace in many files: 
+;; 1. multi-occur (if buffers visiting)
+;; 2. in Dired, Q -> regexp replace in marked files
+;; 3. F6-f (find-name-dired, find-grep-dired), then #2
+
+;; New commands (replace?): replace-regexp-as-diff,
+;;                          multi-file-replace-regexp-as-diff,
+;;                          dired-do-replace-regexp-as-diff
+
+;; regexp: regexp-quote regexp-opt and re-builder

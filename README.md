@@ -29,7 +29,9 @@ run it. I do my best to update the minor version on "big" changes.
 
 ## Keyboard config
 
-I have a Dygma Raise. There's a README with notes about the config, and exported JSON of my current
+I have a Dygma Raise. [There's a
+README](https://git.sr.ht/~sebasmonia/dotfiles/tree/master/item/DygmaRaise/README.md) with notes
+about the config, and exported JSON of my current
 layers, in the corresponding sub-directory.  
 &nbsp;  
 There's a legacy setup using [Karabiner](https://karabiner-elements.pqrs.org/) for macOS, from when
