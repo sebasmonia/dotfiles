@@ -155,7 +155,6 @@ It has additional bindings setup in each local configuration."
 ;; Mode-specific bindings
 (keymap-set eww-mode-map "m" #'hoagie-eww-jump)
 (keymap-set eww-mode-map "I" #'eww-toggle-images)
-(keymap-set narrow-map "i" #'hoagie-narrow-indirect-dwim)
 
 ;; Minibuffer (in my config, it is also completion)
 (keymap-set minibuffer-mode-map "C-n" #'minibuffer-next-completion)
@@ -167,6 +166,10 @@ It has additional bindings setup in each local configuration."
 (keymap-set minibuffer-mode-map "C-<return>" #'minibuffer-force-complete-and-exit)
 (keymap-set completion-in-region-mode-map  "C-n" #'minibuffer-next-completion)
 (keymap-set completion-in-region-mode-map "C-p" #'minibuffer-previous-completion)
+
+(keymap-set narrow-map "i" #'hoagie-narrow-indirect-dwim)
+
+(keymap-set html-mode-map "C-c C-q" #'sgml-quote)
 
 ;; vc-mode and friends
 (keymap-set vc-prefix-map "k" #'vc-revert)
